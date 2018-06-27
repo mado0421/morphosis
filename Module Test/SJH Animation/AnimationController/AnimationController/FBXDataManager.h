@@ -30,7 +30,7 @@ public:
 	bool AnimFileRead();
 
 	void SetTextureName(const char* name) {
-		if (m_pName != nullptr)strcpy(m_pName->string, name);}
+		if (m_pName != nullptr)strcpy_s(m_pName->string, name);}
 	void SetName(std::string name) { m_fileName = name; }
 	std::string GetName()const { return m_fileName; }
 	

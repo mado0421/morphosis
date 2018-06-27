@@ -1,11 +1,12 @@
 #pragma once
 #include"FBXDataManager.h"
 #include<vector>
-
+#include<iostream>
 struct CurveSet
 {
 	cv::CurveNode* m_pCurveNode;
 	int m_nCurveNode;
+	float end_time;
 
 	CurveSet(){
 		m_pCurveNode = nullptr;
@@ -27,6 +28,7 @@ public:
 	int m_nCurveNode;
 
 	float time = 0;
+	float endTime;
 
 	/* 나중에 수정하여 사용 할 것 */
 public:

@@ -37,6 +37,12 @@ void AnimationController::Init(FBXDataManager * pFbxDM)
 		{
 			//	has no animation
 		}
+
+		endTime = 3.0f;
+		/*
+			임시, 또한 나중에 수정하여 사용하는 애니메이션 에서는 CuveSet마다 EndTIme이 포함되어 있어서
+			사용하지 않을 변수
+		*/
 	}
 }
 
@@ -64,7 +70,13 @@ void AnimationController::Init(FBXDataManager * pFbxDM)
 */
 void AnimationController::Update(float fElapsedTime)
 {
+	static int cnt = 0;
+	static const int sampleCount = 100;
+	cnt++;
+
+
 	time += fElapsedTime;
+
 	int nTrans = m_pCurveNode->nTranslation;
 	int nRotate = m_pCurveNode->nRotation;
 	//int nScale = m_pCurveNode->nScale;
@@ -75,31 +87,112 @@ void AnimationController::Update(float fElapsedTime)
 	/*
 		Scale은 사용 안함
 	*/
+	XMFLOAT3 trans = XMFLOAT3();
+	XMFLOAT3 rotate = XMFLOAT3();
+	//XMFLOAT4 scale;
 
+	if (cnt % sampleCount == 0)
+	{
+		std::cout << "timepos: " << time << "\n";
+	}
+	//	Find current and pred Curve Node to make vector4
 	for (int i = 0; i < m_nCurveNode; ++i)
 	{
 		if (0 < nTrans)
 		{
-			for (int fi = 0; nTrans; ++fi)
+			for (int fi = 0; fi < nTrans; ++fi)
 			{
-				
+				if (time >= pTrans[fi].timePos) {
+					if (fi < nTrans - 1)continue;
+					else {
+						/*
+							현재 시간이 마지막 keyFrame의 Timepos보다 크지만
+							EndTime이 아닐때의 처리
+						*/
+						trans.x = pTrans[fi].value.x;
+						trans.y = pTrans[fi].value.y;
+						trans.z = pTrans[fi].value.z;
+						break;
+					}
+				}
+				/*
+					current 와 pred로 Interpolation
+				*/
+				else
+				{
+					float t = (pTrans[fi].timePos - time) /
+						(pTrans[fi].timePos - pTrans[fi - 1].timePos);
+					trans.x = t * pTrans[fi - 1].value.x + (1 - t)*pTrans[fi].value.x;
+					trans.y = t * pTrans[fi - 1].value.y + (1 - t)*pTrans[fi].value.y;
+					trans.z = t * pTrans[fi - 1].value.z + (1 - t)*pTrans[fi].value.z;
+
+					if (cnt % sampleCount == 0)
+					{
+						std::cout << "CurveNode "<<i<<"\n";
+						std::cout << "===============================================================\n";
+						std::cout << "t = " << t << "\n";
+						std::cout << "pred (" << pTrans[fi - 1].value.x << ", " << pTrans[fi - 1].value.y << ", " << pTrans[fi - 1].value.z << ")\n";
+						std::cout << "curr (" << pTrans[fi].value.x << ", " << pTrans[fi].value.y << ", " << pTrans[fi].value.z << ")\n";
+						std::cout << "Trans (" << trans.x << ", " << trans.y << ", " << trans.z << ")\n";
+						std::cout << "===============================================================\n";
+					}
+					break;
+				}
+
 			}
 		}
+	}
 
-		if (0 < nRotate)
+	if (0 < nRotate)
+	{
+		for (int fi = 0; fi < nRotate; ++fi)
 		{
-			for (int fi = 0; nRotate; ++fi)
+			if (time >= pRotat[fi].timePos) {
+				if (fi > 0 || fi < nRotate - 1)continue;
+				else {
+					rotate.x = pRotat[fi].value.x;
+					rotate.y = pRotat[fi].value.y;
+					rotate.z = pRotat[fi].value.z;
+					break;
+				}
+			}
+			else
 			{
+				float t = (pRotat[fi].timePos - time) /
+					(pRotat[fi].timePos - pRotat[fi - 1].timePos);
+				rotate.x = t * pRotat[fi - 1].value.x + (1 - t)*pRotat[fi].value.x;
+				rotate.y = t * pRotat[fi - 1].value.y + (1 - t)*pRotat[fi].value.y;
+				rotate.z = t * pRotat[fi - 1].value.z + (1 - t)*pRotat[fi].value.z;
 
+				if (cnt % sampleCount == 0)
+				{
+					std::cout << "===============================================================\n";
+					std::cout << "t = " << t << "\n";
+					std::cout << "pred (" << pRotat[fi - 1].value.x << ", " << pRotat[fi - 1].value.y << ", " << pRotat[fi - 1].value.z << ")\n";
+					std::cout << "curr (" << pRotat[fi].value.x << ", " << pRotat[fi].value.y << ", " << pRotat[fi].value.z << ")\n";
+					std::cout << "Rotate (" << rotate.x << ", " << rotate.y << ", " << rotate.z << ")\n";
+					std::cout << "===============================================================\n";
+				}
+				break;
 			}
 		}
-
-		/*if (0 < nScale)
-		{
-			for (int fi = 0; nScale; ++fi)
-			{
-
-			}
-		}*/
 	}
 }
+
+
+	
+
+/*
+end time이 153953860000인 애니메이션을 포함한 FBX에서
+CurveNode의 TimePos는
+... , 92372316000, 107767702000
+... , 153953860000
+와 같이 끝의 시간을 포함한 경우와 포함하지 않은 경우가 있다
+
+time 107767702000 을 포함하고 있는 노드는 해당 시간이 넘어가면
+EndTime이 될 때 까지 마지막 노드만을 갖고 보간해야 하고
+
+time 153953860000 을 포함하고 있는 노드는 애니메이션의 종료가 되는 시간이면
+해당 Curve 뒤를 갖고 사용하지 않으므로 상관 없을 것이다.
+
+*/
