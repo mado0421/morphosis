@@ -2,6 +2,8 @@
 #include"FBXDataManager.h"
 #include<vector>
 #include<iostream>
+
+
 struct CurveSet
 {
 	cv::CurveNode* m_pCurveNode;
@@ -17,6 +19,12 @@ struct CurveSet
 	}
 };
 
+struct AnimMatrix
+{
+	XMFLOAT4X4 mat;
+	int bone_idx;
+};
+
 class AnimationController
 {
 public:
@@ -26,6 +34,7 @@ public:
 	//	애니메이션 1개일 때
 	cv::CurveNode* m_pCurveNode;
 	int m_nCurveNode;
+	AnimMatrix* m_pMatrix;
 
 	float time = 0;
 	float endTime;

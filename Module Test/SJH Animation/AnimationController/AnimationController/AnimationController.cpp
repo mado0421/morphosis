@@ -8,6 +8,7 @@ AnimationController::AnimationController()
 	m_nCurveNode = 0;
 	m_pBone = nullptr;
 	m_pCurveNode = nullptr;
+	m_pMatrix = nullptr;
 }
 
 AnimationController::~AnimationController()
@@ -32,6 +33,13 @@ void AnimationController::Init(FBXDataManager * pFbxDM)
 		{
 			m_nCurveNode = pFbxDM->m_nCurveNode;
 			m_pCurveNode = pFbxDM->m_pCurveNode;
+			m_pMatrix = new AnimMatrix[m_nCurveNode];
+
+			for (int i = 0; i < m_nCurveNode; ++i)
+			{
+				m_pMatrix[i].bone_idx = m_pCurveNode->bone_index;
+				XMStoreFloat4x4(&m_pMatrix[i].mat, XMMatrixIdentity());
+			}
 		}
 		else
 		{
@@ -77,18 +85,10 @@ void AnimationController::Update(float fElapsedTime)
 
 	time += fElapsedTime;
 
-	int nTrans = m_pCurveNode->nTranslation;
-	int nRotate = m_pCurveNode->nRotation;
-	//int nScale = m_pCurveNode->nScale;
-
-	cv::Keyframe*	pTrans = m_pCurveNode->pTranslation;
-	cv::Keyframe*	pRotat = m_pCurveNode->pRotation;
 	//cv::Keyframe*	pScale = m_pCurveNode->pScale;
 	/*
 		Scale은 사용 안함
 	*/
-	XMFLOAT3 trans = XMFLOAT3();
-	XMFLOAT3 rotate = XMFLOAT3();
 	//XMFLOAT4 scale;
 
 	if (cnt % sampleCount == 0)
@@ -98,6 +98,15 @@ void AnimationController::Update(float fElapsedTime)
 	//	Find current and pred Curve Node to make vector4
 	for (int i = 0; i < m_nCurveNode; ++i)
 	{
+		XMFLOAT3 trans = XMFLOAT3();
+		XMFLOAT3 rotate = XMFLOAT3();
+		int nTrans = m_pCurveNode[i].nTranslation;
+		int nRotate = m_pCurveNode[i].nRotation;
+		//int nScale = m_pCurveNode->nScale;
+		cv::Keyframe*	pTrans = m_pCurveNode[i].pTranslation;
+		cv::Keyframe*	pRotat = m_pCurveNode[i].pRotation;
+
+
 		if (0 < nTrans)
 		{
 			for (int fi = 0; fi < nTrans; ++fi)
@@ -109,9 +118,9 @@ void AnimationController::Update(float fElapsedTime)
 							현재 시간이 마지막 keyFrame의 Timepos보다 크지만
 							EndTime이 아닐때의 처리
 						*/
-						trans.x = pTrans[fi].value.x;
-						trans.y = pTrans[fi].value.y;
-						trans.z = pTrans[fi].value.z;
+						trans.x = pTrans[0].value.x;
+						trans.y = pTrans[0].value.y;
+						trans.z = pTrans[0].value.z;
 						break;
 					}
 				}
@@ -128,7 +137,7 @@ void AnimationController::Update(float fElapsedTime)
 
 					if (cnt % sampleCount == 0)
 					{
-						std::cout << "CurveNode "<<i<<"\n";
+						std::cout << "CurveNode " << i << "\n";
 						std::cout << "===============================================================\n";
 						std::cout << "t = " << t << "\n";
 						std::cout << "pred (" << pTrans[fi - 1].value.x << ", " << pTrans[fi - 1].value.y << ", " << pTrans[fi - 1].value.z << ")\n";
@@ -141,41 +150,45 @@ void AnimationController::Update(float fElapsedTime)
 
 			}
 		}
-	}
 
-	if (0 < nRotate)
-	{
-		for (int fi = 0; fi < nRotate; ++fi)
+		if (0 < nRotate)
 		{
-			if (time >= pRotat[fi].timePos) {
-				if (fi > 0 || fi < nRotate - 1)continue;
-				else {
-					rotate.x = pRotat[fi].value.x;
-					rotate.y = pRotat[fi].value.y;
-					rotate.z = pRotat[fi].value.z;
+			for (int fi = 0; fi < nRotate; ++fi)
+			{
+				if (time >= pRotat[fi].timePos) {
+					if (fi < nRotate - 1)continue;
+					else {
+						rotate.x = pRotat[0].value.x;
+						rotate.y = pRotat[0].value.y;
+						rotate.z = pRotat[0].value.z;
+						break;
+					}
+				}
+				else
+				{
+					float t = (pRotat[fi].timePos - time) /
+						(pRotat[fi].timePos - pRotat[fi - 1].timePos);
+					rotate.x = t * pRotat[fi - 1].value.x + (1 - t)*pRotat[fi].value.x;
+					rotate.y = t * pRotat[fi - 1].value.y + (1 - t)*pRotat[fi].value.y;
+					rotate.z = t * pRotat[fi - 1].value.z + (1 - t)*pRotat[fi].value.z;
+
+					if (cnt % sampleCount == 0)
+					{
+						std::cout << "===============================================================\n";
+						std::cout << "t = " << t << "\n";
+						std::cout << "pred (" << pRotat[fi - 1].value.x << ", " << pRotat[fi - 1].value.y << ", " << pRotat[fi - 1].value.z << ")\n";
+						std::cout << "curr (" << pRotat[fi].value.x << ", " << pRotat[fi].value.y << ", " << pRotat[fi].value.z << ")\n";
+						std::cout << "Rotate (" << rotate.x << ", " << rotate.y << ", " << rotate.z << ")\n";
+						std::cout << "===============================================================\n";
+					}
 					break;
 				}
 			}
-			else
-			{
-				float t = (pRotat[fi].timePos - time) /
-					(pRotat[fi].timePos - pRotat[fi - 1].timePos);
-				rotate.x = t * pRotat[fi - 1].value.x + (1 - t)*pRotat[fi].value.x;
-				rotate.y = t * pRotat[fi - 1].value.y + (1 - t)*pRotat[fi].value.y;
-				rotate.z = t * pRotat[fi - 1].value.z + (1 - t)*pRotat[fi].value.z;
-
-				if (cnt % sampleCount == 0)
-				{
-					std::cout << "===============================================================\n";
-					std::cout << "t = " << t << "\n";
-					std::cout << "pred (" << pRotat[fi - 1].value.x << ", " << pRotat[fi - 1].value.y << ", " << pRotat[fi - 1].value.z << ")\n";
-					std::cout << "curr (" << pRotat[fi].value.x << ", " << pRotat[fi].value.y << ", " << pRotat[fi].value.z << ")\n";
-					std::cout << "Rotate (" << rotate.x << ", " << rotate.y << ", " << rotate.z << ")\n";
-					std::cout << "===============================================================\n";
-				}
-				break;
-			}
 		}
+
+		XMFLOAT3 Scaling{ 1,1,1 };
+		XMFLOAT4 zero{ 0,0,0 ,1 };
+		m_pMatrix[i].mat = Matrix4x4::AffineTransformation(Scaling, zero, rotate, trans);
 	}
 }
 

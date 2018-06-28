@@ -8,13 +8,84 @@ using namespace std;
 
 FBXDataManager fbxmanager;
 AnimationController ac;
+
+void TestAffineTransFormation()
+{
+#include<time.h>
+	srand(time(NULL));
+	XMFLOAT3 Scaling{ 1,1,1 };
+	XMFLOAT4 zero{ 0,0,0,1};
+	XMFLOAT3 Trans{ 0,0,0 };
+	XMFLOAT3 Rotate{ 0,0,0 };
+
+	XMFLOAT4X4 Matrix;
+	int cnt = -1;
+	const int sampling = 1;
+	cout.width(10);
+
+
+
+	while (cnt++ < sampling)
+	{
+		Trans.x += rand() % 5 == 0 ? 1 : 0;
+		Trans.y += rand() % 5 == 0 ? 1 : 0;
+		Trans.z += rand() % 5 == 0 ? 1 : 0;
+
+		Rotate.x += rand() % 5 == 0 ? 10 : 0;
+		Rotate.y += rand() % 5 == 0 ? 10 : 0;
+		Rotate.z += rand() % 5 == 0 ? 10 : 0;
+		
+		Trans.x = 100;
+		Trans.y = 200;
+		Trans.z = 300;
+
+		Rotate.x = XMConvertToRadians(90);
+		Rotate.y = XMConvertToRadians(90);
+		Rotate.z = XMConvertToRadians(0);
+
+		XMFLOAT4 Quat, tmp;
+		XMStoreFloat4(&Quat, XMQuaternionRotationRollPitchYaw(
+			XMConvertToRadians(90) ,
+			XMConvertToRadians(90) ,
+			XMConvertToRadians(0)));
+		//XMQuaternionRotationRollPitchYaw
+
+		Matrix = Matrix4x4::AffineTransformation(Scaling, zero, Rotate, Trans);
+
+		XMStoreFloat4x4(&Matrix,
+			XMMatrixRotationQuaternion(XMLoadFloat4(&Quat))
+		);
+
+		XMStoreFloat4(&tmp,
+			XMQuaternionRotationMatrix(XMLoadFloat4x4(&Matrix))
+		);
+		
+
+		cout << "count: " << cnt << "\n\n";
+		for (int i = 0; i < 4; ++i)
+		{
+			for (int j = 0; j < 4; ++j)
+			{
+				cout << Matrix.m[i][j] << "\t";
+			}
+			cout << "\n";
+		}
+		cout << "Quaternion: " << Quat.x << ", " << Quat.y << ", " << Quat.z << ", " << Quat.w << "\n";
+		cout << "tmp: " << tmp.x << ", " << tmp.y << ", " << tmp.z << ", " << tmp.w << "\n";
+		cout << "==========================\n";
+
+	}
+}
+
 int main()
 {
+	TestAffineTransFormation();
+
 	bool res;
-	res = fbxmanager.FBXFileRead("BoxWithTwoBones5");
+	res = fbxmanager.FBXFileRead("BoxWithTwoBones3");
+	
 
-
-	float time=0;
+	/*float time=0;
 	if (true == res) {
 		cout << "FileRead Success\n";
 		ac.Init(&fbxmanager);
@@ -39,7 +110,7 @@ int main()
 	else
 	{
 		cout << "FileRead failed\n";
-	}
+	}*/
 
 	system("pause");
 }
