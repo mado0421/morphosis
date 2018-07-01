@@ -19,6 +19,27 @@
     <Filter Include="소스 파일\DDSTextureLoader12">
       <UniqueIdentifier>{d87e9b4f-f65f-4631-a255-da431f0f7a94}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Scene">
+      <UniqueIdentifier>{fa45ba69-307e-4249-ad18-bcf38fa0052f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Object">
+      <UniqueIdentifier>{325051c0-fe93-413c-ace2-cc7fa04e420c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Mesh">
+      <UniqueIdentifier>{bee88d48-c147-4437-bb83-daea5c947ba5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Mesh\Texture">
+      <UniqueIdentifier>{15e6e253-967e-4ccb-819a-901452dd66f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Mesh\Material">
+      <UniqueIdentifier>{fa16c453-f8c4-49d9-91ce-2ef079967f30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Camera">
+      <UniqueIdentifier>{a95bcdb7-ec7b-484b-a0d1-496728d26d95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Timer">
+      <UniqueIdentifier>{724f1c7d-729a-42e9-8269-d6f869058188}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Morphosis.cpp">
@@ -32,6 +53,27 @@
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>소스 파일\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>소스 파일\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>소스 파일\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>소스 파일\Mesh\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>소스 파일\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>소스 파일\Mesh\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>소스 파일\Timer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -69,5 +111,32 @@
     <ClInclude Include="d3dx12.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>소스 파일\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>소스 파일\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>소스 파일\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>소스 파일\Mesh\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>소스 파일\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>소스 파일\Mesh\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>소스 파일\Timer</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+    <None Include="Header.hlsli" />
+    <None Include="VertexShader.hlsl" />
+    <None Include="PixelShader.hlsl" />
   </ItemGroup>
 </Project>

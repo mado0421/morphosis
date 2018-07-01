@@ -13,10 +13,74 @@ CFramework::~CFramework()
 
 void CFramework::Render()
 {
+	if (m_pCurrentScene) m_pCurrentScene->Render(m_pd3dCommandList);
+
 }
 
 void CFramework::Update()
 {
+	m_MainTimer.Tick(0.0f);
+	float fTimeElapsed = m_MainTimer.GetTimeElapsed();
+
+	//====================================
+	// 여기에 Update() 내용을 넣어주세요.
+	// 아래는 Render 관련입니다.
+	if (m_pCurrentScene) m_pCurrentScene->Update(fTimeElapsed);
+
+	//====================================
+
+
+	HRESULT hResult = m_pd3dCommandAllocator->Reset();
+	hResult = m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
+
+	//배리어는 안 배워서 모르겠다 책 참고하기
+	D3D12_RESOURCE_BARRIER d3dResourceBarrier;
+	::ZeroMemory(&d3dResourceBarrier, sizeof(D3D12_RESOURCE_BARRIER));
+	d3dResourceBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	d3dResourceBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	d3dResourceBarrier.Transition.pResource = m_ppd3dSwapChainBackBuffers[m_nSwapChainBufferIndex];
+	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	d3dResourceBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	m_pd3dCommandList->ResourceBarrier(1, &d3dResourceBarrier);
+
+	D3D12_CPU_DESCRIPTOR_HANDLE d3dRtvCPUDescriptorHandle = m_pd3dRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	d3dRtvCPUDescriptorHandle.ptr += (m_nSwapChainBufferIndex * m_nRtvDescriptorIncrementSize);
+
+	//배경색 새로 깔아줌
+	float pfClearColor[4] = { 0.2f, 0.2f, 0.2f, 1.0f };
+	m_pd3dCommandList->ClearRenderTargetView(d3dRtvCPUDescriptorHandle, pfClearColor, 0, NULL);
+
+	D3D12_CPU_DESCRIPTOR_HANDLE d3dDsvCPUDescriptorHandle = m_pd3dDsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	m_pd3dCommandList->ClearDepthStencilView(d3dDsvCPUDescriptorHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
+
+	//아웃풋머지 단계에 어떤 RT를 쓸건지 정하는건가봄
+	m_pd3dCommandList->OMSetRenderTargets(1, &d3dRtvCPUDescriptorHandle, TRUE, &d3dDsvCPUDescriptorHandle);
+
+	//====================================
+	//렌더링 해주세요!
+	Render();
+	//
+	//여기까지
+	//====================================
+
+	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
+	d3dResourceBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	m_pd3dCommandList->ResourceBarrier(1, &d3dResourceBarrier);
+
+	hResult = m_pd3dCommandList->Close();
+
+	ID3D12CommandList *ppd3dCommandLists[] = { m_pd3dCommandList };
+	m_pd3dCommandQueue->ExecuteCommandLists(1, ppd3dCommandLists);
+
+	WaitForGpuComplete();
+	m_pdxgiSwapChain->Present(0, 0);
+
+	MoveToNextFrame();
+
+	m_MainTimer.GetFrameRate(m_pszFrameRate + 12, 37);
+	::SetWindowText(m_hWnd, m_pszFrameRate);
 }
 
 bool CFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
@@ -264,6 +328,16 @@ void CFramework::BuildScenes()
 
 	// 이후 Scene 추가할 때 수정할 것
 	//m_ppScene = new Scene*[Scenes::NumOfScenes];
+	m_ppScenes = new CScene*[Scenes::count];
+
+	m_ppScenes[Scenes::TITLE] = new CTitleScene();
+	m_ppScenes[Scenes::PLAY] = new CPlayScene();
+	m_ppScenes[Scenes::ENTERROOM] = new CEnterRoomScene();
+	m_ppScenes[Scenes::MATCHING] = new CMatchingScene();
+	m_ppScenes[Scenes::RESULT] = new CResultScene();
+
+	m_pCurrentScene = m_ppScenes[Scenes::PLAY];
+	m_pCurrentScene->Initialize(m_pd3dDevice, m_pd3dCommandList, m_hWnd);
 
 	//m_ppScene[Scenes::Title] = new TitleScene();
 	//m_ppScene[Scenes::EnterRoom] = new EnterRoomScene();

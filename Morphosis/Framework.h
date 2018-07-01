@@ -1,7 +1,9 @@
 #pragma once
+#include "Scene.h"
+#include "Timer.h"
+
 #define NUMSWAPCHAINBUFFER 2
 #define NUMDEFAULTSTRINGCHAR 64
-
 
 class CFramework
 {
@@ -12,6 +14,7 @@ private:
 	HWND						m_hWnd;
 	int							m_nWndClientWidth;
 	int							m_nWndClientHeight;
+	_TCHAR						m_pszFrameRate[NUMDEFAULTSTRINGCHAR];
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	// DirectX 12 생성부
@@ -43,8 +46,10 @@ private:
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	// 기타
-//	GameTimer					m_GameTimer;
-
+	CTimer						m_MainTimer;
+	CScene						**m_ppScenes		= NULL;
+	CScene						*m_pCurrentScene	= NULL;
+	int							m_nScenes			= 0;
 
 public:
 	CFramework();
