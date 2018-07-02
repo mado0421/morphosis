@@ -183,7 +183,6 @@
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
     <None Include="Header.hlsli" />
   </ItemGroup>
   <ItemGroup>

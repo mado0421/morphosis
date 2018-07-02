@@ -1,11 +1,18 @@
 #include "Header.hlsli"
 
-VS_TEXTURED_OUTPUT VSTextured(VS_TEXTURED_INPUT input)
+VS_TEXTURED_OUTPUT VSTextured(VS_TEXTURED_INPUT input, uint nVertexID : SV_VertexID)
 {
 	VS_TEXTURED_OUTPUT output;
 
 	output.position = float4(input.position, 1.0f);
 	output.uv = input.uv;
+
+
+
+	if (nVertexID == 0) { output.position		= float4(	0.0f,	0.5f,	0.5f,	1.0f); output.uv = float2(0.5f, 0.0f); }
+	else if (nVertexID == 1) { output.position	= float4(	0.5f,	-0.5f,	0.5f,	1.0f); output.uv = float2(1.0f, 1.0f); }
+	else if (nVertexID == 2) { output.position	= float4(-	0.5f,	-0.5f,	0.5f,	1.0f); output.uv = float2(0.0f, 1.0f); }
+
 
 	return(output);
 }

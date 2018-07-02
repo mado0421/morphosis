@@ -128,6 +128,10 @@ protected:
 
 	CMaterial						*m_pMaterial = NULL;
 
+	//======================================
+	// 테스트 용도
+	CTexturedPSO			*TPSO	= NULL;
+	CTexturedIlluminatedPSO *TLPSO	= NULL;
 
 public:
 	CScene();
@@ -152,8 +156,7 @@ public:
 	virtual void CreateCbvAndSrvDescriptorHeaps(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int nConstantBufferViews, int nShaderResourceViews);
 	virtual void CreateShaderVariables(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList);
 	virtual void CreateConstantBufferViews(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int nConstantBufferViews, ID3D12Resource *pd3dConstantBuffers, UINT nStride);
-	// 
-	//	virtual void CreateShaderResourceViews(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, Texture *pTexture, UINT nRootParameterStartIndex, bool bAutoIncrement);
+	virtual void CreateShaderResourceViews(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, CTexture *pTexture, UINT nRootParameterStartIndex, bool bAutoIncrement);
 
 	virtual ID3D12RootSignature *CreateRootSignature(ID3D12Device *pd3dDevice);
 };
@@ -163,8 +166,8 @@ class CGroundScene : public CScene
 protected:
 	/////////////////////////////////////////////////////////////
 	// 테스트용으로 만든 Object 변수들
-	CObject		**m_ppObjects = NULL;
-	int			m_nObjects = 0;
+	CObject		**m_ppObjects	= NULL;
+	int			m_nObjects		= 0;
 	/////////////////////////////////////////////////////////////
 
 

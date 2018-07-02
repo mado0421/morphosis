@@ -202,15 +202,6 @@ void CGroundScene::CreateCbvAndSrvDescriptorHeaps(ID3D12Device * pd3dDevice, ID3
 	m_d3dCbvGPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart();
 	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * nConstantBufferViews);
 	m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * nConstantBufferViews);
-
-}
-
-void CGroundScene::CreateShaderVariables(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
-{
-	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255); //256의 배수
-	m_pd3dcbObjects = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes * m_nObjects, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-
-	m_pd3dcbObjects->Map(0, NULL, (void **)&m_pcbMappedGameObjects);
 }
 
 void CGroundScene::CreateConstantBufferViews(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, int nConstantBufferViews, ID3D12Resource * pd3dConstantBuffers, UINT nStride)
@@ -226,6 +217,15 @@ void CGroundScene::CreateConstantBufferViews(ID3D12Device * pd3dDevice, ID3D12Gr
 		pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
 	}
 }
+
+void CGroundScene::CreateShaderVariables(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
+{
+	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255); //256의 배수
+	m_pd3dcbObjects = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes * m_nObjects, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+
+	m_pd3dcbObjects->Map(0, NULL, (void **)&m_pcbMappedGameObjects);
+}
+
 
 void CGroundScene::CreateShaderResourceViews(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, CTexture * pTexture, UINT nRootParameterStartIndex, bool bAutoIncrement)
 {
@@ -335,7 +335,7 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	m_pd3dDevice = pd3dDevice;
 	m_pd3dCommandList = pd3dCommandList;
 
-	m_nObjects = 1;
+	m_nObjects = 2;
 	m_ppObjects = new CObject*[m_nObjects];
 
 	// Camera 초기화
@@ -349,8 +349,8 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	// 저기서 RootSignature 쓰니까 그 전에 RootSignature 만들어줘야 함
 	m_nPipelineStates = 2;
 	m_ppPipelineStates = new ID3D12PipelineState*[m_nPipelineStates];
-	CTexturedPSO *TPSO = new CTexturedPSO();
-	CTexturedIlluminatedPSO *TLPSO = new CTexturedIlluminatedPSO();
+	TPSO = new CTexturedPSO();
+	TLPSO = new CTexturedIlluminatedPSO();
 	TPSO->Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
 	TLPSO->Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
 	m_ppPipelineStates[0] = TPSO->GetPipelineState();
@@ -377,11 +377,16 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	CTestMesh *pTestMesh = new CTestMesh(pd3dDevice, pd3dCommandList);
 
 	// 오브젝트를 미리 만들어두는 곳
-	CObject *pObj = new CObject();
-	pObj->SetMesh(0, pTestMesh);
-//	pObj->SetMaterial(m_pMaterial);
-	pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr/* + (::gnCbvSrvDescriptorIncrementSize)*i*/);
-	m_ppObjects[0] = pObj;
+	for (int i = 0; i < m_nObjects; ++i) {
+		CObject *pObj = new CObject();
+		pObj->SetMesh(0, pTestMesh);
+		pObj->SetPosition(10.0f * i, 0.0f, 0.0f);
+		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
+		m_ppObjects[i] = pObj;
+	}
+
+	m_pCamera->SetTarget(m_ppObjects[0]);
+
 }
 
 void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
@@ -392,13 +397,17 @@ void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
 	for (int j = 0; j < m_nObjects; j++)
 	{
-		CB_OBJECT_INFO *pbMappedcbGameObject = (CB_OBJECT_INFO *)((UINT8 *)m_pcbMappedGameObjects + (j * ncbElementBytes));
-		XMStoreFloat4x4(&pbMappedcbGameObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppObjects[j]->m_xmf4x4World)));
-		if (m_pMaterial) pbMappedcbGameObject->m_nMaterialIndex = m_pMaterial->m_nReflection;
+		CB_OBJECT_INFO *pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pcbMappedGameObjects + (j * ncbElementBytes));
+		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppObjects[j]->m_xmf4x4World)));
+		if (m_pMaterial) pbMappedcbObject->m_nMaterialIndex = m_pMaterial->m_nReflection;
 	}
 
-	//if (m_pMaterial) m_pMaterial->UpdateShaderVariables(pd3dCommandList);
+	// 문제가 생기는 부분 1
+	if (m_pMaterial) m_pMaterial->UpdateShaderVariables(pd3dCommandList);
+
+
 	for (int i = 0; i < m_nObjects; ++i) {
+		// 문제가 생기는 부분 2
 		m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
 	}
 }
@@ -576,6 +585,10 @@ void CScene::CreateShaderVariables(ID3D12Device * pd3dDevice, ID3D12GraphicsComm
 }
 
 void CScene::CreateConstantBufferViews(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, int nConstantBufferViews, ID3D12Resource * pd3dConstantBuffers, UINT nStride)
+{
+}
+
+void CScene::CreateShaderResourceViews(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, CTexture * pTexture, UINT nRootParameterStartIndex, bool bAutoIncrement)
 {
 }
 

@@ -54,7 +54,6 @@ void CTexture::UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList)
 		for (int i = 0; i < m_nTextures; i++)
 		{
 			pd3dCommandList->SetGraphicsRootDescriptorTable(m_pRootArgumentInfos[i].m_nRootParameterIndex, m_pRootArgumentInfos[i].m_d3dSrvGpuDescriptorHandle);
-			//pd3dCommandList->SetGraphicsRootDescriptorTable(6, m_pRootArgumentInfos[i].m_d3dSrvGpuDescriptorHandle);
 		}
 	}
 }

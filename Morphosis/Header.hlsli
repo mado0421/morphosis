@@ -11,12 +11,12 @@ cbuffer cbGameObjectInfo : register(b1)
 	uint		gnMaterial : packoffset(c4);
 };
 
-cbuffer cbGameUIInfo : register(b7)
-{
-	matrix		gmtxGameUI : packoffset(c0);
-	float4		gf4Rect : packoffset(c4);
-	uint		gnUIMaterial : packoffset(c8);
-};
+//cbuffer cbGameUIInfo : register(b7)
+//{
+//	matrix		gmtxGameUI : packoffset(c0);
+//	float4		gf4Rect : packoffset(c4);
+//	uint		gnUIMaterial : packoffset(c8);
+//};
 
 Texture2D gtxtTexture : register(t4);
 SamplerState gSamplerState : register(s0);

@@ -4,6 +4,7 @@
 
 CObject::CObject()
 {
+	m_xmf4x4World = Matrix4x4::Identity();
 }
 
 
@@ -11,12 +12,12 @@ CObject::~CObject()
 {
 }
 
-void CObject::UpdateShaderVariables(ID3D12GraphicsCommandList * pd3dCommandList)
-{
-	XMStoreFloat4x4(&m_pcbMappedObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_xmf4x4World)));
-	if (m_pMaterial) m_pcbMappedObject->m_nMaterialIndex = m_pMaterial->m_nReflection;
-
-}
+//void CObject::UpdateShaderVariables(ID3D12GraphicsCommandList * pd3dCommandList)
+//{
+//	XMStoreFloat4x4(&m_pcbMappedObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_xmf4x4World)));
+//	if (m_pMaterial) m_pcbMappedObject->m_nMaterialIndex = m_pMaterial->m_nReflection;
+//
+//}
 
 void CObject::SetRootParameter(ID3D12GraphicsCommandList * pd3dCommandList)
 {
@@ -66,6 +67,18 @@ void CObject::SetMesh(int nIndex, CMesh * pMesh)
 void CObject::SetMaterial(CMaterial * pMaterial)
 {
 	m_pMaterial = pMaterial;
+}
+
+void CObject::SetPosition(float x, float y, float z)
+{
+	m_xmf4x4World._41 = x;
+	m_xmf4x4World._42 = y;
+	m_xmf4x4World._43 = z;
+}
+
+void CObject::SetPosition(XMFLOAT3 xmf3Position)
+{
+	SetPosition(xmf3Position.x, xmf3Position.y, xmf3Position.z);
 }
 
 XMFLOAT3 CObject::GetPosition()

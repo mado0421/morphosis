@@ -29,10 +29,11 @@ public:
 	~CObject();
 
 public:
+	void SetCbvGPUDescriptorHandle(D3D12_GPU_DESCRIPTOR_HANDLE d3dCbvGPUDescriptorHandle) { m_d3dCbvGPUDescriptorHandle = d3dCbvGPUDescriptorHandle; }
 	void SetCbvGPUDescriptorHandlePtr(UINT64 nCbvGPUDescriptorHandlePtr) { m_d3dCbvGPUDescriptorHandle.ptr = nCbvGPUDescriptorHandlePtr; }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetCbvGPUDescriptorHandle() { return(m_d3dCbvGPUDescriptorHandle); }
 
-	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList);
-
+	//virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList);
 
 	virtual void SetRootParameter(ID3D12GraphicsCommandList *pd3dCommandList);
 
@@ -41,6 +42,8 @@ public:
 
 	void SetMesh(int nIndex, CMesh *pMesh);
 	void SetMaterial(CMaterial *pMaterial);
+	void SetPosition(float x, float y, float z);
+	void SetPosition(XMFLOAT3 xmf3Position);
 
 	XMFLOAT3 GetPosition();
 	XMFLOAT3 GetLook();

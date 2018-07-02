@@ -134,7 +134,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
     <None Include="Header.hlsli" />
     <None Include="VertexShader.hlsl" />
     <None Include="PixelShader.hlsl" />
