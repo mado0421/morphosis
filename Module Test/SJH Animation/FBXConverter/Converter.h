@@ -204,6 +204,14 @@ inline void passTo(char ** ppCh, const char * target)
 		pass(ppCh, " ,\n\t*");
 	}
 }
+inline void passToIn(char ** ppCh, const char * target)
+{
+	while (!isIn(*ppCh, target))
+	{
+		pass(ppCh, " ,\n\t*");
+	}
+}
+
 inline void passOver(char ** ppCh, const char * target)
 {
 	while (!isSame(*ppCh, target))

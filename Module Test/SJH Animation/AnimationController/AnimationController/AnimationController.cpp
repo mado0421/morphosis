@@ -135,7 +135,7 @@ void AnimationController::Update(float fElapsedTime)
 					trans.y = t * pTrans[fi - 1].value.y + (1 - t)*pTrans[fi].value.y;
 					trans.z = t * pTrans[fi - 1].value.z + (1 - t)*pTrans[fi].value.z;
 
-					if (cnt % sampleCount == 0)
+					if (b_print_TransInfo&&cnt % sampleCount == 0)
 					{
 						std::cout << "CurveNode " << i << "\n";
 						std::cout << "===============================================================\n";
@@ -172,8 +172,9 @@ void AnimationController::Update(float fElapsedTime)
 					rotate.y = t * pRotat[fi - 1].value.y + (1 - t)*pRotat[fi].value.y;
 					rotate.z = t * pRotat[fi - 1].value.z + (1 - t)*pRotat[fi].value.z;
 
-					if (cnt % sampleCount == 0)
+					if (b_print_RotateInfo&&cnt % sampleCount == 0)
 					{
+						std::cout << "CurveNode " << i << "\n";
 						std::cout << "===============================================================\n";
 						std::cout << "t = " << t << "\n";
 						std::cout << "pred (" << pRotat[fi - 1].value.x << ", " << pRotat[fi - 1].value.y << ", " << pRotat[fi - 1].value.z << ")\n";

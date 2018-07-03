@@ -39,6 +39,9 @@ public:
 	float time = 0;
 	float endTime;
 
+	bool b_print_TransInfo = false;
+	bool b_print_RotateInfo = true;
+
 	/* 나중에 수정하여 사용 할 것 */
 public:
 	std::vector<CurveSet> m_vCurveNode;

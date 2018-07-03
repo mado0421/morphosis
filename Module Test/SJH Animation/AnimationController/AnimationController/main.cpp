@@ -75,17 +75,16 @@ void TestAffineTransFormation()
 		cout << "==========================\n";
 
 	}
+
 }
 
 int main()
 {
-	TestAffineTransFormation();
-
 	bool res;
-	res = fbxmanager.FBXFileRead("BoxWithTwoBones3");
+	res = fbxmanager.FBXFileRead("BoxWithThreeBones_0");
 	
 
-	/*float time=0;
+	float time=0;
 	if (true == res) {
 		cout << "FileRead Success\n";
 		ac.Init(&fbxmanager);
@@ -110,7 +109,7 @@ int main()
 	else
 	{
 		cout << "FileRead failed\n";
-	}*/
+	}
 
 	system("pause");
 }

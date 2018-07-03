@@ -43,8 +43,8 @@ void Converter::ReadFile(const char * fileName)
 	while (m_buffer != NULL)
 	{
 		//FindMeshOnly();
-		
-		Find();
+	
+ 		Find();
 		pass(&m_buffer, " ,\n\t");
 	}
 	//-------------------------------------------------
@@ -871,7 +871,7 @@ void Converter::Bone_SubDeformer_Hierarchy()
 	__int64 boneIdx;
 	if (isIn(m_buffer, ";Model::"))
 	{
-		pass(&m_buffer, " ,\n\t*");
+		passToIn(&m_buffer, "Model::");
 		if (isIn(m_buffer, "SubDeformer::"))
 		{
 			__int64 SubDeformerIdx;
@@ -913,16 +913,10 @@ void Converter::FindBone()
 	{
 		pass(&m_buffer, " ,\n\t*");
 		boneIdx = get64int(&m_buffer);
-		pass(&m_buffer, " ,\n\t*");
-		pass(&m_buffer, " ,\n\t*");
-
-		if (isSame(m_buffer, "\"LimbNode\""))
-		{
-			Bone tmpBone;
-			tmpBone.boneIdx = boneIdx;
-			m_vBone.push_back(tmpBone);
-			printf("야호 본이다\n");
-		}
+		Bone tmpBone;
+		tmpBone.boneIdx = boneIdx;
+		m_vBone.push_back(tmpBone);
+		printf("야호 본이다\n");
 	}
 }
 void Converter::SetBindPose()
