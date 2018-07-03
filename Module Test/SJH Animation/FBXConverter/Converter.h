@@ -338,6 +338,8 @@ public:
 	void SetBindPose();
 
 	void MakeCNode();
+	void ClearScaleNode();
+
 	void AssignBoneIndexToCNode();
 
 	void UseDeformer();

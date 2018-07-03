@@ -50,6 +50,9 @@ void Converter::ReadFile(const char * fileName)
 	//-------------------------------------------------
 
 	MakeCNode();
+	//	사용하지 않을 ScaleNode 제거
+	ClearScaleNode();
+
 	AssignBoneIndexToCNode();
 	SetBindPose();
 	UseDeformer();
@@ -811,7 +814,7 @@ void Converter::AnimCurve_AnimationCurveNode()
 				m_vCurve_CNode_T[2].push_back(std::make_pair(curveIdx, curveNodeIdx));
 			}
 		}
-		else if ("AnimCurveNode::R")
+		else if (isIn(m_buffer, "AnimCurveNode::R"))
 		{
 			passOver(&m_buffer, "\"OP\"");
 			curveIdx = get64int(&m_buffer);
@@ -1046,6 +1049,19 @@ void Converter::MakeCNode()
 		}
 	}
 }
+
+void Converter::ClearScaleNode()
+{
+	for (auto p = m_vNode.begin(); p != m_vNode.end();)
+	{
+		if (p->translation.size() == 0 && p->rotation.size() == 0)
+		{
+			p = m_vNode.erase(p);
+		}
+		else ++p;
+	}
+}
+
 void Converter::AssignBoneIndexToCNode()
 {
 	for (auto a = m_vNode.begin(); a != m_vNode.end(); ++a)
@@ -1057,6 +1073,10 @@ void Converter::AssignBoneIndexToCNode()
 				auto p = std::find_if(m_vCNode_Bone_T.begin(), m_vCNode_Bone_T.end(),
 					[&a](const std::pair<__int64, __int64>& t) {return (t.first == a->nodeIdx); });
 
+				if (p == m_vCNode_Bone_T.end())
+				{
+					continue;
+				}
 				auto bone_iter = find(m_vBone.begin(), m_vBone.end(), p->second);
 				if (bone_iter != m_vBone.end())
 				{
@@ -1068,6 +1088,11 @@ void Converter::AssignBoneIndexToCNode()
 			{
 				auto p = std::find_if(m_vCNode_Bone_R.begin(), m_vCNode_Bone_R.end(),
 					[&a](const std::pair<__int64, __int64>& t) {return (t.first == a->nodeIdx); });
+
+				if (p == m_vCNode_Bone_R.end())
+				{
+					continue;
+				}
 
 				auto bone_iter = find(m_vBone.begin(), m_vBone.end(), p->second);
 				if (bone_iter != m_vBone.end())
