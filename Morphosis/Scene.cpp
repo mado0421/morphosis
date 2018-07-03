@@ -175,6 +175,8 @@ void CGroundScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 
 void CGroundScene::Update(float fTimeElapsed)
 {
+	// 여기서 GPU에서 사용할 변수들 갱신을 해줘야 한다!
+	// 카메라, 오브젝트 등등
 }
 
 void CGroundScene::CreateObjectBuffers()
@@ -361,13 +363,6 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	pTexture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/box_diff.dds", 0);
 
 
-	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
-
-	CreateCbvAndSrvDescriptorHeaps(m_pd3dDevice, m_pd3dCommandList, m_nObjects, 1);
-	CreateShaderVariables(m_pd3dDevice, m_pd3dCommandList);
-	CreateConstantBufferViews(m_pd3dDevice, m_pd3dCommandList, m_nObjects, m_pd3dcbObjects, ncbElementBytes);
-	CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, pTexture, RootParameter::TEXTURE, false);
-
 	// 마테리얼에 텍스처 등록하는 곳
 	m_pMaterial = new CMaterial();
 	m_pMaterial->SetTexture(pTexture);
@@ -376,11 +371,19 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	// 메쉬만드는 곳
 	CTestMesh *pTestMesh = new CTestMesh(pd3dDevice, pd3dCommandList);
 
+	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
+
+	CreateCbvAndSrvDescriptorHeaps(m_pd3dDevice, m_pd3dCommandList, m_nObjects, 1);
+	CreateShaderVariables(m_pd3dDevice, m_pd3dCommandList);
+	CreateConstantBufferViews(m_pd3dDevice, m_pd3dCommandList, m_nObjects, m_pd3dcbObjects, ncbElementBytes);
+	CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, pTexture, RootParameter::TEXTURE, false);
+
 	// 오브젝트를 미리 만들어두는 곳
 	for (int i = 0; i < m_nObjects; ++i) {
 		CObject *pObj = new CObject();
 		pObj->SetMesh(0, pTestMesh);
 		pObj->SetPosition(10.0f * i, 0.0f, 0.0f);
+		pObj->SetMaterial(m_pMaterial);
 		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
 		m_ppObjects[i] = pObj;
 	}
@@ -391,7 +394,10 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 
 void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 {
-	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[0]);
+	//문제였었던 부분 칙쇼~~~~~~~~
+	pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
+
+	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[1]);
 	pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);
 
 	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
@@ -402,12 +408,9 @@ void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 		if (m_pMaterial) pbMappedcbObject->m_nMaterialIndex = m_pMaterial->m_nReflection;
 	}
 
-	// 문제가 생기는 부분 1
-	if (m_pMaterial) m_pMaterial->UpdateShaderVariables(pd3dCommandList);
-
+//	if (m_pMaterial) m_pMaterial->UpdateShaderVariables(pd3dCommandList);
 
 	for (int i = 0; i < m_nObjects; ++i) {
-		// 문제가 생기는 부분 2
 		m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
 	}
 }

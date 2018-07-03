@@ -339,21 +339,12 @@ void CFramework::BuildScenes()
 	m_pCurrentScene = m_ppScenes[Scenes::PLAY];
 	m_pCurrentScene->Initialize(m_pd3dDevice, m_pd3dCommandList, m_hWnd);
 
-	//m_ppScene[Scenes::Title] = new TitleScene();
-	//m_ppScene[Scenes::EnterRoom] = new EnterRoomScene();
-	//m_ppScene[Scenes::Matching] = new MatchingScene();
-	//m_ppScene[Scenes::Play] = new PlayScene();
-	//m_ppScene[Scenes::Result] = new ResultScene();
-
-	//m_pCurrentScene = m_ppScene[Scenes::EnterRoom];
-	//m_pCurrentScene->Initialize(m_pd3dDevice, m_pd3dCommandList, m_hWnd);
-
 	m_pd3dCommandList->Close();
 	ID3D12CommandList *ppd3dCommandLists[] = { m_pd3dCommandList };
 	m_pd3dCommandQueue->ExecuteCommandLists(1, ppd3dCommandLists);
 
 	WaitForGpuComplete();
-//	m_GameTimer.Reset();
+	m_MainTimer.Reset();
 }
 
 void CFramework::ChangeScene(int targetSceneIdx, void * subData)
