@@ -44,6 +44,7 @@ namespace PSO {
 		//PARTICLE,
 		TEXTURE=0,
 		ILLUMINATEDTEXTURE,
+		MODEL,
 
 		count
 	};
@@ -95,6 +96,16 @@ public:
 	virtual D3D12_SHADER_BYTECODE		CreatePixelShader(ID3DBlob **ppd3dShaderBlob);
 };
 
+class CModelPSO : public CPSO
+{
+public:
+	virtual D3D12_INPUT_LAYOUT_DESC		CreateInputLayout();
+
+	virtual D3D12_SHADER_BYTECODE		CreateVertexShader(ID3DBlob **ppd3dShaderBlob);
+	virtual D3D12_SHADER_BYTECODE		CreatePixelShader(ID3DBlob **ppd3dShaderBlob);
+
+};
+
 
 
 // Scene 자체는 안 쓸 예정이니까 추상클래스로?
@@ -134,6 +145,7 @@ protected:
 	// 테스트 용도
 	CTexturedPSO			*TPSO	= NULL;
 	CTexturedIlluminatedPSO *TLPSO	= NULL;
+	CModelPSO				*MPSO	= NULL;
 
 public:
 	CScene();

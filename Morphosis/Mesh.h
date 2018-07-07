@@ -1,5 +1,6 @@
 #pragma once
 #include "Material.h"
+#include "FBXData.h"
 
 class CVertex
 {
@@ -128,4 +129,22 @@ public:
 public:
 //	virtual int CheckRayIntersection(XMFLOAT3& xmRayPosition, XMFLOAT3& xmRayDirection, float *pfNearHitDistance);
 
+};
+
+class CModelMesh : public CMeshIlluminatedTextured
+{
+protected:
+	ID3D12Resource *m_pVertexResource	= NULL;
+	ID3D12Resource *m_pUVResource		= NULL;
+
+private:
+	CFBXData *m_model;
+
+public:
+	CModelMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, const char * fileName);
+	~CModelMesh();
+
+public:
+	bool ReadFile(const char * fileName);
+	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
 };
