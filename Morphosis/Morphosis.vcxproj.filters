@@ -40,6 +40,9 @@
     <Filter Include="소스 파일\Timer">
       <UniqueIdentifier>{724f1c7d-729a-42e9-8269-d6f869058188}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Mesh\FBXData">
+      <UniqueIdentifier>{81d14ca6-f80a-4d13-8288-9858939cb81f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Morphosis.cpp">
@@ -74,6 +77,9 @@
     </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>소스 파일\Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="FBXData.cpp">
+      <Filter>소스 파일\Mesh\FBXData</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -131,6 +137,9 @@
     </ClInclude>
     <ClInclude Include="Timer.h">
       <Filter>소스 파일\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="FBXData.h">
+      <Filter>소스 파일\Mesh\FBXData</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

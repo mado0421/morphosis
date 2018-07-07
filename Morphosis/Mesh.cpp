@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "Mesh.h"
 
 
@@ -535,4 +535,72 @@ CTestMesh::~CTestMesh()
 	CMesh::~CMesh();
 	if (m_pVertices) delete[] m_pVertices;
 	if (m_pnIndices) delete[] m_pnIndices;
+}
+
+CModelMesh::CModelMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, const char * fileName) : CMeshIlluminatedTextured(pd3dDevice, pd3dCommandList)
+{
+	ReadFile(fileName);
+
+	m_nStride = sizeof(FBX::IAVertex);
+	m_nVertices = m_model->m_nIAVertex;
+
+	CMesh::CreateVertexBuffer(pd3dDevice, pd3dCommandList, m_model->m_pIAVertex);
+
+	/*
+	Shader Resource
+
+	Vertex, UI data
+	*/
+	UINT nStride;
+	UINT nNumber;
+
+	FBX::Vertex* pVertex = nullptr;
+	nStride = sizeof(FBX::Vertex);
+
+	/*Read From Data*/
+	nNumber = m_model->m_nVertex;
+	pVertex = m_model->m_pVertex;
+	//
+	m_pVertexResource = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
+		pVertex, nStride*nNumber,
+		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+		NULL);
+
+	FBX::UV* pUV = nullptr;
+	nStride = sizeof(FBX::UV);
+
+	/*Read From Data*/
+	nNumber = m_model->m_nUV;
+	pUV = m_model->m_pUV;
+	/*Resource State ¹Ù²î¾î¾ß ÇÒ Áöµµ ¸ð¸§*/
+	m_pUVResource = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
+		pUV, nStride*nNumber,
+		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+		NULL);
+}
+
+CModelMesh::~CModelMesh()
+{
+	CMesh::~CMesh();
+	if (m_pVertexResource)
+	{
+		m_pVertexResource->Release();
+	}
+
+	if (m_pUVResource)
+	{
+		m_pUVResource->Release();
+	}
+}
+
+bool CModelMesh::ReadFile(const char * fileName)
+{
+	return m_model->ReadFile(fileName);
+}
+
+void CModelMesh::Render(ID3D12GraphicsCommandList * pd3dCommandList)
+{
+	pd3dCommandList->SetGraphicsRootShaderResourceView(RootParameter::VERTEX, m_pVertexResource->GetGPUVirtualAddress());
+	pd3dCommandList->SetGraphicsRootShaderResourceView(RootParameter::UI, m_pUVResource->GetGPUVirtualAddress());
+	CMesh::Render(pd3dCommandList);
 }
