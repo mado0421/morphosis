@@ -117,6 +117,8 @@ void CCamera::CreateShaderVariables(ID3D12Device *pd3dDevice, ID3D12GraphicsComm
 
 void CCamera::UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList)
 {
+	RegenerateViewMatrix();
+
 	XMStoreFloat4x4(&m_pcbMappedCamera->m_xmf4x4View, XMMatrixTranspose(XMLoadFloat4x4(&m_xmf4x4View)));
 	XMStoreFloat4x4(&m_pcbMappedCamera->m_xmf4x4Projection, XMMatrixTranspose(XMLoadFloat4x4(&m_xmf4x4Projection)));
 	::memcpy(&m_pcbMappedCamera->m_xmf3Position, &m_xmf3Position, sizeof(XMFLOAT3));
@@ -162,7 +164,7 @@ void CFollowCamera::SetTarget(void * target)
 	XMFLOAT3 look = m_pTarget->GetLook();
 	SetPosition(pos);
 	SetLookAt(look);
-	SetOffset(XMFLOAT3(/*pos.x + 0.0f, pos.y + 40.0f, pos.z - 120.5f*/0.0f, 40.0f, -120.0f));
+	SetOffset(XMFLOAT3(/*pos.x + 0.0f, pos.y + 40.0f, pos.z - 120.5f*/0.0f, 40.0f, -100.0f));
 
 }
 

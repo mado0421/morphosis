@@ -300,7 +300,7 @@ void CEnterRoomScene::Update(float fTimeElapsed)
 {
 }
 
-void CEnterRoomScene::ProcessInput()
+void CEnterRoomScene::ProcessInput(UCHAR * pKeysBuffer)
 {
 }
 
@@ -342,21 +342,21 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 
 	// Camera 초기화
 	m_pCamera = new CFollowCamera();
-	if (m_pCamera) m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	// RootSignature 초기화
 	m_pd3dGraphicsRootSignature = CreateRootSignature(m_pd3dDevice);
 
 	// PSO 초기화
 	// 저기서 RootSignature 쓰니까 그 전에 RootSignature 만들어줘야 함
-	m_nPipelineStates = 2;
+	m_nPipelineStates = PSO::count;
 	m_ppPipelineStates = new ID3D12PipelineState*[m_nPipelineStates];
 	TPSO = new CTexturedPSO();
 	TLPSO = new CTexturedIlluminatedPSO();
 	TPSO->Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
 	TLPSO->Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
-	m_ppPipelineStates[0] = TPSO->GetPipelineState();
-	m_ppPipelineStates[1] = TLPSO->GetPipelineState();
+	m_ppPipelineStates[PSO::TEXTURE] = TPSO->GetPipelineState();
+	m_ppPipelineStates[PSO::ILLUMINATEDTEXTURE] = TLPSO->GetPipelineState();
 
 	//텍스처 넣는 곳
 	CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
@@ -382,12 +382,13 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	for (int i = 0; i < m_nObjects; ++i) {
 		CObject *pObj = new CObject();
 		pObj->SetMesh(0, pTestMesh);
-		pObj->SetPosition(10.0f * i, 0.0f, 0.0f);
+		pObj->SetPosition(50.0f * i, 0.0f, 0.0f);
 		pObj->SetMaterial(m_pMaterial);
 		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
 		m_ppObjects[i] = pObj;
 	}
 
+	// 처음 따라갈 캐릭터 정해주기
 	m_pCamera->SetTarget(m_ppObjects[0]);
 
 }
@@ -397,9 +398,14 @@ void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 	//문제였었던 부분 칙쇼~~~~~~~~
 	pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
 
-	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[1]);
+	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::ILLUMINATEDTEXTURE]);
 	pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);
 
+	// HLSL에 넣어줄 카메라 정보 갱신부분
+	m_pCamera->SetViewportsAndScissorRects(pd3dCommandList);
+	m_pCamera->UpdateShaderVariables(pd3dCommandList);
+
+	//테스트용 Object들 내용 갱신부분
 	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
 	for (int j = 0; j < m_nObjects; j++)
 	{
@@ -408,7 +414,7 @@ void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 		if (m_pMaterial) pbMappedcbObject->m_nMaterialIndex = m_pMaterial->m_nReflection;
 	}
 
-//	if (m_pMaterial) m_pMaterial->UpdateShaderVariables(pd3dCommandList);
+	if (m_pMaterial) m_pMaterial->UpdateShaderVariables(pd3dCommandList);
 
 	for (int i = 0; i < m_nObjects; ++i) {
 		m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
@@ -419,8 +425,18 @@ void CPlayScene::Update(float fTimeElapsed)
 {
 }
 
-void CPlayScene::ProcessInput()
+void CPlayScene::ProcessInput(UCHAR * pKeysBuffer)
 {
+
+	// 테스트용 
+	//if (pKeysBuffer[VK_SPACE] & 0xF0) {
+	//	XMFLOAT4X4 matrix = m_ppObjects[1]->m_xmf4x4World;
+	//	printf("matrix is\n");
+	//	printf("%f %f %f %f\n", matrix._11, matrix._12, matrix._13, matrix._14);
+	//	printf("%f %f %f %f\n", matrix._21, matrix._22, matrix._23, matrix._24);
+	//	printf("%f %f %f %f\n", matrix._31, matrix._32, matrix._33, matrix._34);
+	//	printf("%f %f %f %f\n", matrix._41, matrix._42, matrix._43, matrix._44);
+	//}
 }
 
 void CPlayScene::OnProcessingMouseMessage()
@@ -463,7 +479,7 @@ void CTitleScene::Update(float fTimeElapsed)
 {
 }
 
-void CTitleScene::ProcessInput()
+void CTitleScene::ProcessInput(UCHAR * pKeysBuffer)
 {
 }
 
@@ -507,7 +523,7 @@ void CMatchingScene::Update(float fTimeElapsed)
 {
 }
 
-void CMatchingScene::ProcessInput()
+void CMatchingScene::ProcessInput(UCHAR * pKeysBuffer)
 {
 }
 
@@ -551,7 +567,7 @@ void CResultScene::Update(float fTimeElapsed)
 {
 }
 
-void CResultScene::ProcessInput()
+void CResultScene::ProcessInput(UCHAR * pKeysBuffer)
 {
 }
 
@@ -639,7 +655,7 @@ D3D12_RASTERIZER_DESC CPSO::CreateRasterizerState()
 	D3D12_RASTERIZER_DESC d3dRasterizerDesc;
 	::ZeroMemory(&d3dRasterizerDesc, sizeof(D3D12_RASTERIZER_DESC));
 	d3dRasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
-	d3dRasterizerDesc.CullMode = D3D12_CULL_MODE_BACK;
+	d3dRasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;
 	d3dRasterizerDesc.FrontCounterClockwise = FALSE;
 	d3dRasterizerDesc.DepthBias = 0;
 	d3dRasterizerDesc.DepthBiasClamp = 0.0f;

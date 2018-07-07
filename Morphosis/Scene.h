@@ -33,15 +33,17 @@ Shader 클래스에서 가지고 있던 것은?
 */
 namespace PSO {
 	enum {
-		CHAR = 0,
-		OBJECT,
-		UI,
-		FLEXIBLE_UI,
-		FLOATING_UI,
-		FLOATING_FLEXIBLE_UI,
-		LEVEL,
-		EFFECT,
-		PARTICLE,
+		//CHAR = 0,
+		//OBJECT,
+		//UI,
+		//FLEXIBLE_UI,
+		//FLOATING_UI,
+		//FLOATING_FLEXIBLE_UI,
+		//LEVEL,
+		//EFFECT,
+		//PARTICLE,
+		TEXTURE=0,
+		ILLUMINATEDTEXTURE,
 
 		count
 	};
@@ -144,7 +146,7 @@ public:
 	virtual void Update(float fTimeElapsed)=0;
 
 	// Scene 별로 키 Input을 달리 처리하기 위한 함수들
-	virtual void ProcessInput()=0;
+	virtual void ProcessInput(UCHAR * pKeysBuffer)=0;
 	virtual void OnProcessingMouseMessage()=0;
 	virtual void OnProcessingKeyboardMessage()=0;
 
@@ -183,7 +185,7 @@ public:
 	virtual void Update(float fTimeElapsed);
 
 	//// Scene 별로 키 Input을 달리 처리하기 위한 함수들
-	//virtual void ProcessInput();
+	//virtual void ProcessInput(UCHAR * pKeysBuffer);
 	//virtual void OnProcessingMouseMessage();
 	//virtual void OnProcessingKeyboardMessage();
 
@@ -214,7 +216,7 @@ public:
 	virtual void Update(float fTimeElapsed);
 
 	//// Scene 별로 키 Input을 달리 처리하기 위한 함수들
-	//virtual void ProcessInput();
+	//virtual void ProcessInput(UCHAR * pKeysBuffer);
 	//virtual void OnProcessingMouseMessage();
 	//virtual void OnProcessingKeyboardMessage();
 
@@ -239,7 +241,7 @@ public:
 	virtual void Update(float fTimeElapsed);
 
 	//// Scene 별로 키 Input을 달리 처리하기 위한 함수들
-	virtual void ProcessInput();
+	virtual void ProcessInput(UCHAR * pKeysBuffer);
 	virtual void OnProcessingMouseMessage();
 	virtual void OnProcessingKeyboardMessage();
 
@@ -264,7 +266,7 @@ public:
 	virtual void Update(float fTimeElapsed);
 
 	//// Scene 별로 키 Input을 달리 처리하기 위한 함수들
-	virtual void ProcessInput();
+	virtual void ProcessInput(UCHAR * pKeysBuffer);
 	virtual void OnProcessingMouseMessage();
 	virtual void OnProcessingKeyboardMessage();
 
@@ -289,7 +291,7 @@ public:
 	virtual void Update(float fTimeElapsed);
 
 	//// Scene 별로 키 Input을 달리 처리하기 위한 함수들
-	virtual void ProcessInput();
+	virtual void ProcessInput(UCHAR * pKeysBuffer);
 	virtual void OnProcessingMouseMessage();
 	virtual void OnProcessingKeyboardMessage();
 
@@ -314,7 +316,7 @@ public:
 	virtual void Update(float fTimeElapsed);
 
 	//// Scene 별로 키 Input을 달리 처리하기 위한 함수들
-	virtual void ProcessInput();
+	virtual void ProcessInput(UCHAR * pKeysBuffer);
 	virtual void OnProcessingMouseMessage();
 	virtual void OnProcessingKeyboardMessage();
 
@@ -339,7 +341,7 @@ public:
 	virtual void Update(float fTimeElapsed);
 
 	//// Scene 별로 키 Input을 달리 처리하기 위한 함수들
-	virtual void ProcessInput();
+	virtual void ProcessInput(UCHAR * pKeysBuffer);
 	virtual void OnProcessingMouseMessage();
 	virtual void OnProcessingKeyboardMessage();
 

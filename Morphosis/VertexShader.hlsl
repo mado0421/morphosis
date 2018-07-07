@@ -7,9 +7,9 @@ VS_TEXTURED_OUTPUT VSTextured(VS_TEXTURED_INPUT input, uint nVertexID : SV_Verte
 	output.position = float4(input.position, 1.0f);
 	output.uv = input.uv;
 
-	if (nVertexID == 0) { output.position		= float4(	0.0f,	0.5f,	0.5f,	1.0f); output.uv = float2(0.5f, 0.0f); }
-	else if (nVertexID == 1) { output.position	= float4(	0.5f,	-0.5f,	0.5f,	1.0f); output.uv = float2(1.0f, 1.0f); }
-	else if (nVertexID == 2) { output.position	= float4(-	0.5f,	-0.5f,	0.5f,	1.0f); output.uv = float2(0.0f, 1.0f); }
+	//if (nVertexID == 0)			{ output.position	= float4(	0.0f,	0.5f,	0.5f,	1.0f); output.uv = float2(0.5f, 0.0f); }
+	//else if (nVertexID == 1)	{ output.position	= float4(	0.5f,	-0.5f,	0.5f,	1.0f); output.uv = float2(1.0f, 1.0f); }
+	//else if (nVertexID == 2)	{ output.position	= float4(-	0.5f,	-0.5f,	0.5f,	1.0f); output.uv = float2(0.0f, 1.0f); }
 
 	return(output);
 }
@@ -34,9 +34,9 @@ VS_TEXTURED_ILLUMINATED_OUTPUT VSTexturedIlluminated(VS_TEXTURED_ILLUMINATED_INP
 	output.position = mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection);
 	output.uv = input.uv;
 
-	if (nVertexID == 0) { output.position = float4(0.0f, 0.5f, 0.5f, 1.0f); output.uv = float2(0.5f, 0.0f); }
-	else if (nVertexID == 1) { output.position = float4(0.5f, -0.5f, 0.5f, 1.0f); output.uv = float2(1.0f, 1.0f); }
-	else if (nVertexID == 2) { output.position = float4(-0.5f, -0.5f, 0.5f, 1.0f); output.uv = float2(0.0f, 1.0f); }
+	//if (nVertexID == 0) { output.position = float4(0.0f, 0.5f, 0.5f, 1.0f); output.uv = float2(0.5f, 0.0f); }
+	//else if (nVertexID == 1) { output.position = float4(0.5f, -0.5f, 0.5f, 1.0f); output.uv = float2(1.0f, 1.0f); }
+	//else if (nVertexID == 2) { output.position = float4(-0.5f, -0.5f, 0.5f, 1.0f); output.uv = float2(0.0f, 1.0f); }
 
 	return output;
 }

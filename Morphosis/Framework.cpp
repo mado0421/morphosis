@@ -22,9 +22,12 @@ void CFramework::Update()
 	m_MainTimer.Tick(0.0f);
 	float fTimeElapsed = m_MainTimer.GetTimeElapsed();
 
+	ProcessInput();
+
 	//====================================
 	// 여기에 Update() 내용을 넣어주세요.
 	// 아래는 Render 관련입니다.
+
 	if (m_pCurrentScene) m_pCurrentScene->Update(fTimeElapsed);
 
 	//====================================
@@ -374,7 +377,7 @@ void CFramework::ProcessInput()
 {
 	static UCHAR pKeysBuffer[256];
 	bool bProcessedByScene = false;
-//	if (GetKeyboardState(pKeysBuffer) && m_pCurrentScene) bProcessedByScene = m_pCurrentScene->ProcessInput(pKeysBuffer, fTimeElapsed);
+	if (GetKeyboardState(pKeysBuffer) && m_pCurrentScene) m_pCurrentScene->ProcessInput(pKeysBuffer);
 
 
 }
