@@ -4,35 +4,64 @@
 
 bool CFBXData::ReadFile(const char * fileName)
 {
+	std::ifstream fs;
 
-	FILE * fp;
-
-	fp = fopen(fileName, "rb");
-	if (NULL == fp) return false;
+	fs.open(fileName, std::ios::binary);
+	if (fs.fail())return false;
 
 	/*	Read Material	*/
-	fread(&m_nMaterial, sizeof(int), 1, fp);
-	fread(&m_pMaterial, sizeof(FBX::Material), m_nMaterial, fp);
+	fs.read((char*)&m_nMaterial, sizeof(int));
+	if (m_nMaterial > 0) {
+		m_pMaterial = new FBX::Material[m_nMaterial];
+		fs.read((char*)m_pMaterial, sizeof(FBX::Material)*m_nMaterial);
+	}
+	else {
+		return FileErrorShutDown(fs);
+	}
 
 	/*	Read Texture File Name	*/
-	fread(&m_nName, sizeof(int), 1, fp);
-	fread(&m_pName, sizeof(FBX::Name), m_nName, fp);
+	fs.read((char*)&m_nName, sizeof(int));
+	if (m_nName > 0) {
+		m_pName = new FBX::Name[m_nName];
+		fs.read((char*)m_pName, sizeof(FBX::Name)*m_nName);
+	}
+	else {
+		return FileErrorShutDown(fs);
+	}
 
 	/*	Read Vertex	*/
-	fread(&m_nVertex, sizeof(int), 1, fp);
-	fread(&m_pVertex, sizeof(FBX::Vertex), m_nVertex, fp);
+	fs.read((char*)&m_nVertex, sizeof(int));
+	if (m_nVertex > 0) {
+		m_pVertex = new FBX::Vertex[m_nVertex];
+		fs.read((char*)m_pVertex, sizeof(FBX::Vertex)*m_nVertex);
+	}
+	else {
+		return FileErrorShutDown(fs);
+	}
 
 	/*	Read UV	*/
-	fread(&m_nUV, sizeof(int), 1, fp);
-	fread(&m_pUV, sizeof(FBX::UV), m_nUV, fp);
+	fs.read((char*)&m_nUV, sizeof(int));
+	if (m_nUV > 0) {
+		m_pUV = new FBX::UV[m_nUV];
+		fs.read((char*)m_pUV, sizeof(FBX::UV)*m_nUV);
+	}
+	else {
+		return FileErrorShutDown(fs);
+	}
 
 	/*	Read Mesh	*/
-	fread(&m_nIAVertex, sizeof(int), 1, fp);
+	fs.read((char*)&m_nIAVertex, sizeof(int));
 
 	//	Vertex Index
-	fread(&m_pIAVertex, sizeof(FBX::IAVertex), m_nIAVertex, fp);
+	if (m_nIAVertex > 0) {
+		m_pIAVertex = new FBX::IAVertex[m_nIAVertex];
+		fs.read((char*)m_pIAVertex, sizeof(FBX::IAVertex)*m_nIAVertex);
+	}
+	else {
+		return FileErrorShutDown(fs);
+	}
 
-	fclose(fp);
+	fs.close();
 	return true;
 }
 
