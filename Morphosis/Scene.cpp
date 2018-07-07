@@ -380,7 +380,6 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	// 메쉬만드는 곳
 	CTestMesh *pTestMesh = new CTestMesh(pd3dDevice, pd3dCommandList);
 	CModelMesh *pTestModelMesh = new CModelMesh(pd3dDevice, pd3dCommandList, "Assets/Models/TestTeapot_0.dat");
-	//pTestModelMesh->ReadFile("Assets/Models/TestTeapot_0");
 
 	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
 
@@ -398,18 +397,24 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	//	pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
 	//	m_ppObjects[i] = pObj;
 	//}
-	CObject *pObj = new CObject();
-	pObj->SetMesh(0, pTestModelMesh);
-	pObj->SetPosition(50.0f * 0, 0.0f, 0.0f);
-	pObj->SetMaterial(m_pMaterial);
-	pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * 0);
-	m_ppObjects[0] = pObj;
+	{
+		CObject *pObj = new CObject();
+		pObj->SetMesh(0, pTestModelMesh);
+		pObj->SetPosition(50.0f * 0, 0.0f, 0.0f);
+		pObj->SetMaterial(m_pMaterial);
+		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * 0);
+		m_ppObjects[0] = pObj;
+	}
 
 
-	pObj->SetMesh(0, pTestMesh);
-	pObj->SetPosition(50.0f * 1, 0.0f, 0.0f);
-	pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * 1);
-	m_ppObjects[1] = pObj;
+	{
+		CObject *pObj = new CObject();
+		pObj->SetMesh(0, pTestMesh);
+		pObj->SetPosition(50.0f * 1, 0.0f, 0.0f);
+		pObj->SetMaterial(m_pMaterial);
+		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * 1);
+		m_ppObjects[1] = pObj;
+	}
 
 	// 처음 따라갈 캐릭터 정해주기
 	m_pCamera->SetTarget(m_ppObjects[0]);
@@ -421,7 +426,7 @@ void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 	//문제였었던 부분 칙쇼~~~~~~~~
 	pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
 
-	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::ILLUMINATEDTEXTURE]);
+//	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::ILLUMINATEDTEXTURE]);
 	pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);
 
 	// HLSL에 넣어줄 카메라 정보 갱신부분
