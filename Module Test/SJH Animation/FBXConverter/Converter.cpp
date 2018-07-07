@@ -61,8 +61,8 @@ void Converter::ReadFile(const char * fileName)
 	ConnectMesh();
 	SetBoneHierarchy();
 
- 	//WriteMeshOnly();
-	WriteFile();
+ 	WriteMeshOnly();
+	//WriteFile();
 
 
 	//Test();

@@ -351,12 +351,21 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	// 저기서 RootSignature 쓰니까 그 전에 RootSignature 만들어줘야 함
 	m_nPipelineStates = PSO::count;
 	m_ppPipelineStates = new ID3D12PipelineState*[m_nPipelineStates];
+
+
+	// 이거 나중에 제대로 관리해야 할 것 같음
+	// 작업일지에 적어두고 이후 수정하기
 	TPSO = new CTexturedPSO();
 	TLPSO = new CTexturedIlluminatedPSO();
+	MPSO = new CModelPSO();
+
 	TPSO->Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
 	TLPSO->Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
+	MPSO->Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
+
 	m_ppPipelineStates[PSO::TEXTURE] = TPSO->GetPipelineState();
 	m_ppPipelineStates[PSO::ILLUMINATEDTEXTURE] = TLPSO->GetPipelineState();
+	m_ppPipelineStates[PSO::MODEL] = MPSO->GetPipelineState();
 
 	//텍스처 넣는 곳
 	CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
@@ -370,6 +379,8 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 
 	// 메쉬만드는 곳
 	CTestMesh *pTestMesh = new CTestMesh(pd3dDevice, pd3dCommandList);
+	CModelMesh *pTestModelMesh = new CModelMesh(pd3dDevice, pd3dCommandList, "Assets/Models/TestTeapot_0.dat");
+	//pTestModelMesh->ReadFile("Assets/Models/TestTeapot_0");
 
 	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
 
@@ -379,14 +390,26 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, pTexture, RootParameter::TEXTURE, false);
 
 	// 오브젝트를 미리 만들어두는 곳
-	for (int i = 0; i < m_nObjects; ++i) {
-		CObject *pObj = new CObject();
-		pObj->SetMesh(0, pTestMesh);
-		pObj->SetPosition(50.0f * i, 0.0f, 0.0f);
-		pObj->SetMaterial(m_pMaterial);
-		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
-		m_ppObjects[i] = pObj;
-	}
+	//for (int i = 0; i < m_nObjects; ++i) {
+	//	CObject *pObj = new CObject();
+	//	pObj->SetMesh(0, pTestMesh);
+	//	pObj->SetPosition(50.0f * i, 0.0f, 0.0f);
+	//	pObj->SetMaterial(m_pMaterial);
+	//	pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
+	//	m_ppObjects[i] = pObj;
+	//}
+	CObject *pObj = new CObject();
+	pObj->SetMesh(0, pTestModelMesh);
+	pObj->SetPosition(50.0f * 0, 0.0f, 0.0f);
+	pObj->SetMaterial(m_pMaterial);
+	pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * 0);
+	m_ppObjects[0] = pObj;
+
+
+	pObj->SetMesh(0, pTestMesh);
+	pObj->SetPosition(50.0f * 1, 0.0f, 0.0f);
+	pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * 1);
+	m_ppObjects[1] = pObj;
 
 	// 처음 따라갈 캐릭터 정해주기
 	m_pCamera->SetTarget(m_ppObjects[0]);
@@ -416,9 +439,16 @@ void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 
 	if (m_pMaterial) m_pMaterial->UpdateShaderVariables(pd3dCommandList);
 
-	for (int i = 0; i < m_nObjects; ++i) {
-		m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
-	}
+	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::MODEL]);
+	m_ppObjects[0]->Render(pd3dCommandList, m_pCamera);
+
+	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::ILLUMINATEDTEXTURE]);
+	m_ppObjects[1]->Render(pd3dCommandList, m_pCamera);
+
+
+	//for (int i = 0; i < m_nObjects; ++i) {
+	//	m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
+	//}
 }
 
 void CPlayScene::Update(float fTimeElapsed)
@@ -813,5 +843,34 @@ D3D12_SHADER_BYTECODE CTexturedIlluminatedPSO::CreateVertexShader(ID3DBlob ** pp
 D3D12_SHADER_BYTECODE CTexturedIlluminatedPSO::CreatePixelShader(ID3DBlob ** ppd3dShaderBlob)
 {
 	return(CompileShaderFromFile(L"PixelShader.hlsl", "PSTexturedIlluminated", "ps_5_1", ppd3dShaderBlob));
+
+}
+
+D3D12_INPUT_LAYOUT_DESC CModelPSO::CreateInputLayout()
+{
+	UINT nInputElementDescs = 5;
+	D3D12_INPUT_ELEMENT_DESC *pd3dInputElementDescs = new D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
+
+	pd3dInputElementDescs[0] = { "VERTEXIDX",	0, DXGI_FORMAT_R32_SINT,		0, 0,	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[1] = { "UVIDX",		0, DXGI_FORMAT_R32_SINT,		0, 4,	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[2] = { "NORMAL",		0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 8,	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[3] = { "BINORMAL",	0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20,	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[4] = { "TANGENT",		0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32,	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+
+	D3D12_INPUT_LAYOUT_DESC d3dInputLayoutDesc;
+	d3dInputLayoutDesc.pInputElementDescs = pd3dInputElementDescs;
+	d3dInputLayoutDesc.NumElements = nInputElementDescs;
+
+	return(d3dInputLayoutDesc);
+}
+
+D3D12_SHADER_BYTECODE CModelPSO::CreateVertexShader(ID3DBlob ** ppd3dShaderBlob)
+{
+	return(CompileShaderFromFile(L"VertexShader.hlsl", "VSModel", "vs_5_1", ppd3dShaderBlob));
+}
+
+D3D12_SHADER_BYTECODE CModelPSO::CreatePixelShader(ID3DBlob ** ppd3dShaderBlob)
+{
+	return(CompileShaderFromFile(L"PixelShader.hlsl", "PSModel", "ps_5_1", ppd3dShaderBlob));
 
 }
