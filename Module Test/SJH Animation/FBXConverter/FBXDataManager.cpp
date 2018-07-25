@@ -158,8 +158,8 @@ bool FBXDataManager::FBXFileRead()
 	/*	Read Bone	*/
 	fs.read((char*)&m_nBone, sizeof(int));
 	if (m_nBone > 0) {
-		m_pBone = new cv::Bone[m_nBone];
-		fs.read((char*)m_pBone, sizeof(cv::Bone)*m_nBone);
+		m_pBone = new cv::CBone[m_nBone];
+		fs.read((char*)m_pBone, sizeof(cv::CBone)*m_nBone);
 	}
 	else {
 		return FileErrorShutDown(fs);

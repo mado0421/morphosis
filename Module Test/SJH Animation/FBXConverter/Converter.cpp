@@ -158,9 +158,20 @@ void Converter::WriteFile()
 	//	Bone 구조체를 쓴다.
 	num = m_vBone.size();
 	fwrite(&num, sizeof(int), 1, m_pFile);
+
+	//	클라에서 실제로 쓸 다른 구조체
+	m_pBone = new CBone[num];
+	XMFLOAT4X4 identitiy;
+	XMStoreFloat4x4(&identitiy, XMMatrixIdentity());
+
 	for (int i = 0; i < num; ++i)
 	{
-		fwrite(&m_vBone[i], sizeof(Bone), 1, m_pFile);
+		m_pBone[i].parentIdx = m_vBone[i].parentIdx;
+		m_pBone[i].toParent = m_vBone[i].toParent;
+		m_pBone[i].offset = m_vBone[i].offset;
+		m_pBone[i].matrix = identitiy;
+
+		fwrite(&m_pBone[i], sizeof(CBone), 1, m_pFile);
 	}
 
 	//	CurveNode를 쓴다.

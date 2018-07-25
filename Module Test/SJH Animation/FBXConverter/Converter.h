@@ -148,6 +148,17 @@ struct Bone
 
 	bool operator==(__int64 i64) { return (boneIdx == i64); }
 };
+
+struct CBone
+{
+	XMFLOAT4X4 toParent;
+	XMFLOAT4X4 offset;
+
+	XMFLOAT4X4 matrix;
+	int parentIdx;
+	int padding[3];
+};
+
 struct Material
 {
 	__int64 materialIdx;
@@ -279,6 +290,7 @@ class Converter
 
 	std::vector<PoseNode>	m_vPoseNode;
 	std::vector<Bone>		m_vBone;
+	CBone* m_pBone;
 
 	std::vector<Name>		m_vTextureName;
 	std::vector<Material>	m_vMaterial;

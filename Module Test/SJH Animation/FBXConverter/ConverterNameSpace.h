@@ -105,6 +105,16 @@ namespace cv
 
 		bool operator==(__int64 i64) { return (boneIdx == i64); }
 	};
+
+	struct CBone
+	{
+		XMFLOAT4X4 toParent;
+		XMFLOAT4X4 offset;
+
+		XMFLOAT4X4 matrix;
+		int parentIdx;
+		int padding[3];
+	};
 	struct Material
 	{
 		__int64 materialIdx;
