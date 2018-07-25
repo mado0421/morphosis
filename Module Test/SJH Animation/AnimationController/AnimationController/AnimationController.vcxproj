@@ -118,6 +118,7 @@
     <ClCompile Include="AnimationController.cpp" />
     <ClCompile Include="FBXDataManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimationController.h" />

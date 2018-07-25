@@ -3,6 +3,20 @@
 #include<vector>
 #include<iostream>
 
+struct Bone
+{
+	XMFLOAT4X4 toParent;
+	XMFLOAT4X4 offset;
+
+	XMFLOAT4X4 matrix;
+	int parentIdx;
+	int padding[3];
+};
+
+#define MAXBONE	40
+struct BONES {
+	Bone bone[MAXBONE];
+};
 
 struct CurveSet
 {
@@ -19,28 +33,26 @@ struct CurveSet
 	}
 };
 
-struct AnimMatrix
-{
-	XMFLOAT4X4 mat;
-	int bone_idx;
-};
-
 class AnimationController
 {
 public:
-	cv::Bone* m_pBone;
 	int m_nBone;
+	cv::Bone* m_pBone;
+
+	BONES m_Bones;
+	ID3D12Resource *m_pBoneResource;
+
+
 
 	//	애니메이션 1개일 때
-	cv::CurveNode* m_pCurveNode;
 	int m_nCurveNode;
-	AnimMatrix* m_pMatrix;
+	cv::CurveNode* m_pCurveNode;
 
-	float time = 0;
+
+	XMFLOAT4X4* res_matrix;
+
+	float local_time = 0;
 	float endTime;
-
-	bool b_print_TransInfo = false;
-	bool b_print_RotateInfo = true;
 
 	/* 나중에 수정하여 사용 할 것 */
 public:
@@ -51,9 +63,15 @@ public:
 	AnimationController();
 	virtual ~AnimationController();
 	
-	void Init(FBXDataManager* pFbxDM);
-	void Update(float fElapsedTime);
+	void Init(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList,FBXDataManager* pFbxDM);
+
+	void Update(float fElapsedTime, ID3D12GraphicsCommandList *pd3dCommandList);
+
+	void AnimaionUpdate();
+	void BoneUpdate(ID3D12GraphicsCommandList *pd3dCommandList);
 
 
 };
+
+
 

@@ -249,6 +249,7 @@ inline float3	getFloat3(char ** ppCh)
 	return tempFloat3;
 }
 
+enum class FBX_DATA { Mesh, FBX, Anim };
 
 class Converter
 {
@@ -292,11 +293,13 @@ class Converter
 	
 	//	start index from 1   , 0 index is Object connection
 	std::vector<std::pair<__int64, __int64>> m_vPaBone_chBone;
+
+	
 public:
 	Converter();
 	~Converter();
 
-	void ReadFile(const char * fileName);
+	void ReadFile(FBX_DATA format,const char * fileName);
 	void WriteFile();
 
 	void Test();
@@ -309,6 +312,7 @@ public:
 	void FindScale();
 
 	void FindAnimationCount();
+
 
 	//===================For Mesh==================
 	void FindMeshOnly();
