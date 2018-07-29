@@ -37,7 +37,7 @@ class AnimationController
 {
 public:
 	int m_nBone;
-	cv::Bone* m_pBone;
+	cv::CBone* m_pBone;
 
 	BONES m_Bones;
 	ID3D12Resource *m_pBoneResource;

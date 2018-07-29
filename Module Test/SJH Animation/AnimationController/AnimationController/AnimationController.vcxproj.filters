@@ -45,4 +45,7 @@
       <Filter>Import</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="VertexShader.hlsl" />
+  </ItemGroup>
 </Project>

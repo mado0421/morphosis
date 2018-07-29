@@ -111,7 +111,7 @@ bool FBXDataManager::FBXFileRead()
 		fs.read((char*)m_pMaterial, sizeof(cv::Material)*m_nMaterial);
 	}
 	else {
-		return FileErrorShutDown(fs);
+		//return FileErrorShutDown(fs);
 	}
 
 	/*	Read Texture File Name	*/
@@ -121,7 +121,7 @@ bool FBXDataManager::FBXFileRead()
 		fs.read((char*)m_pName, sizeof(cv::Name)*m_nName);
 	}
 	else {
-		return FileErrorShutDown(fs);
+		//return FileErrorShutDown(fs);
 	}
 
 	/*	Read Vertex	*/
@@ -131,7 +131,7 @@ bool FBXDataManager::FBXFileRead()
 		fs.read((char*)m_pVertex, sizeof(cv::Vertex)*m_nVertex);
 	}
 	else {
-		return FileErrorShutDown(fs);
+		//return FileErrorShutDown(fs);
 	}
 
 	/*	Read UV	*/
@@ -141,7 +141,7 @@ bool FBXDataManager::FBXFileRead()
 		fs.read((char*)m_pUV, sizeof(cv::UV)*m_nUV);
 	}
 	else {
-		return FileErrorShutDown(fs);
+		//return FileErrorShutDown(fs);
 	}
 
 	/*	Read Mesh	*/
@@ -152,17 +152,17 @@ bool FBXDataManager::FBXFileRead()
 		fs.read((char*)m_pIAVertex, sizeof(cv::IAVertex)*m_nIAVertex);
 	}
 	else {
-		return FileErrorShutDown(fs);
+		//return FileErrorShutDown(fs);
 	}
 
 	/*	Read Bone	*/
 	fs.read((char*)&m_nBone, sizeof(int));
 	if (m_nBone > 0) {
-		m_pBone = new cv::Bone[m_nBone];
-		fs.read((char*)m_pBone, sizeof(cv::Bone)*m_nBone);
+		m_pBone = new cv::CBone[m_nBone];
+		fs.read((char*)m_pBone, sizeof(cv::CBone)*m_nBone);
 	}
 	else {
-		return FileErrorShutDown(fs);
+		//return FileErrorShutDown(fs);
 	}
 
 	/*	Read CurveNode	*/
@@ -203,7 +203,7 @@ bool FBXDataManager::FBXFileRead()
 		}
 	}
 	else {
-		return FileErrorShutDown(fs);
+		//return FileErrorShutDown(fs);
 	}
 
 	fs.close();
