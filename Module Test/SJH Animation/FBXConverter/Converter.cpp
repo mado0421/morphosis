@@ -11,7 +11,7 @@ Converter::~Converter()
 {
 }
 
-void Converter::ReadFile(const char * fileName)
+void Converter::ReadFile(FBX_DATA format, const char * fileName)
 {
 	char filePath[256] = "resource/model/";
 	__int64 lSize;
@@ -38,16 +38,26 @@ void Converter::ReadFile(const char * fileName)
 	//FindAnimationCount();
 	m_buffer = strtok(m_buffer, " ,\n\t");
 
-	//-------------------------------------------------
-	// 해야하는 것들을 여기 적어주세요.
-	while (m_buffer != NULL)
+	if (format == FBX_DATA::Mesh)
 	{
-		//FindMeshOnly();
-	
- 		Find();
-		pass(&m_buffer, " ,\n\t");
+		while (m_buffer != NULL)
+		{
+			FindMeshOnly();
+			pass(&m_buffer, " ,\n\t");
+		}
 	}
-	//-------------------------------------------------
+	else if (format == FBX_DATA::FBX)
+	{
+		while (m_buffer != NULL)
+		{
+			Find();
+			pass(&m_buffer, " ,\n\t");
+		}
+	}
+	else if (format == FBX_DATA::Anim)
+	{
+
+	}
 
 	MakeCNode();
 	//	사용하지 않을 ScaleNode 제거
@@ -61,9 +71,19 @@ void Converter::ReadFile(const char * fileName)
 	ConnectMesh();
 	SetBoneHierarchy();
 
- 	WriteMeshOnly();
-	//WriteFile();
 
+	if (format == FBX_DATA::Mesh)
+	{
+		WriteMeshOnly();
+	}
+	else if (format == FBX_DATA::FBX)
+	{
+		WriteFile();
+	}
+	else if(format == FBX_DATA::Anim)
+	{
+
+	}
 
 	//Test();
 }
@@ -138,9 +158,20 @@ void Converter::WriteFile()
 	//	Bone 구조체를 쓴다.
 	num = m_vBone.size();
 	fwrite(&num, sizeof(int), 1, m_pFile);
+
+	//	클라에서 실제로 쓸 다른 구조체
+	m_pBone = new CBone[num];
+	XMFLOAT4X4 identitiy;
+	XMStoreFloat4x4(&identitiy, XMMatrixIdentity());
+
 	for (int i = 0; i < num; ++i)
 	{
-		fwrite(&m_vBone[i], sizeof(Bone), 1, m_pFile);
+		m_pBone[i].parentIdx = m_vBone[i].parentIdx;
+		m_pBone[i].toParent = m_vBone[i].toParent;
+		m_pBone[i].offset = m_vBone[i].offset;
+		m_pBone[i].matrix = identitiy;
+
+		fwrite(&m_pBone[i], sizeof(CBone), 1, m_pFile);
 	}
 
 	//	CurveNode를 쓴다.

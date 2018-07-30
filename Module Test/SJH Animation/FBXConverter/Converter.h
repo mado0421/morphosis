@@ -148,6 +148,17 @@ struct Bone
 
 	bool operator==(__int64 i64) { return (boneIdx == i64); }
 };
+
+struct CBone
+{
+	XMFLOAT4X4 toParent;
+	XMFLOAT4X4 offset;
+
+	XMFLOAT4X4 matrix;
+	int parentIdx;
+	int padding[3];
+};
+
 struct Material
 {
 	__int64 materialIdx;
@@ -249,6 +260,7 @@ inline float3	getFloat3(char ** ppCh)
 	return tempFloat3;
 }
 
+enum class FBX_DATA { Mesh, FBX, Anim };
 
 class Converter
 {
@@ -278,6 +290,7 @@ class Converter
 
 	std::vector<PoseNode>	m_vPoseNode;
 	std::vector<Bone>		m_vBone;
+	CBone* m_pBone;
 
 	std::vector<Name>		m_vTextureName;
 	std::vector<Material>	m_vMaterial;
@@ -292,11 +305,13 @@ class Converter
 	
 	//	start index from 1   , 0 index is Object connection
 	std::vector<std::pair<__int64, __int64>> m_vPaBone_chBone;
+
+	
 public:
 	Converter();
 	~Converter();
 
-	void ReadFile(const char * fileName);
+	void ReadFile(FBX_DATA format,const char * fileName);
 	void WriteFile();
 
 	void Test();
@@ -309,6 +324,7 @@ public:
 	void FindScale();
 
 	void FindAnimationCount();
+
 
 	//===================For Mesh==================
 	void FindMeshOnly();

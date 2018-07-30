@@ -18,7 +18,7 @@ void TestAffineTransFormation()
 	XMFLOAT3 Trans{ 0,0,0 };
 	XMFLOAT3 Rotate{ 0,0,0 };
 
-	XMFLOAT4X4 Matrix;
+	XMFLOAT4X4 res_matrix;
 	int cnt = -1;
 	const int sampling = 1;
 	cout.width(10);
@@ -50,14 +50,14 @@ void TestAffineTransFormation()
 			XMConvertToRadians(0)));
 		//XMQuaternionRotationRollPitchYaw
 
-		Matrix = Matrix4x4::AffineTransformation(Scaling, zero, Rotate, Trans);
+		res_matrix = Matrix4x4::AffineTransformation(Scaling, zero, Rotate, Trans);
 
-		XMStoreFloat4x4(&Matrix,
+		XMStoreFloat4x4(&res_matrix,
 			XMMatrixRotationQuaternion(XMLoadFloat4(&Quat))
 		);
 
 		XMStoreFloat4(&tmp,
-			XMQuaternionRotationMatrix(XMLoadFloat4x4(&Matrix))
+			XMQuaternionRotationMatrix(XMLoadFloat4x4(&res_matrix))
 		);
 		
 
@@ -66,7 +66,7 @@ void TestAffineTransFormation()
 		{
 			for (int j = 0; j < 4; ++j)
 			{
-				cout << Matrix.m[i][j] << "\t";
+				cout << res_matrix.m[i][j] << "\t";
 			}
 			cout << "\n";
 		}
@@ -84,10 +84,10 @@ int main()
 	res = fbxmanager.FBXFileRead("BoxWithThreeBones_0");
 	
 
-	float time=0;
+	float local_time=0;
 	if (true == res) {
 		cout << "FileRead Success\n";
-		ac.Init(&fbxmanager);
+		ac.Init(nullptr,nullptr,&fbxmanager);
 		auto s = chrono::system_clock::time_point();
 		s = chrono::system_clock::now();
 
@@ -97,10 +97,10 @@ int main()
 			float et = chrono::duration_cast<chrono::microseconds>(
 				chrono::system_clock::now()
 				- s).count()/1000.f;
-			time += et;
+			local_time += et;
 
 			ac.Update(et);
-			if (time > 5000)break;
+			if (local_time > 5000)break;
 			Sleep(1);
 			s = chrono::system_clock::now();
 

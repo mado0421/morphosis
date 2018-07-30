@@ -63,7 +63,7 @@ public:
 	cv::IAVertex* m_pIAVertex;
 	int m_nIAVertex;
 
-	cv::Bone* m_pBone;
+	cv::CBone* m_pBone;
 	int m_nBone;
 
 	cv::CurveNode* m_pCurveNode;
