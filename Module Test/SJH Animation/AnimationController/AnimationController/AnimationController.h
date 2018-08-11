@@ -43,7 +43,6 @@ public:
 	ID3D12Resource *m_pBoneResource;
 
 
-
 	//	애니메이션 1개일 때
 	int m_nCurveNode;
 	cv::CurveNode* m_pCurveNode;
@@ -70,7 +69,13 @@ public:
 	void AnimaionUpdate();
 	void BoneUpdate(ID3D12GraphicsCommandList *pd3dCommandList);
 
-
+	inline XMFLOAT4X4 AffineTransformation(XMFLOAT3& Scaling, XMFLOAT4& RotationOrigin,
+		XMFLOAT3& Rotation, XMFLOAT3& Translation);
+	
+	inline XMFLOAT4X4 Transpose(XMFLOAT4X4& xmmtx4x4Matrix);
+	inline XMFLOAT4X4 Identity();
+	
+	inline XMFLOAT4X4 Multiply(XMFLOAT4X4& xmmtx4x4Matrix1, XMFLOAT4X4& xmmtx4x4Matrix2);
 };
 
 

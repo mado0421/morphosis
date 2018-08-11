@@ -206,7 +206,7 @@ inline bool isIn(const char * a, const char * b)
 }
 inline void pass(char ** ppCh, const char * target)
 {
-	*ppCh = strtok(NULL, target);
+ 	*ppCh = strtok(NULL, target);
 }
 inline void passTo(char ** ppCh, const char * target)
 {
@@ -226,6 +226,14 @@ inline void passToIn(char ** ppCh, const char * target)
 inline void passOver(char ** ppCh, const char * target)
 {
 	while (!isSame(*ppCh, target))
+	{
+		pass(ppCh, " ,\n\t");
+	}
+	pass(ppCh, " ,\n\t*");
+}
+inline void passOverIn(char ** ppCh, const char * target)
+{
+	while (!isIn(*ppCh, target))
 	{
 		pass(ppCh, " ,\n\t");
 	}

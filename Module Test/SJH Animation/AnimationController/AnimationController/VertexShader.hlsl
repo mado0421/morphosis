@@ -10,7 +10,7 @@ struct BONE
 StructuredBuffer<BONE> bone;
 cbuffer cbone :register(b10)
 {
-	BONE b[MAXBONE]
+	BONE b[MAXBONE];
 };
 
 struct WeightInfo

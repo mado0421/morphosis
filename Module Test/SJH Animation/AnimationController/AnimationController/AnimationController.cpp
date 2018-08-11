@@ -165,24 +165,66 @@ void AnimationController::AnimaionUpdate()
 
 		XMFLOAT3 Scaling{ 1,1,1 };
 		XMFLOAT4 zero{ 0,0,0 ,1 };
-		res_matrix[i] = Matrix4x4::AffineTransformation(Scaling, zero, rotate, trans);
+		res_matrix[i] = AffineTransformation(Scaling, zero, rotate, trans);
 	}
 }
 
 void AnimationController::BoneUpdate(ID3D12GraphicsCommandList *pd3dCommandList)
 {
 	Bone* pBone = m_Bones.bone;
+	//	Bone 업데이트
 	for (int i = 0; i < m_nBone; ++i)
 	{
-		pBone[i].matrix = Matrix4x4::Transpose(res_matrix[i]);
+		/*
+			to hierachy transform
+			first local transformation in local coordinate
+			second transfrom coordinate into parent's
+		*/
+		pBone[i].matrix = res_matrix[i];
+		pBone[i].matrix = Multiply(pBone[i].matrix, pBone[i].toParent);
+		pBone[i].matrix = Transpose(res_matrix[i]);
 	}
 	
+	//	Resource 등록
 	pd3dCommandList->SetGraphicsRootConstantBufferView(
 		ROOT_PARAMETER_BONES, m_pBoneResource->GetGPUVirtualAddress());
 }
 
+inline XMFLOAT4X4 AnimationController::AffineTransformation(XMFLOAT3& Scaling, XMFLOAT4& RotationOrigin,
+	XMFLOAT3& Rotation, XMFLOAT3& Translation)
+{
+	XMFLOAT4X4 xmmtx4x4Result;
 
-	
+	XMStoreFloat4x4(&xmmtx4x4Result,
+		XMMatrixAffineTransformation(
+			XMLoadFloat3(&Scaling),
+			XMLoadFloat4(&RotationOrigin),
+			XMQuaternionRotationRollPitchYawFromVector(XMLoadFloat3(&Rotation)),
+			XMLoadFloat3(&Translation))
+	);
+	return(xmmtx4x4Result);
+}
+
+inline XMFLOAT4X4 AnimationController::Transpose(XMFLOAT4X4& xmmtx4x4Matrix)
+{
+	XMFLOAT4X4 xmmtx4x4Result;
+	XMStoreFloat4x4(&xmmtx4x4Result, XMMatrixTranspose(XMLoadFloat4x4(&xmmtx4x4Matrix)));
+	return(xmmtx4x4Result);
+}
+
+inline XMFLOAT4X4 AnimationController::Identity()
+{
+	XMFLOAT4X4 xmmtx4x4Result;
+	XMStoreFloat4x4(&xmmtx4x4Result, XMMatrixIdentity());
+	return(xmmtx4x4Result);
+}
+
+inline XMFLOAT4X4 AnimationController::Multiply(XMFLOAT4X4& xmmtx4x4Matrix1, XMFLOAT4X4& xmmtx4x4Matrix2)
+{
+	XMFLOAT4X4 xmmtx4x4Result;
+	XMStoreFloat4x4(&xmmtx4x4Result, XMLoadFloat4x4(&xmmtx4x4Matrix1) * XMLoadFloat4x4(&xmmtx4x4Matrix2));
+	return(xmmtx4x4Result);
+}
 
 /*
 end local_time이 153953860000인 애니메이션을 포함한 FBX에서

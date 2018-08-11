@@ -99,7 +99,7 @@ int main()
 				- s).count()/1000.f;
 			local_time += et;
 
-			ac.Update(et);
+			ac.Update(et,nullptr);
 			if (local_time > 5000)break;
 			Sleep(1);
 			s = chrono::system_clock::now();
