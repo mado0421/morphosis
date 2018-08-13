@@ -350,11 +350,14 @@ void Converter::Find()
 	FindBiNormal();
 	FindNormal();
 	FindTangent();
-	FindBone();
 
+	FindBone();
 	FindCurve();
 	FindCurveNode();
+
+	//	error
 	FindDeformer();
+
 	FindOffsetMatrix();
 	Bone_SubDeformer_Hierarchy();
 	AnimCurve_AnimationCurveNode();
@@ -497,38 +500,49 @@ void Converter::FindDeformer()
 
 			tempDeformer.deformerIdx = deformerIdx;
 
-			passOver(&m_buffer, "Indexes:");
-			numOfAffectVertices = getInt(&m_buffer);
-
-			affectedVertexIdx.resize(numOfAffectVertices);
-			weight.resize(numOfAffectVertices);
-			tempDeformer.weight.resize(numOfAffectVertices);
-
-			passOver(&m_buffer, "a:");
-			
-			for (int i = 0; i < numOfAffectVertices; ++i)
+			while (!isSame(m_buffer, "Indexes:")&& 
+				!isSame(m_buffer, "Transform:"))
 			{
-				affectedVertexIdx[i] = getInt(&m_buffer);
-				pass(&m_buffer, " ,");
+				pass(&m_buffer, " ,\n\t");
 			}
-
-			//	이렇게 하지 않으면 에러남
-			passOver(&m_buffer, "\n\t\tWeights:");
-			passOver(&m_buffer, "a:");
-
-			for (int i = 0; i < numOfAffectVertices; ++i)
+			if (isSame(m_buffer, "Indexes:"))
 			{
-				weight[i] = getFloat(&m_buffer);
-				pass(&m_buffer, " ,");
-			}
+				printf("SubDeformer %lld	/ ", deformerIdx);
+				
+				pass(&m_buffer, " ,\n\t*");
+				numOfAffectVertices = getInt(&m_buffer);
+				printf("Indexes:  %d\n", numOfAffectVertices);
 
-			for (int i = 0; i < numOfAffectVertices; ++i)
-			{
-				tempDeformer.weight[i].idx = affectedVertexIdx[i];
-				tempDeformer.weight[i].weight = weight[i];
-			}
+				affectedVertexIdx.resize(numOfAffectVertices);
+				weight.resize(numOfAffectVertices);
+				tempDeformer.weight.resize(numOfAffectVertices);
 
-			m_vDeformer.push_back(tempDeformer);
+				passOver(&m_buffer, "a:");
+
+				for (int i = 0; i < numOfAffectVertices; ++i)
+				{
+					affectedVertexIdx[i] = getInt(&m_buffer);
+					pass(&m_buffer, " ,");
+				}
+
+				//	이렇게 하지 않으면 에러남
+				passOverIn(&m_buffer, "Weights:");
+				passOver(&m_buffer, "a:");
+
+				for (int i = 0; i < numOfAffectVertices; ++i)
+				{
+					weight[i] = getFloat(&m_buffer);
+					pass(&m_buffer, " ,");
+				}
+
+				for (int i = 0; i < numOfAffectVertices; ++i)
+				{
+					tempDeformer.weight[i].idx = affectedVertexIdx[i];
+					tempDeformer.weight[i].weight = weight[i];
+				}
+
+				m_vDeformer.push_back(tempDeformer);
+			}
 		}
 	}
 }
