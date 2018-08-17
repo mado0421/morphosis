@@ -104,3 +104,20 @@ XMFLOAT3 CObject::GetRight()
 	XMFLOAT3 vector = { m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13 };
 	return Vector3::Normalize(vector);
 }
+
+void CMovingObject::Update(float fTimeElapsed)
+{
+	m_xmf4x4World._41 += m_xmf3Variation.x * fTimeElapsed * m_fSpeed;
+	m_xmf4x4World._42 += m_xmf3Variation.y * fTimeElapsed * m_fSpeed;
+	m_xmf4x4World._43 += m_xmf3Variation.z * fTimeElapsed * m_fSpeed;
+	m_xmf3Variation.x = 0;
+	m_xmf3Variation.y = 0;
+	m_xmf3Variation.z = 0;
+}
+
+void CMovingObject::AddPosVariation(XMFLOAT3 xmf3Velocity)
+{
+	m_xmf3Variation.x += xmf3Velocity.x;
+	m_xmf3Variation.y += xmf3Velocity.y;
+	m_xmf3Variation.z += xmf3Velocity.z;
+}

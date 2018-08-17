@@ -49,6 +49,8 @@ public:
 	XMFLOAT3 GetLook();
 	XMFLOAT3 GetUp();
 	XMFLOAT3 GetRight();
+
+
 };
 
 class CCollideObejct : public CObject
@@ -61,7 +63,14 @@ protected:
 
 class CMovingObject : public CCollideObejct
 {
+public:
+	XMFLOAT3						m_xmf3Variation;
+	float							m_fSpeed = 100.0f;
 
+public:
+	virtual void Update(float fTimeElapsed);
+
+	void AddPosVariation(XMFLOAT3 xmf3Velocity);
 };
 
 class CDefaultUI : public CObject
