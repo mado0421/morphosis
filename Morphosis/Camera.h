@@ -20,11 +20,6 @@ protected:
 	XMFLOAT3						m_xmf3Up;
 	XMFLOAT3						m_xmf3Look;
 
-	float           				m_fPitch;
-	float           				m_fRoll;
-	float           				m_fYaw;
-
-
 	XMFLOAT3						m_xmf3LookAtWorld;
 	XMFLOAT3						m_xmf3Offset;
 	float           				m_fTimeLag;
@@ -34,7 +29,6 @@ protected:
 
 	D3D12_VIEWPORT					m_d3dViewport;
 	D3D12_RECT						m_d3dScissorRect;
-
 
 	ID3D12Resource					*m_pd3dcbCamera = NULL;
 	VS_CB_CAMERA_INFO				*m_pcbMappedCamera = NULL;
@@ -48,29 +42,23 @@ public:
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList);
 
 	virtual void SetViewportsAndScissorRects(ID3D12GraphicsCommandList *pd3dCommandList);
-
-	void GenerateViewMatrix();
-	void GenerateViewMatrix(XMFLOAT3 xmf3Position, XMFLOAT3 xmf3LookAt, XMFLOAT3 xmf3Up);
-	void RegenerateViewMatrix();
-
-	void GenerateProjectionMatrix(float fNearPlaneDistance, float fFarPlaneDistance, float fAspectRatio, float fFOVAngle);
-
 	void SetViewport(int xTopLeft, int yTopLeft, int nWidth, int nHeight, float fMinZ = 0.0f, float fMaxZ = 1.0f);
 	void SetScissorRect(LONG xLeft, LONG yTop, LONG xRight, LONG yBottom);
 
-	void SetPosition(XMFLOAT3 xmf3Position) { m_xmf3Position = xmf3Position; }
-	XMFLOAT3& GetPosition() { return(m_xmf3Position); }
+	void GenerateViewMatrix();
+	void GenerateViewMatrix(XMFLOAT3 xmf3Position, XMFLOAT3 xmf3LookAt, XMFLOAT3 xmf3Up);
+	void GenerateProjectionMatrix(float fNearPlaneDistance, float fFarPlaneDistance, float fAspectRatio, float fFOVAngle);
+	void RegenerateViewMatrix();
 
-	void SetLookAtPosition(XMFLOAT3 xmf3LookAtWorld) { m_xmf3LookAtWorld = xmf3LookAtWorld; }
-	XMFLOAT3& GetLookAtPosition() { return(m_xmf3LookAtWorld); }
+	void SetPosition(XMFLOAT3 xmf3Position)				{ m_xmf3Position = xmf3Position; }
+	void SetLookAtPosition(XMFLOAT3 xmf3LookAtWorld)	{ m_xmf3LookAtWorld = xmf3LookAtWorld; }
 
-	XMFLOAT3& GetRightVector() { return(m_xmf3Right); }
-	XMFLOAT3& GetUpVector() { return(m_xmf3Up); }
-	XMFLOAT3& GetLookVector() { return(m_xmf3Look); }
+	XMFLOAT3& GetPosition()								{ return(m_xmf3Position); }
+	XMFLOAT3& GetLookAtPosition()						{ return(m_xmf3LookAtWorld); }
 
-	float& GetPitch() { return(m_fPitch); }
-	float& GetRoll() { return(m_fRoll); }
-	float& GetYaw() { return(m_fYaw); }
+	XMFLOAT3& GetRight()	{ return(m_xmf3Right); }
+	XMFLOAT3& GetUp()		{ return(m_xmf3Up); }
+	XMFLOAT3& GetLook()		{ return(m_xmf3Look); }
 
 	//	void SetOffset(XMFLOAT3 xmf3Offset) { m_xmf3Offset = xmf3Offset; }
 	void SetOffset(XMFLOAT3 xmf3Offset) { m_xmf3Offset = xmf3Offset; m_xmf3Position.x += xmf3Offset.x; m_xmf3Position.y += xmf3Offset.y; m_xmf3Position.z += xmf3Offset.z; }
@@ -91,7 +79,6 @@ public:
 
 	virtual void SetTarget(void *target) {}
 	virtual CObject* GetTarget() { return nullptr; }
-	XMFLOAT3 GetLook() { return m_xmf3Look; }
 };
 
 class CBoardCamera : public CCamera

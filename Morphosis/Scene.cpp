@@ -482,6 +482,8 @@ void CPlayScene::ProcessInput(UCHAR * pKeysBuffer)
 	if (pKeysBuffer[KEY::A] & 0xF0) { xmf3temp = m_ppMovingObjects[0]->GetRight(); m_ppMovingObjects[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -1)); }
 	if (pKeysBuffer[KEY::S] & 0xF0) { xmf3temp = m_ppMovingObjects[0]->GetLook(); m_ppMovingObjects[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -1)); }
 	if (pKeysBuffer[KEY::D] & 0xF0) { m_ppMovingObjects[0]->AddPosVariation(m_ppMovingObjects[0]->GetRight()); }
+	if (pKeysBuffer[KEY::Q] & 0xF0) { m_ppMovingObjects[0]->AddRotateAngle(XMFLOAT3{ 0, -40, 0 }); }
+	if (pKeysBuffer[KEY::E] & 0xF0) { m_ppMovingObjects[0]->AddRotateAngle(XMFLOAT3{ 0, 40, 0 }); }
 
 	if (pKeysBuffer[KEY::_1] & 0xF0)
 		if(m_pCamera->GetTarget() != m_ppMovingObjects[0])
@@ -491,10 +493,9 @@ void CPlayScene::ProcessInput(UCHAR * pKeysBuffer)
 		if (m_pCamera->GetTarget() != m_ppObjects[0])
 			m_pCamera->SetTarget(m_ppObjects[0]);
 
-
 	/*for Test*/
 	if (pKeysBuffer[VK_SPACE] & 0xF0) {
-		XMFLOAT4X4 matrix = m_ppMovingObjects[1]->m_xmf4x4World;
+		XMFLOAT4X4 matrix = m_ppMovingObjects[0]->m_xmf4x4World;
 		printf("matrix is\n");
 		printf("%f %f %f %f\n", matrix._11, matrix._12, matrix._13, matrix._14);
 		printf("%f %f %f %f\n", matrix._21, matrix._22, matrix._23, matrix._24);

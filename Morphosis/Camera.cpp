@@ -5,20 +5,17 @@
 
 CCamera::CCamera()
 {
-	m_xmf4x4View = Matrix4x4::Identity();
-	m_xmf4x4Projection = Matrix4x4::Identity();
-	m_d3dViewport = { 0, 0, FRAME_BUFFER_WIDTH , FRAME_BUFFER_HEIGHT, 0.0f, 1.0f };
-	m_d3dScissorRect = { 0, 0, FRAME_BUFFER_WIDTH , FRAME_BUFFER_HEIGHT };
-	m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
-	m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
-	m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
-	m_fPitch = 0.0f;
-	m_fRoll = 0.0f;
-	m_fYaw = 0.0f;
-	m_xmf3Offset = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	m_fTimeLag = 0.0f;
-	m_xmf3LookAtWorld = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	m_xmf4x4View		= Matrix4x4::Identity();
+	m_xmf4x4Projection	= Matrix4x4::Identity();
+	m_d3dViewport		= { 0, 0, FRAME_BUFFER_WIDTH , FRAME_BUFFER_HEIGHT, 0.0f, 1.0f };
+	m_d3dScissorRect	= { 0, 0, FRAME_BUFFER_WIDTH , FRAME_BUFFER_HEIGHT };
+	m_xmf3Position		= XMFLOAT3(0.0f, 0.0f, 0.0f);
+	m_xmf3Right			= XMFLOAT3(1.0f, 0.0f, 0.0f);
+	m_xmf3Look			= XMFLOAT3(0.0f, 0.0f, 1.0f);
+	m_xmf3Up			= XMFLOAT3(0.0f, 1.0f, 0.0f);
+	m_xmf3Offset		= XMFLOAT3(0.0f, 0.0f, 0.0f);
+	m_fTimeLag			= 0.0f;
+	m_xmf3LookAtWorld	= XMFLOAT3(0.0f, 0.0f, 0.0f);
 }
 
 CCamera::~CCamera()
@@ -27,12 +24,12 @@ CCamera::~CCamera()
 
 void CCamera::SetViewport(int xTopLeft, int yTopLeft, int nWidth, int nHeight, float fMinZ, float fMaxZ)
 {
-	m_d3dViewport.TopLeftX = float(xTopLeft);
-	m_d3dViewport.TopLeftY = float(yTopLeft);
-	m_d3dViewport.Width = float(nWidth);
-	m_d3dViewport.Height = float(nHeight);
-	m_d3dViewport.MinDepth = fMinZ;
-	m_d3dViewport.MaxDepth = fMaxZ;
+	m_d3dViewport.TopLeftX	= float(xTopLeft);
+	m_d3dViewport.TopLeftY	= float(yTopLeft);
+	m_d3dViewport.Width		= float(nWidth);
+	m_d3dViewport.Height	= float(nHeight);
+	m_d3dViewport.MinDepth	= fMinZ;
+	m_d3dViewport.MaxDepth	= fMaxZ;
 }
 
 void CCamera::SetScissorRect(LONG xLeft, LONG yTop, LONG xRight, LONG yBottom)
@@ -132,11 +129,12 @@ void CFollowCamera::SetTarget(void * target)
 {
 	m_pTarget = (CObject*)target;
 	XMFLOAT3 pos = m_pTarget->GetPosition();
-	XMFLOAT3 look = m_pTarget->GetLook();
+	/*포지션을 정하고 오프셋을 주어 포지션을 변경 시킨 뒤에 LookAt을 하지 않으면 
+	눈의 위치와 바라보려는 곳이 겹치면서 바라보는 방향 벡터가 (0, 0, 0)이 되기 때문에
+	문제가 생김*/
 	SetPosition(pos);
 	SetOffset(XMFLOAT3(0.0f, 40.0f, -100.0f));
 	SetLookAt(pos);
-
 }
 
 CObject * CFollowCamera::GetTarget()
