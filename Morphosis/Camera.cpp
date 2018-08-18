@@ -19,35 +19,6 @@ CCamera::CCamera()
 	m_xmf3Offset = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	m_fTimeLag = 0.0f;
 	m_xmf3LookAtWorld = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	m_nMode = 0x00;
-	//	m_pPlayer = NULL;
-}
-
-CCamera::CCamera(CCamera *pCamera)
-{
-	if (pCamera)
-	{
-		*this = *pCamera;
-	}
-	else
-	{
-		m_xmf4x4View = Matrix4x4::Identity();
-		m_xmf4x4Projection = Matrix4x4::Identity();
-		m_d3dViewport = { 0, 0, FRAME_BUFFER_WIDTH , FRAME_BUFFER_HEIGHT, 0.0f, 1.0f };
-		m_d3dScissorRect = { 0, 0, FRAME_BUFFER_WIDTH , FRAME_BUFFER_HEIGHT };
-		m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
-		m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
-		m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
-		m_fPitch = 0.0f;
-		m_fRoll = 0.0f;
-		m_fYaw = 0.0f;
-		m_xmf3Offset = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		m_fTimeLag = 0.0f;
-		m_xmf3LookAtWorld = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		m_nMode = 0x00;
-		//m_pPlayer = NULL;
-	}
 }
 
 CCamera::~CCamera()
@@ -163,9 +134,14 @@ void CFollowCamera::SetTarget(void * target)
 	XMFLOAT3 pos = m_pTarget->GetPosition();
 	XMFLOAT3 look = m_pTarget->GetLook();
 	SetPosition(pos);
-	SetLookAt(look);
-	SetOffset(XMFLOAT3(/*pos.x + 0.0f, pos.y + 40.0f, pos.z - 120.5f*/0.0f, 40.0f, -100.0f));
+	SetOffset(XMFLOAT3(0.0f, 40.0f, -100.0f));
+	SetLookAt(pos);
 
+}
+
+CObject * CFollowCamera::GetTarget()
+{
+	return m_pTarget;
 }
 
 void CFollowCamera::Update(XMFLOAT3 & xmf3LookAt, float fTimeElapsed)
@@ -205,6 +181,8 @@ void CFollowCamera::Update(XMFLOAT3 & xmf3LookAt, float fTimeElapsed)
 void CFollowCamera::SetLookAt(XMFLOAT3 & xmf3LookAt)
 {
 	XMFLOAT3 up = m_pTarget->GetUp();
+	//여기서 포지션이랑 LookAt이랑 같으면 EyeDir이 0, 0, 0이라고 에러 뜸
+
 	XMFLOAT4X4 mtxLookAt = Matrix4x4::LookAtLH(m_xmf3Position, xmf3LookAt, up);
 	m_xmf3Right = XMFLOAT3(mtxLookAt._11, mtxLookAt._21, mtxLookAt._31);
 	m_xmf3Up = XMFLOAT3(mtxLookAt._12, mtxLookAt._22, mtxLookAt._32);

@@ -472,6 +472,7 @@ void CPlayScene::Update(float fTimeElapsed)
 	//가만히 있는 오브젝트를 갱신을 해줘야 할까? 저는 아니라고 생각합니다.
 	//for (int i = 0; i < m_nObjects; i++) m_ppObjects[i]->Update(fTimeElapsed);
 	for (int i = 0; i < m_nMovingObjects; i++) m_ppMovingObjects[i]->Update(fTimeElapsed);
+
 }
 
 void CPlayScene::ProcessInput(UCHAR * pKeysBuffer)
@@ -481,6 +482,15 @@ void CPlayScene::ProcessInput(UCHAR * pKeysBuffer)
 	if (pKeysBuffer[KEY::A] & 0xF0) { xmf3temp = m_ppMovingObjects[0]->GetRight(); m_ppMovingObjects[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -1)); }
 	if (pKeysBuffer[KEY::S] & 0xF0) { xmf3temp = m_ppMovingObjects[0]->GetLook(); m_ppMovingObjects[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -1)); }
 	if (pKeysBuffer[KEY::D] & 0xF0) { m_ppMovingObjects[0]->AddPosVariation(m_ppMovingObjects[0]->GetRight()); }
+
+	if (pKeysBuffer[KEY::_1] & 0xF0)
+		if(m_pCamera->GetTarget() != m_ppMovingObjects[0])
+			m_pCamera->SetTarget(m_ppMovingObjects[0]);
+
+	if (pKeysBuffer[KEY::_2] & 0xF0)
+		if (m_pCamera->GetTarget() != m_ppObjects[0])
+			m_pCamera->SetTarget(m_ppObjects[0]);
+
 
 	/*for Test*/
 	if (pKeysBuffer[VK_SPACE] & 0xF0) {

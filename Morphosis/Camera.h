@@ -24,7 +24,6 @@ protected:
 	float           				m_fRoll;
 	float           				m_fYaw;
 
-	DWORD							m_nMode;
 
 	XMFLOAT3						m_xmf3LookAtWorld;
 	XMFLOAT3						m_xmf3Offset;
@@ -42,7 +41,6 @@ protected:
 
 public:
 	CCamera();
-	CCamera(CCamera *pCamera);
 	virtual ~CCamera();
 
 	virtual void CreateShaderVariables(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
@@ -59,12 +57,6 @@ public:
 
 	void SetViewport(int xTopLeft, int yTopLeft, int nWidth, int nHeight, float fMinZ = 0.0f, float fMaxZ = 1.0f);
 	void SetScissorRect(LONG xLeft, LONG yTop, LONG xRight, LONG yBottom);
-
-	//void SetPlayer(CPlayer *pPlayer) { m_pPlayer = pPlayer; }
-	//CPlayer *GetPlayer() { return(m_pPlayer); }
-
-	void SetMode(DWORD nMode) { m_nMode = nMode; }
-	DWORD GetMode() { return(m_nMode); }
 
 	void SetPosition(XMFLOAT3 xmf3Position) { m_xmf3Position = xmf3Position; }
 	XMFLOAT3& GetPosition() { return(m_xmf3Position); }
@@ -98,9 +90,8 @@ public:
 	virtual void SetLookAt(XMFLOAT3& xmf3LookAt) { }
 
 	virtual void SetTarget(void *target) {}
-	XMFLOAT3 GetLook() {
-		return m_xmf3Look;
-	}
+	virtual CObject* GetTarget() { return nullptr; }
+	XMFLOAT3 GetLook() { return m_xmf3Look; }
 };
 
 class CBoardCamera : public CCamera
@@ -126,6 +117,7 @@ public:
 
 public:
 	virtual void SetTarget(void *target);
+	virtual CObject* GetTarget();
 	virtual void Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed);
 	virtual void SetLookAt(XMFLOAT3& xmf3LookAt);
 };
