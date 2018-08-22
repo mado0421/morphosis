@@ -167,8 +167,8 @@ void Converter::WriteFile()
 	for (int i = 0; i < num; ++i)
 	{
 		m_pBone[i].parentIdx = m_vBone[i].parentIdx;
-		m_pBone[i].toParent = m_vBone[i].toParent;
-		m_pBone[i].offset = m_vBone[i].offset;
+		m_pBone[i].toParent = identitiy;
+		m_pBone[i].offset = Transpose(m_vBone[i].offset);
 		m_pBone[i].matrix = identitiy;
 
 		fwrite(&m_pBone[i], sizeof(CBone), 1, m_pFile);
@@ -525,7 +525,7 @@ void Converter::FindDeformer()
 					pass(&m_buffer, " ,");
 				}
 
-				//	이렇게 하지 않으면 에러남
+
 				passOverIn(&m_buffer, "Weights:");
 				passOver(&m_buffer, "a:");
 
@@ -540,9 +540,16 @@ void Converter::FindDeformer()
 					tempDeformer.weight[i].idx = affectedVertexIdx[i];
 					tempDeformer.weight[i].weight = weight[i];
 				}
-
-				m_vDeformer.push_back(tempDeformer);
 			}
+
+			//	Find Transform
+			passOverIn(&m_buffer, "Transform:");
+			passOver(&m_buffer, "a:");
+			
+			tempDeformer.transform = GetFloat4x4(&m_buffer);
+
+			m_vDeformer.push_back(tempDeformer);
+
 		}
 	}
 }
@@ -916,7 +923,8 @@ void Converter::Bone_SubDeformer_Hierarchy()
 	__int64 boneIdx;
 	if (isIn(m_buffer, ";Model::"))
 	{
-		passToIn(&m_buffer, "Model::");
+		pass(&m_buffer, " ,\n\t*");
+		while (!isIn(m_buffer, "Model::") && !isIn(m_buffer, "SubDeformer::")){pass(&m_buffer, " ,\n\t*");}
 		if (isIn(m_buffer, "SubDeformer::"))
 		{
 			__int64 SubDeformerIdx;
@@ -936,7 +944,6 @@ void Converter::Bone_SubDeformer_Hierarchy()
 					p->boneIdx = bi - m_vBone.begin();
 				}
 			}
-
 		}
 		else if (isIn(m_buffer, "Model::"))
 		{
@@ -966,20 +973,31 @@ void Converter::FindBone()
 }
 void Converter::SetBindPose()
 {
-	for (const auto& p : m_vPoseNode)
+	for (const auto& de : m_vDeformer)
 	{
-		auto bi = find(m_vBone.begin(), m_vBone.end(), p.poseIdx);
+		int idx = de.boneIdx;
 
-		if (bi != m_vBone.end())
-		{
-			bi->offset = p.mat;
-		}
-		else
-		{
-			printf("Bone이랑 연결되어 있지 않은 PoseNode.\n1개여야 정상.\n");
-		}
+		m_vBone[idx].offset = de.transform;
 	}
 }
+/*
+//	Prev this is not use
+for (const auto& p : m_vPoseNode)
+{
+auto bi = find(m_vBone.begin(), m_vBone.end(), p.poseIdx);
+
+if (bi != m_vBone.end())
+{
+bi->offset = p.mat;
+}
+else
+{
+printf("Bone이랑 연결되어 있지 않은 PoseNode.\n1개여야 정상.\n");
+}
+}
+*/
+
+
 void Converter::MakeCNode()
 {
 	for (auto& node : m_vNode)
@@ -1178,6 +1196,12 @@ void Converter::SetBoneHierarchy()
 			}
 		}
 	}
+}
+inline XMFLOAT4X4 Converter::Transpose(XMFLOAT4X4 & xmmtx4x4Matrix)
+{
+	XMFLOAT4X4 xmmtx4x4Result;
+	XMStoreFloat4x4(&xmmtx4x4Result, XMMatrixTranspose(XMLoadFloat4x4(&xmmtx4x4Matrix)));
+	return(xmmtx4x4Result);
 }
 /*
 
