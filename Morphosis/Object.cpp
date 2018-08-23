@@ -107,16 +107,11 @@ XMFLOAT3 CObject::GetRight()
 
 void CMovingObject::Update(float fTimeElapsed)
 {
-	m_xmf4x4World._41 += m_xmf3Variation.x * fTimeElapsed * m_fSpeed;
-	m_xmf4x4World._42 += m_xmf3Variation.y * fTimeElapsed * m_fSpeed;
-	m_xmf4x4World._43 += m_xmf3Variation.z * fTimeElapsed * m_fSpeed;
-
-	m_xmf3Variation.x = m_xmf3Variation.y = m_xmf3Variation.z = 0;
 
 	XMMATRIX temp = DirectX::XMLoadFloat4x4(&m_xmf4x4World);
-	XMMATRIX rotateXAxis = DirectX::XMMatrixRotationAxis(XMVECTOR{ 1, 0, 0 }, DirectX::XMConvertToRadians(m_xmf3RotateAngle.x * fTimeElapsed));
-	XMMATRIX rotateYAxis = DirectX::XMMatrixRotationAxis(XMVECTOR{ 0, 1, 0 }, DirectX::XMConvertToRadians(m_xmf3RotateAngle.y * fTimeElapsed));
-	XMMATRIX rotateZAxis = DirectX::XMMatrixRotationAxis(XMVECTOR{ 0, 0, 1 }, DirectX::XMConvertToRadians(m_xmf3RotateAngle.z * fTimeElapsed));
+	XMMATRIX rotateXAxis = DirectX::XMMatrixRotationAxis(DirectX::XMLoadFloat3(&GetRight()), DirectX::XMConvertToRadians(m_xmf3RotateAngle.x * fTimeElapsed));
+	XMMATRIX rotateYAxis = DirectX::XMMatrixRotationAxis(DirectX::XMLoadFloat3(&GetUp()), DirectX::XMConvertToRadians(m_xmf3RotateAngle.y * fTimeElapsed));
+	XMMATRIX rotateZAxis = DirectX::XMMatrixRotationAxis(DirectX::XMLoadFloat3(&GetLook()), DirectX::XMConvertToRadians(m_xmf3RotateAngle.z * fTimeElapsed));
 	rotateYAxis = DirectX::XMMatrixMultiply(rotateYAxis, rotateZAxis);
 	rotateXAxis = DirectX::XMMatrixMultiply(rotateXAxis, rotateYAxis);
 	temp = DirectX::XMMatrixMultiply(temp, rotateXAxis);
@@ -124,6 +119,11 @@ void CMovingObject::Update(float fTimeElapsed)
 
 	m_xmf3RotateAngle.x = m_xmf3RotateAngle.y = m_xmf3RotateAngle.z = 0;
 
+	m_xmf4x4World._41 += m_xmf3Variation.x * fTimeElapsed * m_fSpeed;
+	m_xmf4x4World._42 += m_xmf3Variation.y * fTimeElapsed * m_fSpeed;
+	m_xmf4x4World._43 += m_xmf3Variation.z * fTimeElapsed * m_fSpeed;
+
+	m_xmf3Variation.x = m_xmf3Variation.y = m_xmf3Variation.z = 0;
 
 }
 

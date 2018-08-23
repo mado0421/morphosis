@@ -113,8 +113,8 @@ void CCamera::SetViewportsAndScissorRects(ID3D12GraphicsCommandList *pd3dCommand
 CFollowCamera::CFollowCamera() : CCamera()
 {
 	SetTimeLag(0.1f);
-	SetOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));	// 플레이어 시점 높이에 따라 정할 필요 있음
-											// 이 부분은 나중에 봐야되니까 적어두자
+	SetOffset(XMFLOAT3(0.0f, 40.0f, -100.0f));	// 플레이어 시점 높이에 따라 정할 필요 있음
+												// 이 부분은 나중에 봐야되니까 적어두자
 	GenerateProjectionMatrix(1.01f, 5000.0f, ASPECT_RATIO, 60.0f);
 
 	SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
@@ -132,8 +132,7 @@ void CFollowCamera::SetTarget(void * target)
 	/*포지션을 정하고 오프셋을 주어 포지션을 변경 시킨 뒤에 LookAt을 하지 않으면 
 	눈의 위치와 바라보려는 곳이 겹치면서 바라보는 방향 벡터가 (0, 0, 0)이 되기 때문에
 	문제가 생김*/
-	SetPosition(pos);
-	SetOffset(XMFLOAT3(0.0f, 40.0f, -100.0f));
+//	SetPosition(pos);
 	SetLookAt(pos);
 }
 
@@ -142,37 +141,71 @@ CObject * CFollowCamera::GetTarget()
 	return m_pTarget;
 }
 
-void CFollowCamera::Update(XMFLOAT3 & xmf3LookAt, float fTimeElapsed)
+void CFollowCamera::Update(float fTimeElapsed)
 {
 	if (m_pTarget)
 	{
-		XMFLOAT4X4 xmf4x4Rotate = Matrix4x4::Identity();
-		XMFLOAT3 xmf3Right = m_pTarget->GetRight();
-		XMFLOAT3 xmf3Up = m_pTarget->GetUp();
-		XMFLOAT3 xmf3Look = m_pTarget->GetLook();
-		//		printf("curLook is %f, %f, %f\n", xmf3Look.x, xmf3Look.y, xmf3Look.z);
+		/*
+		카메라가 현재 위치에서 타겟의 위치로 이동하게 하고 싶다.
+		현재 카메라의 위치를 정하는 방식은 카메라 위치 += 카메라 오프셋 값
+		따라서 카메라 위치에서 먼저 오프셋 값을 빼고 이동을 시킨 뒤 다시 오프셋 값을 더해야 함.
+		*/
+		m_xmf3Position.x -= m_xmf3Offset.x;
+		m_xmf3Position.y -= m_xmf3Offset.y;
+		m_xmf3Position.z -= m_xmf3Offset.z;
 
-		xmf4x4Rotate._11 = xmf3Right.x; xmf4x4Rotate._21 = xmf3Up.x; xmf4x4Rotate._31 = xmf3Look.x;
-		xmf4x4Rotate._12 = xmf3Right.y; xmf4x4Rotate._22 = xmf3Up.y; xmf4x4Rotate._32 = xmf3Look.y;
-		xmf4x4Rotate._13 = xmf3Right.z; xmf4x4Rotate._23 = xmf3Up.z; xmf4x4Rotate._33 = xmf3Look.z;
-
-		XMFLOAT3 xmf3Offset;
-		XMStoreFloat3(&xmf3Offset, XMVector3TransformCoord(XMLoadFloat3(&m_xmf3Offset), XMLoadFloat4x4(&xmf4x4Rotate)));
-		//XMFLOAT3 xmf3Offset = Vector3::TransformCoord(m_xmf3Offset, &XMLoadFloat4x4(&xmf4x4Rotate));
-
-		XMFLOAT3 xmf3Position = Vector3::Add(m_pTarget->GetPosition(), xmf3Offset);
-		XMFLOAT3 xmf3Direction = Vector3::Subtract(xmf3Position, m_xmf3Position);
-		float fLength = Vector3::Length(xmf3Direction);
-		xmf3Direction = Vector3::Normalize(xmf3Direction);
-		float fTimeLagScale = (m_fTimeLag) ? fTimeElapsed * (1.0f / m_fTimeLag) : 1.0f;
-		float fDistance = fLength * fTimeLagScale;
-		if (fDistance > fLength) fDistance = fLength;
-		if (fLength < 0.01f) fDistance = fLength;
-		if (fDistance > 0)
-		{
-			m_xmf3Position = Vector3::Add(m_xmf3Position, xmf3Direction, fDistance);
-			SetLookAt(xmf3LookAt);
+		/*먼저 회전말고 이동 먼저 해보자.*/
+		XMFLOAT3 targetPos = m_pTarget->GetPosition();
+		if (!IsZero(targetPos.x - m_xmf3Position.x)) {
+			/*일정 거리 이상이면 차이의 0.7배만큼, 일정 거리 이하면 그 값으로 대체*/
+			m_xmf3Position.x += (targetPos.x - m_xmf3Position.x) * 0.95 * fTimeElapsed;
+			if (fabs(m_xmf3Position.x - targetPos.x) < 0.2f) m_xmf3Position.x = targetPos.x;
 		}
+
+
+		if (!IsZero(targetPos.y - m_xmf3Position.y)) {
+			/*일정 거리 이상이면 차이의 0.7배만큼, 일정 거리 이하면 그 값으로 대체*/
+			m_xmf3Position.y += (targetPos.y - m_xmf3Position.y) * 0.95 * fTimeElapsed;
+			if (fabs(m_xmf3Position.y - targetPos.y) < 0.2f) m_xmf3Position.y = targetPos.y;
+		}
+
+		if (!IsZero(targetPos.z - m_xmf3Position.z)) {
+			/*일정 거리 이상이면 차이의 0.7배만큼, 일정 거리 이하면 그 값으로 대체*/
+			m_xmf3Position.z += (targetPos.z - m_xmf3Position.z) * 0.95 * fTimeElapsed;
+			if (fabs(m_xmf3Position.z - targetPos.z) < 0.2f) m_xmf3Position.z = targetPos.z;
+		}
+		targetPos = m_xmf3Position;
+
+		m_xmf3Position.x += m_xmf3Offset.x;
+		m_xmf3Position.y += m_xmf3Offset.y;
+		m_xmf3Position.z += m_xmf3Offset.z;
+
+		SetLookAt(targetPos);
+
+		//XMFLOAT4X4 xmf4x4Rotate = Matrix4x4::Identity();
+		//XMFLOAT3 xmf3Right = m_pTarget->GetRight();
+		//XMFLOAT3 xmf3Up = m_pTarget->GetUp();
+		//XMFLOAT3 xmf3Look = m_pTarget->GetLook();
+		////		printf("curLook is %f, %f, %f\n", xmf3Look.x, xmf3Look.y, xmf3Look.z);
+		//xmf4x4Rotate._11 = xmf3Right.x; xmf4x4Rotate._21 = xmf3Up.x; xmf4x4Rotate._31 = xmf3Look.x;
+		//xmf4x4Rotate._12 = xmf3Right.y; xmf4x4Rotate._22 = xmf3Up.y; xmf4x4Rotate._32 = xmf3Look.y;
+		//xmf4x4Rotate._13 = xmf3Right.z; xmf4x4Rotate._23 = xmf3Up.z; xmf4x4Rotate._33 = xmf3Look.z;
+		//XMFLOAT3 xmf3Offset;
+		//XMStoreFloat3(&xmf3Offset, XMVector3TransformCoord(XMLoadFloat3(&m_xmf3Offset), XMLoadFloat4x4(&xmf4x4Rotate)));
+		////XMFLOAT3 xmf3Offset = Vector3::TransformCoord(m_xmf3Offset, &XMLoadFloat4x4(&xmf4x4Rotate));
+		//XMFLOAT3 xmf3Position = Vector3::Add(m_pTarget->GetPosition(), xmf3Offset);
+		//XMFLOAT3 xmf3Direction = Vector3::Subtract(xmf3Position, m_xmf3Position);
+		//float fLength = Vector3::Length(xmf3Direction);
+		//xmf3Direction = Vector3::Normalize(xmf3Direction);
+		//float fTimeLagScale = (m_fTimeLag) ? fTimeElapsed * (1.0f / m_fTimeLag) : 1.0f;
+		//float fDistance = fLength * fTimeLagScale;
+		//if (fDistance > fLength) fDistance = fLength;
+		//if (fLength < 0.01f) fDistance = fLength;
+		//if (fDistance > 0)
+		//{
+		//	m_xmf3Position = Vector3::Add(m_xmf3Position, xmf3Direction, fDistance);
+		//	SetLookAt(xmf3LookAt);
+		//}
 	}
 }
 

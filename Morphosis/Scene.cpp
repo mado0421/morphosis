@@ -472,7 +472,7 @@ void CPlayScene::Update(float fTimeElapsed)
 	//가만히 있는 오브젝트를 갱신을 해줘야 할까? 저는 아니라고 생각합니다.
 	//for (int i = 0; i < m_nObjects; i++) m_ppObjects[i]->Update(fTimeElapsed);
 	for (int i = 0; i < m_nMovingObjects; i++) m_ppMovingObjects[i]->Update(fTimeElapsed);
-
+	m_pCamera->Update(fTimeElapsed);
 }
 
 void CPlayScene::ProcessInput(UCHAR * pKeysBuffer)
