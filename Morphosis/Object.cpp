@@ -107,22 +107,27 @@ XMFLOAT3 CObject::GetRight()
 
 void CMovingObject::Update(float fTimeElapsed)
 {
-
-	XMMATRIX temp = DirectX::XMLoadFloat4x4(&m_xmf4x4World);
-	XMMATRIX rotateXAxis = DirectX::XMMatrixRotationAxis(DirectX::XMLoadFloat3(&GetRight()), DirectX::XMConvertToRadians(m_xmf3RotateAngle.x * fTimeElapsed));
-	XMMATRIX rotateYAxis = DirectX::XMMatrixRotationAxis(DirectX::XMLoadFloat3(&GetUp()), DirectX::XMConvertToRadians(m_xmf3RotateAngle.y * fTimeElapsed));
-	XMMATRIX rotateZAxis = DirectX::XMMatrixRotationAxis(DirectX::XMLoadFloat3(&GetLook()), DirectX::XMConvertToRadians(m_xmf3RotateAngle.z * fTimeElapsed));
-	rotateYAxis = DirectX::XMMatrixMultiply(rotateYAxis, rotateZAxis);
-	rotateXAxis = DirectX::XMMatrixMultiply(rotateXAxis, rotateYAxis);
-	temp = DirectX::XMMatrixMultiply(temp, rotateXAxis);
-	DirectX::XMStoreFloat4x4(&m_xmf4x4World, temp);
-
-	m_xmf3RotateAngle.x = m_xmf3RotateAngle.y = m_xmf3RotateAngle.z = 0;
-
 	m_xmf4x4World._41 += m_xmf3Variation.x * fTimeElapsed * m_fSpeed;
 	m_xmf4x4World._42 += m_xmf3Variation.y * fTimeElapsed * m_fSpeed;
 	m_xmf4x4World._43 += m_xmf3Variation.z * fTimeElapsed * m_fSpeed;
 
+	XMFLOAT3 xmf3Right = XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
+	XMFLOAT3 xmf3Up = XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
+	XMFLOAT3 xmf3Look = XMFLOAT3(m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33);
+
+	XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(m_xmf3RotateAngle.y * fTimeElapsed));
+	xmf3Look = Vector3::TransformNormal(xmf3Look, xmmtxRotate);
+	xmf3Right = Vector3::TransformNormal(xmf3Right, xmmtxRotate);
+
+	xmf3Look = Vector3::Normalize(xmf3Look);
+	xmf3Right = Vector3::CrossProduct(xmf3Up, xmf3Look, true);
+	xmf3Up = Vector3::CrossProduct(xmf3Look, xmf3Right, true);
+
+	m_xmf4x4World._11 = xmf3Right.x;	m_xmf4x4World._12 = xmf3Right.y;	m_xmf4x4World._13 = xmf3Right.z;
+	m_xmf4x4World._21 = xmf3Up.x;		m_xmf4x4World._22 = xmf3Up.y;		m_xmf4x4World._23 = xmf3Up.z;
+	m_xmf4x4World._31 = xmf3Look.x;		m_xmf4x4World._32 = xmf3Look.y;		m_xmf4x4World._33 = xmf3Look.z;
+
+	m_xmf3RotateAngle.x = m_xmf3RotateAngle.y = m_xmf3RotateAngle.z = 0;
 	m_xmf3Variation.x = m_xmf3Variation.y = m_xmf3Variation.z = 0;
 
 }

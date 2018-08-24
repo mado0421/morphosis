@@ -421,6 +421,7 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 		pObj->SetPosition(50.0f * 0, 0.0f, 0.0f);
 		pObj->SetMaterial(m_ppMaterial[0]);
 		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * (m_nObjects));
+		pObj->AddRotateAngle(XMFLOAT3(0.0f, 45.0f, 0.0f));
 		m_ppMovingObjects[0] = pObj;
 	}
 

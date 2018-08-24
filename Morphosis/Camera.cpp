@@ -150,6 +150,27 @@ void CFollowCamera::Update(float fTimeElapsed)
 		현재 카메라의 위치를 정하는 방식은 카메라 위치 += 카메라 오프셋 값
 		따라서 카메라 위치에서 먼저 오프셋 값을 빼고 이동을 시킨 뒤 다시 오프셋 값을 더해야 함.
 		*/
+
+		/*
+		카메라가 보는 방향을 회전시키려면 타겟의 룩 벡터와 카메라가 보는 방향의 룩 벡터를 구한 뒤
+		내적을 하여 사잇각을 구하고 외적을 하여 회전 방향까지 구한 뒤에 돌리면 됨
+		*/
+		//XMFLOAT3 targetLook = m_pTarget->GetLook();
+		//XMVECTOR temp = XMLoadFloat3(&targetLook);
+		//XMVECTOR temp2 = XMLoadFloat3(&m_xmf3Look);
+		//XMFLOAT3 result;
+		//XMStoreFloat3(&result, XMVector2AngleBetweenVectors(temp2, temp));
+		//result.x
+		//float fInnerAngle = Vector3::Angle(m_xmf3Look, targetLook);
+		//
+		//if (Vector3::CrossProduct(m_xmf3Look, targetLook, false).y > 0) {
+		//	Vector3::Rotate()
+		//	fInnerAngle * 5 * fTimeElapsed;
+		//}
+		//else {
+
+		//}
+
 		m_xmf3Position.x -= m_xmf3Offset.x;
 		m_xmf3Position.y -= m_xmf3Offset.y;
 		m_xmf3Position.z -= m_xmf3Offset.z;
@@ -158,20 +179,19 @@ void CFollowCamera::Update(float fTimeElapsed)
 		XMFLOAT3 targetPos = m_pTarget->GetPosition();
 		if (!IsZero(targetPos.x - m_xmf3Position.x)) {
 			/*일정 거리 이상이면 차이의 0.7배만큼, 일정 거리 이하면 그 값으로 대체*/
-			m_xmf3Position.x += (targetPos.x - m_xmf3Position.x) * 0.95 * fTimeElapsed;
+			m_xmf3Position.x += (targetPos.x - m_xmf3Position.x) * CAM_MOVE_SPEED * fTimeElapsed;
 			if (fabs(m_xmf3Position.x - targetPos.x) < 0.2f) m_xmf3Position.x = targetPos.x;
 		}
 
-
 		if (!IsZero(targetPos.y - m_xmf3Position.y)) {
 			/*일정 거리 이상이면 차이의 0.7배만큼, 일정 거리 이하면 그 값으로 대체*/
-			m_xmf3Position.y += (targetPos.y - m_xmf3Position.y) * 0.95 * fTimeElapsed;
+			m_xmf3Position.y += (targetPos.y - m_xmf3Position.y) * CAM_MOVE_SPEED * fTimeElapsed;
 			if (fabs(m_xmf3Position.y - targetPos.y) < 0.2f) m_xmf3Position.y = targetPos.y;
 		}
 
 		if (!IsZero(targetPos.z - m_xmf3Position.z)) {
 			/*일정 거리 이상이면 차이의 0.7배만큼, 일정 거리 이하면 그 값으로 대체*/
-			m_xmf3Position.z += (targetPos.z - m_xmf3Position.z) * 0.95 * fTimeElapsed;
+			m_xmf3Position.z += (targetPos.z - m_xmf3Position.z) * CAM_MOVE_SPEED * fTimeElapsed;
 			if (fabs(m_xmf3Position.z - targetPos.z) < 0.2f) m_xmf3Position.z = targetPos.z;
 		}
 		targetPos = m_xmf3Position;
