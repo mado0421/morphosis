@@ -390,6 +390,7 @@ public:
 
 	void UseDeformer();
 	void SetBoneHierarchy();
+	void MergeCurveNode();
 
 	inline XMFLOAT4X4 Transpose(XMFLOAT4X4& xmmtx4x4Matrix);
 };

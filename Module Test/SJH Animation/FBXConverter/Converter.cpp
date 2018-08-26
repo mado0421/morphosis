@@ -71,6 +71,8 @@ void Converter::ReadFile(FBX_DATA format, const char * fileName)
 	ConnectMesh();
 	SetBoneHierarchy();
 
+	MergeCurveNode();
+
 
 	if (format == FBX_DATA::Mesh)
 	{
@@ -1195,6 +1197,24 @@ void Converter::SetBoneHierarchy()
 				c->parentIdx = p - m_vBone.begin();
 			}
 		}
+	}
+}
+void Converter::MergeCurveNode()
+{
+	auto p = m_vNode.begin();
+	while (p != m_vNode.end())
+	{
+		auto next = p + 1;
+		if (next != m_vNode.end())
+		{
+			if(p->bone_index==next->bone_index)
+			{
+				p->rotation = next->rotation;
+				m_vNode.erase(next);
+			}
+			++p;
+		}
+		else break;
 	}
 }
 inline XMFLOAT4X4 Converter::Transpose(XMFLOAT4X4 & xmmtx4x4Matrix)

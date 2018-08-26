@@ -107,16 +107,14 @@ void AnimationController::Update(float fElapsedTime ,ID3D12GraphicsCommandList *
 		if (paIdx != -1) pBone[i].toParent = pBone[paIdx].matrix;
 		else pBone[i].toParent = Identity();
 
-		pBone[i].offset = Inverse(m_pBone[i].offset);
-
 		pBone[i].matrix = Identity();
+		pBone[i].offset = m_pBone[i].offset;
 
 		pBone[i].matrix = Multiply(pBone[i].matrix, res_matrix[i]);
 
-		pBone[i].matrix = Multiply(pBone[i].matrix, pBone[i].offset);
+		//pBone[i].matrix = Multiply(pBone[i].matrix, pBone[i].offset);
 		pBone[i].matrix = Multiply(pBone[i].matrix, pBone[i].toParent);
 
-		pBone[i].offset = m_pBone[i].offset;
 	}
 
 
@@ -132,6 +130,12 @@ void AnimationController::Update(float fElapsedTime ,ID3D12GraphicsCommandList *
 void AnimationController::AnimaionUpdate()
 {
 	//	Find current and pred Curve Node to make vector4
+	for (int i = 0; i < m_nBone; ++i)
+		res_matrix[i] = Identity();
+
+	AllocConsole();
+	freopen("CONOUT$", "wt", stdout);
+
 	for (int i = 0; i < m_nCurveNode; ++i)
 	{
 		XMFLOAT3 trans = XMFLOAT3();
@@ -141,9 +145,9 @@ void AnimationController::AnimaionUpdate()
 		//int nScale = m_pCurveNode->nScale;
 		cv::Keyframe*	pTrans = m_pCurveNode[i].pTranslation;
 		cv::Keyframe*	pRotat = m_pCurveNode[i].pRotation;
+		printf("CurveNode [ %d ]\n", m_pCurveNode[i].bone_index);
 
-
-		if (0 < nTrans)
+		if (1 < nTrans)
 		{
 			for (int fi = 0; fi < nTrans; ++fi)
 			{
@@ -165,18 +169,33 @@ void AnimationController::AnimaionUpdate()
 				*/
 				else
 				{
-					float t = (pTrans[fi].timePos - local_time) /
-						(pTrans[fi].timePos - pTrans[fi - 1].timePos);
-					trans.x = t * pTrans[fi - 1].value.x + (1 - t)*pTrans[fi].value.x;
-					trans.y = t * pTrans[fi - 1].value.y + (1 - t)*pTrans[fi].value.y;
-					trans.z = t * pTrans[fi - 1].value.z + (1 - t)*pTrans[fi].value.z;
-					break;
-				}
+					if (fi != 0)
+					{
 
+						float t = (pTrans[fi].timePos - local_time) /
+							(pTrans[fi].timePos - pTrans[fi - 1].timePos);
+						trans.x = t * pTrans[fi - 1].value.x + (1 - t)*pTrans[fi].value.x;
+						trans.y = t * pTrans[fi - 1].value.y + (1 - t)*pTrans[fi].value.y;
+						trans.z = t * pTrans[fi - 1].value.z + (1 - t)*pTrans[fi].value.z;
+						break;
+					}
+					else
+					{
+						trans.x = pTrans[0].value.x;
+						trans.y = pTrans[0].value.y;
+						trans.z = pTrans[0].value.z;
+					}
+				}
 			}
 		}
+		else if (1 == nTrans)
+		{
+			trans.x = pTrans[0].value.x;
+			trans.y = pTrans[0].value.y;
+			trans.z = pTrans[0].value.z;
+		}
 
-		if (0 < nRotate)
+		if (1 < nRotate)
 		{
 			for (int fi = 0; fi < nRotate; ++fi)
 			{
@@ -186,32 +205,66 @@ void AnimationController::AnimaionUpdate()
 						rotate.x = pRotat[0].value.x;
 						rotate.y = pRotat[0].value.y;
 						rotate.z = pRotat[0].value.z;
+						printf("rv0		(%f, %f, %f)\n", pRotat[0].value.x, pRotat[0].value.y, pRotat[0].value.z);
 						break;
 					}
 				}
 				else
 				{
-					float t = (pRotat[fi].timePos - local_time) /
-						(pRotat[fi].timePos - pRotat[fi - 1].timePos);
-					rotate.x = t * pRotat[fi - 1].value.x + (1 - t)*pRotat[fi].value.x;
-					rotate.y = t * pRotat[fi - 1].value.y + (1 - t)*pRotat[fi].value.y;
-					rotate.z = t * pRotat[fi - 1].value.z + (1 - t)*pRotat[fi].value.z;
-					break;
+					if (fi != 0)
+					{
+						float t = (pRotat[fi].timePos - local_time) /
+							(pRotat[fi].timePos - pRotat[fi - 1].timePos);
+						rotate.x = t * pRotat[fi - 1].value.x + (1 - t)*pRotat[fi].value.x;
+						rotate.y = t * pRotat[fi - 1].value.y + (1 - t)*pRotat[fi].value.y;
+						rotate.z = t * pRotat[fi - 1].value.z + (1 - t)*pRotat[fi].value.z;
+						printf("t	%f		", t);
+						printf("rv0		(%f, %f, %f)	", pRotat[fi - 1].value.x, pRotat[fi - 1].value.y, pRotat[fi - 1].value.z);
+						printf("rv1		(%f, %f, %f)	\n", pRotat[fi].value.x, pRotat[fi].value.y, pRotat[fi].value.z);
+						break;
+					}
+					else
+					{
+						rotate.x = pRotat[0].value.x;
+						rotate.y = pRotat[0].value.y;
+						rotate.z = pRotat[0].value.z;
+						printf("rv0		(%f, %f, %f)\n", pRotat[0].value.x, pRotat[0].value.y, pRotat[0].value.z);
+						break;
+					}
 				}
 			}
+		}
+		else if (1 == nRotate)
+		{
+			rotate.x = pRotat[0].value.x;
+			rotate.y = pRotat[0].value.y;
+			rotate.z = pRotat[0].value.z;
+
+			printf("rv0		(%f, %f, %f)", pRotat[0].value.x, pRotat[0].value.y, pRotat[0].value.z);
 		}
 
 		XMFLOAT3 Scaling{ 1,1,1 };
 		XMFLOAT4 zero{ 0,0,0 ,1 };
-		if (fabsf(trans.x) < FLT_MIN)trans.x = 0;
-		if (fabsf(trans.y) < FLT_MIN)trans.y = 0;
-		if (fabsf(trans.z) < FLT_MIN)trans.z = 0;
+		CheckEpsilon(trans);
+		CheckEpsilon(rotate);
 
-		if (fabsf(rotate.x) < FLT_MIN)rotate.x = 0;
-		if (fabsf(rotate.y) < FLT_MIN)rotate.y = 0;
-		if (fabsf(rotate.z) < FLT_MIN)rotate.z = 0;
+		/*printf("Trans  (%f,	%f,	%f)		", trans.x, trans.y, trans.z);
+		printf("/	Rotate  (%f, %f, %f\n\n", rotate.x, rotate.y, rotate.z);*/
+		printf("/	Rotate  (%f, %f, %f\n\n", rotate.x, rotate.y, rotate.z);
+		rotate.x *= 3.14159265358979323846 / 180.0f;
+		rotate.y *= 3.14159265358979323846 / 180.0f;
+		rotate.z *= 3.14159265358979323846 / 180.0f;
 
-		res_matrix[i] = AffineTransformation(Scaling, zero, rotate, trans);
+		res_matrix[m_pCurveNode[i].bone_index] = AffineTransformation(Scaling, zero, rotate, trans);
+
+		/*if (m_pCurveNode[i].bone_index == 3)
+		{
+			if (CheckNan(res_matrix[3]))
+			{
+				printf("trans %d %d %d\n", trans.x, trans.y, trans.z);
+				printf("rotate %d %d %d\n", rotate.x, rotate.y, rotate.z);
+			}
+		}*/
 	}
  }
 
@@ -266,6 +319,29 @@ inline XMFLOAT4X4 AnimationController::Inverse(XMFLOAT4X4 & matrix)
 	XMStoreFloat4x4(&result,
 		XMMatrixInverse(&XMMatrixDeterminant(XMLoadFloat4x4(&matrix)), XMLoadFloat4x4(&matrix)));
 	return result;
+}
+
+inline void AnimationController::CheckEpsilon(XMFLOAT3 & v)
+{
+	if (fabsf(v.x) < FLT_MIN)v.x = 0;
+	if (fabsf(v.y) < FLT_MIN)v.y = 0;
+	if (fabsf(v.z) < FLT_MIN)v.z = 0;
+}
+
+bool AnimationController::CheckNan(XMFLOAT4X4 & matrix)
+{
+	for (int i = 0; i < 4; ++i)
+	{
+		for (int j = 0; j < 4; ++j)
+		{
+			if (_isnan(matrix.m[i][j]))
+			{
+				printf("Error Nan\n");
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 /*

@@ -276,10 +276,7 @@ VS_OUTPUT VSData(VS_INTPUT input, uint nVertexID : SV_VertexID)
 
 			//res_pos += weight * mul(pos, b.offset);
 
-			//res_pos += weight * mul(mul(b.offset, pos), b.m);
-
-			//res_pos += weight * pos;
-			//res_pos += weight * mul(pos,b.offset);
+			//res_pos += weight * mul(pos, b.m);
 		}
 	}
 	pos = res_pos;

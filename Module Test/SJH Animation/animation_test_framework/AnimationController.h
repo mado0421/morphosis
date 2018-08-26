@@ -3,7 +3,6 @@
 #include<vector>
 #include<iostream>
 
-
 struct Bone
 {
 	XMFLOAT4X4 toParent;
@@ -82,6 +81,12 @@ public:
 	inline XMFLOAT4X4 Multiply(XMFLOAT4X4& xmmtx4x4Matrix1, XMFLOAT4X4& xmmtx4x4Matrix2);
 
 	inline XMFLOAT4X4 Inverse(XMFLOAT4X4& matrix);
+
+	inline void CheckEpsilon(XMFLOAT3& v);
+
+	//	Test
+
+	bool CheckNan(XMFLOAT4X4& matrix);
 };
 
 
