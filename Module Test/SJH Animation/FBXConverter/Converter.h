@@ -393,5 +393,7 @@ public:
 	void MergeCurveNode();
 
 	inline XMFLOAT4X4 Transpose(XMFLOAT4X4& xmmtx4x4Matrix);
+	inline XMFLOAT4X4 Identity();
+
 };
 

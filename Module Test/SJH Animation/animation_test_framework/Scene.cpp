@@ -147,8 +147,8 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	m_pModelObject2->SetPosition(0, 30, 30);
 
 	
-	//BoxWithThreeBones_0	char_run_test
-	pFbxDataManager->FBXFileRead("BoxWithThreeBones_0");
+	//BoxWithThreeBones_0	char_run_test	char_jump_test
+	pFbxDataManager->FBXFileRead("char_jump_test");
 	pFbxDataManager->SetTextureName("BODY");
 
 	ac = new AnimationController;

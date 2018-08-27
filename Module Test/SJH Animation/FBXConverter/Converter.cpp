@@ -975,6 +975,10 @@ void Converter::FindBone()
 }
 void Converter::SetBindPose()
 {
+	for (auto& d : m_vBone)
+	{
+		d.offset = Identity();
+	}
 	for (const auto& de : m_vDeformer)
 	{
 		int idx = de.boneIdx;
@@ -1221,6 +1225,13 @@ inline XMFLOAT4X4 Converter::Transpose(XMFLOAT4X4 & xmmtx4x4Matrix)
 {
 	XMFLOAT4X4 xmmtx4x4Result;
 	XMStoreFloat4x4(&xmmtx4x4Result, XMMatrixTranspose(XMLoadFloat4x4(&xmmtx4x4Matrix)));
+	return(xmmtx4x4Result);
+}
+
+inline XMFLOAT4X4 Converter::Identity()
+{
+	XMFLOAT4X4 xmmtx4x4Result;
+	XMStoreFloat4x4(&xmmtx4x4Result, XMMatrixIdentity());
 	return(xmmtx4x4Result);
 }
 /*

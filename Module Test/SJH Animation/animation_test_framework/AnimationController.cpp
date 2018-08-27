@@ -158,9 +158,9 @@ void AnimationController::AnimaionUpdate()
 						현재 시간이 마지막 keyFrame의 Timepos보다 크지만
 						EndTime이 아닐때의 처리
 						*/
-						trans.x = pTrans[0].value.x;
-						trans.y = pTrans[0].value.y;
-						trans.z = pTrans[0].value.z;
+						trans.x = pTrans[nTrans - 1].value.x;
+						trans.y = pTrans[nTrans - 1].value.y;
+						trans.z = pTrans[nTrans - 1].value.z;
 						break;
 					}
 				}
@@ -202,9 +202,9 @@ void AnimationController::AnimaionUpdate()
 				if (local_time >= pRotat[fi].timePos) {
 					if (fi < nRotate - 1)continue;
 					else {
-						rotate.x = pRotat[0].value.x;
-						rotate.y = pRotat[0].value.y;
-						rotate.z = pRotat[0].value.z;
+						rotate.x = pRotat[nRotate - 1].value.x;
+						rotate.y = pRotat[nRotate - 1].value.y;
+						rotate.z = pRotat[nRotate - 1].value.z;
 						printf("rv0		(%f, %f, %f)\n", pRotat[0].value.x, pRotat[0].value.y, pRotat[0].value.z);
 						break;
 					}
