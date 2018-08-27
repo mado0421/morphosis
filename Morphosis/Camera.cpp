@@ -154,26 +154,63 @@ void CFollowCamera::Update(float fTimeElapsed)
 		/*
 		카메라가 보는 방향을 회전시키려면 타겟의 룩 벡터와 카메라가 보는 방향의 룩 벡터를 구한 뒤
 		내적을 하여 사잇각을 구하고 외적을 하여 회전 방향까지 구한 뒤에 돌리면 됨
+
+		y축 기준으로 각만 재서 그걸로 회전시키자
+		x축도 해야하네 z축은 할 필요 없음
+
 		*/
-		//XMFLOAT3 targetLook = m_pTarget->GetLook();
-		//XMVECTOR temp = XMLoadFloat3(&targetLook);
-		//XMVECTOR temp2 = XMLoadFloat3(&m_xmf3Look);
-		//XMFLOAT3 result;
-		//XMStoreFloat3(&result, XMVector2AngleBetweenVectors(temp2, temp));
-		//result.x
-		//float fInnerAngle = Vector3::Angle(m_xmf3Look, targetLook);
-		//
-		//if (Vector3::CrossProduct(m_xmf3Look, targetLook, false).y > 0) {
-		//	Vector3::Rotate()
-		//	fInnerAngle * 5 * fTimeElapsed;
-		//}
-		//else {
-
-		//}
-
 		m_xmf3Position.x -= m_xmf3Offset.x;
 		m_xmf3Position.y -= m_xmf3Offset.y;
 		m_xmf3Position.z -= m_xmf3Offset.z;
+
+		XMFLOAT3 targetLook = m_pTarget->GetLook();
+		XMFLOAT3 targetRight = m_pTarget->GetRight();
+		XMFLOAT3 targetUp = m_pTarget->GetUp();
+		XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+
+		XMFLOAT3 a = Vector3::CrossProduct(up, targetLook);
+		XMFLOAT3 b = Vector3::CrossProduct(up, m_xmf3Look);
+
+		XMFLOAT3 A = XMFLOAT3(7, 3, -2);
+
+		XMVECTOR AA = XMLoadFloat3(&a);
+		XMVECTOR BB = XMLoadFloat3(&b);
+
+		XMStoreFloat3(&A, XMVector3Cross(AA, BB));
+
+		if (A.y < 0) {
+			printf("right\n");
+
+		}
+		else
+		{
+			printf("left\n");
+			targetUp = Vector3::ScalarProduct(targetUp, -1);
+		}
+
+
+
+		XMVECTOR tempTargetLook = XMLoadFloat3(&a);
+		XMVECTOR temp = XMLoadFloat3(&b);
+		XMStoreFloat3(&a, XMVector3AngleBetweenNormals(tempTargetLook, temp));
+		float fInnerAngle = a.x;
+
+//		if (Vector3::CrossProduct(targetLook, temp).y < 0) fInnerAngle *= -1;
+		XMMATRIX xmmtxRotate;
+		xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&targetUp), fInnerAngle * fTimeElapsed * CAM_ROTATE_SPEED);
+
+		if (fabs(fInnerAngle) >= 0.05) {
+
+
+			m_xmf3Look = Vector3::TransformNormal(m_xmf3Look, xmmtxRotate);
+			m_xmf3Right = Vector3::TransformNormal(m_xmf3Right, xmmtxRotate);
+			m_xmf3Offset = Vector3::TransformNormal(m_xmf3Offset, xmmtxRotate);
+		}
+		else
+		{
+			m_xmf3Look = targetLook;
+			m_xmf3Right = targetRight;
+		}
 
 		/*먼저 회전말고 이동 먼저 해보자.*/
 		XMFLOAT3 targetPos = m_pTarget->GetPosition();
