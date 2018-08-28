@@ -142,6 +142,8 @@ protected:
 	CMaterial						**m_ppMaterial = NULL;
 	int								m_nMaterial = 0;
 
+	POINT							m_ptOldCursorPos;
+
 	//======================================
 	// 테스트 용도
 	CTexturedPSO			*TPSO	= NULL;

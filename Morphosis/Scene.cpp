@@ -167,6 +167,7 @@ CGroundScene::~CGroundScene()
 
 void CGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext)
 {
+	GetCursorPos(&m_ptOldCursorPos);
 }
 
 void CGroundScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
@@ -335,6 +336,8 @@ CPlayScene::~CPlayScene()
 #define PO_PER_PLAYER 16
 void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext)
 {
+	CGroundScene::Initialize(pd3dDevice, pd3dCommandList, pContext);
+
 	m_pd3dDevice = pd3dDevice;
 	m_pd3dCommandList = pd3dCommandList;
 
@@ -429,7 +432,7 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 		pObj->Initialize();
 		pObj->SetTeam(i % 2);
 
-		//pObj->AddRotateAngle(XMFLOAT3(0.0f, 45.0f, 0.0f));
+		pObj->AddRotateAngle(XMFLOAT3(0.0f, 90.0f * i, 0.0f));
 		m_ppPlayers[i] = pObj;
 	}
 	for (int i = 0; i < m_nProjectileObjects; i++) {
@@ -492,15 +495,25 @@ void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 void CPlayScene::Update(float fTimeElapsed)
 {
 	//가만히 있는 오브젝트를 갱신을 해줘야 할까? 저는 아니라고 생각합니다.
-	//for (int i = 0; i < m_nObjects; i++) m_ppObjects[i]->Update(fTimeElapsed);
 	for (int i = 0; i < m_nPlayers; i++) if (!m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->Update(fTimeElapsed);
 	for (int i = 0; i < m_nProjectileObjects; i++) if (!m_ppProjectileObjects[i]->IsDead()) m_ppProjectileObjects[i]->Update(fTimeElapsed);
 
 	m_pCamera->Update(fTimeElapsed);
 }
 
+#define MOUSE_XSPEED 20
 void CPlayScene::ProcessInput(UCHAR * pKeysBuffer)
 {
+	float cxDelta = 0.0f, cyDelta = 0.0f;
+	POINT ptCursorPos;
+
+	GetCursorPos(&ptCursorPos);
+	cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
+	cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
+	SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
+
+	if (cxDelta) m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, cxDelta * MOUSE_XSPEED, 0 });
+
 	XMFLOAT3 xmf3temp;
 	if (pKeysBuffer[KEY::W] & 0xF0) { m_ppPlayers[0]->AddPosVariation(m_ppPlayers[0]->GetLook()); }
 	if (pKeysBuffer[KEY::A] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetRight(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -1)); }
