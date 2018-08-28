@@ -379,6 +379,7 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 
 	// 메쉬만드는 곳
 	CTestMesh *pTestMesh = new CTestMesh(pd3dDevice, pd3dCommandList);
+	CTestMesh *pTestMesh2 = new CTestMesh(pd3dDevice, pd3dCommandList, 5);
 	CModelMesh *pTestModelMesh = new CModelMesh(pd3dDevice, pd3dCommandList, "Assets/Models/character_2_com4");
 
 	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
@@ -424,20 +425,32 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	/*여기가 움직이는 모델*/
 	for (int i = 0; i < m_nPlayers; i++) {
 		CPlayerObject *pObj = new CPlayerObject();
+
+		XMFLOAT3 pos = XMFLOAT3(20.0f * i, 0.0f, 100.0f * i);
+		XMFLOAT3 extents = XMFLOAT3(20.0f, 20.0f, 20.0f);			//반지름 아니고 지름임
+		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
+
 		pObj->SetMesh(0, pTestModelMesh);
-		pObj->SetPosition(20.0f * i, 0.0f, 100.0f * i);
+		pObj->SetPosition(pos);
 		pObj->SetMaterial(m_ppMaterial[1]);
 		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * ((m_nObjects) + i));
 
 		pObj->Initialize();
 		pObj->SetTeam(i % 2);
 
+		pObj->SetOOBB(pos, extents, orientation);
+
 		pObj->AddRotateAngle(XMFLOAT3(0.0f, 90.0f * i, 0.0f));
 		m_ppPlayers[i] = pObj;
 	}
 	for (int i = 0; i < m_nProjectileObjects; i++) {
 		CProjectileObject *pObj = new CProjectileObject();
-		pObj->SetMesh(0, pTestMesh);
+
+		XMFLOAT3 pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		XMFLOAT3 extents = XMFLOAT3(5.0f, 5.0f, 5.0f);			//반지름 아니고 지름임
+		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
+
+		pObj->SetMesh(0, pTestMesh2);
 		pObj->SetPosition(0.0f, 0.0f, 0.0f);
 		pObj->SetMaterial(m_ppMaterial[0]);
 		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * ((m_nObjects + m_nPlayers) + i));
@@ -445,6 +458,8 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 		pObj->Initialize();
 		pObj->SetTeam((i % PO_PER_PLAYER) % 2);
 		pObj->m_alive = false;
+
+		pObj->SetOOBB(pos, extents, orientation);
 
 		m_ppProjectileObjects[i] = pObj;
 	}
@@ -481,14 +496,20 @@ void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppPlayers[i]->m_xmf4x4World)));
 	}
 
+	for (int i = 0; i < m_nProjectileObjects; i++)
+	{
+		CB_OBJECT_INFO *pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pcbMappedGameObjects + ((i + m_nObjects + m_nPlayers) * ncbElementBytes));
+		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppProjectileObjects[i]->m_xmf4x4World)));
+	}
+
 //	if (m_pMaterial) m_pMaterial->UpdateShaderVariables(pd3dCommandList);
 
 	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::MODEL]);
-	for (int i = 0; i < m_nPlayers; i++) m_ppPlayers[i]->Render(pd3dCommandList, m_pCamera);
+	for (int i = 0; i < m_nPlayers; i++) if (!m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->Render(pd3dCommandList, m_pCamera);
 
 	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::ILLUMINATEDTEXTURE]);
-	for (int i = 0; i < m_nObjects; i++) m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
-	for(int i = 0 ; i < m_nProjectileObjects; i++) if(!m_ppProjectileObjects[i]->IsDead()) m_ppProjectileObjects[i]->Render(pd3dCommandList, m_pCamera);
+	for (int i = 0; i < m_nObjects; ++i) m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
+	for(int i = 0 ; i < m_nProjectileObjects; ++i) if(!m_ppProjectileObjects[i]->IsDead()) m_ppProjectileObjects[i]->Render(pd3dCommandList, m_pCamera);
 
 }
 
@@ -498,21 +519,32 @@ void CPlayScene::Update(float fTimeElapsed)
 	for (int i = 0; i < m_nPlayers; i++) if (!m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->Update(fTimeElapsed);
 	for (int i = 0; i < m_nProjectileObjects; i++) if (!m_ppProjectileObjects[i]->IsDead()) m_ppProjectileObjects[i]->Update(fTimeElapsed);
 
+	for (int i = 0; i < m_nPlayers; i++)
+		if (!m_ppPlayers[i]->IsDead())
+			for(int j = 0; j < m_nProjectileObjects; ++j)
+				if(m_ppPlayers[i]->m_team != m_ppProjectileObjects[j]->m_team)
+					if(!m_ppProjectileObjects[j]->IsDead())
+						if (m_ppPlayers[i]->IsCollide(m_ppProjectileObjects[j]->m_collisionBox)) {
+							m_ppProjectileObjects[j]->m_alive = false;
+							m_ppPlayers[i]->Damaged(10);
+							break;
+						}
+
 	m_pCamera->Update(fTimeElapsed);
 }
 
 #define MOUSE_XSPEED 20
 void CPlayScene::ProcessInput(UCHAR * pKeysBuffer)
 {
-	float cxDelta = 0.0f, cyDelta = 0.0f;
-	POINT ptCursorPos;
+	//float cxDelta = 0.0f, cyDelta = 0.0f;
+	//POINT ptCursorPos;
 
-	GetCursorPos(&ptCursorPos);
-	cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
-	cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
-	SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
+	//GetCursorPos(&ptCursorPos);
+	//cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
+	//cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
+	//SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 
-	if (cxDelta) m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, cxDelta * MOUSE_XSPEED, 0 });
+	//if (cxDelta) m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, cxDelta * MOUSE_XSPEED, 0 });
 
 	XMFLOAT3 xmf3temp;
 	if (pKeysBuffer[KEY::W] & 0xF0) { m_ppPlayers[0]->AddPosVariation(m_ppPlayers[0]->GetLook()); }
@@ -529,6 +561,23 @@ void CPlayScene::ProcessInput(UCHAR * pKeysBuffer)
 	if (pKeysBuffer[KEY::_2] & 0xF0)
 		if (m_pCamera->GetTarget() != m_ppPlayers[1])
 			m_pCamera->SetTarget(m_ppPlayers[1]);
+
+	if (pKeysBuffer[VK_LBUTTON] & 0xF0) { 
+		//attack
+
+		if (m_ppPlayers[0]->IsFireable()) {
+			m_ppPlayers[0]->Attack();
+			for (int i = 0; i < PO_PER_PLAYER; ++i) {
+				if (!m_ppProjectileObjects[(m_nPlayers * 0) + i]->m_alive) {
+					m_ppProjectileObjects[(m_nPlayers * 0) + i]->m_alive = true;
+					m_ppProjectileObjects[(m_nPlayers * 0) + i]->Initialize(m_ppPlayers[0]);
+					printf("fire");
+					break;
+				}
+			}
+		}
+	}
+
 
 	/*for Test*/
 	if (pKeysBuffer[VK_SPACE] & 0xF0) {

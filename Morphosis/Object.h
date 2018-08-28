@@ -52,15 +52,26 @@ public:
 	XMFLOAT3 GetUp();
 	XMFLOAT3 GetRight();
 
+	void SetLook(XMFLOAT3 look);
+	void SetUp(XMFLOAT3 up);
+	void SetRight(XMFLOAT3 right);
+
 
 };
 
 class CCollideObejct : public CObject
 {
-protected:
+public:
 	BoundingOrientedBox				m_collisionBox;
 
-
+	BoundingOrientedBox GetOOBB() { return m_collisionBox; }
+	void SetOOBB(XMFLOAT3& xmCenter, XMFLOAT3& xmExtents, XMFLOAT4& xmOrientation)
+	{
+		m_collisionBox = BoundingOrientedBox(xmCenter, xmExtents, xmOrientation);
+	}
+	bool IsCollide(const BoundingOrientedBox& other) {
+		return m_collisionBox.Intersects(other);
+	}
 };
 
 class CMovingObject : public CCollideObejct
@@ -69,15 +80,21 @@ public:
 	XMFLOAT3						m_xmf3Variation;
 	XMFLOAT3						m_xmf3RotateAngle;
 	float							m_fSpeed = 100.0f;
+	float							m_fGAcceleration = 0;
 
 public:
 	virtual void Update(float fTimeElapsed);
 
 	void AddPosVariation(XMFLOAT3 xmf3Velocity);
 	void AddRotateAngle(XMFLOAT3 xmf3Angle);
+
+	/*
+	충돌체크
+	*/
+	bool IsOnGround() { return true; }
 };
 
-#define TIMER_ATT 0.8
+#define TIMER_ATT 0.05
 #define TIMER_RESPANW 5
 class CPlayerObject : public CMovingObject
 {
@@ -97,7 +114,7 @@ public:
 	void SetTeam(bool team) { m_team = team; }
 
 	bool IsDead() { return m_hp <= 0; }
-	bool IsFireable() { return m_attTimer <= 0; }
+	bool IsFireable() { return (m_attTimer <= 0) && !IsDead(); }
 };
 
 class CProjectileObject : public CMovingObject
@@ -105,9 +122,11 @@ class CProjectileObject : public CMovingObject
 public:
 	bool m_team = 0;
 	bool m_alive = false;
+	float m_fLifeTime = 1.0f;
 
 public:
 	virtual void Initialize();
+	virtual void Initialize(CMovingObject *user);
 	virtual void Update(float fTimeElapsed);
 
 	void SetTeam(bool team) { m_team = team; }
