@@ -12,6 +12,11 @@ CObject::~CObject()
 {
 }
 
+void CObject::Initialize()
+{
+
+}
+
 //void CObject::UpdateShaderVariables(ID3D12GraphicsCommandList * pd3dCommandList)
 //{
 //	XMStoreFloat4x4(&m_pcbMappedObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_xmf4x4World)));
@@ -105,24 +110,57 @@ XMFLOAT3 CObject::GetRight()
 	return Vector3::Normalize(vector);
 }
 
+void CObject::SetLook(XMFLOAT3 look)
+{
+	m_xmf4x4World._31 = look.x;
+	m_xmf4x4World._32 = look.y;
+	m_xmf4x4World._33 = look.z;
+}
+
+void CObject::SetUp(XMFLOAT3 up)
+{
+	m_xmf4x4World._21 = up.x;
+	m_xmf4x4World._22 = up.y;
+	m_xmf4x4World._23 = up.z;
+}
+
+void CObject::SetRight(XMFLOAT3 right)
+{
+	m_xmf4x4World._11 = right.x;
+	m_xmf4x4World._12 = right.y;
+	m_xmf4x4World._13 = right.z;
+}
+
 void CMovingObject::Update(float fTimeElapsed)
 {
 	m_xmf4x4World._41 += m_xmf3Variation.x * fTimeElapsed * m_fSpeed;
-	m_xmf4x4World._42 += m_xmf3Variation.y * fTimeElapsed * m_fSpeed;
+	m_xmf4x4World._42 += m_xmf3Variation.y * fTimeElapsed * m_fSpeed + m_fGAcceleration * fTimeElapsed;
 	m_xmf4x4World._43 += m_xmf3Variation.z * fTimeElapsed * m_fSpeed;
 
-	m_xmf3Variation.x = m_xmf3Variation.y = m_xmf3Variation.z = 0;
+	if (!IsOnGround()) m_fGAcceleration += fTimeElapsed * 9.8;
 
-	XMMATRIX temp = DirectX::XMLoadFloat4x4(&m_xmf4x4World);
-	XMMATRIX rotateXAxis = DirectX::XMMatrixRotationAxis(XMVECTOR{ 1, 0, 0 }, DirectX::XMConvertToRadians(m_xmf3RotateAngle.x * fTimeElapsed));
-	XMMATRIX rotateYAxis = DirectX::XMMatrixRotationAxis(XMVECTOR{ 0, 1, 0 }, DirectX::XMConvertToRadians(m_xmf3RotateAngle.y * fTimeElapsed));
-	XMMATRIX rotateZAxis = DirectX::XMMatrixRotationAxis(XMVECTOR{ 0, 0, 1 }, DirectX::XMConvertToRadians(m_xmf3RotateAngle.z * fTimeElapsed));
-	rotateYAxis = DirectX::XMMatrixMultiply(rotateYAxis, rotateZAxis);
-	rotateXAxis = DirectX::XMMatrixMultiply(rotateXAxis, rotateYAxis);
-	temp = DirectX::XMMatrixMultiply(temp, rotateXAxis);
-	DirectX::XMStoreFloat4x4(&m_xmf4x4World, temp);
+	XMFLOAT3 xmf3Right = XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
+	XMFLOAT3 xmf3Up = XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
+	XMFLOAT3 xmf3Look = XMFLOAT3(m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33);
+
+	XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(m_xmf3RotateAngle.y * fTimeElapsed));
+	xmf3Look = Vector3::TransformNormal(xmf3Look, xmmtxRotate);
+	xmf3Right = Vector3::TransformNormal(xmf3Right, xmmtxRotate);
+
+	xmf3Look = Vector3::Normalize(xmf3Look);
+	xmf3Right = Vector3::CrossProduct(xmf3Up, xmf3Look, true);
+	xmf3Up = Vector3::CrossProduct(xmf3Look, xmf3Right, true);
+
+	m_xmf4x4World._11 = xmf3Right.x;	m_xmf4x4World._12 = xmf3Right.y;	m_xmf4x4World._13 = xmf3Right.z;
+	m_xmf4x4World._21 = xmf3Up.x;		m_xmf4x4World._22 = xmf3Up.y;		m_xmf4x4World._23 = xmf3Up.z;
+	m_xmf4x4World._31 = xmf3Look.x;		m_xmf4x4World._32 = xmf3Look.y;		m_xmf4x4World._33 = xmf3Look.z;
 
 	m_xmf3RotateAngle.x = m_xmf3RotateAngle.y = m_xmf3RotateAngle.z = 0;
+	m_xmf3Variation.x = m_xmf3Variation.y = m_xmf3Variation.z = 0;
+
+	XMFLOAT3 center = XMFLOAT3(m_xmf4x4World._41, m_xmf4x4World._42, m_xmf4x4World._43);
+	m_collisionBox.Center = center;
+	XMStoreFloat4(&m_collisionBox.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_collisionBox.Orientation)));
 
 
 }
@@ -141,4 +179,73 @@ void CMovingObject::AddRotateAngle(XMFLOAT3 xmf3Angle)
 	m_xmf3RotateAngle.z += xmf3Angle.z;
 }
 
+void CPlayerObject::Initialize()
+{
+	CObject::Initialize();
+	m_hp = 100;
+}
 
+void CPlayerObject::Update(float fTimeElapsed)
+{
+	if (IsDead()) {
+		if (m_timer < 0) {
+			Initialize();
+			//Init
+			return;
+		}
+		m_timer -= fTimeElapsed;
+
+	}
+	else
+	{
+		CMovingObject::Update(fTimeElapsed);
+		if (!IsFireable()) m_attTimer -= fTimeElapsed;
+	}
+
+}
+
+void CPlayerObject::Attack()
+{
+	m_attTimer = TIMER_ATT;
+	//투사체 생성은 Scene 키입력 받을 때 해주자
+}
+
+void CPlayerObject::Damaged(int val)
+{
+	m_hp -= val;
+}
+
+void CProjectileObject::Initialize()
+{
+	CObject::Initialize();
+	m_fSpeed = 550;
+	m_fLifeTime = 1.0f;
+
+}
+
+void CProjectileObject::Initialize(CMovingObject *user)
+{
+	CProjectileObject::Initialize();
+	XMFLOAT3 pos = user->GetPosition();
+	pos.y += 30;
+	SetPosition(pos);
+	SetLook(user->GetLook());
+	SetUp(user->GetUp());
+	SetRight(user->GetRight());
+	m_collisionBox.Center = pos;
+
+}
+
+void CProjectileObject::Update(float fTimeElapsed)
+{
+	if (!IsDead())
+	{
+		CMovingObject::Update(fTimeElapsed);
+		m_xmf3Variation = GetLook();
+		m_fLifeTime -= fTimeElapsed;
+		if (m_fLifeTime <= 0) {
+			m_alive = false;
+		}
+	}
+
+}
