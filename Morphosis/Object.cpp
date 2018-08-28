@@ -12,6 +12,11 @@ CObject::~CObject()
 {
 }
 
+void CObject::Initialize()
+{
+
+}
+
 //void CObject::UpdateShaderVariables(ID3D12GraphicsCommandList * pd3dCommandList)
 //{
 //	XMStoreFloat4x4(&m_pcbMappedObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_xmf4x4World)));
@@ -146,4 +151,55 @@ void CMovingObject::AddRotateAngle(XMFLOAT3 xmf3Angle)
 	m_xmf3RotateAngle.z += xmf3Angle.z;
 }
 
+void CPlayerObject::Initialize()
+{
+	CObject::Initialize();
+	m_hp = 100;
+}
 
+void CPlayerObject::Update(float fTimeElapsed)
+{
+	if (IsDead()) {
+		if (m_timer < 0) {
+			Initialize();
+			//Init
+			return;
+		}
+		m_timer -= fTimeElapsed;
+
+	}
+	else
+	{
+		CMovingObject::Update(fTimeElapsed);
+		if (!IsFireable()) m_attTimer -= fTimeElapsed;
+	}
+
+}
+
+void CPlayerObject::Attack()
+{
+	m_attTimer = TIMER_ATT;
+	//투사체 생성은 Scene 키입력 받을 때 해주자
+}
+
+void CPlayerObject::Damaged(int val)
+{
+	m_hp -= val;
+}
+
+void CProjectileObject::Initialize()
+{
+	CObject::Initialize();
+	m_fSpeed = 50;
+}
+
+void CProjectileObject::Update(float fTimeElapsed)
+{
+	if (!IsDead())
+	{
+		CMovingObject::Update(fTimeElapsed);
+		m_xmf3Variation = GetLook();
+
+	}
+
+}

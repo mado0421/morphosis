@@ -29,6 +29,8 @@ public:
 	~CObject();
 
 public:
+	virtual void Initialize();
+
 	void SetCbvGPUDescriptorHandle(D3D12_GPU_DESCRIPTOR_HANDLE d3dCbvGPUDescriptorHandle) { m_d3dCbvGPUDescriptorHandle = d3dCbvGPUDescriptorHandle; }
 	void SetCbvGPUDescriptorHandlePtr(UINT64 nCbvGPUDescriptorHandlePtr) { m_d3dCbvGPUDescriptorHandle.ptr = nCbvGPUDescriptorHandlePtr; }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetCbvGPUDescriptorHandle() { return(m_d3dCbvGPUDescriptorHandle); }
@@ -73,6 +75,43 @@ public:
 
 	void AddPosVariation(XMFLOAT3 xmf3Velocity);
 	void AddRotateAngle(XMFLOAT3 xmf3Angle);
+};
+
+#define TIMER_ATT 0.8
+#define TIMER_RESPANW 5
+class CPlayerObject : public CMovingObject
+{
+public:
+	short m_hp = 100;
+	float m_timer = 0;
+	float m_attTimer = 0;
+	bool m_team = 0;
+
+public:
+	virtual void Initialize();
+	virtual void Update(float fTimeElapsed);
+
+	void Attack();
+	void Damaged(int val);
+
+	void SetTeam(bool team) { m_team = team; }
+
+	bool IsDead() { return m_hp <= 0; }
+	bool IsFireable() { return m_attTimer <= 0; }
+};
+
+class CProjectileObject : public CMovingObject
+{
+public:
+	bool m_team = 0;
+	bool m_alive = false;
+
+public:
+	virtual void Initialize();
+	virtual void Update(float fTimeElapsed);
+
+	void SetTeam(bool team) { m_team = team; }
+	bool IsDead() { return !m_alive; }
 };
 
 class CDefaultUI : public CObject

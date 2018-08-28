@@ -181,11 +181,14 @@ class CGroundScene : public CScene
 protected:
 	/////////////////////////////////////////////////////////////
 	// 테스트용으로 만든 Object 변수들
-	CObject			**m_ppObjects	= NULL;
-	int				m_nObjects		= 0;
+	CObject				**m_ppObjects			= NULL;
+	int					m_nObjects				= 0;
 
-	CMovingObject	**m_ppMovingObjects = NULL;
-	int				m_nMovingObjects	= 0;
+	CPlayerObject		**m_ppPlayers			= NULL;
+	int					m_nPlayers				= 0;
+
+	CProjectileObject	**m_ppProjectileObjects = NULL;
+	int					m_nProjectileObjects	= 0;
 	/////////////////////////////////////////////////////////////
 
 

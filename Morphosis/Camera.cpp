@@ -179,12 +179,12 @@ void CFollowCamera::Update(float fTimeElapsed)
 		XMStoreFloat3(&A, XMVector3Cross(AA, BB));
 
 		if (A.y < 0) {
-			printf("right\n");
+//			printf("right\n");
 
 		}
 		else
 		{
-			printf("left\n");
+//			printf("left\n");
 			targetUp = Vector3::ScalarProduct(targetUp, -1);
 		}
 
