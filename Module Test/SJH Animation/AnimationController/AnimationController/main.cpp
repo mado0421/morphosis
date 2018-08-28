@@ -81,7 +81,7 @@ void TestAffineTransFormation()
 int main()
 {
 	bool res;
-	res = fbxmanager.FBXFileRead("BoxWithThreeBones_0");
+	res = fbxmanager.FBXFileRead("char_run_test");
 	
 
 	float local_time=0;

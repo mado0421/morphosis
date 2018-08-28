@@ -180,9 +180,10 @@ void AnimationController::BoneUpdate(ID3D12GraphicsCommandList *pd3dCommandList)
 			first local transformation in local coordinate
 			second transfrom coordinate into parent's
 		*/
-		pBone[i].matrix = res_matrix[i];
-		pBone[i].matrix = Multiply(pBone[i].matrix, pBone[i].toParent);
-		pBone[i].matrix = Transpose(res_matrix[i]);
+		/*pBone[i].matrix = res_matrix[i];
+		pBone[i].matrix = Multiply(pBone[i].matrix, pBone[i].toParent);*/
+		pBone[i].matrix = Identity();
+		pBone[i].matrix = Transpose(pBone[i].matrix);
 	}
 	
 	//	Resource µî·Ï
@@ -224,6 +225,15 @@ inline XMFLOAT4X4 AnimationController::Multiply(XMFLOAT4X4& xmmtx4x4Matrix1, XMF
 	XMFLOAT4X4 xmmtx4x4Result;
 	XMStoreFloat4x4(&xmmtx4x4Result, XMLoadFloat4x4(&xmmtx4x4Matrix1) * XMLoadFloat4x4(&xmmtx4x4Matrix2));
 	return(xmmtx4x4Result);
+}
+
+inline XMFLOAT4X4 AnimationController::Inverse(XMFLOAT4X4 & matrix)
+{
+	XMFLOAT4X4 result;
+	
+	XMStoreFloat4x4(&result,
+		XMMatrixInverse(&XMMatrixDeterminant(XMLoadFloat4x4(&matrix)), XMLoadFloat4x4(&matrix)));
+	return result;
 }
 
 /*
