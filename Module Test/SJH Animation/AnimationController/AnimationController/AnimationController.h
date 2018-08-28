@@ -76,6 +76,8 @@ public:
 	inline XMFLOAT4X4 Identity();
 	
 	inline XMFLOAT4X4 Multiply(XMFLOAT4X4& xmmtx4x4Matrix1, XMFLOAT4X4& xmmtx4x4Matrix2);
+
+	inline XMFLOAT4X4 Inverse(XMFLOAT4X4& matrix);
 };
 
 

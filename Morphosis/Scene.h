@@ -139,7 +139,8 @@ protected:
 
 	CCamera							*m_pCamera = NULL;
 
-	CMaterial						*m_pMaterial = NULL;
+	CMaterial						**m_ppMaterial = NULL;
+	int								m_nMaterial = 0;
 
 	//======================================
 	// 테스트 용도
@@ -180,8 +181,11 @@ class CGroundScene : public CScene
 protected:
 	/////////////////////////////////////////////////////////////
 	// 테스트용으로 만든 Object 변수들
-	CObject		**m_ppObjects	= NULL;
-	int			m_nObjects		= 0;
+	CObject			**m_ppObjects	= NULL;
+	int				m_nObjects		= 0;
+
+	CMovingObject	**m_ppMovingObjects = NULL;
+	int				m_nMovingObjects	= 0;
 	/////////////////////////////////////////////////////////////
 
 

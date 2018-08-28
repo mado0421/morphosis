@@ -76,6 +76,7 @@ struct Deformer
 	__int64					deformerIdx;
 	int						boneIdx;//	array index
 	std::vector<WeightInfo> weight;
+	XMFLOAT4X4				transform;
 };
 
 struct Vertex
@@ -267,6 +268,19 @@ inline float3	getFloat3(char ** ppCh)
 	pass(ppCh, " ,\n\t");
 	return tempFloat3;
 }
+inline XMFLOAT4X4 GetFloat4x4(char ** ppch)
+{
+	XMFLOAT4X4 res;
+	for (int i = 0; i < 4; ++i)
+	{
+		for (int j = 0; j < 4; ++j)
+		{
+			res.m[j][i] = getFloat(ppch);
+			pass(ppch, " ,\n\t");
+		}
+	}
+	return res;
+}
 
 enum class FBX_DATA { Mesh, FBX, Anim };
 
@@ -376,6 +390,10 @@ public:
 
 	void UseDeformer();
 	void SetBoneHierarchy();
+	void MergeCurveNode();
+
+	inline XMFLOAT4X4 Transpose(XMFLOAT4X4& xmmtx4x4Matrix);
+	inline XMFLOAT4X4 Identity();
 
 };
 
