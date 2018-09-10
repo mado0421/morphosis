@@ -221,10 +221,10 @@ void CGroundScene::CreateConstantBufferViews(ID3D12Device * pd3dDevice, ID3D12Gr
 	}
 }
 
-void CGroundScene::CreateShaderVariables(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
+void CGroundScene::CreateShaderVariables(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, int nConstantBufferViews)
 {
 	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255); //256의 배수
-	m_pd3dcbObjects = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes * (m_nObjects + m_nPlayers + m_nProjectileObjects), D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	m_pd3dcbObjects = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes * nConstantBufferViews, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
 
 	m_pd3dcbObjects->Map(0, NULL, (void **)&m_pcbMappedGameObjects);
 }
@@ -350,6 +350,12 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	m_nProjectileObjects = m_nPlayers * PO_PER_PLAYER;
 	m_ppProjectileObjects = new CProjectileObject*[m_nProjectileObjects];
 
+//	m_nDebugObjects = 0;
+	m_nDebugObjects = m_nObjects + m_nPlayers + m_nProjectileObjects;
+	m_ppDebugObjects = new CObject*[m_nDebugObjects];
+
+	int nObjects = m_nObjects + m_nPlayers + m_nProjectileObjects + m_nDebugObjects;
+
 	// Camera 초기화
 	m_pCamera = new CFollowCamera();
 	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
@@ -362,20 +368,21 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	m_nPipelineStates = PSO::count;
 	m_ppPipelineStates = new ID3D12PipelineState*[m_nPipelineStates];
 
+	m_ppCPSOs = new CPSO*[m_nPipelineStates];
+	m_ppCPSOs[PSO::TEXTURE] = new CTexturedPSO();
+	m_ppCPSOs[PSO::ILLUMINATEDTEXTURE] = new CTexturedIlluminatedPSO();
+	m_ppCPSOs[PSO::MODEL] = new CModelPSO();
+	m_ppCPSOs[PSO::DEBUG] = new CDebugPSO();
 
-	// 이거 나중에 제대로 관리해야 할 것 같음
-	// 작업일지에 적어두고 이후 수정하기
-	TPSO = new CTexturedPSO();
-	TLPSO = new CTexturedIlluminatedPSO();
-	MPSO = new CModelPSO();
+	m_ppCPSOs[PSO::TEXTURE]->Initialize(pd3dDevice, m_pd3dGraphicsRootSignature);
+	m_ppCPSOs[PSO::ILLUMINATEDTEXTURE]->Initialize(pd3dDevice, m_pd3dGraphicsRootSignature);
+	m_ppCPSOs[PSO::MODEL]->Initialize(pd3dDevice, m_pd3dGraphicsRootSignature);
+	m_ppCPSOs[PSO::DEBUG]->Initialize(pd3dDevice, m_pd3dGraphicsRootSignature);
 
-	TPSO->Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
-	TLPSO->Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
-	MPSO->Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
-
-	m_ppPipelineStates[PSO::TEXTURE] = TPSO->GetPipelineState();
-	m_ppPipelineStates[PSO::ILLUMINATEDTEXTURE] = TLPSO->GetPipelineState();
-	m_ppPipelineStates[PSO::MODEL] = MPSO->GetPipelineState();
+	m_ppPipelineStates[PSO::TEXTURE] = m_ppCPSOs[PSO::TEXTURE]->GetPipelineState();
+	m_ppPipelineStates[PSO::ILLUMINATEDTEXTURE] = m_ppCPSOs[PSO::ILLUMINATEDTEXTURE]->GetPipelineState();
+	m_ppPipelineStates[PSO::MODEL] = m_ppCPSOs[PSO::MODEL]->GetPipelineState();
+	m_ppPipelineStates[PSO::DEBUG] = m_ppCPSOs[PSO::DEBUG]->GetPipelineState();
 
 	// 메쉬만드는 곳
 	CTestMesh *pTestMesh = new CTestMesh(pd3dDevice, pd3dCommandList);
@@ -383,9 +390,9 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	CModelMesh *pTestModelMesh = new CModelMesh(pd3dDevice, pd3dCommandList, "Assets/Models/character_2_com4");
 
 	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
-	CreateCbvAndSrvDescriptorHeaps(m_pd3dDevice, m_pd3dCommandList, m_nObjects + m_nPlayers + m_nProjectileObjects, 1);
-	CreateShaderVariables(m_pd3dDevice, m_pd3dCommandList);
-	CreateConstantBufferViews(m_pd3dDevice, m_pd3dCommandList, m_nObjects + m_nPlayers + m_nProjectileObjects, m_pd3dcbObjects, ncbElementBytes);
+	CreateCbvAndSrvDescriptorHeaps(m_pd3dDevice, m_pd3dCommandList, nObjects, 1);
+	CreateShaderVariables(m_pd3dDevice, m_pd3dCommandList, nObjects);
+	CreateConstantBufferViews(m_pd3dDevice, m_pd3dCommandList, nObjects, m_pd3dcbObjects, ncbElementBytes);
 
 	// 마테리얼에 텍스처 등록하는 곳
 	m_nMaterial = 2;
@@ -398,23 +405,21 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 		mat->SetReflection(1);
 		m_ppMaterial[0] = mat;
 		CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, pTexture, RootParameter::TEXTURE, false);
-
 	}
 	{
 		CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
 		pTexture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/character_2_diff_test3.dds", 0);
 		CMaterial *mat = new CMaterial();
-
 		mat->SetTexture(pTexture);
 		mat->SetReflection(1);
 		m_ppMaterial[1] = mat;
 		CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, pTexture, RootParameter::TEXTURE, false);
-
 	}
 
 	/*여기가 박스 모델*/
 	for(int i = 0; i < m_nObjects; i++) {
 		CObject *pObj = new CObject();
+
 		pObj->SetMesh(0, pTestMesh);
 		pObj->SetPosition(25.0f * (i + 1), 0.0f, 0.0f);
 		pObj->SetMaterial(m_ppMaterial[0]);
@@ -437,12 +442,11 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 
 		pObj->Initialize();
 		pObj->SetTeam(i % 2);
-
 		pObj->SetOOBB(pos, extents, orientation);
-
 		pObj->AddRotateAngle(XMFLOAT3(0.0f, 90.0f * i, 0.0f));
 		m_ppPlayers[i] = pObj;
 	}
+
 	for (int i = 0; i < m_nProjectileObjects; i++) {
 		CProjectileObject *pObj = new CProjectileObject();
 
@@ -464,6 +468,21 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 		m_ppProjectileObjects[i] = pObj;
 	}
 
+	/*여기가 디버그 모델*/
+	for (int i = 0; i < m_nDebugObjects; i++) {
+		CObject *pObj = new CObject();
+		CTestMesh *pDebugMesh;
+		if (i < m_nObjects) pDebugMesh = new CTestMesh(pd3dDevice, pd3dCommandList, 10.5);
+		else if (i < m_nObjects + m_nPlayers) pDebugMesh = new CTestMesh(pd3dDevice, pd3dCommandList, 20.5);
+		else pDebugMesh = new CTestMesh(pd3dDevice, pd3dCommandList, 5.5);
+
+		pObj->SetMesh(0, pDebugMesh);
+		pObj->SetPosition(0.0f, 0.0f, 0.0f);
+		pObj->SetMaterial(m_ppMaterial[0]);
+		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * ((m_nObjects + m_nPlayers + m_nProjectileObjects) + i));
+		m_ppDebugObjects[i] = pObj;
+	}
+
 	// 처음 따라갈 캐릭터 정해주기
 	m_pCamera->SetTarget(m_ppPlayers[0]);
 
@@ -474,7 +493,6 @@ void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 	//문제였었던 부분 칙쇼~~~~~~~~
 	pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
 
-//	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::ILLUMINATEDTEXTURE]);
 	pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);
 
 	// HLSL에 넣어줄 카메라 정보 갱신부분
@@ -487,7 +505,6 @@ void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 	{
 		CB_OBJECT_INFO *pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pcbMappedGameObjects + (i * ncbElementBytes));
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppObjects[i]->m_xmf4x4World)));
-//		if (m_pMaterial) pbMappedcbObject->m_nMaterialIndex = m_pMaterial->m_nReflection;
 	}
 
 	for (int i = 0; i < m_nPlayers; i++)
@@ -502,14 +519,23 @@ void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppProjectileObjects[i]->m_xmf4x4World)));
 	}
 
-//	if (m_pMaterial) m_pMaterial->UpdateShaderVariables(pd3dCommandList);
+	for (int i = 0; i < m_nDebugObjects; i++)
+	{
+		CB_OBJECT_INFO *pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pcbMappedGameObjects + (((m_nObjects + m_nPlayers + m_nProjectileObjects) + i) * ncbElementBytes));
+		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppDebugObjects[i]->m_xmf4x4World)));
+	}
+
+	//if (m_pMaterial) m_pMaterial->UpdateShaderVariables(pd3dCommandList);
 
 	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::MODEL]);
 	for (int i = 0; i < m_nPlayers; i++) if (!m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->Render(pd3dCommandList, m_pCamera);
 
 	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::ILLUMINATEDTEXTURE]);
 	for (int i = 0; i < m_nObjects; ++i) m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
-	for(int i = 0 ; i < m_nProjectileObjects; ++i) if(!m_ppProjectileObjects[i]->IsDead()) m_ppProjectileObjects[i]->Render(pd3dCommandList, m_pCamera);
+	for (int i = 0 ; i < m_nProjectileObjects; ++i) if(!m_ppProjectileObjects[i]->IsDead()) m_ppProjectileObjects[i]->Render(pd3dCommandList, m_pCamera);
+
+	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::DEBUG]);
+	for (int i = 0; i < m_nDebugObjects; ++i) m_ppDebugObjects[i]->Render(pd3dCommandList, m_pCamera);
 
 }
 
@@ -529,6 +555,11 @@ void CPlayScene::Update(float fTimeElapsed)
 							m_ppPlayers[i]->Damaged(10);
 							break;
 						}
+	for (int i = 0; i < m_nDebugObjects; i++) {
+		if (i < m_nObjects) { m_ppDebugObjects[i]->SetPosition(m_ppObjects[i]->GetPosition()); }
+		else if (i < m_nObjects + m_nPlayers) {m_ppDebugObjects[i]->SetPosition(m_ppPlayers[i - m_nObjects]->GetOOBB().Center);}
+		else { m_ppDebugObjects[i]->SetPosition(m_ppProjectileObjects[i - m_nObjects - m_nPlayers]->GetOOBB().Center); }
+	}
 
 	m_pCamera->Update(fTimeElapsed);
 }
@@ -536,15 +567,15 @@ void CPlayScene::Update(float fTimeElapsed)
 #define MOUSE_XSPEED 20
 void CPlayScene::ProcessInput(UCHAR * pKeysBuffer)
 {
-	//float cxDelta = 0.0f, cyDelta = 0.0f;
-	//POINT ptCursorPos;
+	float cxDelta = 0.0f, cyDelta = 0.0f;
+	POINT ptCursorPos;
 
-	//GetCursorPos(&ptCursorPos);
-	//cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
-	//cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
-	//SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
+	GetCursorPos(&ptCursorPos);
+	cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
+	cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
+//	SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 
-	//if (cxDelta) m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, cxDelta * MOUSE_XSPEED, 0 });
+	if (cxDelta) m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, cxDelta * MOUSE_XSPEED, 0 });
 
 	XMFLOAT3 xmf3temp;
 	if (pKeysBuffer[KEY::W] & 0xF0) { m_ppPlayers[0]->AddPosVariation(m_ppPlayers[0]->GetLook()); }
@@ -748,7 +779,7 @@ void CScene::CreateCbvAndSrvDescriptorHeaps(ID3D12Device * pd3dDevice, ID3D12Gra
 
 }
 
-void CScene::CreateShaderVariables(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
+void CScene::CreateShaderVariables(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, int nConstantBufferViews)
 {
 
 
@@ -806,7 +837,7 @@ D3D12_RASTERIZER_DESC CPSO::CreateRasterizerState()
 	D3D12_RASTERIZER_DESC d3dRasterizerDesc;
 	::ZeroMemory(&d3dRasterizerDesc, sizeof(D3D12_RASTERIZER_DESC));
 	d3dRasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
-	d3dRasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;
+	d3dRasterizerDesc.CullMode = D3D12_CULL_MODE_BACK;
 	d3dRasterizerDesc.FrontCounterClockwise = FALSE;
 	d3dRasterizerDesc.DepthBias = 0;
 	d3dRasterizerDesc.DepthBiasClamp = 0.0f;
@@ -887,6 +918,10 @@ D3D12_SHADER_BYTECODE CPSO::CompileShaderFromFile(const WCHAR * pszFileName, LPC
 	ID3DBlob *pd3dErrorBlob = NULL;
 	HRESULT result = ::D3DCompileFromFile(pszFileName, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, pszShaderName, pszShaderProfile, nCompileFlags, 0, ppd3dShaderBlob, &pd3dErrorBlob);
 	//	assert(result == S_OK);
+	if (result != S_OK)
+	{
+		printf("aaa");
+	}
 	char *pErrorString = NULL;
 	if (pd3dErrorBlob)pErrorString = (char *)pd3dErrorBlob->GetBufferPointer();
 
@@ -994,4 +1029,48 @@ D3D12_SHADER_BYTECODE CModelPSO::CreatePixelShader(ID3DBlob ** ppd3dShaderBlob)
 {
 	return(CompileShaderFromFile(L"PixelShader.hlsl", "PSModel", "ps_5_1", ppd3dShaderBlob));
 
+}
+
+D3D12_INPUT_LAYOUT_DESC CDebugPSO::CreateInputLayout()
+{
+	UINT nInputElementDescs = 1;
+	D3D12_INPUT_ELEMENT_DESC *pd3dInputElementDescs = new D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
+
+	pd3dInputElementDescs[0] = { "POSITION", 0,	DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+
+	D3D12_INPUT_LAYOUT_DESC d3dInputLayoutDesc;
+	d3dInputLayoutDesc.pInputElementDescs = pd3dInputElementDescs;
+	d3dInputLayoutDesc.NumElements = nInputElementDescs;
+
+	return(d3dInputLayoutDesc);
+}
+
+D3D12_RASTERIZER_DESC CDebugPSO::CreateRasterizerState()
+{
+	D3D12_RASTERIZER_DESC d3dRasterizerDesc;
+	::ZeroMemory(&d3dRasterizerDesc, sizeof(D3D12_RASTERIZER_DESC));
+	d3dRasterizerDesc.FillMode = D3D12_FILL_MODE_WIREFRAME;
+	d3dRasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;
+	d3dRasterizerDesc.FrontCounterClockwise = FALSE;
+	d3dRasterizerDesc.DepthBias = 0;
+	d3dRasterizerDesc.DepthBiasClamp = 0.0f;
+	d3dRasterizerDesc.SlopeScaledDepthBias = 0.0f;
+	d3dRasterizerDesc.DepthClipEnable = TRUE;
+	d3dRasterizerDesc.MultisampleEnable = FALSE;
+	d3dRasterizerDesc.AntialiasedLineEnable = FALSE;
+	d3dRasterizerDesc.ForcedSampleCount = 0;
+	d3dRasterizerDesc.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
+
+	return(d3dRasterizerDesc);
+}
+
+
+D3D12_SHADER_BYTECODE CDebugPSO::CreateVertexShader(ID3DBlob ** ppd3dShaderBlob)
+{
+	return(CompileShaderFromFile(L"VertexShader.hlsl", "VSDebug", "vs_5_1", ppd3dShaderBlob));
+}
+
+D3D12_SHADER_BYTECODE CDebugPSO::CreatePixelShader(ID3DBlob ** ppd3dShaderBlob)
+{
+	return(CompileShaderFromFile(L"PixelShader.hlsl", "PSDebug", "ps_5_1", ppd3dShaderBlob));
 }

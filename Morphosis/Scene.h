@@ -45,6 +45,7 @@ namespace PSO {
 		TEXTURE=0,
 		ILLUMINATEDTEXTURE,
 		MODEL,
+		DEBUG,
 
 		count
 	};
@@ -106,6 +107,15 @@ public:
 
 };
 
+class CDebugPSO : public CPSO
+{
+public:
+	virtual D3D12_INPUT_LAYOUT_DESC		CreateInputLayout();
+	virtual D3D12_RASTERIZER_DESC		CreateRasterizerState();
+
+	virtual D3D12_SHADER_BYTECODE		CreateVertexShader(ID3DBlob **ppd3dShaderBlob);
+	virtual D3D12_SHADER_BYTECODE		CreatePixelShader(ID3DBlob **ppd3dShaderBlob);
+};
 
 
 // Scene 자체는 안 쓸 예정이니까 추상클래스로?
@@ -146,9 +156,7 @@ protected:
 
 	//======================================
 	// 테스트 용도
-	CTexturedPSO			*TPSO	= NULL;
-	CTexturedIlluminatedPSO *TLPSO	= NULL;
-	CModelPSO				*MPSO	= NULL;
+	CPSO **m_ppCPSOs	= NULL;
 
 public:
 	CScene();
@@ -171,7 +179,7 @@ public:
 	virtual void ReleaseObjectBuffers()=0;
 
 	virtual void CreateCbvAndSrvDescriptorHeaps(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int nConstantBufferViews, int nShaderResourceViews);
-	virtual void CreateShaderVariables(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList);
+	virtual void CreateShaderVariables(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, int nConstantBufferViews);
 	virtual void CreateConstantBufferViews(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int nConstantBufferViews, ID3D12Resource *pd3dConstantBuffers, UINT nStride);
 	virtual void CreateShaderResourceViews(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, CTexture *pTexture, UINT nRootParameterStartIndex, bool bAutoIncrement);
 
@@ -186,11 +194,16 @@ protected:
 	CObject				**m_ppObjects			= NULL;
 	int					m_nObjects				= 0;
 
+	CObject				**m_ppDebugObjects		= NULL;
+	int					m_nDebugObjects			= 0;
+
 	CPlayerObject		**m_ppPlayers			= NULL;
 	int					m_nPlayers				= 0;
 
 	CProjectileObject	**m_ppProjectileObjects = NULL;
 	int					m_nProjectileObjects	= 0;
+
+
 	/////////////////////////////////////////////////////////////
 
 
@@ -216,7 +229,7 @@ public:
 	virtual void ReleaseObjectBuffers();
 
 	virtual void CreateCbvAndSrvDescriptorHeaps(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int nConstantBufferViews, int nShaderResourceViews);
-	virtual void CreateShaderVariables(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList);
+	virtual void CreateShaderVariables(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, int nConstantBufferViews);
 	virtual void CreateConstantBufferViews(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int nConstantBufferViews, ID3D12Resource *pd3dConstantBuffers, UINT nStride);
 	virtual void CreateShaderResourceViews(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, CTexture *pTexture, UINT nRootParameterStartIndex, bool bAutoIncrement);
 

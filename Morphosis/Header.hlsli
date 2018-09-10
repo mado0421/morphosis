@@ -90,3 +90,12 @@ struct VS_MODEL_OUTPUT
 	float3 binormal : BINORMAL;
 	float3 tangent : TANGENT;
 };
+
+struct VS_DEBUG_INPUT
+{
+	float3 position : POSITION;
+};
+struct VS_DEBUG_OUTPUT
+{
+	float4 position : SV_POSITION;
+};

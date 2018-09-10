@@ -50,3 +50,13 @@ VS_MODEL_OUTPUT VSModel(VS_MODEL_INPUT input, uint nVertexID : SV_VertexID)
 
 	return(output);
 }
+
+VS_DEBUG_OUTPUT VSDebug(VS_DEBUG_INPUT input)
+{
+	VS_DEBUG_OUTPUT output;
+
+	float3 positionW = (float3)mul(float4(input.position, 1.0f), gmtxGameObject);
+	output.position = mul(mul(float4(positionW, 1.0f), gmtxView), gmtxProjection);
+
+	return(output);
+}
