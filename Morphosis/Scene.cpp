@@ -350,8 +350,8 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	m_nProjectileObjects = m_nPlayers * PO_PER_PLAYER;
 	m_ppProjectileObjects = new CProjectileObject*[m_nProjectileObjects];
 
-//	m_nDebugObjects = 0;
-	m_nDebugObjects = m_nObjects + m_nPlayers + m_nProjectileObjects;
+	m_nDebugObjects = 0;
+//	m_nDebugObjects = m_nObjects + m_nPlayers + m_nProjectileObjects;
 	m_ppDebugObjects = new CObject*[m_nDebugObjects];
 
 	int nObjects = m_nObjects + m_nPlayers + m_nProjectileObjects + m_nDebugObjects;
@@ -432,7 +432,7 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 		CPlayerObject *pObj = new CPlayerObject();
 
 		XMFLOAT3 pos = XMFLOAT3(20.0f * i, 0.0f, 100.0f * i);
-		XMFLOAT3 extents = XMFLOAT3(20.0f, 20.0f, 20.0f);			//반지름 아니고 지름임
+		XMFLOAT3 extents = XMFLOAT3(15.0f, 25.0f, 15.0f);			//반지름 아니고 지름임
 		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
 
 		pObj->SetMesh(0, pTestModelMesh);
@@ -442,6 +442,7 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 
 		pObj->Initialize();
 		pObj->SetTeam(i % 2);
+		pos.y += 30;
 		pObj->SetOOBB(pos, extents, orientation);
 		pObj->AddRotateAngle(XMFLOAT3(0.0f, 90.0f * i, 0.0f));
 		m_ppPlayers[i] = pObj;
@@ -460,7 +461,7 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * ((m_nObjects + m_nPlayers) + i));
 
 		pObj->Initialize();
-		pObj->SetTeam((i % PO_PER_PLAYER) % 2);
+		pObj->SetTeam((i / PO_PER_PLAYER) % 2);
 		pObj->m_alive = false;
 
 		pObj->SetOOBB(pos, extents, orientation);
@@ -468,20 +469,20 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 		m_ppProjectileObjects[i] = pObj;
 	}
 
-	/*여기가 디버그 모델*/
-	for (int i = 0; i < m_nDebugObjects; i++) {
-		CObject *pObj = new CObject();
-		CTestMesh *pDebugMesh;
-		if (i < m_nObjects) pDebugMesh = new CTestMesh(pd3dDevice, pd3dCommandList, 10.5);
-		else if (i < m_nObjects + m_nPlayers) pDebugMesh = new CTestMesh(pd3dDevice, pd3dCommandList, 20.5);
-		else pDebugMesh = new CTestMesh(pd3dDevice, pd3dCommandList, 5.5);
+	///*여기가 디버그 모델*/
+	//for (int i = 0; i < m_nDebugObjects; i++) {
+	//	CObject *pObj = new CObject();
+	//	CTestMesh *pDebugMesh;
+	//	if (i < m_nObjects) pDebugMesh = new CTestMesh(pd3dDevice, pd3dCommandList, 10.5);
+	//	else if (i < m_nObjects + m_nPlayers) pDebugMesh = new CTestMesh(pd3dDevice, pd3dCommandList, 20.5);
+	//	else pDebugMesh = new CTestMesh(pd3dDevice, pd3dCommandList, 5.5);
 
-		pObj->SetMesh(0, pDebugMesh);
-		pObj->SetPosition(0.0f, 0.0f, 0.0f);
-		pObj->SetMaterial(m_ppMaterial[0]);
-		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * ((m_nObjects + m_nPlayers + m_nProjectileObjects) + i));
-		m_ppDebugObjects[i] = pObj;
-	}
+	//	pObj->SetMesh(0, pDebugMesh);
+	//	pObj->SetPosition(0.0f, 0.0f, 0.0f);
+	//	pObj->SetMaterial(m_ppMaterial[0]);
+	//	pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * ((m_nObjects + m_nPlayers + m_nProjectileObjects) + i));
+	//	m_ppDebugObjects[i] = pObj;
+	//}
 
 	// 처음 따라갈 캐릭터 정해주기
 	m_pCamera->SetTarget(m_ppPlayers[0]);
@@ -534,8 +535,8 @@ void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 	for (int i = 0; i < m_nObjects; ++i) m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
 	for (int i = 0 ; i < m_nProjectileObjects; ++i) if(!m_ppProjectileObjects[i]->IsDead()) m_ppProjectileObjects[i]->Render(pd3dCommandList, m_pCamera);
 
-	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::DEBUG]);
-	for (int i = 0; i < m_nDebugObjects; ++i) m_ppDebugObjects[i]->Render(pd3dCommandList, m_pCamera);
+	//if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::DEBUG]);
+	//for (int i = 0; i < m_nDebugObjects; ++i) m_ppDebugObjects[i]->Render(pd3dCommandList, m_pCamera);
 
 }
 
@@ -551,15 +552,16 @@ void CPlayScene::Update(float fTimeElapsed)
 				if(m_ppPlayers[i]->m_team != m_ppProjectileObjects[j]->m_team)
 					if(!m_ppProjectileObjects[j]->IsDead())
 						if (m_ppPlayers[i]->IsCollide(m_ppProjectileObjects[j]->m_collisionBox)) {
+							printf("col");
 							m_ppProjectileObjects[j]->m_alive = false;
 							m_ppPlayers[i]->Damaged(10);
 							break;
 						}
-	for (int i = 0; i < m_nDebugObjects; i++) {
-		if (i < m_nObjects) { m_ppDebugObjects[i]->SetPosition(m_ppObjects[i]->GetPosition()); }
-		else if (i < m_nObjects + m_nPlayers) {m_ppDebugObjects[i]->SetPosition(m_ppPlayers[i - m_nObjects]->GetOOBB().Center);}
-		else { m_ppDebugObjects[i]->SetPosition(m_ppProjectileObjects[i - m_nObjects - m_nPlayers]->GetOOBB().Center); }
-	}
+	//for (int i = 0; i < m_nDebugObjects; i++) {
+	//	if (i < m_nObjects) { m_ppDebugObjects[i]->SetPosition(m_ppObjects[i]->GetPosition()); }
+	//	else if (i < m_nObjects + m_nPlayers) {m_ppDebugObjects[i]->SetPosition(m_ppPlayers[i - m_nObjects]->GetOOBB().Center);}
+	//	else { m_ppDebugObjects[i]->SetPosition(m_ppProjectileObjects[i - m_nObjects - m_nPlayers]->GetOOBB().Center); }
+	//}
 
 	m_pCamera->Update(fTimeElapsed);
 }
