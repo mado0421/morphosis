@@ -604,12 +604,12 @@ void CPlayScene::ProcessInput(UCHAR * pKeysBuffer)
 	//if (cxDelta) m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, cxDelta * MOUSE_XSPEED, 0 });
 
 	XMFLOAT3 xmf3temp;
-	if (pKeysBuffer[KEY::W] & 0xF0) { m_ppPlayers[0]->AddPosVariation(m_ppPlayers[0]->GetLook()); }
-	if (pKeysBuffer[KEY::A] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetRight(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -1)); }
-	if (pKeysBuffer[KEY::S] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetLook(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -1)); }
-	if (pKeysBuffer[KEY::D] & 0xF0) { m_ppPlayers[0]->AddPosVariation(m_ppPlayers[0]->GetRight()); }
-	if (pKeysBuffer[KEY::Q] & 0xF0) { m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, -40, 0 }); }
-	if (pKeysBuffer[KEY::E] & 0xF0) { m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, 40, 0 }); }
+	if (pKeysBuffer[KEY::W] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetLook(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, 2)); }
+	if (pKeysBuffer[KEY::A] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetRight(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -2)); }
+	if (pKeysBuffer[KEY::S] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetLook(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -2)); }
+	if (pKeysBuffer[KEY::D] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetRight(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, 2)); }
+	if (pKeysBuffer[KEY::Q] & 0xF0) { m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, -40*10, 0 }); }
+	if (pKeysBuffer[KEY::E] & 0xF0) { m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, 40*10, 0 }); }
 
 	if (pKeysBuffer[KEY::_1] & 0xF0)
 		if(m_pCamera->GetTarget() != m_ppPlayers[0])

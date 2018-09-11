@@ -78,7 +78,8 @@ bool CLevelData::FileRead(const char * fileName)
 	for (int i = 0; i < m_nSpawnPoints; ++i)
 	{
 		m_pSpawnPoints[i].x *= LEVELSIZE;
-		m_pSpawnPoints[i].y *= LEVELSIZE + 100;
+		m_pSpawnPoints[i].x += LEVELSIZE * 10;
+		m_pSpawnPoints[i].y *= LEVELSIZE + 10;
 		m_pSpawnPoints[i].z *= LEVELSIZE;
 	}
 
