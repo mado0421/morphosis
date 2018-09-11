@@ -644,7 +644,7 @@ void Converter::FindUV()
 			UV tempUV;
 			tempUV.u = getFloat(&m_buffer);
 			pass(&m_buffer, " ,\n\t");
-			tempUV.v = getFloat(&m_buffer);
+			tempUV.v = 1 - getFloat(&m_buffer);
 			pass(&m_buffer, " ,\n\t");
 			m_vUV[i] = tempUV;
 		}

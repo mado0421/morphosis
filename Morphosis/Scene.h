@@ -192,7 +192,7 @@ class CGroundScene : public CScene
 protected:
 	/////////////////////////////////////////////////////////////
 	// 테스트용으로 만든 Object 변수들
-	CObject				**m_ppObjects			= NULL;
+	CCollideObejct		**m_ppObjects			= NULL;
 	int					m_nObjects				= 0;
 
 	CObject				**m_ppDebugObjects		= NULL;

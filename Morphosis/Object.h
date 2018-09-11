@@ -74,7 +74,7 @@ public:
 	}
 };
 
-#define G (9.8)
+#define G (2 * 9.8)
 class CMovingObject : public CCollideObejct
 {
 public:
@@ -82,6 +82,7 @@ public:
 	XMFLOAT3						m_xmf3RotateAngle;
 	float							m_fSpeed = 100.0f;
 
+	bool							m_bStand = false;
 	float							m_fGravityAccel = 0;
 
 public:
@@ -94,6 +95,17 @@ public:
 	충돌체크
 	*/
 	bool IsOnGround() { return GetPosition().y <= 0; }
+	bool IsOnBlock(const BoundingOrientedBox &levelOOBB)
+	{
+		if (m_collisionBox.Center.y > levelOOBB.Center.y + levelOOBB.Extents.y) {
+			XMFLOAT3 temp = GetPosition();
+			temp.y = levelOOBB.Center.y + levelOOBB.Extents.y;
+			SetPosition(temp);
+			m_bStand = true;
+			return true;
+		}
+		return false;
+	}
 };
 
 #define TIMER_ATT 0.05

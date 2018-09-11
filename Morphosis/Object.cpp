@@ -137,7 +137,10 @@ void CMovingObject::Update(float fTimeElapsed)
 	m_xmf4x4World._42 += m_xmf3Variation.y * fTimeElapsed * m_fSpeed - m_fGravityAccel * fTimeElapsed;
 	m_xmf4x4World._43 += m_xmf3Variation.z * fTimeElapsed * m_fSpeed;
 
-	if (!IsOnGround()) m_fGravityAccel += fTimeElapsed * G * 12;
+	if (!m_bStand) {
+		m_bStand = IsOnGround();
+		if(!m_bStand) m_fGravityAccel += fTimeElapsed * G * 12;
+	}
 	else m_fGravityAccel = 0.0f;
 
 	XMFLOAT3 xmf3Right = XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);

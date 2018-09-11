@@ -10,7 +10,7 @@ CLevelData::CLevelData()
 CLevelData::~CLevelData()
 {
 }
-
+#define LEVELSIZE 20
 bool CLevelData::FileRead(const char * fileName)
 {
 	std::ifstream fs;
@@ -64,5 +64,32 @@ bool CLevelData::FileRead(const char * fileName)
 	}
 
 	fs.close();
+
+	for (int i = 0; i < m_nLevelBlocks; ++i) 
+	{
+		m_pLevelBlocks[i].pos.x		*= LEVELSIZE;
+		m_pLevelBlocks[i].pos.y		*= LEVELSIZE;
+		m_pLevelBlocks[i].pos.z		*= LEVELSIZE;
+		m_pLevelBlocks[i].extent.x	*= LEVELSIZE/2.0;
+		m_pLevelBlocks[i].extent.y	*= LEVELSIZE/2.0;
+		m_pLevelBlocks[i].extent.z	*= LEVELSIZE/2.0;
+	}
+
+	for (int i = 0; i < m_nSpawnPoints; ++i)
+	{
+		m_pSpawnPoints[i].x *= LEVELSIZE;
+		m_pSpawnPoints[i].y *= LEVELSIZE + 100;
+		m_pSpawnPoints[i].z *= LEVELSIZE;
+	}
+
+	for (int i = 0; i < m_nTargetPlaceBlocks; ++i)
+	{
+		m_pTargetPlaceBlocks[i].pos.x		*= LEVELSIZE;
+		m_pTargetPlaceBlocks[i].pos.y		*= LEVELSIZE;
+		m_pTargetPlaceBlocks[i].pos.z		*= LEVELSIZE;
+		m_pTargetPlaceBlocks[i].extent.x	*= LEVELSIZE/2.0;
+		m_pTargetPlaceBlocks[i].extent.y	*= LEVELSIZE/2.0;
+		m_pTargetPlaceBlocks[i].extent.z	*= LEVELSIZE/2.0;
+	}
 
 }
