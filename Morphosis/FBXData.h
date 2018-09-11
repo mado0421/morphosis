@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-#include<fstream>
 
 #define NUMOFBONE 4
 

@@ -338,6 +338,9 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 {
 	CGroundScene::Initialize(pd3dDevice, pd3dCommandList, pContext);
 
+	m_pLevel = new CLevelData();
+	m_pLevel->FileRead("Assets/Levels/Level_0.dat");
+
 	m_pd3dDevice = pd3dDevice;
 	m_pd3dCommandList = pd3dCommandList;
 
@@ -416,8 +419,19 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 		CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, pTexture, RootParameter::TEXTURE, false);
 	}
 
+	///*여기가 박스 모델*/
+	//for(int i = 0; i < m_nObjects; i++) {
+	//	CObject *pObj = new CObject();
+
+	//	pObj->SetMesh(0, pTestMesh);
+	//	pObj->SetPosition(25.0f * (i + 1), 0.0f, 0.0f);
+	//	pObj->SetMaterial(m_ppMaterial[0]);
+	//	pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
+	//	m_ppObjects[i] = pObj;
+	//}
+
 	/*여기가 박스 모델*/
-	for(int i = 0; i < m_nObjects; i++) {
+	for (int i = 0; i < m_nObjects; i++) {
 		CObject *pObj = new CObject();
 
 		pObj->SetMesh(0, pTestMesh);
@@ -526,8 +540,6 @@ void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppDebugObjects[i]->m_xmf4x4World)));
 	}
 
-	//if (m_pMaterial) m_pMaterial->UpdateShaderVariables(pd3dCommandList);
-
 	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::MODEL]);
 	for (int i = 0; i < m_nPlayers; i++) if (!m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->Render(pd3dCommandList, m_pCamera);
 
@@ -566,7 +578,7 @@ void CPlayScene::Update(float fTimeElapsed)
 	m_pCamera->Update(fTimeElapsed);
 }
 
-#define MOUSE_XSPEED 20
+#define MOUSE_XSPEED 10
 void CPlayScene::ProcessInput(UCHAR * pKeysBuffer)
 {
 	float cxDelta = 0.0f, cyDelta = 0.0f;
@@ -611,15 +623,16 @@ void CPlayScene::ProcessInput(UCHAR * pKeysBuffer)
 		}
 	}
 
-
-	/*for Test*/
 	if (pKeysBuffer[VK_SPACE] & 0xF0) {
-		XMFLOAT4X4 matrix = m_ppPlayers[0]->m_xmf4x4World;
-		printf("matrix is\n");
-		printf("%f %f %f %f\n", matrix._11, matrix._12, matrix._13, matrix._14);
-		printf("%f %f %f %f\n", matrix._21, matrix._22, matrix._23, matrix._24);
-		printf("%f %f %f %f\n", matrix._31, matrix._32, matrix._33, matrix._34);
-		printf("%f %f %f %f\n", matrix._41, matrix._42, matrix._43, matrix._44);
+		//jump
+		if(m_ppPlayers[0]->IsOnGround()) m_ppPlayers[0]->m_fGravityAccel -= G * 6;
+
+		//XMFLOAT4X4 matrix = m_ppPlayers[0]->m_xmf4x4World;
+		//printf("matrix is\n");
+		//printf("%f %f %f %f\n", matrix._11, matrix._12, matrix._13, matrix._14);
+		//printf("%f %f %f %f\n", matrix._21, matrix._22, matrix._23, matrix._24);
+		//printf("%f %f %f %f\n", matrix._31, matrix._32, matrix._33, matrix._34);
+		//printf("%f %f %f %f\n", matrix._41, matrix._42, matrix._43, matrix._44);
 	}
 }
 

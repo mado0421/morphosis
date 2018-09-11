@@ -74,13 +74,15 @@ public:
 	}
 };
 
+#define G (9.8)
 class CMovingObject : public CCollideObejct
 {
 public:
 	XMFLOAT3						m_xmf3Variation;
 	XMFLOAT3						m_xmf3RotateAngle;
 	float							m_fSpeed = 100.0f;
-	float							m_fGAcceleration = 0;
+
+	float							m_fGravityAccel = 0;
 
 public:
 	virtual void Update(float fTimeElapsed);
@@ -91,7 +93,7 @@ public:
 	/*
 	충돌체크
 	*/
-	bool IsOnGround() { return true; }
+	bool IsOnGround() { return GetPosition().y <= 0; }
 };
 
 #define TIMER_ATT 0.05

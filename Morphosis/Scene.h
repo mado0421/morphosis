@@ -1,6 +1,7 @@
 #pragma once
 #include "Object.h"
 #include "Camera.h"
+#include "LevelData.h"
 
 /*
 GPU로 전달해주기 위한 상수버퍼 형식 구조체들
@@ -206,7 +207,7 @@ protected:
 
 	/////////////////////////////////////////////////////////////
 
-
+	CLevelData *m_pLevel = NULL;
 
 public:
 	CGroundScene();

@@ -43,6 +43,9 @@
     <Filter Include="소스 파일\Mesh\FBXData">
       <UniqueIdentifier>{81d14ca6-f80a-4d13-8288-9858939cb81f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Mesh\LevelData">
+      <UniqueIdentifier>{32551056-bae1-41bc-a613-41d4f9e98ad8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Morphosis.cpp">
@@ -80,6 +83,9 @@
     </ClCompile>
     <ClCompile Include="FBXData.cpp">
       <Filter>소스 파일\Mesh\FBXData</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelData.cpp">
+      <Filter>소스 파일\Mesh\LevelData</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -140,6 +146,9 @@
     </ClInclude>
     <ClInclude Include="FBXData.h">
       <Filter>소스 파일\Mesh\FBXData</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelData.h">
+      <Filter>소스 파일\Mesh\LevelData</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
