@@ -62,16 +62,31 @@ public:
 class CCollideObejct : public CObject
 {
 public:
+	CMesh							**m_ppTestMeshes;
+	int								m_nTestMeshes;
 	BoundingOrientedBox				m_collisionBox;
 
 	BoundingOrientedBox GetOOBB() { return m_collisionBox; }
-	void SetOOBB(XMFLOAT3& xmCenter, XMFLOAT3& xmExtents, XMFLOAT4& xmOrientation)
-	{
-		m_collisionBox = BoundingOrientedBox(xmCenter, xmExtents, xmOrientation);
+	void SetOOBB(XMFLOAT3& xmCenter, XMFLOAT3& xmExtents, XMFLOAT4& xmOrientation) {m_collisionBox = BoundingOrientedBox(xmCenter, xmExtents, xmOrientation);}
+	bool IsCollide(const BoundingOrientedBox& other) {return m_collisionBox.Intersects(other);}
+	void SetOOBBMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList) {
+		CTestMesh *pTestMesh = new CTestMesh(pd3dDevice, pd3dCommandList, m_collisionBox.Extents);
+
+		if (m_ppTestMeshes)
+		{
+			m_ppTestMeshes[0] = pTestMesh;
+			m_nTestMeshes = 1;
+		}
+		else
+		{
+			m_ppTestMeshes = new CMesh*;
+			m_ppTestMeshes[0] = pTestMesh;
+			m_nTestMeshes = 1;
+		}
 	}
-	bool IsCollide(const BoundingOrientedBox& other) {
-		return m_collisionBox.Intersects(other);
-	}
+
+	virtual void TestRender(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL);
+
 };
 
 #define G (2 * 9.8)
@@ -95,17 +110,17 @@ public:
 	충돌체크
 	*/
 	bool IsOnGround() { return GetPosition().y <= 0; }
-	bool IsOnBlock(const BoundingOrientedBox &levelOOBB)
-	{
-		if (m_collisionBox.Center.y > levelOOBB.Center.y + levelOOBB.Extents.y) {
-			XMFLOAT3 temp = GetPosition();
-			temp.y = levelOOBB.Center.y + levelOOBB.Extents.y;
-			SetPosition(temp);
-			m_bStand = true;
-			return true;
-		}
-		return false;
-	}
+	//bool IsOnBlock(const BoundingOrientedBox &levelOOBB)
+	//{
+	//	if (m_collisionBox.Center.y > levelOOBB.Center.y + levelOOBB.Extents.y) {
+	//		XMFLOAT3 temp = GetPosition();
+	//		temp.y = levelOOBB.Center.y + levelOOBB.Extents.y;
+	//		SetPosition(temp);
+	//		m_bStand = true;
+	//		return true;
+	//	}
+	//	return false;
+	//}
 };
 
 #define TIMER_ATT 0.05

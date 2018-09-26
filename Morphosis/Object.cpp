@@ -253,3 +253,16 @@ void CProjectileObject::Update(float fTimeElapsed)
 	}
 
 }
+
+void CCollideObejct::TestRender(ID3D12GraphicsCommandList * pd3dCommandList, CCamera * pCamera)
+{
+	if (m_ppTestMeshes && (m_nTestMeshes > 0))
+	{
+		SetRootParameter(pd3dCommandList);
+
+		for (int i = 0; i < m_nTestMeshes; i++)
+		{
+			if (m_ppTestMeshes[i]) m_ppTestMeshes[i]->Render(pd3dCommandList);
+		}
+	}
+}

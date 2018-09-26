@@ -338,6 +338,33 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 {
 	CGroundScene::Initialize(pd3dDevice, pd3dCommandList, pContext);
 
+
+	/*
+	현재 문제: 디버그 오브젝트를 생성하려 하는데 생성할 때 관리하기가 힘들다
+	원인: Objects와 Player와 Bullet이 다 따로 할당되기 때문
+	해결방안: 하나의 배열로 관리하는 것은 어떨까?
+
+	nTotalObjects = nObject + nPlayer + nBullet
+	ppObjectList = new CObject*[nTotalObjects]
+	int i = 0
+	while(i < nTotalObjects)
+	{
+
+	}
+	
+	생성 다 하고 list포인터에 넣어주면 끝?
+	함 해보자
+	음음음~~~~
+
+
+
+	*/
+
+
+
+
+
+
 	m_pLevel = new CLevelData();
 	m_pLevel->FileRead("Assets/Levels/Level_0.dat");
 
@@ -352,6 +379,25 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 
 	m_nProjectileObjects = m_nPlayers * PO_PER_PLAYER;
 	m_ppProjectileObjects = new CProjectileObject*[m_nProjectileObjects];
+
+
+
+	//int nTotalObjects = m_nObjects + m_nPlayers + m_nProjectileObjects;
+	//CObject ** ppObjectList = new CObject*[nTotalObjects];
+
+	//int j = 0;
+	//while (j < nTotalObjects) {
+	//	if (j < m_nObjects) {
+
+	//	}
+	//	else if (m_nObjects <= j && j < m_nPlayers) {
+
+	//	}
+	//	else {
+
+	//	}
+	//	j++;
+	//}
 
 	m_nDebugObjects = 0;
 //	m_nDebugObjects = m_nObjects + m_nPlayers + m_nProjectileObjects;
@@ -441,6 +487,7 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 		pObj->SetPosition(m_pLevel->m_pLevelBlocks[i].pos);
 		pObj->SetMaterial(m_ppMaterial[0]);
 		pObj->SetOOBB(m_pLevel->m_pLevelBlocks[i].pos, m_pLevel->m_pLevelBlocks[i].extent, orientation);
+		pObj->SetOOBBMesh(pd3dDevice, pd3dCommandList);
 
 		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
 		m_ppObjects[i] = pObj;
@@ -461,7 +508,9 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 
 		pObj->Initialize();
 		pObj->SetTeam(i % 2);
+		pos.y += 100;
 		pObj->SetOOBB(pos, extents, orientation);
+		pObj->SetOOBBMesh(pd3dDevice, pd3dCommandList);
 		pObj->AddRotateAngle(XMFLOAT3(0.0f, 90.0f * i, 0.0f));
 		m_ppPlayers[i] = pObj;
 	}
@@ -483,6 +532,7 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 		pObj->m_alive = false;
 
 		pObj->SetOOBB(pos, extents, orientation);
+		pObj->SetOOBBMesh(pd3dDevice, pd3dCommandList);
 
 		m_ppProjectileObjects[i] = pObj;
 	}
@@ -549,7 +599,10 @@ void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 	for (int i = 0 ; i < m_nProjectileObjects; ++i) if(!m_ppProjectileObjects[i]->IsDead()) m_ppProjectileObjects[i]->Render(pd3dCommandList, m_pCamera);
 
 	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::DEBUG]);
-	for (int i = 0; i < m_nDebugObjects; ++i) m_ppDebugObjects[i]->Render(pd3dCommandList, m_pCamera);
+	for (int i = 0; i < m_nObjects; ++i) m_ppObjects[i]->TestRender(pd3dCommandList, m_pCamera);
+	for (int i = 0; i < m_nPlayers; i++) if (!m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->TestRender(pd3dCommandList, m_pCamera);
+	for (int i = 0; i < m_nProjectileObjects; ++i) if (!m_ppProjectileObjects[i]->IsDead()) m_ppProjectileObjects[i]->TestRender(pd3dCommandList, m_pCamera);
+	//for (int i = 0; i < m_nDebugObjects; ++i) m_ppDebugObjects[i]->Render(pd3dCommandList, m_pCamera);
 
 }
 
@@ -573,15 +626,15 @@ void CPlayScene::Update(float fTimeElapsed)
 						}
 
 			/*지형과 충돌체크*/
-			for(int j = 0; j < m_nObjects; ++j)
-				if (m_ppPlayers[i]->IsCollide(m_ppObjects[j]->m_collisionBox)) {
-					m_ppPlayers[i]->m_bStand = true;
-					BoundingOrientedBox playerOOBB = m_ppPlayers[i]->GetOOBB();
-					BoundingOrientedBox levelOOBB = m_ppObjects[i]->GetOOBB();
+			//for(int j = 0; j < m_nObjects; ++j)
+			//	if (m_ppPlayers[i]->IsCollide(m_ppObjects[j]->m_collisionBox)) {
+			//		m_ppPlayers[i]->m_bStand = true;
+			//		BoundingOrientedBox playerOOBB = m_ppPlayers[i]->GetOOBB();
+			//		BoundingOrientedBox levelOOBB = m_ppObjects[i]->GetOOBB();
 
-					m_ppPlayers[i]->IsOnBlock(m_ppObjects[i]->GetOOBB());
+			//		m_ppPlayers[i]->IsOnBlock(m_ppObjects[i]->GetOOBB());
 
-				}
+			//	}
 		}
 	for (int i = 0; i < m_nDebugObjects; i++) {
 		m_ppDebugObjects[i]->SetPosition(m_ppObjects[i]->GetOOBB().Center);
