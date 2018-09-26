@@ -148,4 +148,5 @@ public:
 public:
 	bool ReadFile(const char * fileName);
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
+	XMFLOAT3 GetExtents() { return m_model->GetExtents(); }
 };

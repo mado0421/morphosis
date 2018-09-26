@@ -436,7 +436,7 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 		CPlayerObject *pObj = new CPlayerObject();
 
 		XMFLOAT3 pos = XMFLOAT3(m_pLevel->m_pSpawnPoints[i]);
-		XMFLOAT3 extents = XMFLOAT3(10.0f, 20.0f, 10.0f);			//반지름 아니고 지름임
+		XMFLOAT3 extents = pTestModelMesh->GetExtents();			//반지름 아니고 지름임
 		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
 
 		pObj->SetMesh(0, pTestModelMesh);
@@ -446,7 +446,6 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 
 		pObj->Initialize();
 		pObj->SetTeam(i % 2);
-		pos.y += 100;
 		pObj->SetOOBB(pos, extents, orientation);
 		pObj->SetOOBBMesh(pd3dDevice, pd3dCommandList);
 		pObj->AddRotateAngle(XMFLOAT3(0.0f, 90.0f * i, 0.0f));

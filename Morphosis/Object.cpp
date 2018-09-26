@@ -231,7 +231,7 @@ void CProjectileObject::Initialize(CMovingObject *user)
 {
 	CProjectileObject::Initialize();
 	XMFLOAT3 pos = user->GetPosition();
-	pos.y += 30;
+	/*pos.y += 30;*/
 	SetPosition(pos);
 	SetLook(user->GetLook());
 	SetUp(user->GetUp());

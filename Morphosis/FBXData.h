@@ -136,6 +136,11 @@ public:
 		return false;
 	};
 
+	//모델 길이만큼 위로 올릴려고!
+	XMFLOAT3 GetExtents() {
+		return m_xmf3Extents;
+	}
+
 public:
 	CFBXData();
 	~CFBXData();
@@ -157,6 +162,8 @@ public:
 
 	FBX::IAVertex* m_pIAVertex;
 	int m_nIAVertex;
+
+	XMFLOAT3 m_xmf3Extents;
 
 };
 

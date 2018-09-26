@@ -45,12 +45,18 @@ bool CFBXData::ReadFile(const char * fileName)
 	XMFLOAT3 xmf3Up = {1, 0, 0};
 	XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(-90));
 	XMFLOAT3 temp;
+	float MaxX = 0;
+	float MaxY = 0;
 	float MaxZ = 0;
 	for (int i = 0; i < m_nVertex; ++i) {
+		if (m_pVertex[i].pos.x > MaxX) MaxX = m_pVertex[i].pos.x;
+		if (m_pVertex[i].pos.y > MaxY) MaxY = m_pVertex[i].pos.y;
 		if (m_pVertex[i].pos.z > MaxZ) MaxZ = m_pVertex[i].pos.z;
 	}
 
 	MaxZ /= 2.0;
+
+	m_xmf3Extents = { MaxX , MaxZ ,MaxY };
 
 	for (int i = 0; i < m_nVertex; ++i) {
 		temp = { m_pVertex[i].pos.x, m_pVertex[i].pos.y ,m_pVertex[i].pos.z };
