@@ -39,6 +39,28 @@ bool CFBXData::ReadFile(const char * fileName)
 		return FileErrorShutDown(fs);
 	}
 
+	/*
+	여기서 버텍스 다 회전시켜줘야 함
+	*/
+	XMFLOAT3 xmf3Up = {1, 0, 0};
+	XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(-90));
+	XMFLOAT3 temp;
+	float MaxZ = 0;
+	for (int i = 0; i < m_nVertex; ++i) {
+		if (m_pVertex[i].pos.z > MaxZ) MaxZ = m_pVertex[i].pos.z;
+	}
+
+	MaxZ /= 2.0;
+
+	for (int i = 0; i < m_nVertex; ++i) {
+		temp = { m_pVertex[i].pos.x, m_pVertex[i].pos.y ,m_pVertex[i].pos.z };
+		temp = Vector3::TransformNormal(temp, xmmtxRotate);
+		m_pVertex[i].pos.x = temp.x;
+		m_pVertex[i].pos.y = temp.y - MaxZ;
+		m_pVertex[i].pos.z = temp.z;
+	}
+
+
 	/*	Read UV	*/
 	fs.read((char*)&m_nUV, sizeof(int));
 	if (m_nUV > 0) {

@@ -338,33 +338,6 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 {
 	CGroundScene::Initialize(pd3dDevice, pd3dCommandList, pContext);
 
-
-	/*
-	현재 문제: 디버그 오브젝트를 생성하려 하는데 생성할 때 관리하기가 힘들다
-	원인: Objects와 Player와 Bullet이 다 따로 할당되기 때문
-	해결방안: 하나의 배열로 관리하는 것은 어떨까?
-
-	nTotalObjects = nObject + nPlayer + nBullet
-	ppObjectList = new CObject*[nTotalObjects]
-	int i = 0
-	while(i < nTotalObjects)
-	{
-
-	}
-	
-	생성 다 하고 list포인터에 넣어주면 끝?
-	함 해보자
-	음음음~~~~
-
-
-
-	*/
-
-
-
-
-
-
 	m_pLevel = new CLevelData();
 	m_pLevel->FileRead("Assets/Levels/Level_0.dat");
 
@@ -380,31 +353,7 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	m_nProjectileObjects = m_nPlayers * PO_PER_PLAYER;
 	m_ppProjectileObjects = new CProjectileObject*[m_nProjectileObjects];
 
-
-
-	//int nTotalObjects = m_nObjects + m_nPlayers + m_nProjectileObjects;
-	//CObject ** ppObjectList = new CObject*[nTotalObjects];
-
-	//int j = 0;
-	//while (j < nTotalObjects) {
-	//	if (j < m_nObjects) {
-
-	//	}
-	//	else if (m_nObjects <= j && j < m_nPlayers) {
-
-	//	}
-	//	else {
-
-	//	}
-	//	j++;
-	//}
-
-	m_nDebugObjects = 0;
-//	m_nDebugObjects = m_nObjects + m_nPlayers + m_nProjectileObjects;
-	m_nDebugObjects = m_nObjects;
-	m_ppDebugObjects = new CObject*[m_nDebugObjects];
-
-	int nObjects = m_nObjects + m_nPlayers + m_nProjectileObjects + m_nDebugObjects;
+	int nObjects = m_nObjects + m_nPlayers + m_nProjectileObjects;
 
 	// Camera 초기화
 	m_pCamera = new CFollowCamera();
@@ -437,7 +386,7 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	// 메쉬만드는 곳
 	CTestMesh *pTestMesh = new CTestMesh(pd3dDevice, pd3dCommandList);
 	CTestMesh *pTestMesh2 = new CTestMesh(pd3dDevice, pd3dCommandList, 5);
-	CModelMesh *pTestModelMesh = new CModelMesh(pd3dDevice, pd3dCommandList, "Assets/Models/character_2_com5");
+	CModelMesh *pTestModelMesh = new CModelMesh(pd3dDevice, pd3dCommandList, "Assets/Models/character_2_com3");
 
 	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
 	CreateCbvAndSrvDescriptorHeaps(m_pd3dDevice, m_pd3dCommandList, nObjects, 1);
@@ -465,17 +414,6 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 		m_ppMaterial[1] = mat;
 		CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, pTexture, RootParameter::TEXTURE, false);
 	}
-
-	///*여기가 박스 모델*/
-	//for(int i = 0; i < m_nObjects; i++) {
-	//	CObject *pObj = new CObject();
-
-	//	pObj->SetMesh(0, pTestMesh);
-	//	pObj->SetPosition(25.0f * (i + 1), 0.0f, 0.0f);
-	//	pObj->SetMaterial(m_ppMaterial[0]);
-	//	pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
-	//	m_ppObjects[i] = pObj;
-	//}
 
 	/*여기가 박스 모델*/
 	for (int i = 0; i < m_nObjects; i++) {
@@ -537,18 +475,6 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 		m_ppProjectileObjects[i] = pObj;
 	}
 
-	/*여기가 디버그 모델*/
-	for (int i = 0; i < m_nDebugObjects; i++) {
-		CObject *pObj = new CObject();
-		CTestMesh *pDebugMesh = new CTestMesh(pd3dDevice, pd3dCommandList, m_ppObjects[i]->GetOOBB().Extents);
-
-		pObj->SetMesh(0, pDebugMesh);
-		pObj->SetPosition(0.0f, 0.0f, 0.0f);
-		pObj->SetMaterial(m_ppMaterial[0]);
-		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * ((m_nObjects + m_nPlayers + m_nProjectileObjects) + i));
-		m_ppDebugObjects[i] = pObj;
-	}
-
 	// 처음 따라갈 캐릭터 정해주기
 	m_pCamera->SetTarget(m_ppPlayers[0]);
 
@@ -585,12 +511,6 @@ void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppProjectileObjects[i]->m_xmf4x4World)));
 	}
 
-	for (int i = 0; i < m_nDebugObjects; i++)
-	{
-		CB_OBJECT_INFO *pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pcbMappedGameObjects + (((m_nObjects + m_nPlayers + m_nProjectileObjects) + i) * ncbElementBytes));
-		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppDebugObjects[i]->m_xmf4x4World)));
-	}
-
 	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::MODEL]);
 	for (int i = 0; i < m_nPlayers; i++) if (!m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->Render(pd3dCommandList, m_pCamera);
 
@@ -602,7 +522,6 @@ void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 	for (int i = 0; i < m_nObjects; ++i) m_ppObjects[i]->TestRender(pd3dCommandList, m_pCamera);
 	for (int i = 0; i < m_nPlayers; i++) if (!m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->TestRender(pd3dCommandList, m_pCamera);
 	for (int i = 0; i < m_nProjectileObjects; ++i) if (!m_ppProjectileObjects[i]->IsDead()) m_ppProjectileObjects[i]->TestRender(pd3dCommandList, m_pCamera);
-	//for (int i = 0; i < m_nDebugObjects; ++i) m_ppDebugObjects[i]->Render(pd3dCommandList, m_pCamera);
 
 }
 
@@ -636,10 +555,6 @@ void CPlayScene::Update(float fTimeElapsed)
 
 			//	}
 		}
-	for (int i = 0; i < m_nDebugObjects; i++) {
-		m_ppDebugObjects[i]->SetPosition(m_ppObjects[i]->GetOOBB().Center);
-	}
-
 	m_pCamera->Update(fTimeElapsed);
 }
 
