@@ -394,7 +394,7 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	CreateConstantBufferViews(m_pd3dDevice, m_pd3dCommandList, nObjects, m_pd3dcbObjects, ncbElementBytes);
 
 	// 마테리얼에 텍스처 등록하는 곳
-	m_nMaterial = 2;
+	m_nMaterial = 3;
 	m_ppMaterial = new CMaterial*[m_nMaterial];
 	{
 		CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
@@ -414,6 +414,15 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 		m_ppMaterial[1] = mat;
 		CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, pTexture, RootParameter::TEXTURE, false);
 	}
+	{
+		CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
+		pTexture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/wall_test_diff.dds", 0);
+		CMaterial *mat = new CMaterial();
+		mat->SetTexture(pTexture);
+		mat->SetReflection(1);
+		m_ppMaterial[2] = mat;
+		CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, pTexture, RootParameter::TEXTURE, false);
+	}
 
 	/*여기가 박스 모델*/
 	for (int i = 0; i < m_nObjects; i++) {
@@ -423,7 +432,8 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 
 		pObj->SetMesh(0, pLevelMesh);
 		pObj->SetPosition(m_pLevel->m_pLevelBlocks[i].pos);
-		pObj->SetMaterial(m_ppMaterial[0]);
+		if(i==5 || i == 3) pObj->SetMaterial(m_ppMaterial[2]);
+		else pObj->SetMaterial(m_ppMaterial[0]);
 		pObj->SetOOBB(m_pLevel->m_pLevelBlocks[i].pos, m_pLevel->m_pLevelBlocks[i].extent, orientation);
 		pObj->SetOOBBMesh(pd3dDevice, pd3dCommandList);
 

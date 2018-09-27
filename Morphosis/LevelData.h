@@ -2,11 +2,14 @@
 
 struct Block {
 	XMFLOAT3 pos, extent;
+	//int texIdx;
 };
 
 class CLevelData
 {
 public:
+	//std::vector<string> texName;
+
 	Block		*m_pLevelBlocks = NULL;
 	int			m_nLevelBlocks = 0;
 
