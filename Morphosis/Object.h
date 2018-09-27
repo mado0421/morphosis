@@ -89,7 +89,7 @@ public:
 
 };
 
-#define G (2 * 9.8)
+#define G (0.05 * 9.8)
 class CMovingObject : public CCollideObejct
 {
 public:
@@ -97,10 +97,22 @@ public:
 	XMFLOAT3						m_xmf3RotateAngle;
 	float							m_fSpeed = 100.0f;
 
-	bool							m_bStand = false;
 	float							m_fGravityAccel = 0;
-
+	bool							isFalling = true;
+	float							prevHeight = 0;
 public:
+
+	void MoveOOBB(float fTimeElapsed) {
+		m_collisionBox.Center.x += m_xmf3Variation.x * fTimeElapsed * m_fSpeed;
+		m_collisionBox.Center.y += m_xmf3Variation.y * fTimeElapsed * m_fSpeed;
+		m_collisionBox.Center.z += m_xmf3Variation.z * fTimeElapsed * m_fSpeed;
+	}
+	void FallingOOBB(float fTimeElapsed) {
+		prevHeight = m_collisionBox.Center.y;
+		m_fGravityAccel += fTimeElapsed * G * 6;
+		m_collisionBox.Center.y -= m_fGravityAccel;
+	}
+
 	virtual void Update(float fTimeElapsed);
 
 	void AddPosVariation(XMFLOAT3 xmf3Velocity);
@@ -109,7 +121,6 @@ public:
 	/*
 	충돌체크
 	*/
-	bool IsOnGround() { return GetPosition().y <= 0; }
 	//bool IsOnBlock(const BoundingOrientedBox &levelOOBB)
 	//{
 	//	if (m_collisionBox.Center.y > levelOOBB.Center.y + levelOOBB.Extents.y) {

@@ -113,7 +113,7 @@ void CCamera::SetViewportsAndScissorRects(ID3D12GraphicsCommandList *pd3dCommand
 CFollowCamera::CFollowCamera() : CCamera()
 {
 	SetTimeLag(0.1f);
-	SetOffset(XMFLOAT3(0.0f, 50.0f, -60.0f));	// 플레이어 시점 높이에 따라 정할 필요 있음
+	SetOffset(XMFLOAT3(0.0f, 30.0f, -80.0f));	// 플레이어 시점 높이에 따라 정할 필요 있음
 												// 이 부분은 나중에 봐야되니까 적어두자
 	GenerateProjectionMatrix(1.01f, 5000.0f, ASPECT_RATIO, 60.0f);
 
@@ -124,7 +124,7 @@ CFollowCamera::CFollowCamera() : CCamera()
 CFollowCamera::~CFollowCamera()
 {
 }
-#define CAM_Y_DISTANCE 45
+#define CAM_Y_DISTANCE 15
 void CFollowCamera::SetTarget(void * target)
 {
 	m_pTarget = (CObject*)target;

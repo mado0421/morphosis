@@ -526,9 +526,8 @@ void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 
 void CPlayScene::Update(float fTimeElapsed)
 {
-	//가만히 있는 오브젝트를 갱신을 해줘야 할까? 저는 아니라고 생각합니다.
-	for (int i = 0; i < m_nPlayers; i++) if (!m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->Update(fTimeElapsed);
-	for (int i = 0; i < m_nProjectileObjects; i++) if (!m_ppProjectileObjects[i]->IsDead()) m_ppProjectileObjects[i]->Update(fTimeElapsed);
+//	for (int i = 0; i < m_nPlayers; i++) if (!m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->MoveOOBB(fTimeElapsed);
+	for (int i = 0; i < m_nProjectileObjects; i++) if (!m_ppProjectileObjects[i]->IsDead()) m_ppProjectileObjects[i]->MoveOOBB(fTimeElapsed);
 
 	for (int i = 0; i < m_nPlayers; i++)
 		if (!m_ppPlayers[i]->IsDead()) {
@@ -543,21 +542,41 @@ void CPlayScene::Update(float fTimeElapsed)
 							break;
 						}
 
+			//먼저 이동
+			m_ppPlayers[i]->MoveOOBB(fTimeElapsed);
 			/*지형과 충돌체크*/
-			//for(int j = 0; j < m_nObjects; ++j)
-			//	if (m_ppPlayers[i]->IsCollide(m_ppObjects[j]->m_collisionBox)) {
-			//		m_ppPlayers[i]->m_bStand = true;
-			//		BoundingOrientedBox playerOOBB = m_ppPlayers[i]->GetOOBB();
-			//		BoundingOrientedBox levelOOBB = m_ppObjects[i]->GetOOBB();
+			for(int j = 0; j < m_nObjects; ++j)
+				if (m_ppPlayers[i]->IsCollide(m_ppObjects[j]->m_collisionBox)) {
+					//m_ppPlayers[i]->isCollide = true;
+					//충돌했으니까 이동은 무효로
+					m_ppPlayers[i]->MoveOOBB(-fTimeElapsed);
+					break;
+				}
 
-			//		m_ppPlayers[i]->IsOnBlock(m_ppObjects[i]->GetOOBB());
+			//먼저 떨어짐
+			m_ppPlayers[i]->FallingOOBB(fTimeElapsed);
+			m_ppPlayers[i]->isFalling = true;
 
-			//	}
+			for (int j = 0; j < m_nObjects; ++j)
+				if (m_ppPlayers[i]->IsCollide(m_ppObjects[j]->m_collisionBox)) {
+					//충돌했으니까 이동은 무효로
+					m_ppPlayers[i]->isFalling = false;
+					m_ppPlayers[i]->m_collisionBox.Center.y = m_ppPlayers[i]->prevHeight;
+					m_ppPlayers[i]->m_fGravityAccel = 0;
+					break;
+				}
 		}
+
+	//가만히 있는 오브젝트를 갱신을 해줘야 할까? 저는 아니라고 생각합니다.
+	for (int i = 0; i < m_nPlayers; i++) if (!m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->Update(fTimeElapsed);
+	for (int i = 0; i < m_nProjectileObjects; i++) if (!m_ppProjectileObjects[i]->IsDead()) m_ppProjectileObjects[i]->Update(fTimeElapsed);
+
 	m_pCamera->Update(fTimeElapsed);
 }
 
 #define MOUSE_XSPEED 10
+#define MOVE_SPEED 1.5
+#define ROTATE_SPEED 300
 void CPlayScene::ProcessInput(UCHAR * pKeysBuffer)
 {
 	float cxDelta = 0.0f, cyDelta = 0.0f;
@@ -571,12 +590,12 @@ void CPlayScene::ProcessInput(UCHAR * pKeysBuffer)
 	//if (cxDelta) m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, cxDelta * MOUSE_XSPEED, 0 });
 
 	XMFLOAT3 xmf3temp;
-	if (pKeysBuffer[KEY::W] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetLook(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, 2)); }
-	if (pKeysBuffer[KEY::A] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetRight(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -2)); }
-	if (pKeysBuffer[KEY::S] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetLook(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -2)); }
-	if (pKeysBuffer[KEY::D] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetRight(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, 2)); }
-	if (pKeysBuffer[KEY::Q] & 0xF0) { m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, -40*10, 0 }); }
-	if (pKeysBuffer[KEY::E] & 0xF0) { m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, 40*10, 0 }); }
+	if (pKeysBuffer[KEY::W] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetLook(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp,	MOVE_SPEED)); }
+	if (pKeysBuffer[KEY::A] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetRight(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp,  -MOVE_SPEED)); }
+	if (pKeysBuffer[KEY::S] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetLook(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp,   -MOVE_SPEED)); }
+	if (pKeysBuffer[KEY::D] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetRight(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp,   MOVE_SPEED)); }
+	if (pKeysBuffer[KEY::Q] & 0xF0) { m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, -ROTATE_SPEED, 0 }); }
+	if (pKeysBuffer[KEY::E] & 0xF0) { m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, ROTATE_SPEED, 0 }); }
 
 	if (pKeysBuffer[KEY::_1] & 0xF0)
 		if(m_pCamera->GetTarget() != m_ppPlayers[0])
@@ -604,7 +623,7 @@ void CPlayScene::ProcessInput(UCHAR * pKeysBuffer)
 
 	if (pKeysBuffer[VK_SPACE] & 0xF0) {
 		//jump
-		if(m_ppPlayers[0]->IsOnGround()) m_ppPlayers[0]->m_fGravityAccel -= G * 6;
+		if(!m_ppPlayers[0]->isFalling) m_ppPlayers[0]->m_fGravityAccel -= G * 3;
 
 		//XMFLOAT4X4 matrix = m_ppPlayers[0]->m_xmf4x4World;
 		//printf("matrix is\n");

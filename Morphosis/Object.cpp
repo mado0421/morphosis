@@ -133,15 +133,15 @@ void CObject::SetRight(XMFLOAT3 right)
 
 void CMovingObject::Update(float fTimeElapsed)
 {
+
+	m_xmf4x4World._41 = m_collisionBox.Center.x;
+	m_xmf4x4World._42 = m_collisionBox.Center.y;
+	m_xmf4x4World._43 = m_collisionBox.Center.z;
+	
+	/*
 	m_xmf4x4World._41 += m_xmf3Variation.x * fTimeElapsed * m_fSpeed;
 	m_xmf4x4World._42 += m_xmf3Variation.y * fTimeElapsed * m_fSpeed - m_fGravityAccel * fTimeElapsed;
-	m_xmf4x4World._43 += m_xmf3Variation.z * fTimeElapsed * m_fSpeed;
-
-	if (!m_bStand) {
-		m_bStand = IsOnGround();
-		if(!m_bStand) m_fGravityAccel += fTimeElapsed * G * 12;
-	}
-	else m_fGravityAccel = 0.0f;
+	m_xmf4x4World._43 += m_xmf3Variation.z * fTimeElapsed * m_fSpeed;*/
 
 	XMFLOAT3 xmf3Right = XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
 	XMFLOAT3 xmf3Up = XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
@@ -162,8 +162,8 @@ void CMovingObject::Update(float fTimeElapsed)
 	m_xmf3RotateAngle.x = m_xmf3RotateAngle.y = m_xmf3RotateAngle.z = 0;
 	m_xmf3Variation.x = m_xmf3Variation.y = m_xmf3Variation.z = 0;
 
-	XMFLOAT3 center = XMFLOAT3(m_xmf4x4World._41, m_xmf4x4World._42, m_xmf4x4World._43);
-	m_collisionBox.Center = center;
+	//XMFLOAT3 center = XMFLOAT3(m_xmf4x4World._41, m_xmf4x4World._42, m_xmf4x4World._43);
+	//m_collisionBox.Center = center;
 	XMStoreFloat4(&m_collisionBox.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_collisionBox.Orientation)));
 
 
