@@ -198,5 +198,5 @@ bool CLevelData::FileRead(const char * fileName)
 		m_pTargetPlaceBlocks[i].extent.y	*= LEVELSIZE/2.0;
 		m_pTargetPlaceBlocks[i].extent.z	*= LEVELSIZE/2.0;
 	}
-
+	return true;
 }
