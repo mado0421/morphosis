@@ -3,6 +3,8 @@
 #include "Camera.h"
 #include "LevelData.h"
 
+class CFramework;
+
 /*
 GPU로 전달해주기 위한 상수버퍼 형식 구조체들
 위치, 재질
@@ -155,6 +157,8 @@ protected:
 
 	POINT							m_ptOldCursorPos;
 
+	CFramework						*m_pFramework = NULL;
+
 	//======================================
 	// 테스트 용도
 	CPSO **m_ppCPSOs	= NULL;
@@ -183,6 +187,8 @@ public:
 	virtual void CreateShaderVariables(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, int nConstantBufferViews);
 	virtual void CreateConstantBufferViews(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int nConstantBufferViews, ID3D12Resource *pd3dConstantBuffers, UINT nStride);
 	virtual void CreateShaderResourceViews(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, CTexture *pTexture, UINT nRootParameterStartIndex, bool bAutoIncrement);
+
+	virtual void ReleaseShaderVariables();
 
 	virtual ID3D12RootSignature *CreateRootSignature(ID3D12Device *pd3dDevice);
 };
@@ -233,6 +239,8 @@ public:
 	virtual void CreateShaderVariables(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, int nConstantBufferViews);
 	virtual void CreateConstantBufferViews(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int nConstantBufferViews, ID3D12Resource *pd3dConstantBuffers, UINT nStride);
 	virtual void CreateShaderResourceViews(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, CTexture *pTexture, UINT nRootParameterStartIndex, bool bAutoIncrement);
+
+	virtual void ReleaseShaderVariables();
 
 };
 

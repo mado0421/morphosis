@@ -85,8 +85,8 @@ public class Exporter : MonoBehaviour {
             print(str);
         }
 
-        string strFilePath = Application.dataPath + "/Level_1";
-        string strFilePath2 = Application.dataPath + "/Level_1_tex";
+        string strFilePath = Application.dataPath + "/Level_2";
+        string strFilePath2 = Application.dataPath + "/Level_2_tex";
         print(strFilePath);
 
         FileStream fs = new FileStream(strFilePath2, FileMode.Create);

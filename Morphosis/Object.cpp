@@ -203,6 +203,10 @@ void CPlayerObject::Update(float fTimeElapsed)
 	else
 	{
 		CMovingObject::Update(fTimeElapsed);
+		if (m_jump) {
+			m_fGravityAccel = -fTimeElapsed * G * 350;
+			m_jump = false;
+		}
 		if (!IsFireable()) m_attTimer -= fTimeElapsed;
 	}
 
@@ -217,6 +221,11 @@ void CPlayerObject::Attack()
 void CPlayerObject::Damaged(int val)
 {
 	m_hp -= val;
+}
+
+void CPlayerObject::Jump()
+{
+	if (!isFalling && !m_jump) m_jump = true;
 }
 
 void CProjectileObject::Initialize()

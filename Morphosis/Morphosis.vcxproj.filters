@@ -46,6 +46,9 @@
     <Filter Include="소스 파일\Mesh\LevelData">
       <UniqueIdentifier>{32551056-bae1-41bc-a613-41d4f9e98ad8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Info">
+      <UniqueIdentifier>{426803dd-8189-42ba-90f7-fad11145a45e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Morphosis.cpp">

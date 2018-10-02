@@ -339,8 +339,8 @@ void CFramework::BuildScenes()
 	m_ppScenes[Scenes::MATCHING] = new CMatchingScene();
 	m_ppScenes[Scenes::RESULT] = new CResultScene();
 
-	m_pCurrentScene = m_ppScenes[Scenes::PLAY];
-	m_pCurrentScene->Initialize(m_pd3dDevice, m_pd3dCommandList, m_hWnd);
+	m_pCurrentScene = m_ppScenes[Scenes::ENTERROOM];
+	m_pCurrentScene->Initialize(m_pd3dDevice, m_pd3dCommandList, this);
 
 	m_pd3dCommandList->Close();
 	ID3D12CommandList *ppd3dCommandLists[] = { m_pd3dCommandList };
@@ -352,20 +352,20 @@ void CFramework::BuildScenes()
 
 void CFramework::ChangeScene(int targetSceneIdx, void * subData)
 {
-	// Scene Change 부분
-	//m_pCurrentScene->ReleaseShaderVariables();
+	 //Scene Change 부분
+	m_pCurrentScene->ReleaseShaderVariables();
 
-	//switch (targetSceneIdx)
-	//{
-	//case Scenes::Title:		m_pCurrentScene = m_ppScene[Scenes::Title];		break;
-	//case Scenes::EnterRoom: m_pCurrentScene = m_ppScene[Scenes::EnterRoom]; break;
-	//case Scenes::Matching:	m_pCurrentScene = m_ppScene[Scenes::Matching];	break;
-	//case Scenes::Play:		m_pCurrentScene = m_ppScene[Scenes::Play];		break;
-	//case Scenes::Result:	m_pCurrentScene = m_ppScene[Scenes::Result];	break;
-	//default: assert(!"으악 너 지금 Scene Change에 뭐 넣은거야!!"); break;
-	//}
+	switch (targetSceneIdx)
+	{
+	case Scenes::TITLE:		m_pCurrentScene = m_ppScenes[Scenes::TITLE];	break;
+	case Scenes::ENTERROOM: m_pCurrentScene = m_ppScenes[Scenes::ENTERROOM];break;
+	case Scenes::MATCHING:	m_pCurrentScene = m_ppScenes[Scenes::MATCHING];	break;
+	case Scenes::PLAY:		m_pCurrentScene = m_ppScenes[Scenes::PLAY];		break;
+	case Scenes::RESULT:	m_pCurrentScene = m_ppScenes[Scenes::RESULT];	break;
+	default: assert(!"으악 너 지금 Scene Change에 뭐 넣은거야!!"); break;
+	}
 
-	//m_pCurrentScene->Initialize(m_pd3dDevice, m_pd3dCommandList, m_hWnd);
+	m_pCurrentScene->Initialize(m_pd3dDevice, m_pd3dCommandList, subData);
 
 }
 

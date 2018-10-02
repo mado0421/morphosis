@@ -1,5 +1,12 @@
 #include "stdafx.h"
 #include "Scene.h"
+#include "Framework.h"
+
+#define MOUSE_XSPEED 10
+#define MOVE_SPEED 1.5
+#define ROTATE_SPEED 300
+#define PO_PER_PLAYER 16
+
 
 D3D12_SHADER_RESOURCE_VIEW_DESC GetShaderResourceViewDesc(D3D12_RESOURCE_DESC d3dResourceDesc, UINT nTextureType)
 {
@@ -167,6 +174,7 @@ CGroundScene::~CGroundScene()
 
 void CGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext)
 {
+	m_pFramework = (CFramework*)pContext;
 	GetCursorPos(&m_ptOldCursorPos);
 }
 
@@ -249,6 +257,11 @@ void CGroundScene::CreateShaderResourceViews(ID3D12Device * pd3dDevice, ID3D12Gr
 	}
 }
 
+void CGroundScene::ReleaseShaderVariables()
+{
+	CScene::ReleaseShaderVariables();
+}
+
 CLoadingScene::CLoadingScene()
 {
 }
@@ -291,18 +304,331 @@ CEnterRoomScene::~CEnterRoomScene()
 
 void CEnterRoomScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext)
 {
+	CGroundScene::Initialize(pd3dDevice, pd3dCommandList, pContext);
+
+	m_pLevel = new CLevelData();
+	m_pLevel->FileRead("Assets/Levels/Level_2");
+
+	m_pd3dDevice = pd3dDevice;
+	m_pd3dCommandList = pd3dCommandList;
+
+	m_nObjects = m_pLevel->m_nLevelBlocks;
+	m_ppObjects = new CCollideObejct*[m_nObjects];
+
+	m_nPlayers = m_pLevel->m_nSpawnPoints;
+	m_ppPlayers = new CPlayerObject*[m_nPlayers];
+
+	m_nProjectileObjects = m_nPlayers * PO_PER_PLAYER;
+	m_ppProjectileObjects = new CProjectileObject*[m_nProjectileObjects];
+
+	int nObjects = m_nObjects + m_nPlayers + m_nProjectileObjects;
+
+	// Camera 초기화
+	m_pCamera = new CFollowCamera();
+	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	// RootSignature 초기화
+	m_pd3dGraphicsRootSignature = CreateRootSignature(m_pd3dDevice);
+
+	// PSO 초기화
+	// 저기서 RootSignature 쓰니까 그 전에 RootSignature 만들어줘야 함
+	m_nPipelineStates = PSO::count;
+	m_ppPipelineStates = new ID3D12PipelineState*[m_nPipelineStates];
+
+	m_ppCPSOs = new CPSO*[m_nPipelineStates];
+	m_ppCPSOs[PSO::TEXTURE] = new CTexturedPSO();
+	m_ppCPSOs[PSO::ILLUMINATEDTEXTURE] = new CTexturedIlluminatedPSO();
+	m_ppCPSOs[PSO::MODEL] = new CModelPSO();
+	m_ppCPSOs[PSO::DEBUG] = new CDebugPSO();
+
+	m_ppCPSOs[PSO::TEXTURE]->Initialize(pd3dDevice, m_pd3dGraphicsRootSignature);
+	m_ppCPSOs[PSO::ILLUMINATEDTEXTURE]->Initialize(pd3dDevice, m_pd3dGraphicsRootSignature);
+	m_ppCPSOs[PSO::MODEL]->Initialize(pd3dDevice, m_pd3dGraphicsRootSignature);
+	m_ppCPSOs[PSO::DEBUG]->Initialize(pd3dDevice, m_pd3dGraphicsRootSignature);
+
+	m_ppPipelineStates[PSO::TEXTURE] = m_ppCPSOs[PSO::TEXTURE]->GetPipelineState();
+	m_ppPipelineStates[PSO::ILLUMINATEDTEXTURE] = m_ppCPSOs[PSO::ILLUMINATEDTEXTURE]->GetPipelineState();
+	m_ppPipelineStates[PSO::MODEL] = m_ppCPSOs[PSO::MODEL]->GetPipelineState();
+	m_ppPipelineStates[PSO::DEBUG] = m_ppCPSOs[PSO::DEBUG]->GetPipelineState();
+
+	// 메쉬만드는 곳
+	CTestMesh *pTestMesh = new CTestMesh(pd3dDevice, pd3dCommandList);
+	CTestMesh *pTestMesh2 = new CTestMesh(pd3dDevice, pd3dCommandList, 5);
+	CModelMesh *pTestModelMesh = new CModelMesh(pd3dDevice, pd3dCommandList, "Assets/Models/character_2_com3");
+	CModelMesh **ppLevelMeshes = NULL;
+
+	int nLevelMeshes = 6;
+	ppLevelMeshes = new CModelMesh*[nLevelMeshes];
+//	ppLevelMeshes[0] = new CModelMesh(pd3dDevice, pd3dCommandList, "Assets/Models/map_lobby_box1");
+	//ppLevelMeshes[1] = new CModelMesh(pd3dDevice, pd3dCommandList, "Assets/Models/map_lobby_oilTank001");
+	//ppLevelMeshes[2] = new CModelMesh(pd3dDevice, pd3dCommandList, "Assets/Models/map_lobby_oilTank002");
+	//ppLevelMeshes[3] = new CModelMesh(pd3dDevice, pd3dCommandList, "Assets/Models/map_lobby_upFloor");
+	//ppLevelMeshes[4] = new CModelMesh(pd3dDevice, pd3dCommandList, "Assets/Models/map_lobby_level");
+	//ppLevelMeshes[5] = new CModelMesh(pd3dDevice, pd3dCommandList, "Assets/Models/map_lobby_stair1");
+
+
+	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
+	CreateCbvAndSrvDescriptorHeaps(m_pd3dDevice, m_pd3dCommandList, nObjects, 1);
+	CreateShaderVariables(m_pd3dDevice, m_pd3dCommandList, nObjects);
+	CreateConstantBufferViews(m_pd3dDevice, m_pd3dCommandList, nObjects, m_pd3dcbObjects, ncbElementBytes);
+
+	// 마테리얼에 텍스처 등록하는 곳
+	m_nMaterial = 3;
+	m_ppMaterial = new CMaterial*[m_nMaterial];
+	{
+		CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
+		pTexture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/box_diff.dds", 0);
+		CMaterial *mat = new CMaterial();
+		mat->SetTexture(pTexture);
+		mat->SetReflection(1);
+		m_ppMaterial[0] = mat;
+		CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, pTexture, RootParameter::TEXTURE, false);
+	}
+	{
+		CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
+		pTexture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/character_2_diff_test3.dds", 0);
+		CMaterial *mat = new CMaterial();
+		mat->SetTexture(pTexture);
+		mat->SetReflection(1);
+		m_ppMaterial[1] = mat;
+		CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, pTexture, RootParameter::TEXTURE, false);
+	}
+	{
+		CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
+		pTexture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/wall_test_diff.dds", 0);
+		CMaterial *mat = new CMaterial();
+		mat->SetTexture(pTexture);
+		mat->SetReflection(1);
+		m_ppMaterial[2] = mat;
+		CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, pTexture, RootParameter::TEXTURE, false);
+	}
+
+	/*여기가 박스 모델*/
+	for (int i = 0; i < m_nObjects; i++) {
+		CCollideObejct *pObj = new CCollideObejct();
+		CTestMesh *pLevelMesh = new CTestMesh(pd3dDevice, pd3dCommandList, m_pLevel->m_pLevelBlocks[i].extent);
+		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
+
+		pObj->SetMesh(0, pLevelMesh);
+		pObj->SetPosition(m_pLevel->m_pLevelBlocks[i].pos);
+		if (i == 5 || i == 3) pObj->SetMaterial(m_ppMaterial[2]);
+		else pObj->SetMaterial(m_ppMaterial[0]);
+		pObj->SetOOBB(m_pLevel->m_pLevelBlocks[i].pos, m_pLevel->m_pLevelBlocks[i].extent, orientation);
+		pObj->SetOOBBMesh(pd3dDevice, pd3dCommandList);
+
+		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
+		m_ppObjects[i] = pObj;
+	}
+
+	/*여기가 움직이는 모델*/
+	for (int i = 0; i < m_nPlayers; i++) {
+		CPlayerObject *pObj = new CPlayerObject();
+
+		XMFLOAT3 pos = XMFLOAT3(m_pLevel->m_pSpawnPoints[i]);
+		XMFLOAT3 extents = pTestModelMesh->GetExtents();			//반지름 아니고 지름임
+		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
+
+		pObj->SetMesh(0, pTestModelMesh);
+		pObj->SetPosition(pos);
+		pObj->SetMaterial(m_ppMaterial[1]);
+		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * ((m_nObjects)+i));
+
+		pObj->Initialize();
+		pObj->SetTeam(i % 2);
+		pObj->SetOOBB(pos, extents, orientation);
+		pObj->SetOOBBMesh(pd3dDevice, pd3dCommandList);
+		pObj->AddRotateAngle(XMFLOAT3(0.0f, 90.0f * i, 0.0f));
+		m_ppPlayers[i] = pObj;
+	}
+
+	for (int i = 0; i < m_nProjectileObjects; i++) {
+		CProjectileObject *pObj = new CProjectileObject();
+
+		XMFLOAT3 pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		XMFLOAT3 extents = XMFLOAT3(5.0f, 5.0f, 5.0f);			//반지름 아니고 지름임
+		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
+
+		pObj->SetMesh(0, pTestMesh2);
+		pObj->SetPosition(0.0f, 0.0f, 0.0f);
+		pObj->SetMaterial(m_ppMaterial[0]);
+		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * ((m_nObjects + m_nPlayers) + i));
+
+		pObj->Initialize();
+		pObj->SetTeam((i / PO_PER_PLAYER) % 2);
+		pObj->m_alive = false;
+
+		pObj->SetOOBB(pos, extents, orientation);
+		pObj->SetOOBBMesh(pd3dDevice, pd3dCommandList);
+
+		m_ppProjectileObjects[i] = pObj;
+	}
+
+	// 처음 따라갈 캐릭터 정해주기
+	m_pCamera->SetTarget(m_ppPlayers[0]);
+
 }
 
 void CEnterRoomScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 {
+	pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
+
+	pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);
+
+	// HLSL에 넣어줄 카메라 정보 갱신부분
+	m_pCamera->SetViewportsAndScissorRects(pd3dCommandList);
+	m_pCamera->UpdateShaderVariables(pd3dCommandList);
+
+	//테스트용 Object들 내용 갱신부분
+	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
+	for (int i = 0; i < m_nObjects; i++)
+	{
+		CB_OBJECT_INFO *pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pcbMappedGameObjects + (i * ncbElementBytes));
+		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppObjects[i]->m_xmf4x4World)));
+	}
+
+	for (int i = 0; i < m_nPlayers; i++)
+	{
+		CB_OBJECT_INFO *pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pcbMappedGameObjects + ((i + m_nObjects) * ncbElementBytes));
+		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppPlayers[i]->m_xmf4x4World)));
+	}
+
+	for (int i = 0; i < m_nProjectileObjects; i++)
+	{
+		CB_OBJECT_INFO *pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pcbMappedGameObjects + ((i + m_nObjects + m_nPlayers) * ncbElementBytes));
+		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppProjectileObjects[i]->m_xmf4x4World)));
+	}
+
+	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::MODEL]);
+	for (int i = 0; i < m_nPlayers; i++) if (!m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->Render(pd3dCommandList, m_pCamera);
+
+	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::ILLUMINATEDTEXTURE]);
+	for (int i = 0; i < m_nObjects; ++i) m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
+	for (int i = 0; i < m_nProjectileObjects; ++i) if (!m_ppProjectileObjects[i]->IsDead()) m_ppProjectileObjects[i]->Render(pd3dCommandList, m_pCamera);
+
+	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::DEBUG]);
+	for (int i = 0; i < m_nObjects; ++i) m_ppObjects[i]->TestRender(pd3dCommandList, m_pCamera);
+	for (int i = 0; i < m_nPlayers; i++) if (!m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->TestRender(pd3dCommandList, m_pCamera);
+	for (int i = 0; i < m_nProjectileObjects; ++i) if (!m_ppProjectileObjects[i]->IsDead()) m_ppProjectileObjects[i]->TestRender(pd3dCommandList, m_pCamera);
+
 }
 
 void CEnterRoomScene::Update(float fTimeElapsed)
 {
+	for (int i = 0; i < m_nProjectileObjects; i++) if (!m_ppProjectileObjects[i]->IsDead()) m_ppProjectileObjects[i]->MoveOOBB(fTimeElapsed);
+
+	for (int i = 0; i < m_nPlayers; i++)
+		if (!m_ppPlayers[i]->IsDead()) {
+			/*탄과 충돌체크*/
+			for (int j = 0; j < m_nProjectileObjects; ++j)
+				if (m_ppPlayers[i]->m_team != m_ppProjectileObjects[j]->m_team)
+					if (!m_ppProjectileObjects[j]->IsDead())
+						if (m_ppPlayers[i]->IsCollide(m_ppProjectileObjects[j]->m_collisionBox)) {
+							printf("col");
+							m_ppProjectileObjects[j]->m_alive = false;
+							m_ppPlayers[i]->Damaged(10);
+							break;
+						}
+
+			//먼저 이동
+			m_ppPlayers[i]->MoveOOBB(fTimeElapsed);
+			/*지형과 충돌체크*/
+			for (int j = 0; j < m_nObjects; ++j)
+				if (m_ppPlayers[i]->IsCollide(m_ppObjects[j]->m_collisionBox)) {
+					//m_ppPlayers[i]->isCollide = true;
+					//충돌했으니까 이동은 무효로
+					m_ppPlayers[i]->MoveOOBB(-fTimeElapsed);
+					break;
+				}
+
+			//먼저 떨어짐
+			m_ppPlayers[i]->FallingOOBB(fTimeElapsed);
+			m_ppPlayers[i]->isFalling = true;
+
+			for (int j = 0; j < m_nObjects; ++j)
+				if (m_ppPlayers[i]->IsCollide(m_ppObjects[j]->m_collisionBox)) {
+					//충돌했으니까 이동은 무효로
+					m_ppPlayers[i]->isFalling = false;
+					m_ppPlayers[i]->m_collisionBox.Center.y = m_ppPlayers[i]->prevHeight;
+					m_ppPlayers[i]->m_fGravityAccel = 0;
+					break;
+				}
+		}
+
+	//가만히 있는 오브젝트를 갱신을 해줘야 할까? 저는 아니라고 생각합니다.
+	for (int i = 0; i < m_nPlayers; i++) if (!m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->Update(fTimeElapsed);
+	for (int i = 0; i < m_nProjectileObjects; i++) if (!m_ppProjectileObjects[i]->IsDead()) m_ppProjectileObjects[i]->Update(fTimeElapsed);
+
+	m_pCamera->Update(fTimeElapsed);
 }
 
 void CEnterRoomScene::ProcessInput(UCHAR * pKeysBuffer)
 {
+	float cxDelta = 0.0f, cyDelta = 0.0f;
+	POINT ptCursorPos;
+
+	GetCursorPos(&ptCursorPos);
+	cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
+	cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
+	//	SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
+
+	//if (cxDelta) m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, cxDelta * MOUSE_XSPEED, 0 });
+
+	XMFLOAT3 xmf3temp;
+	if (pKeysBuffer[KEY::W] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetLook(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, MOVE_SPEED)); }
+	if (pKeysBuffer[KEY::A] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetRight(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -MOVE_SPEED)); }
+	if (pKeysBuffer[KEY::S] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetLook(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -MOVE_SPEED)); }
+	if (pKeysBuffer[KEY::D] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetRight(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, MOVE_SPEED)); }
+	if (pKeysBuffer[KEY::Q] & 0xF0) { m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, -ROTATE_SPEED, 0 }); }
+	if (pKeysBuffer[KEY::E] & 0xF0) { m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, ROTATE_SPEED, 0 }); }
+
+	if (pKeysBuffer[KEY::_1] & 0xF0)
+		if (m_pCamera->GetTarget() != m_ppPlayers[0])
+			m_pCamera->SetTarget(m_ppPlayers[0]);
+
+	if (pKeysBuffer[KEY::_2] & 0xF0)
+		if (m_pCamera->GetTarget() != m_ppPlayers[1])
+			m_pCamera->SetTarget(m_ppPlayers[1]);
+
+	if (pKeysBuffer[VK_LBUTTON] & 0xF0) {
+		//attack
+
+		if (m_ppPlayers[0]->IsFireable()) {
+			m_ppPlayers[0]->Attack();
+			for (int i = 0; i < PO_PER_PLAYER; ++i) {
+				if (!m_ppProjectileObjects[(m_nPlayers * 0) + i]->m_alive) {
+					m_ppProjectileObjects[(m_nPlayers * 0) + i]->m_alive = true;
+					m_ppProjectileObjects[(m_nPlayers * 0) + i]->Initialize(m_ppPlayers[0]);
+					printf("fire");
+					break;
+				}
+			}
+		}
+	}
+
+	if (pKeysBuffer[VK_SPACE] & 0xF0) {
+		//jump
+		if (!m_ppPlayers[0]->isFalling) m_ppPlayers[0]->Jump();
+
+		//XMFLOAT4X4 matrix = m_ppPlayers[0]->m_xmf4x4World;
+		//printf("matrix is\n");
+		//printf("%f %f %f %f\n", matrix._11, matrix._12, matrix._13, matrix._14);
+		//printf("%f %f %f %f\n", matrix._21, matrix._22, matrix._23, matrix._24);
+		//printf("%f %f %f %f\n", matrix._31, matrix._32, matrix._33, matrix._34);
+		//printf("%f %f %f %f\n", matrix._41, matrix._42, matrix._43, matrix._44);
+	}
+
+	if (pKeysBuffer[VK_RETURN] & 0xF0) {
+		//jump
+		m_pFramework->ChangeScene(Scenes::PLAY, m_pFramework);
+
+		//XMFLOAT4X4 matrix = m_ppPlayers[0]->m_xmf4x4World;
+		//printf("matrix is\n");
+		//printf("%f %f %f %f\n", matrix._11, matrix._12, matrix._13, matrix._14);
+		//printf("%f %f %f %f\n", matrix._21, matrix._22, matrix._23, matrix._24);
+		//printf("%f %f %f %f\n", matrix._31, matrix._32, matrix._33, matrix._34);
+		//printf("%f %f %f %f\n", matrix._41, matrix._42, matrix._43, matrix._44);
+	}
+
 }
 
 void CEnterRoomScene::OnProcessingMouseMessage()
@@ -333,7 +659,6 @@ CPlayScene::~CPlayScene()
 {
 }
 
-#define PO_PER_PLAYER 16
 void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext)
 {
 	CGroundScene::Initialize(pd3dDevice, pd3dCommandList, pContext);
@@ -491,7 +816,6 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 
 void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 {
-	//문제였었던 부분 칙쇼~~~~~~~~
 	pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
 
 	pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);
@@ -584,9 +908,7 @@ void CPlayScene::Update(float fTimeElapsed)
 	m_pCamera->Update(fTimeElapsed);
 }
 
-#define MOUSE_XSPEED 10
-#define MOVE_SPEED 1.5
-#define ROTATE_SPEED 300
+
 void CPlayScene::ProcessInput(UCHAR * pKeysBuffer)
 {
 	float cxDelta = 0.0f, cyDelta = 0.0f;
@@ -633,7 +955,7 @@ void CPlayScene::ProcessInput(UCHAR * pKeysBuffer)
 
 	if (pKeysBuffer[VK_SPACE] & 0xF0) {
 		//jump
-		if(!m_ppPlayers[0]->isFalling) m_ppPlayers[0]->m_fGravityAccel -= G * 3;
+		if(!m_ppPlayers[0]->isFalling) m_ppPlayers[0]->Jump();
 
 		//XMFLOAT4X4 matrix = m_ppPlayers[0]->m_xmf4x4World;
 		//printf("matrix is\n");
@@ -814,6 +1136,14 @@ void CScene::CreateConstantBufferViews(ID3D12Device * pd3dDevice, ID3D12Graphics
 
 void CScene::CreateShaderResourceViews(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, CTexture * pTexture, UINT nRootParameterStartIndex, bool bAutoIncrement)
 {
+}
+
+void CScene::ReleaseShaderVariables()
+{
+	if (m_pd3dcbObjects) {
+		m_pd3dcbObjects->Unmap(0, NULL);
+		m_pd3dcbObjects->Release();
+	}
 }
 
 void CPSO::CreatePipelineStateDesc(ID3D12Device * pd3dDevice, ID3D12RootSignature * pd3dGraphicsRootSignature)

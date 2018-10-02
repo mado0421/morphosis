@@ -109,7 +109,7 @@ public:
 	}
 	void FallingOOBB(float fTimeElapsed) {
 		prevHeight = m_collisionBox.Center.y;
-		m_fGravityAccel += fTimeElapsed * G * 6;
+		m_fGravityAccel += fTimeElapsed * G;
 		m_collisionBox.Center.y -= m_fGravityAccel;
 	}
 
@@ -117,21 +117,6 @@ public:
 
 	void AddPosVariation(XMFLOAT3 xmf3Velocity);
 	void AddRotateAngle(XMFLOAT3 xmf3Angle);
-
-	/*
-	충돌체크
-	*/
-	//bool IsOnBlock(const BoundingOrientedBox &levelOOBB)
-	//{
-	//	if (m_collisionBox.Center.y > levelOOBB.Center.y + levelOOBB.Extents.y) {
-	//		XMFLOAT3 temp = GetPosition();
-	//		temp.y = levelOOBB.Center.y + levelOOBB.Extents.y;
-	//		SetPosition(temp);
-	//		m_bStand = true;
-	//		return true;
-	//	}
-	//	return false;
-	//}
 };
 
 #define TIMER_ATT 0.05
@@ -143,6 +128,7 @@ public:
 	float m_timer = 0;
 	float m_attTimer = 0;
 	bool m_team = 0;
+	bool m_jump = false;
 
 public:
 	virtual void Initialize();
@@ -150,6 +136,7 @@ public:
 
 	void Attack();
 	void Damaged(int val);
+	void Jump();
 
 	void SetTeam(bool team) { m_team = team; }
 

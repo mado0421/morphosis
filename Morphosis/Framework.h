@@ -67,8 +67,6 @@ public:
 	void CreateDirect3DDevice();
 	void CreateRtvAndDsvDescriptorHeaps();
 
-	// 나중에 RT를 많이 늘리고 싶으면 이 부분 함수 수정하기
-	// 컴퓨트 쉐이더나 디퍼드 렌더링 등 쓰려면 여기 고쳐야 할 것
 	void CreateRenderTargetViews();
 	void CreateDepthStencilView();
 	void CreateCommandQueueAndList();

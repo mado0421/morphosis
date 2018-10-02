@@ -117,7 +117,7 @@ m_pTargetPlaceBlocks[i].extent.z	*= LEVELSIZE/2.0;
 
 */
 
-#define LEVELSIZE 20
+#define LEVELSIZE 40
 bool CLevelData::FileRead(const char * fileName)
 {
 	std::ifstream fs;
