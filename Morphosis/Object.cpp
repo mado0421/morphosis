@@ -204,7 +204,7 @@ void CPlayerObject::Update(float fTimeElapsed)
 	{
 		CMovingObject::Update(fTimeElapsed);
 		if (m_jump) {
-			m_fGravityAccel = -fTimeElapsed * G * 350;
+			m_fGravityAccel = -fTimeElapsed * G * 450;
 			m_jump = false;
 		}
 		if (!IsFireable()) m_attTimer -= fTimeElapsed;
@@ -274,4 +274,31 @@ void CCollideObejct::TestRender(ID3D12GraphicsCommandList * pd3dCommandList, CCa
 			if (m_ppTestMeshes[i]) m_ppTestMeshes[i]->Render(pd3dCommandList);
 		}
 	}
+}
+
+CDefaultUI::CDefaultUI()
+{
+	extents.x = 0;
+	extents.y = 0;
+	texIdx = 0;
+}
+
+CDefaultUI::~CDefaultUI()
+{
+}
+
+void CDefaultUI::SetRootParameter(ID3D12GraphicsCommandList * pd3dCommandList)
+{
+	pd3dCommandList->SetGraphicsRootDescriptorTable(RootParameter::UI, m_d3dCbvGPUDescriptorHandle);
+}
+
+void CDefaultUI::SetExtents(XMFLOAT2 ext)
+{
+	SetExtents(ext.x, ext.y);
+}
+
+void CDefaultUI::SetExtents(float x, float y)
+{
+	extents.x = x;
+	extents.x = y;
 }

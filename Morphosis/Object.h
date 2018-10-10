@@ -9,6 +9,11 @@ struct CB_OBJECT_INFO {
 	UINT		m_nMaterialIndex;
 };
 
+struct CB_UI_INFO {
+	XMFLOAT4X4	m_xmf4x4World;
+	UINT		m_nMaterialIndex;
+};
+
 class CObject
 {
 public:
@@ -109,7 +114,7 @@ public:
 	}
 	void FallingOOBB(float fTimeElapsed) {
 		prevHeight = m_collisionBox.Center.y;
-		m_fGravityAccel += fTimeElapsed * G;
+		m_fGravityAccel += fTimeElapsed * G * 16.5;
 		m_collisionBox.Center.y -= m_fGravityAccel;
 	}
 
@@ -162,6 +167,19 @@ public:
 
 class CDefaultUI : public CObject
 {
+public:
+	CDefaultUI();
+	~CDefaultUI();
+
+public:
+	virtual void SetRootParameter(ID3D12GraphicsCommandList *pd3dCommandList);
+	virtual void SetExtents(XMFLOAT2 extents);
+	virtual void SetExtents(float x, float y);
+
+	//위치, 크기(Extents), 텍스쳐 인덱스
+public:
+	XMFLOAT2 extents;
+	unsigned int texIdx;
 
 };
 
