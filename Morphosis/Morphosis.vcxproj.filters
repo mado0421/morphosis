@@ -157,6 +157,7 @@
   <ItemGroup>
     <None Include="Header.hlsli" />
     <None Include="VertexShader.hlsl" />
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PixelShader.hlsl" />

@@ -359,7 +359,7 @@ void CEnterRoomScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComman
 
 	int nLevelMeshes = 6;
 	ppLevelMeshes = new CModelMesh*[nLevelMeshes];
-//	ppLevelMeshes[0] = new CModelMesh(pd3dDevice, pd3dCommandList, "Assets/Models/map_lobby_box1");
+	//ppLevelMeshes[0] = new CModelMesh(pd3dDevice, pd3dCommandList, "Assets/Models/map_lobby_box1");
 	//ppLevelMeshes[1] = new CModelMesh(pd3dDevice, pd3dCommandList, "Assets/Models/map_lobby_oilTank001");
 	//ppLevelMeshes[2] = new CModelMesh(pd3dDevice, pd3dCommandList, "Assets/Models/map_lobby_oilTank002");
 	//ppLevelMeshes[3] = new CModelMesh(pd3dDevice, pd3dCommandList, "Assets/Models/map_lobby_upFloor");
@@ -964,6 +964,12 @@ void CPlayScene::ProcessInput(UCHAR * pKeysBuffer)
 		//printf("%f %f %f %f\n", matrix._31, matrix._32, matrix._33, matrix._34);
 		//printf("%f %f %f %f\n", matrix._41, matrix._42, matrix._43, matrix._44);
 	}
+
+	if (pKeysBuffer[VK_RETURN] & 0xF0) {
+		//jump
+		m_pFramework->ChangeScene(Scenes::ENTERROOM, m_pFramework);
+	}
+
 }
 
 void CPlayScene::OnProcessingMouseMessage()

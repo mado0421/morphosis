@@ -15,9 +15,9 @@ bool CFBXData::ReadFile(const char * fileName)
 		m_pMaterial = new FBX::Material[m_nMaterial];
 		fs.read((char*)m_pMaterial, sizeof(FBX::Material)*m_nMaterial);
 	}
-	else {
-		return FileErrorShutDown(fs);
-	}
+	//else {
+	//	return FileErrorShutDown(fs);
+	//}
 
 	/*	Read Texture File Name	*/
 	fs.read((char*)&m_nName, sizeof(int));
@@ -25,9 +25,9 @@ bool CFBXData::ReadFile(const char * fileName)
 		m_pName = new FBX::Name[m_nName];
 		fs.read((char*)m_pName, sizeof(FBX::Name)*m_nName);
 	}
-	else {
-		return FileErrorShutDown(fs);
-	}
+	//else {
+	//	return FileErrorShutDown(fs);
+	//}
 
 	/*	Read Vertex	*/
 	fs.read((char*)&m_nVertex, sizeof(int));
@@ -35,9 +35,9 @@ bool CFBXData::ReadFile(const char * fileName)
 		m_pVertex = new FBX::Vertex[m_nVertex];
 		fs.read((char*)m_pVertex, sizeof(FBX::Vertex)*m_nVertex);
 	}
-	else {
-		return FileErrorShutDown(fs);
-	}
+	//else {
+	//	return FileErrorShutDown(fs);
+	//}
 
 	/*
 	여기서 버텍스 다 회전시켜줘야 함
@@ -73,9 +73,9 @@ bool CFBXData::ReadFile(const char * fileName)
 		m_pUV = new FBX::UV[m_nUV];
 		fs.read((char*)m_pUV, sizeof(FBX::UV)*m_nUV);
 	}
-	else {
-		return FileErrorShutDown(fs);
-	}
+	//else {
+	//	return FileErrorShutDown(fs);
+	//}
 
 	/*	Read Mesh	*/
 	fs.read((char*)&m_nIAVertex, sizeof(int));
@@ -85,9 +85,9 @@ bool CFBXData::ReadFile(const char * fileName)
 		m_pIAVertex = new FBX::IAVertex[m_nIAVertex];
 		fs.read((char*)m_pIAVertex, sizeof(FBX::IAVertex)*m_nIAVertex);
 	}
-	else {
-		return FileErrorShutDown(fs);
-	}
+	//else {
+	//	return FileErrorShutDown(fs);
+	//}
 
 	fs.close();
 	return true;
