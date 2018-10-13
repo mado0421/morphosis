@@ -12,7 +12,7 @@
 
 
 #define Client_To_Server
-#define CS_MATCHING 1
+#define CS_MatchingING 1
 
 #define CS_MOVE
 #define CS_ATTACK

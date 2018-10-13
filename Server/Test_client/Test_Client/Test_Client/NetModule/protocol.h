@@ -1,5 +1,4 @@
 #pragma once
-#include"../stdafx.h"
 #define SERVER_PORT				8000
 
 #define MAX_BUFF_SIZE			4000

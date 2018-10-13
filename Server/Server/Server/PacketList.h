@@ -10,7 +10,7 @@ public:
 };
 
 
-class CS_R_Packet_Matching : public Packet
+class CS_R_Packet_Matchinging : public Packet
 {
 
 };

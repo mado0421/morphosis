@@ -1,5 +1,4 @@
 #pragma once
-#include"../stdafx.h"
 #pragma pack (push,1)
 
 class Packet
