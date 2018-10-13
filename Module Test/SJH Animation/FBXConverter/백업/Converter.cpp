@@ -75,9 +75,6 @@ void Converter::ReadFile(FBX_DATA format, const char * fileName)
 
 	MergeCurveNode();
 
-	//	For Debuging
-	CheckVertexBoneIndex();
-	CheckWeights();
 
 	if (format == FBX_DATA::Mesh)
 	{
@@ -459,9 +456,8 @@ void Converter::FindCurve()
 
 		for (int i = 0; i < numOfKey; ++i)
 		{
-			__int64 i64 = get64int(&m_buffer) * 0.01;
-			double i64d = i64 / 30790772.f;
-			float timePos = i64d / 30.0f;
+			__int64 i64 = get64int(&m_buffer) * 0.01 / 30790772;
+			float timePos = i64 / 30.0f;
 
 			tempCurve.key[i].timePos = timePos;
 			pass(&m_buffer, " ,\n\t");
@@ -952,7 +948,6 @@ void Converter::Bone_SubDeformer_Hierarchy()
 				{
 					p->boneIdx = bi - m_vBone.begin();
 				}
-
 			}
 		}
 		else if (isIn(m_buffer, "Model::"))
@@ -1241,79 +1236,6 @@ inline XMFLOAT4X4 Converter::Identity()
 	XMFLOAT4X4 xmmtx4x4Result;
 	XMStoreFloat4x4(&xmmtx4x4Result, XMMatrixIdentity());
 	return(xmmtx4x4Result);
-}
-void Converter::CheckVertexBoneIndex()
-{
-	printf("num of Vertex: %d\n", m_vVertex.size());
-	printf("num of Bone: %d\n", m_vBone.size());
-
-	int num = m_vBone.size() + 10;
-	int *count = new int[num];
-	memset(count, 0, sizeof(int)*num);
-
-	for (const auto& p : m_vVertex)
-	{
-		for (int i = 0; i < 4; ++i) 
-		{
-			if (p.weights[i].weight <= 0)break;
-			count[p.weights[i].idx]++;
-		}
-	}
-
-	for (int i = 0; i < num; ++i)
-	{
-		printf("%d	의 갯수:%d\n", i, count[i]);
-	}
-
-	for (int i = 0; i < m_vDeformer.size(); ++i)
-	{
-		
-		printf("%d Deformer의 Bone 인덱스:%d\n", i, m_vDeformer[i].boneIdx);
-	}
-
-	printf("CurveNode가 등록한 Bone index 들\n");
-	for (int i=0;i<m_vNode.size();++i)
-	{
-		printf("%d 노드의 bone Index: %d\n", i, m_vNode[i].bone_index);
-	}
-}
-void Converter::CheckWeights()
-{
-	int one = 0, over = 0, less = 0;
-	int wCnt[4] = { 0,0,0,0 };
-	for (int i = 0; i < m_vVertex.size(); ++i)
-	{
-		float t = 0;
-		int weightCnt = 0;
-		for (int j = 0; j < 4; ++j)
-		{
-			float weight= m_vVertex[i].weights[j].weight;
-			t += weight;
-			if (weight != 0)weightCnt++;
-		}
-		if (t == 1)one++;
-		else if (t > 1) {
-			over++;
-			printf("over : %f\n", t);
-		}
-		else {
-			less++;
-			printf("less : %f\n", t);
-		}
-
-		wCnt[weightCnt - 1]++;
-	}
-	printf("Vertex number: %d\n", m_vVertex.size());
-	printf("Weights 가중치 정도\n");
-	printf("Collect : %d\n", one);
-	printf("Over : %d\n", over);
-	printf("less : %d\n", less);
-
-	printf("weight Cnt\n");
-	printf("count 0	:	%d\n", wCnt[0]);
-	printf("count 1	:	%d\n", wCnt[1]);
-	printf("count 2	:	%d\n", wCnt[2]);
-	printf("count 3	:	%d\n", wCnt[3]);
 }
 /*
 
