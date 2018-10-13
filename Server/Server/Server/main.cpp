@@ -1,27 +1,38 @@
 #include"header.h"
 #include"Client.h"
+#include"Room.h"
+#include"PacketList.h"
 //--------------------------------------------------------------//
 void Initialize();	//	{wsa, iocp, clients }
 void Destroy();
 
 void WorkerThread();
 void AcceptThread();
-//bool PacketProcess(const unsigned char* pBuf);
+
+void ProcessPacket(int clientKey,char* packet);
+
+
+void Test();
 
 //--------------------------------------------------------------//
 HANDLE g_iocp;
 Client g_clients[MAX_CLIENT];
+RoomManager g_rooms;
 
 //--------------------------------------------------------------//
+
 int main()
 {
 	Initialize();
 
+	//Test();
+
 	//	thread make
+	thread accept_thread{ AcceptThread };
+
 	vector<thread> work_thread;
 	for (int i = 0; i < 4; ++i)work_thread.push_back(thread{ WorkerThread });
 
-	thread accept_thread{ AcceptThread };
 	
 	//	thread join
 	for (auto& w : work_thread)w.join();
@@ -34,10 +45,15 @@ int main()
 
 void Initialize()
 {
-	//	data init
+	cout << "Initialize\n";
+
+	//	client init
 	for (auto& c : g_clients){
 		c.Init();
 	}
+
+	//	room init
+	g_rooms.Init();
 
 	//	wsa
 	WSADATA wsadata;
@@ -56,7 +72,7 @@ void WorkerThread()
 	while (true)
 	{
 		unsigned long dwIOSize;
-		unsigned long key;
+		unsigned long long key;
 		WSAOVERLAPPED *pOver;
 
 		bool is_success = GetQueuedCompletionStatus(g_iocp,
@@ -90,7 +106,7 @@ void WorkerThread()
 				if (remain <= r_size) {	// Complete packet
 					memcpy(g_clients[key].prev_packet + g_clients[key].prev_size,
 						ptr, remain);
-					//ProcessPacket  prev_packet
+					ProcessPacket(key, g_clients[key].prev_packet);
 
 					r_size -= remain;
 					ptr += remain;
@@ -120,7 +136,7 @@ void WorkerThread()
 
 void AcceptThread()
 {
-	auto sock_listen = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
+	auto sock_listen = WSASocketW(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
 
 	SOCKADDR_IN bind_addr;
 	ZeroMemory(&bind_addr, sizeof(SOCKADDR_IN));
@@ -128,8 +144,10 @@ void AcceptThread()
 	bind_addr.sin_port = htons(SERVER_PORT);
 	bind_addr.sin_addr.s_addr = INADDR_ANY;
 
-	bind(sock_listen, reinterpret_cast<SOCKADDR*>(&bind_addr), sizeof(SOCKADDR_IN));
+	//	__stdcall bind, std::bind -> ::bind
+	::bind(sock_listen, reinterpret_cast<SOCKADDR*>(&bind_addr), sizeof(SOCKADDR_IN));
 	listen(sock_listen, 1000);
+	cout << "listen\n";
 
 	while (true)
 	{
@@ -148,7 +166,7 @@ void AcceptThread()
 
 		for (int i = 0; i < MAX_CLIENT; ++i)
 		{
-			if (g_clients[i].in_connected = false)
+			if (g_clients[i].in_connected == false)
 			{
 				new_key = i;
 				break;
@@ -176,4 +194,25 @@ void AcceptThread()
 			cout << "Recv in Accept error\n";
 		}
 	}
+}
+
+void ProcessPacket(int cl, char * packet)
+{
+	Packet *p = reinterpret_cast<Packet*>(packet);
+	switch (p->type)
+	{
+	case CS_MatchingING:
+
+		g_rooms.Matching(cl);
+
+		break;
+	default:
+		break;
+	}
+	
+}
+
+void Test()
+{
+
 }
