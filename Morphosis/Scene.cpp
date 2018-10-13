@@ -246,13 +246,13 @@ void CGroundScene::CreateShaderResourceViews(ID3D12Device * pd3dDevice, ID3D12Gr
 	int nTextureType = pTexture->GetTextureType();
 	for (int i = 0; i < nTextures; i++)
 	{
-		ID3D12Resource *pShaderResource = pTexture->GetTexture(i);
+		ID3D12Resource *pShaderResource = pTexture->GetTexture();
 		D3D12_RESOURCE_DESC d3dResourceDesc = pShaderResource->GetDesc();
 		D3D12_SHADER_RESOURCE_VIEW_DESC d3dShaderResourceViewDesc = GetShaderResourceViewDesc(d3dResourceDesc, nTextureType);
 		pd3dDevice->CreateShaderResourceView(pShaderResource, &d3dShaderResourceViewDesc, d3dSrvCPUDescriptorHandle);
 		m_d3dSrvCPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
 
-		pTexture->SetRootArgument(i, (bAutoIncrement) ? (nRootParameterStartIndex + i) : nRootParameterStartIndex, d3dSrvGPUDescriptorHandle);
+		pTexture->SetRootArgument((bAutoIncrement) ? (nRootParameterStartIndex + i) : nRootParameterStartIndex, d3dSrvGPUDescriptorHandle);
 		m_d3dSrvGPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
 	}
 }
@@ -376,8 +376,8 @@ void CEnterRoomScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComman
 	m_nMaterial = 3;
 	m_ppMaterial = new CMaterial*[m_nMaterial];
 	{
-		CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
-		pTexture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/box_diff.dds", 0);
+		CTexture *pTexture = new CTexture(RESOURCE_TEXTURE2D);
+		pTexture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/box_diff.dds");
 		CMaterial *mat = new CMaterial();
 		mat->SetTexture(pTexture);
 		mat->SetReflection(1);
@@ -385,8 +385,8 @@ void CEnterRoomScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComman
 		CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, pTexture, RootParameter::TEXTURE, false);
 	}
 	{
-		CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
-		pTexture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/character_2_diff_test3.dds", 0);
+		CTexture *pTexture = new CTexture(RESOURCE_TEXTURE2D);
+		pTexture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/character_2_diff_test3.dds");
 		CMaterial *mat = new CMaterial();
 		mat->SetTexture(pTexture);
 		mat->SetReflection(1);
@@ -394,8 +394,8 @@ void CEnterRoomScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComman
 		CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, pTexture, RootParameter::TEXTURE, false);
 	}
 	{
-		CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
-		pTexture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/wall_test_diff.dds", 0);
+		CTexture *pTexture = new CTexture(RESOURCE_TEXTURE2D);
+		pTexture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/wall_test_diff.dds");
 		CMaterial *mat = new CMaterial();
 		mat->SetTexture(pTexture);
 		mat->SetReflection(1);
@@ -732,8 +732,8 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	m_nMaterial = 3;
 	m_ppMaterial = new CMaterial*[m_nMaterial];
 	{
-		CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
-		pTexture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/box_diff.dds", 0);
+		CTexture *pTexture = new CTexture(RESOURCE_TEXTURE2D);
+		pTexture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/box_diff.dds");
 		CMaterial *mat = new CMaterial();
 		mat->SetTexture(pTexture);
 		mat->SetReflection(1);
@@ -741,8 +741,8 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 		CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, pTexture, RootParameter::TEXTURE, false);
 	}
 	{
-		CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
-		pTexture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/character_2_diff_test3.dds", 0);
+		CTexture *pTexture = new CTexture(RESOURCE_TEXTURE2D);
+		pTexture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/character_2_diff_test3.dds");
 		CMaterial *mat = new CMaterial();
 		mat->SetTexture(pTexture);
 		mat->SetReflection(1);
@@ -750,8 +750,8 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 		CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, pTexture, RootParameter::TEXTURE, false);
 	}
 	{
-		CTexture *pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0);
-		pTexture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/wall_test_diff.dds", 0);
+		CTexture *pTexture = new CTexture(RESOURCE_TEXTURE2D);
+		pTexture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/wall_test_diff.dds");
 		CMaterial *mat = new CMaterial();
 		mat->SetTexture(pTexture);
 		mat->SetReflection(1);

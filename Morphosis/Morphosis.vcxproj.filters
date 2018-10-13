@@ -114,6 +114,9 @@
     <ClCompile Include="Weapon.cpp">
       <Filter>소스 파일\Weapon</Filter>
     </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>소스 파일\Mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Morphosis.rc">
@@ -185,6 +188,9 @@
     </ClInclude>
     <ClInclude Include="Weapon.h">
       <Filter>소스 파일\Weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>소스 파일\Mesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

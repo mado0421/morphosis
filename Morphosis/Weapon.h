@@ -19,6 +19,7 @@ public:
 	void Fire();
 	void Reload();
 	void Update(float time);
+	void Init(const WeaponDescription& Info);
 
 	//ÀÜÅºÀÌ ¾øÀ» °æ¿ì
 	bool isZeroAmmo() { return (curAmmo <= 0); }

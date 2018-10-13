@@ -7,14 +7,12 @@ CMaterial::CMaterial()
 
 CMaterial::~CMaterial()
 {
-	if (m_pTexture) m_pTexture->Release();
+	if (m_pTexture) delete m_pTexture;
 }
 
 void CMaterial::SetTexture(CTexture *pTexture)
 {
-	if (m_pTexture) m_pTexture->Release();
 	m_pTexture = pTexture;
-	if (m_pTexture) m_pTexture->AddRef();
 }
 
 void CMaterial::UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList)

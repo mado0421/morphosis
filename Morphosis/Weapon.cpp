@@ -33,6 +33,11 @@ void CWeapon::Update(float time)
 	if (isReloadEnd()) isReloading = false;
 }
 
+void CWeapon::Init(const WeaponDescription & info)
+{
+	defaultInfo = info;
+}
+
 CWeapon::CWeapon()
 {
 }
