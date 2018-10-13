@@ -163,6 +163,7 @@
     <ClCompile Include="Technic.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Morphosis.rc" />
@@ -190,6 +191,7 @@
     <ClInclude Include="Technic.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="Weapon.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
