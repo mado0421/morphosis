@@ -6,12 +6,11 @@ void Destroy();
 
 void WorkerThread();
 void AcceptThread();
+//bool PacketProcess(const unsigned char* pBuf);
 
 //--------------------------------------------------------------//
 HANDLE g_iocp;
 Client g_clients[MAX_CLIENT];
-
-
 
 //--------------------------------------------------------------//
 int main()
@@ -33,18 +32,11 @@ int main()
 	return 0;
 }
 
-
 void Initialize()
 {
 	//	data init
-	for (auto& c : g_clients)
-	{
-		c.in_connected = false;
-		c.exover.event_type = false;
-		c.exover.wsabuf.buf = c.exover.IOCPbuf;
-		c.exover.wsabuf.len = sizeof(c.exover.IOCPbuf);
-		c.packet_size = 0;
-		c.prev_size = 0;
+	for (auto& c : g_clients){
+		c.Init();
 	}
 
 	//	wsa
@@ -63,7 +55,66 @@ void WorkerThread()
 {
 	while (true)
 	{
+		unsigned long dwIOSize;
+		unsigned long key;
+		WSAOVERLAPPED *pOver;
 
+		bool is_success = GetQueuedCompletionStatus(g_iocp,
+			&dwIOSize, &key, &pOver, INFINITE);
+		cout << "GQCS from client [" << key << "] with size [" << dwIOSize << "]\n";
+
+		//	俊矾 贸府
+		if (is_success == 0) {
+			cout << "Error in GQCS ket [" << key << "]\n";
+			continue;
+		}
+
+		//	立加 辆丰 贸府
+		if (dwIOSize == 0) {
+			continue;
+		}
+
+		//	send/recv 贸府
+		EXOver *o = reinterpret_cast<EXOver*>(pOver);
+		if (o->event_type == EVT_RECV) {
+			//	犁炼赋
+			int r_size = dwIOSize;
+			char* ptr = o->IOCPbuf;
+			while (0 < r_size)
+			{
+				if (g_clients[key].packet_size == 0){
+					g_clients[key].packet_size = ptr[0];
+				}
+
+				int remain = g_clients[key].packet_size - g_clients[key].prev_size;
+				if (remain <= r_size) {	// Complete packet
+					memcpy(g_clients[key].prev_packet + g_clients[key].prev_size,
+						ptr, remain);
+					//ProcessPacket  prev_packet
+
+					r_size -= remain;
+					ptr += remain;
+					g_clients[key].packet_size = 0;
+					g_clients[key].prev_size = 0;
+				}
+				else
+				{	//	Incomplete packet
+					memcpy(g_clients[key].prev_packet + g_clients[key].prev_size,
+						ptr,
+						r_size);
+					g_clients[key].prev_size += r_size;
+					r_size = 0;
+				}
+			}
+			unsigned long flag = 0;
+			ZeroMemory(&o->wsaover, sizeof(WSAOVERLAPPED));
+			WSARecv(g_clients[key].socket, &o->wsabuf, 1, NULL,
+				&flag, &o->wsaover, NULL);
+		}
+		else if (o->event_type == EVT_SEND) {
+			delete o;
+			// -q
+		}
 	}
 }
 
@@ -103,14 +154,14 @@ void AcceptThread()
 				break;
 			}
 		}
-		
+
 		if (new_key == -1) {
 			cout << "full of user\n";
 			continue;
 		}
 
 		// client init
-		g_clients[new_key].exover.event_type = true;
+		g_clients[new_key].exover.event_type = EVT_RECV;
 		g_clients[new_key].exover.wsabuf.buf = g_clients[new_key].exover.IOCPbuf;
 		g_clients[new_key].exover.wsabuf.len = sizeof(g_clients[new_key].exover.IOCPbuf);
 		ZeroMemory(&g_clients[new_key].exover.wsaover, sizeof(WSAOVERLAPPED));
@@ -124,6 +175,5 @@ void AcceptThread()
 		if (ret != 0) {
 			cout << "Recv in Accept error\n";
 		}
-
-	}	
+	}
 }

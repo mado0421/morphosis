@@ -17,3 +17,8 @@ struct EXOver {
 	char IOCPbuf[MAX_BUFF_SIZE];
 	char event_type;
 };
+
+
+static const char EVT_RECV = 0;
+static const char EVT_SEND = 1;
+

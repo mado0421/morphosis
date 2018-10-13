@@ -6,7 +6,7 @@ struct Client {
 	bool in_connected;
 
 	// POSITION
-
+	
 	// OTHER
 
 
@@ -15,4 +15,7 @@ struct Client {
 	int packet_size;
 	int prev_size;
 	char prev_packet[MAX_PACKET_SIZE];
+	
+public:
+	void Init();
 };
