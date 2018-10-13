@@ -662,13 +662,14 @@ CPlayScene::~CPlayScene()
 void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext)
 {
 	CGroundScene::Initialize(pd3dDevice, pd3dCommandList, pContext);
-
-	m_pLevel = new CLevelData();
-	m_pLevel->FileRead("Assets/Levels/Level_0.dat");
-
 	m_pd3dDevice = pd3dDevice;
 	m_pd3dCommandList = pd3dCommandList;
 
+	//LoadLevel("Level_0");
+	m_pLevel = new CLevelData();
+	m_pLevel->FileRead("Assets/Levels/Level_0.dat");
+
+	//CreateObjects();
 	m_nObjects = m_pLevel->m_nLevelBlocks;
 	m_ppObjects = new CCollideObejct*[m_nObjects];
 
@@ -680,7 +681,13 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 
 	int nObjects = m_nObjects + m_nPlayers + m_nProjectileObjects;
 
+	//m_nUIObjects = 100;
+	//m_ppUIObjects = new CDefaultUI*[m_nUIObjects];
+
+
+
 	// Camera 초기화
+	//InitCamera();
 	m_pCamera = new CFollowCamera();
 	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
@@ -689,6 +696,7 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 
 	// PSO 초기화
 	// 저기서 RootSignature 쓰니까 그 전에 RootSignature 만들어줘야 함
+	//InitPSOs();
 	m_nPipelineStates = PSO::count;
 	m_ppPipelineStates = new ID3D12PipelineState*[m_nPipelineStates];
 
@@ -709,6 +717,8 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	m_ppPipelineStates[PSO::DEBUG] = m_ppCPSOs[PSO::DEBUG]->GetPipelineState();
 
 	// 메쉬만드는 곳
+	// 메쉬 만드는 것도 levelData 만들면서 모델 임포트 하고 마테리얼 임포트하고 해야하는거 아님?
+	// 아 유니티 쓰지 말고 언리얼 쓰자
 	CTestMesh *pTestMesh = new CTestMesh(pd3dDevice, pd3dCommandList);
 	CTestMesh *pTestMesh2 = new CTestMesh(pd3dDevice, pd3dCommandList, 5);
 	CModelMesh *pTestModelMesh = new CModelMesh(pd3dDevice, pd3dCommandList, "Assets/Models/character_2_com3");
@@ -748,6 +758,11 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 		m_ppMaterial[2] = mat;
 		CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, pTexture, RootParameter::TEXTURE, false);
 	}
+
+	//for (int i = 0; i < m_nUIObjects; ++i) {
+	//	m_ppObjects[i]->Initialize();
+
+	//}
 
 	/*여기가 박스 모델*/
 	for (int i = 0; i < m_nObjects; i++) {

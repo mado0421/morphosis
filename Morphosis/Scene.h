@@ -5,35 +5,6 @@
 
 class CFramework;
 
-/*
-GPU로 전달해주기 위한 상수버퍼 형식 구조체들
-위치, 재질
-
-크기가 변하는 UI 같은 경우는 전체 크기와 변화량을 같이 넣어줘야 한다.
-*/
-
-//// 기본적인 오브젝트들 전용(크기 변동이 없는 기본적인 UI
-//struct CB_OBJECT_INFO {
-//	XMFLOAT4X4	m_xmf4x4World;
-//	UINT		m_nMaterialIndex;
-//};
-//
-//struct CB_FLEXIBLEUI_INFO {
-//	XMFLOAT4X4	m_xmf4x4World;
-//	UINT		m_nMaterialIndex;
-//	XMFLOAT4	m_xmf4Rect;			// var top left bottom right
-//};
-
-/*
-EnterRoomScene과 PlayScene에서 사용할 클래스
-조명, 오브젝트, 캐릭터, UI, 레벨 데이터, 파티클, 이펙트, 투사체 등의 배열이 필요
-이를 총괄할 ID3D12Resource 인터페이스가 필요함
-
-Scene에서 PSO를 가져야 할까?
-PSO 리스트를 Scene에서 가져야 하는가?
-Shader 클래스에서 가지고 있던 것은?
-서술자 핸들도 갖고 있네 뭐지
-*/
 namespace PSO {
 	enum {
 		//CHAR = 0,
@@ -62,7 +33,6 @@ public:
 
 public:
 	virtual void Initialize(ID3D12Device * pd3dDevice, ID3D12RootSignature * pd3dGraphicsRootSignature);
-
 
 	// PSO를 만드는 부분
 	virtual void						CreatePipelineStateDesc(ID3D12Device * pd3dDevice, ID3D12RootSignature * pd3dGraphicsRootSignature);
@@ -126,13 +96,6 @@ public:
 class CScene
 {
 protected:
-	/*
-	Scene이 가져야 할 것들.
-	루트 시그니처
-	오브젝트 리스트?
-	리소스 포인터
-
-	*/
 	ID3D12RootSignature				*m_pd3dGraphicsRootSignature	= NULL;
 	ID3D12Resource					*m_pd3dcbObjects				= NULL;
 	CB_OBJECT_INFO					*m_pcbMappedGameObjects			= NULL;
@@ -159,8 +122,6 @@ protected:
 
 	CFramework						*m_pFramework = NULL;
 
-	//======================================
-	// 테스트 용도
 	CPSO **m_ppCPSOs	= NULL;
 
 public:
@@ -172,6 +133,12 @@ public:
 	virtual void Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext)=0;
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList)=0;
 	virtual void Update(float fTimeElapsed)=0;
+
+	//virtual void LoadLevel(const char * fileName) = 0;
+	//virtual void CreateObjects() = 0;
+	//virtual void InitCamera() = 0;
+	//virtual void InitPSOs() = 0;
+
 
 	// Scene 별로 키 Input을 달리 처리하기 위한 함수들
 	virtual void ProcessInput(UCHAR * pKeysBuffer)=0;
@@ -210,7 +177,8 @@ protected:
 	CProjectileObject	**m_ppProjectileObjects = NULL;
 	int					m_nProjectileObjects	= 0;
 
-
+	CDefaultUI			**m_ppUIObjects = NULL;
+	int					m_nUIObjects = 0;
 	/////////////////////////////////////////////////////////////
 
 	CLevelData *m_pLevel = NULL;

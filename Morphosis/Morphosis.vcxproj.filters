@@ -49,6 +49,18 @@
     <Filter Include="소스 파일\Info">
       <UniqueIdentifier>{426803dd-8189-42ba-90f7-fad11145a45e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Skill">
+      <UniqueIdentifier>{11d76006-0658-4b5f-b9d4-640844cb928c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Skill\TechnicSet">
+      <UniqueIdentifier>{693cfb9a-7039-4602-a548-0fc1a846e2c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Skill\Technic">
+      <UniqueIdentifier>{75702433-233c-48c4-a863-bd30c1e30aa1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Skill\Skill">
+      <UniqueIdentifier>{097f30d4-fc82-4d3d-8844-772280860317}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Morphosis.cpp">
@@ -89,6 +101,12 @@
     </ClCompile>
     <ClCompile Include="LevelData.cpp">
       <Filter>소스 파일\Mesh\LevelData</Filter>
+    </ClCompile>
+    <ClCompile Include="Skill.cpp">
+      <Filter>소스 파일\Skill\Skill</Filter>
+    </ClCompile>
+    <ClCompile Include="Technic.cpp">
+      <Filter>소스 파일\Skill\Technic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -152,6 +170,12 @@
     </ClInclude>
     <ClInclude Include="LevelData.h">
       <Filter>소스 파일\Mesh\LevelData</Filter>
+    </ClInclude>
+    <ClInclude Include="Skill.h">
+      <Filter>소스 파일\Skill\Skill</Filter>
+    </ClInclude>
+    <ClInclude Include="Technic.h">
+      <Filter>소스 파일\Skill\Technic</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

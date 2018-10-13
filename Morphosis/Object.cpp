@@ -31,6 +31,7 @@ void CObject::SetRootParameter(ID3D12GraphicsCommandList * pd3dCommandList)
 
 void CObject::Render(ID3D12GraphicsCommandList * pd3dCommandList, CCamera * pCamera)
 {
+	if (!isAlive) return;
 	if (m_pMaterial)
 	{
 		if (m_pMaterial->m_pTexture)
@@ -52,6 +53,7 @@ void CObject::Render(ID3D12GraphicsCommandList * pd3dCommandList, CCamera * pCam
 
 void CObject::Update(float fTimeElapsed)
 {
+	if (!isAlive) return;
 }
 
 void CObject::SetMesh(int nIndex, CMesh * pMesh)
@@ -81,30 +83,30 @@ void CObject::SetPosition(float x, float y, float z)
 	m_xmf4x4World._43 = z;
 }
 
-void CObject::SetPosition(XMFLOAT3 xmf3Position)
+void CObject::SetPosition(const XMFLOAT3 xmf3Position)
 {
 	SetPosition(xmf3Position.x, xmf3Position.y, xmf3Position.z);
 }
 
-XMFLOAT3 CObject::GetPosition()
+XMFLOAT3 const CObject::GetPosition()
 {
 	return(XMFLOAT3(m_xmf4x4World._41, m_xmf4x4World._42, m_xmf4x4World._43));
 
 }
 
-XMFLOAT3 CObject::GetLook()
+XMFLOAT3 const CObject::GetLook()
 {
 	XMFLOAT3 vector = { m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33 };
 	return Vector3::Normalize(vector);
 }
 
-XMFLOAT3 CObject::GetUp()
+XMFLOAT3 const CObject::GetUp()
 {
 	XMFLOAT3 vector = { m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23 };
 	return Vector3::Normalize(vector);
 }
 
-XMFLOAT3 CObject::GetRight()
+XMFLOAT3 const CObject::GetRight()
 {
 	XMFLOAT3 vector = { m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13 };
 	return Vector3::Normalize(vector);
@@ -133,7 +135,7 @@ void CObject::SetRight(XMFLOAT3 right)
 
 void CMovingObject::Update(float fTimeElapsed)
 {
-
+	if (!isAlive) return;
 	m_xmf4x4World._41 = m_collisionBox.Center.x;
 	m_xmf4x4World._42 = m_collisionBox.Center.y;
 	m_xmf4x4World._43 = m_collisionBox.Center.z;
@@ -301,4 +303,28 @@ void CDefaultUI::SetExtents(float x, float y)
 {
 	extents.x = x;
 	extents.x = y;
+}
+
+void CDefaultUI::Initialize()
+{
+	SetPosition(0, 0, 0);
+	curLife = lifeTime;
+	isAlive = true;
+}
+
+void CDefaultUI::Initialize(CObject& other)
+{
+	other.GetPosition();
+	SetPosition(other.GetPosition());
+
+
+}
+
+void CDefaultUI::Update(float fTimeElapsed)
+{
+	if (isAlive) {
+		m_xmf4x4World._42 += fTimeElapsed * 10;
+		curLife -= fTimeElapsed;
+		if (curLife < 0) isAlive = false;
+	}
 }

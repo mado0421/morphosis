@@ -23,11 +23,12 @@ public:
 	int								m_nMeshes;
 	CMaterial						*m_pMaterial = NULL;
 
-
 	D3D12_GPU_DESCRIPTOR_HANDLE		m_d3dCbvGPUDescriptorHandle;
 
 	CB_OBJECT_INFO					*m_pcbMappedObject = NULL;
 	ID3D12Resource					*m_pd3dcbObject = NULL;
+
+	bool							isAlive = true;
 
 public:
 	CObject();
@@ -50,12 +51,12 @@ public:
 	void SetMesh(int nIndex, CMesh *pMesh);
 	void SetMaterial(CMaterial *pMaterial);
 	void SetPosition(float x, float y, float z);
-	void SetPosition(XMFLOAT3 xmf3Position);
+	void SetPosition(const XMFLOAT3 xmf3Position);
 
-	XMFLOAT3 GetPosition();
-	XMFLOAT3 GetLook();
-	XMFLOAT3 GetUp();
-	XMFLOAT3 GetRight();
+	const XMFLOAT3 GetPosition();
+	const XMFLOAT3 GetLook();
+	const XMFLOAT3 GetUp();
+	const XMFLOAT3 GetRight();
 
 	void SetLook(XMFLOAT3 look);
 	void SetUp(XMFLOAT3 up);
@@ -176,10 +177,16 @@ public:
 	virtual void SetExtents(XMFLOAT2 extents);
 	virtual void SetExtents(float x, float y);
 
+	virtual void Initialize();
+	virtual void Initialize(CObject& other);
+	virtual void Update(float fTimeElapsed);
 	//위치, 크기(Extents), 텍스쳐 인덱스
 public:
 	XMFLOAT2 extents;
 	unsigned int texIdx;
+	float lifeTime = 3;
+	float curLife = 0;
+	bool isAlive = false;
 
 };
 
