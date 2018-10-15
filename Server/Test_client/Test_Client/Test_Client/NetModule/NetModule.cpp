@@ -10,6 +10,8 @@ NetModule::~NetModule()
 {
 }
 
+
+
 void NetModule::Init(HWND hWnd)
 {
 	WSADATA wsadata;
@@ -77,7 +79,7 @@ void NetModule::ReadPacket(SOCKET socket)
 		if (r_size >= remain)
 		{
 			memcpy(packet_buffer + prev_size, ptr, remain);
-			//Processpacket()
+			ProcessPacket(packet_buffer);
 
 			r_size -= remain;
 			ptr += remain;
@@ -91,6 +93,32 @@ void NetModule::ReadPacket(SOCKET socket)
 			r_size = 0;
 		}
 	}
+}
+
+void NetModule::ProcessPacket(char * packet)
+{
+	Packet *p = reinterpret_cast<Packet*>(packet);
+
+	if (p->type == TT_ECHO)
+	{
+		TT_Packet_Echo * rp = reinterpret_cast<TT_Packet_Echo*>(packet);
+		std::tm* now = std::localtime(&rp->time);
+		cout << now->tm_mon + 1 << " / " << now->tm_mday << " / " << now->tm_hour << ":" << now->tm_min << endl;
+	}
+}
+
+void NetModule::SendPacket()
+{
+	TT_Packet_Echo *packet = reinterpret_cast<TT_Packet_Echo*>(send_buffer);
+	packet->size = sizeof(packet);
+	send_wsabuf.len = sizeof(packet);
+	DWORD iobyte;
+	packet->type = TT_ECHO;
+	packet->time = std::time(0);
+
+	int ret = WSASend(socket, &send_wsabuf, 1, &iobyte, 0, NULL, NULL);
+	cout << "SendPacket size: " << iobyte << endl;
+
 }
 
 void NetModule::Destroy()

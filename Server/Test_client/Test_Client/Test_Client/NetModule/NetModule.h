@@ -1,4 +1,5 @@
 #pragma once
+#define _WINSOCK_DEPRECATED_NO_WARNINGS 
 #include <WinSock2.h>
 #include <windows.h> 
 #include <windowsx.h>
@@ -7,9 +8,10 @@
 #include"PacketList.h"
 #pragma comment (lib, "ws2_32.lib")
 
+#pragma warning(disable:4996)
+
 #define	BUF_SIZE	1024
 #define	WM_SOCKET	WM_USER + 1
-
 class NetModule
 {
 public:
@@ -38,4 +40,8 @@ public:
 	int Connect();
 	void Process_WM_SOCKET(WPARAM wparam, LPARAM lparam);
 	void ReadPacket(SOCKET socket);
+	void ProcessPacket(char* packet);
+
+	//	tmp
+	void SendPacket();
 };

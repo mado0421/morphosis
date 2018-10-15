@@ -19,6 +19,8 @@
 #define CS_SKILL1
 #define CS_SKILL2
 
+#define TT_ECHO	10
+
 
 
 #define Server_To_Client

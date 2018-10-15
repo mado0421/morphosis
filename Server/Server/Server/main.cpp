@@ -10,9 +10,12 @@ void WorkerThread();
 void AcceptThread();
 
 void ProcessPacket(int clientKey,char* packet);
+void SendPacket(int clientKey, void* packet);
+
 
 
 void Test();
+void error_display(const char *msg, int err_no);
 
 //--------------------------------------------------------------//
 HANDLE g_iocp;
@@ -81,7 +84,7 @@ void WorkerThread()
 
 		//	에러 처리
 		if (is_success == 0) {
-			cout << "Error in GQCS ket [" << key << "]\n";
+			cout << "Error in GQCS key [" << key << "]\n";
 			continue;
 		}
 
@@ -159,8 +162,7 @@ void AcceptThread()
 		int client_addr_len = sizeof(SOCKADDR_IN);
 
 		auto new_socket = WSAAccept(sock_listen,
-			reinterpret_cast<SOCKADDR*>(&client_addr), &client_addr_len,
-			NULL, NULL);
+			reinterpret_cast<SOCKADDR*>(&client_addr), &client_addr_len,NULL, NULL);
 		cout << "accept new client\n";
 		int new_key = -1;
 
@@ -179,6 +181,7 @@ void AcceptThread()
 		}
 
 		// client init
+		g_clients[new_key].socket = new_socket;
 		g_clients[new_key].exover.event_type = EVT_RECV;
 		g_clients[new_key].exover.wsabuf.buf = g_clients[new_key].exover.IOCPbuf;
 		g_clients[new_key].exover.wsabuf.len = sizeof(g_clients[new_key].exover.IOCPbuf);
@@ -191,14 +194,23 @@ void AcceptThread()
 		int ret = WSARecv(new_socket, &g_clients[new_key].exover.wsabuf, 1,
 			NULL, &flag, &g_clients[new_key].exover.wsaover, NULL);
 		if (ret != 0) {
-			cout << "Recv in Accept error\n";
+			int err_no = WSAGetLastError();
+			if (WSA_IO_PENDING != err_no)
+				error_display("Recv in AcceptThread", err_no);
 		}
+		
 	}
 }
 
 void ProcessPacket(int cl, char * packet)
 {
 	Packet *p = reinterpret_cast<Packet*>(packet);
+	TT_Packet_Echo * rp = reinterpret_cast<TT_Packet_Echo*>(packet);
+
+	TT_Packet_Echo sp;
+	sp.size = sizeof(sp);
+	sp.type = TT_ECHO;
+	std::tm* now;
 	switch (p->type)
 	{
 	case CS_MatchingING:
@@ -206,13 +218,55 @@ void ProcessPacket(int cl, char * packet)
 		g_rooms.Matching(cl);
 
 		break;
+
+	case TT_ECHO:
+		now = std::localtime(&rp->time);
+		cout << now->tm_mon + 1 << " / " << now->tm_mday << " / " << now->tm_hour << ":" << now->tm_min << endl;
+		sp.time = std::time(0);
+		SendPacket(cl, &sp);
+		break;
 	default:
 		break;
 	}
 	
 }
 
+void SendPacket(int clientKey, void * packet)
+{
+	EXOver *o = new EXOver;
+	BYTE *p = reinterpret_cast<BYTE*>(packet);
+	memcpy(o->IOCPbuf, packet, p[0]);
+	o->event_type = EVT_SEND;
+	o->wsabuf.buf = o->IOCPbuf;
+	o->wsabuf.len = p[0];
+	ZeroMemory(&o->wsaover, sizeof(WSAOVERLAPPED));
+
+	int ret = WSASend(g_clients[clientKey].socket, &o->wsabuf, 1, NULL, 0, &o->wsaover, NULL);
+	if (0 != ret) {
+		int err_no = WSAGetLastError();
+		if (WSA_IO_PENDING != err_no)
+			error_display("Error in SendPacket:", err_no);
+	}
+
+	cout << "SendPacket to Client [" << clientKey << "] Type [" << (int)p[1] << "] size [" << (int)p[0] << "]\n";
+}
+
 void Test()
 {
 
+}
+
+
+void error_display(const char *msg, int err_no)
+{
+	WCHAR *lpMsgBuf;
+	FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		FORMAT_MESSAGE_FROM_SYSTEM,
+		NULL, err_no,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)&lpMsgBuf, 0, NULL);
+	cout << msg;
+	wcout << L"에러 " << lpMsgBuf << endl;
+	LocalFree(lpMsgBuf);
 }

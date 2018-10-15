@@ -29,12 +29,33 @@ class SC_Packet_PutPlayer : public Packet
 	int c;
 };
 
+
+
+class CS_Move_Packet :public Packet
+{
+public:
+	float x, y, z;
+};
+
+class SC_Pos_Packet :public Packet
+{
+public:
+	int client_key;
+	float x, y, z;
+};
+
+
+
 class TT_Packet_test : public Packet
 {
 	char a;
 	float b;
 };
 
-
+class TT_Packet_Echo :public Packet
+{
+public:
+	std::time_t time;
+};
 
 #pragma (pop)
