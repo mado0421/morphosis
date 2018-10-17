@@ -1,5 +1,5 @@
 #pragma once
-#include "Mesh.h"
+#include "Model.h"
 #include "Camera.h"
 
 
@@ -18,6 +18,8 @@ class CObject
 {
 public:
 	XMFLOAT4X4						m_xmf4x4World;
+
+	CModel							*model = NULL;
 
 	CMesh							**m_ppMeshes;
 	int								m_nMeshes;
@@ -48,7 +50,7 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL);
 	virtual void Update(float fTimeElapsed);
 
-	void SetMesh(int nIndex, CMesh *pMesh);
+	void SetModel(CModel *model);
 	void SetMaterial(CMaterial *pMaterial);
 	void SetPosition(float x, float y, float z);
 	void SetPosition(const XMFLOAT3 xmf3Position);

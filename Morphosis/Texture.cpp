@@ -35,11 +35,6 @@ void CTexture::UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList)
 	pd3dCommandList->SetGraphicsRootDescriptorTable(rootArgumentInfo->m_nRootParameterIndex, rootArgumentInfo->m_d3dSrvGpuDescriptorHandle);
 }
 
-void CTexture::UpdateShaderVariable(ID3D12GraphicsCommandList *pd3dCommandList)
-{
-	pd3dCommandList->SetGraphicsRootDescriptorTable(rootArgumentInfo->m_nRootParameterIndex, rootArgumentInfo->m_d3dSrvGpuDescriptorHandle);
-}
-
 void CTexture::ReleaseUploadBuffers()
 {
 	if (uploadBuffer)

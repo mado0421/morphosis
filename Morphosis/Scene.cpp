@@ -409,7 +409,10 @@ void CEnterRoomScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComman
 		CTestMesh *pLevelMesh = new CTestMesh(pd3dDevice, pd3dCommandList, m_pLevel->m_pLevelBlocks[i].extent);
 		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
 
-		pObj->SetMesh(0, pLevelMesh);
+		CModel *model = new CModel();
+		model->AddMesh(pLevelMesh);
+
+		pObj->SetModel(model);
 		pObj->SetPosition(m_pLevel->m_pLevelBlocks[i].pos);
 		if (i == 5 || i == 3) pObj->SetMaterial(m_ppMaterial[2]);
 		else pObj->SetMaterial(m_ppMaterial[0]);
@@ -428,7 +431,11 @@ void CEnterRoomScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComman
 		XMFLOAT3 extents = pTestModelMesh->GetExtents();			//반지름 아니고 지름임
 		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
 
-		pObj->SetMesh(0, pTestModelMesh);
+		CModel *model = new CModel();
+		model->AddMesh(pTestModelMesh);
+
+		pObj->SetModel(model);
+		//pObj->SetMesh(0, pTestModelMesh);
 		pObj->SetPosition(pos);
 		pObj->SetMaterial(m_ppMaterial[1]);
 		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * ((m_nObjects)+i));
@@ -448,7 +455,12 @@ void CEnterRoomScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComman
 		XMFLOAT3 extents = XMFLOAT3(5.0f, 5.0f, 5.0f);			//반지름 아니고 지름임
 		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
 
-		pObj->SetMesh(0, pTestMesh2);
+		CModel *model = new CModel();
+		model->AddMesh(pTestMesh2);
+
+		pObj->SetModel(model);
+
+		//pObj->SetMesh(0, pTestMesh2);
 		pObj->SetPosition(0.0f, 0.0f, 0.0f);
 		pObj->SetMaterial(m_ppMaterial[0]);
 		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * ((m_nObjects + m_nPlayers) + i));
@@ -729,40 +741,17 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	CreateConstantBufferViews(m_pd3dDevice, m_pd3dCommandList, nObjects, m_pd3dcbObjects, ncbElementBytes);
 
 	// 마테리얼에 텍스처 등록하는 곳
-	m_nMaterial = 3;
-	m_ppMaterial = new CMaterial*[m_nMaterial];
-	{
-		CTexture *pTexture = new CTexture(RESOURCE_TEXTURE2D);
-		pTexture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/box_diff.dds");
-		CMaterial *mat = new CMaterial();
-		mat->SetTexture(pTexture);
-		mat->SetReflection(1);
-		m_ppMaterial[0] = mat;
-		CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, pTexture, RootParameter::TEXTURE, false);
-	}
-	{
-		CTexture *pTexture = new CTexture(RESOURCE_TEXTURE2D);
-		pTexture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/character_2_diff_test3.dds");
-		CMaterial *mat = new CMaterial();
-		mat->SetTexture(pTexture);
-		mat->SetReflection(1);
-		m_ppMaterial[1] = mat;
-		CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, pTexture, RootParameter::TEXTURE, false);
-	}
-	{
-		CTexture *pTexture = new CTexture(RESOURCE_TEXTURE2D);
-		pTexture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/wall_test_diff.dds");
-		CMaterial *mat = new CMaterial();
-		mat->SetTexture(pTexture);
-		mat->SetReflection(1);
-		m_ppMaterial[2] = mat;
-		CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, pTexture, RootParameter::TEXTURE, false);
-	}
-
-	//for (int i = 0; i < m_nUIObjects; ++i) {
-	//	m_ppObjects[i]->Initialize();
-
-	//}
+	int numOfTexture = 3;
+	CTexture **textures = new CTexture*[numOfTexture];
+	textures[0] = new CTexture(RESOURCE_TEXTURE2D);
+	textures[0]->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/box_diff.dds");
+	CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, textures[0], RootParameter::TEXTURE, false);
+	textures[1] = new CTexture(RESOURCE_TEXTURE2D);
+	textures[1]->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/character_2_diff_test3.dds");
+	CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, textures[1], RootParameter::TEXTURE, false);
+	textures[2] = new CTexture(RESOURCE_TEXTURE2D);
+	textures[2]->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/wall_test_diff.dds");
+	CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, textures[2], RootParameter::TEXTURE, false);
 
 	/*여기가 박스 모델*/
 	for (int i = 0; i < m_nObjects; i++) {
@@ -770,7 +759,11 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 		CTestMesh *pLevelMesh = new CTestMesh(pd3dDevice, pd3dCommandList, m_pLevel->m_pLevelBlocks[i].extent);
 		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
 
-		pObj->SetMesh(0, pLevelMesh);
+		CModel *model = new CModel();
+		model->AddMesh(pLevelMesh);
+		model->SetTexture(textures[2]);
+
+		pObj->SetModel(model);
 		pObj->SetPosition(m_pLevel->m_pLevelBlocks[i].pos);
 		if(i==5 || i == 3) pObj->SetMaterial(m_ppMaterial[2]);
 		else pObj->SetMaterial(m_ppMaterial[0]);
@@ -789,7 +782,12 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 		XMFLOAT3 extents = pTestModelMesh->GetExtents();			//반지름 아니고 지름임
 		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
 
-		pObj->SetMesh(0, pTestModelMesh);
+		CModel *model = new CModel();
+		model->AddMesh(pTestModelMesh);
+		model->SetTexture(textures[1]);
+
+		pObj->SetModel(model);
+
 		pObj->SetPosition(pos);
 		pObj->SetMaterial(m_ppMaterial[1]);
 		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * ((m_nObjects) + i));
@@ -809,7 +807,11 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 		XMFLOAT3 extents = XMFLOAT3(5.0f, 5.0f, 5.0f);			//반지름 아니고 지름임
 		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
 
-		pObj->SetMesh(0, pTestMesh2);
+		CModel *model = new CModel();
+		model->AddMesh(pTestMesh2);
+		model->SetTexture(textures[0]);
+
+		pObj->SetModel(model);
 		pObj->SetPosition(0.0f, 0.0f, 0.0f);
 		pObj->SetMaterial(m_ppMaterial[0]);
 		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * ((m_nObjects + m_nPlayers) + i));
@@ -860,16 +862,16 @@ void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 	}
 
 	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::MODEL]);
-	for (int i = 0; i < m_nPlayers; i++) if (!m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->Render(pd3dCommandList, m_pCamera);
+	for (int i = 0; i < m_nPlayers; i++) m_ppPlayers[i]->Render(pd3dCommandList, m_pCamera);
 
-	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::ILLUMINATEDTEXTURE]);
-	for (int i = 0; i < m_nObjects; ++i) m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
-	for (int i = 0 ; i < m_nProjectileObjects; ++i) if(!m_ppProjectileObjects[i]->IsDead()) m_ppProjectileObjects[i]->Render(pd3dCommandList, m_pCamera);
+	//if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::ILLUMINATEDTEXTURE]);
+	//for (int i = 0; i < m_nObjects; ++i) m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
+	//for (int i = 0 ; i < m_nProjectileObjects; ++i) if(!m_ppProjectileObjects[i]->IsDead()) m_ppProjectileObjects[i]->Render(pd3dCommandList, m_pCamera);
 
-	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::DEBUG]);
-	for (int i = 0; i < m_nObjects; ++i) m_ppObjects[i]->TestRender(pd3dCommandList, m_pCamera);
-	for (int i = 0; i < m_nPlayers; i++) if (!m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->TestRender(pd3dCommandList, m_pCamera);
-	for (int i = 0; i < m_nProjectileObjects; ++i) if (!m_ppProjectileObjects[i]->IsDead()) m_ppProjectileObjects[i]->TestRender(pd3dCommandList, m_pCamera);
+	//if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::DEBUG]);
+	//for (int i = 0; i < m_nObjects; ++i) m_ppObjects[i]->TestRender(pd3dCommandList, m_pCamera);
+	//for (int i = 0; i < m_nPlayers; i++) if (!m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->TestRender(pd3dCommandList, m_pCamera);
+	//for (int i = 0; i < m_nProjectileObjects; ++i) if (!m_ppProjectileObjects[i]->IsDead()) m_ppProjectileObjects[i]->TestRender(pd3dCommandList, m_pCamera);
 
 }
 

@@ -32,23 +32,28 @@ void CObject::SetRootParameter(ID3D12GraphicsCommandList * pd3dCommandList)
 void CObject::Render(ID3D12GraphicsCommandList * pd3dCommandList, CCamera * pCamera)
 {
 	if (!isAlive) return;
-	if (m_pMaterial)
-	{
-		if (m_pMaterial->m_pTexture)
-		{
-			m_pMaterial->m_pTexture->UpdateShaderVariables(pd3dCommandList);
-		}
+	if (model) {
+		model->UpdateShaderVar(pd3dCommandList);
+		pd3dCommandList->SetGraphicsRootDescriptorTable(RootParameter::OBJECT, m_d3dCbvGPUDescriptorHandle);
+		model->Render(pd3dCommandList);
 	}
+	//if (m_pMaterial)
+	//{
+	//	if (m_pMaterial->m_pTexture)
+	//	{
+	//		m_pMaterial->m_pTexture->UpdateShaderVariables(pd3dCommandList);
+	//	}
+	//}
 
-	if (m_ppMeshes && (m_nMeshes > 0))
-	{
-		SetRootParameter(pd3dCommandList);
+	//if (m_ppMeshes && (m_nMeshes > 0))
+	//{
+	//	SetRootParameter(pd3dCommandList);
 
-		for (int i = 0; i < m_nMeshes; i++)
-		{
-			if (m_ppMeshes[i]) m_ppMeshes[i]->Render(pd3dCommandList);
-		}
-	}
+	//	for (int i = 0; i < m_nMeshes; i++)
+	//	{
+	//		if (m_ppMeshes[i]) m_ppMeshes[i]->Render(pd3dCommandList);
+	//	}
+	//}
 }
 
 void CObject::Update(float fTimeElapsed)
@@ -56,20 +61,28 @@ void CObject::Update(float fTimeElapsed)
 	if (!isAlive) return;
 }
 
-void CObject::SetMesh(int nIndex, CMesh * pMesh)
+void CObject::SetModel(CModel * model)
 {
-	if (m_ppMeshes)
-	{
-		m_ppMeshes[nIndex] = pMesh;
-		m_nMeshes = 1;
-	}
-	else
-	{
-		m_ppMeshes = new CMesh*;
-		m_ppMeshes[nIndex] = pMesh;
-		m_nMeshes = 1;
-	}
+	this->model = model;
 }
+
+//void CObject::SetMesh(int nIndex, CMesh * pMesh)
+//{
+//	if (model) {
+//
+//	}
+//	if (m_ppMeshes)
+//	{
+//		m_ppMeshes[nIndex] = pMesh;
+//		m_nMeshes = 1;
+//	}
+//	else
+//	{
+//		m_ppMeshes = new CMesh*;
+//		m_ppMeshes[nIndex] = pMesh;
+//		m_nMeshes = 1;
+//	}
+//}
 
 void CObject::SetMaterial(CMaterial * pMaterial)
 {
