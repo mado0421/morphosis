@@ -741,17 +741,32 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	CreateConstantBufferViews(m_pd3dDevice, m_pd3dCommandList, nObjects, m_pd3dcbObjects, ncbElementBytes);
 
 	// 마테리얼에 텍스처 등록하는 곳
-	int numOfTexture = 3;
+
+	/*
+	필요한 텍스처 개수를 알아내야 함
+	캐릭터 텍스처(고정), 무기 텍스처(고정), 터레인 텍스처(변동), UI텍스처(고정), 파티클 및 이펙트 텍스처(고정)
+	터레인 데이터에 있어야 하는 것:
+	- position
+	- extents
+	- textureIdx
+	터레인 데이터를 읽을 때 텍스처 이름도 저장해야 함
+	*/
+	int numOfTexture = 6;
 	CTexture **textures = new CTexture*[numOfTexture];
-	textures[0] = new CTexture(RESOURCE_TEXTURE2D);
-	textures[0]->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/box_diff.dds");
-	CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, textures[0], RootParameter::TEXTURE, false);
-	textures[1] = new CTexture(RESOURCE_TEXTURE2D);
-	textures[1]->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/character_2_diff_test3.dds");
-	CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, textures[1], RootParameter::TEXTURE, false);
-	textures[2] = new CTexture(RESOURCE_TEXTURE2D);
-	textures[2]->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, L"Assets/Textures/TEST/wall_test_diff.dds");
-	CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, textures[2], RootParameter::TEXTURE, false);
+	wchar_t **text = new wchar_t*[numOfTexture];
+	text[0] = L"Assets/Textures/TEST/box_diff.dds";
+	text[1] = L"Assets/Textures/TEST/character_2_diff_test3.dds";
+	text[2] = L"Assets/Textures/TEST/wall_test_diff.dds";
+	text[3] = L"Assets/Textures/TEST/crosshair_test_diff.dds";
+	text[4] = L"Assets/Textures/TEST/hpbar_in.dds";
+	text[5] = L"Assets/Textures/TEST/hpbar_out.dds";
+
+	for (int i = 0; i < numOfTexture; ++i) {
+		textures[i] = new CTexture(RESOURCE_TEXTURE2D);
+		textures[i]->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, text[i]);
+		CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, textures[i], RootParameter::TEXTURE, false);
+	}
+
 
 	/*여기가 박스 모델*/
 	for (int i = 0; i < m_nObjects; i++) {
@@ -765,8 +780,6 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 
 		pObj->SetModel(model);
 		pObj->SetPosition(m_pLevel->m_pLevelBlocks[i].pos);
-		if(i==5 || i == 3) pObj->SetMaterial(m_ppMaterial[2]);
-		else pObj->SetMaterial(m_ppMaterial[0]);
 		pObj->SetOOBB(m_pLevel->m_pLevelBlocks[i].pos, m_pLevel->m_pLevelBlocks[i].extent, orientation);
 		pObj->SetOOBBMesh(pd3dDevice, pd3dCommandList);
 
@@ -789,7 +802,6 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 		pObj->SetModel(model);
 
 		pObj->SetPosition(pos);
-		pObj->SetMaterial(m_ppMaterial[1]);
 		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * ((m_nObjects) + i));
 
 		pObj->Initialize();
@@ -813,7 +825,6 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 
 		pObj->SetModel(model);
 		pObj->SetPosition(0.0f, 0.0f, 0.0f);
-		pObj->SetMaterial(m_ppMaterial[0]);
 		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * ((m_nObjects + m_nPlayers) + i));
 
 		pObj->Initialize();
