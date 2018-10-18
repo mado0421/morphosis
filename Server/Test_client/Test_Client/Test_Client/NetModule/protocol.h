@@ -1,5 +1,4 @@
 #pragma once
-
 #define SERVER_PORT				8000
 
 #define MAX_BUFF_SIZE			4000
@@ -12,7 +11,7 @@
 
 
 #define Client_To_Server
-#define CS_MatchingING 1
+#define CS_MATCHING 1
 
 #define CS_MOVE
 #define CS_ATTACK
@@ -21,6 +20,7 @@
 #define CS_SKILL2
 
 #define TT_ECHO	10
+
 
 
 #define Server_To_Client

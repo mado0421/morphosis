@@ -1,7 +1,8 @@
 #pragma once
 #include"header.h"
 
-struct Client {
+class Client {
+public:
 	SOCKET socket;
 	bool in_connected;
 

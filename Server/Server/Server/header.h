@@ -4,9 +4,11 @@
 #include<windowsx.h>
 #include<thread>
 #include<vector>
+#include<ctime>
 #include"protocol.h"
 
 #pragma comment(lib,"ws2_32.lib")
+#pragma warning(disable:4996)
 
 using namespace std;
 
