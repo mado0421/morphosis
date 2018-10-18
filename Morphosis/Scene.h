@@ -19,6 +19,7 @@ namespace PSO {
 		TEXTURE=0,
 		ILLUMINATEDTEXTURE,
 		MODEL,
+		UI,
 		DEBUG,
 
 		count
@@ -90,6 +91,17 @@ public:
 	virtual D3D12_SHADER_BYTECODE		CreatePixelShader(ID3DBlob **ppd3dShaderBlob);
 };
 
+class CUIPSO : public CPSO
+{
+public:
+	virtual D3D12_INPUT_LAYOUT_DESC		CreateInputLayout();
+	virtual D3D12_BLEND_DESC			CreateBlendState();
+	virtual D3D12_RASTERIZER_DESC		CreateRasterizerState();
+
+	virtual D3D12_SHADER_BYTECODE		CreateVertexShader(ID3DBlob **ppd3dShaderBlob);
+	virtual D3D12_SHADER_BYTECODE		CreatePixelShader(ID3DBlob **ppd3dShaderBlob);
+};
+
 
 // Scene 자체는 안 쓸 예정이니까 추상클래스로?
 // 인터페이스?
@@ -121,8 +133,6 @@ protected:
 	POINT							m_ptOldCursorPos;
 
 	CFramework						*m_pFramework = NULL;
-
-	CPSO **m_ppCPSOs	= NULL;
 
 public:
 	CScene();

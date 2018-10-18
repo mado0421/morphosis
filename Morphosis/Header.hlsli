@@ -99,3 +99,14 @@ struct VS_DEBUG_OUTPUT
 {
 	float4 position : SV_POSITION;
 };
+
+struct VS_UI_INPUT
+{
+	float3 position : POSITION;
+	float2 uv : TEXCOORD;
+};
+struct VS_UI_OUTPUT
+{
+	float4 position : SV_POSITION;
+	float2 uv : TEXCOORD;
+};

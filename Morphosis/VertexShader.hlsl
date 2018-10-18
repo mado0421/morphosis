@@ -60,3 +60,13 @@ VS_DEBUG_OUTPUT VSDebug(VS_DEBUG_INPUT input)
 
 	return(output);
 }
+
+VS_UI_OUTPUT VSUI(VS_UI_INPUT input)
+{
+	VS_UI_OUTPUT output;
+
+	output.position = float4(input.position, 1.0f);
+	output.uv = input.uv;
+
+	return(output);
+}

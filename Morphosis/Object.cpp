@@ -206,7 +206,7 @@ void CPlayerObject::Initialize()
 
 void CPlayerObject::Update(float fTimeElapsed)
 {
-	if (IsDead()) {
+	if (!isAlive) {
 		if (m_timer < 0) {
 			Initialize();
 			//Init
@@ -266,13 +266,13 @@ void CProjectileObject::Initialize(CMovingObject *user)
 
 void CProjectileObject::Update(float fTimeElapsed)
 {
-	if (!IsDead())
+	if (isAlive)
 	{
 		CMovingObject::Update(fTimeElapsed);
 		m_xmf3Variation = GetLook();
 		m_fLifeTime -= fTimeElapsed;
 		if (m_fLifeTime <= 0) {
-			m_alive = false;
+			isAlive = false;
 		}
 	}
 
@@ -280,6 +280,7 @@ void CProjectileObject::Update(float fTimeElapsed)
 
 void CCollideObejct::TestRender(ID3D12GraphicsCommandList * pd3dCommandList, CCamera * pCamera)
 {
+	if (!isAlive) return;
 	if (m_ppTestMeshes && (m_nTestMeshes > 0))
 	{
 		SetRootParameter(pd3dCommandList);

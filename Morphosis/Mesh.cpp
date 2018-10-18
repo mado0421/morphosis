@@ -739,10 +739,10 @@ CUITextured::CUITextured(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * 
 	m_nSlot = 0;
 	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
-	float left = -extents.x;
-	float top = extents.y;
-	float right = extents.x;
-	float bottom = -extents.y;
+	float left		= -extents.x;
+	float top		= extents.y;
+	float right		= extents.x;
+	float bottom	= -extents.y;
 
 
 	XMFLOAT3 pxmf3Position[6];

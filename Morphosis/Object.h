@@ -117,7 +117,7 @@ public:
 	}
 	void FallingOOBB(float fTimeElapsed) {
 		prevHeight = m_collisionBox.Center.y;
-		m_fGravityAccel += fTimeElapsed * G * 16.5;
+		m_fGravityAccel += fTimeElapsed * G * 1.5;
 		m_collisionBox.Center.y -= m_fGravityAccel;
 	}
 
@@ -156,7 +156,6 @@ class CProjectileObject : public CMovingObject
 {
 public:
 	bool m_team = 0;
-	bool m_alive = false;
 	float m_fLifeTime = 1.0f;
 
 public:
@@ -165,7 +164,6 @@ public:
 	virtual void Update(float fTimeElapsed);
 
 	void SetTeam(bool team) { m_team = team; }
-	bool IsDead() { return !m_alive; }
 };
 
 class CDefaultUI : public CObject
