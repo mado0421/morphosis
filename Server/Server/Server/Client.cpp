@@ -8,4 +8,7 @@ void Client::Init()
 	exover.wsabuf.len = sizeof(exover.IOCPbuf);
 	packet_size = 0;
 	prev_size = 0;
+
+	//	spon 정해야함
+	w_matrix.Identity();
 }

@@ -6,8 +6,9 @@ public:
 	SOCKET socket;
 	bool in_connected;
 
-	// POSITION
-	
+	// POSITION	4x3 matrix
+	WTrans w_matrix;
+
 	// OTHER
 
 

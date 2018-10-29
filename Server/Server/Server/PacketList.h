@@ -9,6 +9,45 @@ public:
 	BYTE type;
 };
 
+//	Client To Server
+class CS_AddPosVar_Packet : public Packet
+{
+public:
+	float x, y, z;
+};
+
+class CS_Rotate_Packet : public Packet
+{
+public:
+	float x, y, z;
+};
+
+
+//	Server To Client
+class SC_WTrans_Packet : public Packet
+{
+public:
+	WTrans wt;
+
+public:
+};
+
+class SC_Identify_Packet :public Packet
+{
+public:
+	int key;
+};
+
+class SC_Move_Packet :public Packet
+{
+public:
+	int key;
+	float x, y, z;
+};
+
+
+
+//
 
 class CS_R_Packet_Matchinging : public Packet
 {
@@ -29,8 +68,6 @@ class SC_Packet_PutPlayer : public Packet
 	int c;
 };
 
-
-
 class CS_Move_Packet :public Packet
 {
 public:
@@ -44,8 +81,6 @@ public:
 	float x, y, z;
 };
 
-
-
 class TT_Packet_test : public Packet
 {
 	char a;
@@ -58,4 +93,4 @@ public:
 	std::time_t time;
 };
 
-#pragma (pop)
+#pragma pack(pop)

@@ -28,7 +28,7 @@ int main()
 {
 	Initialize();
 
-	//Test();
+	Test();
 
 	//	thread make
 	thread accept_thread{ AcceptThread };
@@ -80,7 +80,7 @@ void WorkerThread()
 
 		bool is_success = GetQueuedCompletionStatus(g_iocp,
 			&dwIOSize, &key, &pOver, INFINITE);
-		cout << "GQCS from client [" << key << "] with size [" << dwIOSize << "]\n";
+		//cout << "GQCS from client [" << key << "] with size [" << dwIOSize << "]\n";
 
 		//	에러 처리
 		if (is_success == 0) {
@@ -162,7 +162,7 @@ void AcceptThread()
 		int client_addr_len = sizeof(SOCKADDR_IN);
 
 		auto new_socket = WSAAccept(sock_listen,
-			reinterpret_cast<SOCKADDR*>(&client_addr), &client_addr_len,NULL, NULL);
+			reinterpret_cast<SOCKADDR*>(&client_addr), &client_addr_len, NULL, NULL);
 		cout << "accept new client\n";
 		int new_key = -1;
 
@@ -190,15 +190,23 @@ void AcceptThread()
 		CreateIoCompletionPort(reinterpret_cast<HANDLE>(new_socket), g_iocp, new_key, 0);
 		g_clients[new_key].in_connected = true;
 
-		unsigned long flag = 0;
+		DWORD flag = 0;
+		DWORD lpNumberOfBytesRecvd = 0;
 		int ret = WSARecv(new_socket, &g_clients[new_key].exover.wsabuf, 1,
 			NULL, &flag, &g_clients[new_key].exover.wsaover, NULL);
 		if (ret != 0) {
 			int err_no = WSAGetLastError();
-			if (WSA_IO_PENDING != err_no)
-				error_display("Recv in AcceptThread", err_no);
+			if (WSA_IO_PENDING != err_no) {
+				error_display("err Recv in AcceptThread", err_no);
+				cout << err_no << "\n";
+			}
 		}
-		
+		SC_Identify_Packet* id_packet = new SC_Identify_Packet;
+
+		id_packet->type = SC_IDENTIFY;
+		id_packet->size = sizeof(SC_Identify_Packet);
+		id_packet->key = new_key;
+		SendPacket(new_key, id_packet);
 	}
 }
 
@@ -214,17 +222,34 @@ void ProcessPacket(int cl, char * packet)
 	switch (p->type)
 	{
 	case CS_MatchingING:
-
 		g_rooms.Matching(cl);
-
 		break;
-
 	case TT_ECHO:
 		now = std::localtime(&rp->time);
 		cout << now->tm_mon + 1 << " / " << now->tm_mday << " / " << now->tm_hour << ":" << now->tm_min << endl;
 		sp.time = std::time(0);
 		SendPacket(cl, &sp);
 		break;
+
+	case CS_MOVE:
+	{
+		//cout << "CSMOVE\n";
+		CS_Move_Packet* t = reinterpret_cast<CS_Move_Packet*>(packet);
+
+		SC_Move_Packet* mp = new SC_Move_Packet;
+		mp->size = sizeof(SC_Move_Packet);
+		mp->type = SC_MOVE;
+		mp->key = cl;
+		mp->x = t->x;
+		mp->y = t->y;
+		mp->z = t->z;
+		for (int i = 0; i < MAX_CLIENT; ++i)
+		{
+			if (g_clients[i].in_connected == false)break;
+			SendPacket(i, mp);
+		}
+		break;
+	}
 	default:
 		break;
 	}
@@ -248,14 +273,14 @@ void SendPacket(int clientKey, void * packet)
 			error_display("Error in SendPacket:", err_no);
 	}
 
-	cout << "SendPacket to Client [" << clientKey << "] Type [" << (int)p[1] << "] size [" << (int)p[0] << "]\n";
+	//cout << "SendPacket to Client [" << clientKey << "] Type [" << (int)p[1] << "] size [" << (int)p[0] << "]\n";
 }
 
 void Test()
 {
-
+	cout << "sizeof WTrans: " << sizeof(WTrans) << "\n";
+	cout << "sizeof WTransPacket: " << sizeof(SC_WTrans_Packet) << "\n";
 }
-
 
 void error_display(const char *msg, int err_no)
 {
