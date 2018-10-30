@@ -312,7 +312,7 @@ void CEnterRoomScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComman
 	m_pd3dDevice = pd3dDevice;
 	m_pd3dCommandList = pd3dCommandList;
 
-	m_nObjects = m_pLevel->m_nLevelBlocks;
+	m_nObjects = m_pLevel->m_nLevelBlocks + 3;
 	m_ppObjects = new CCollideObejct*[m_nObjects];
 
 	m_nPlayers = m_pLevel->m_nSpawnPoints;
@@ -350,6 +350,7 @@ void CEnterRoomScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComman
 	m_ppPipelineStates[PSO::ILLUMINATEDTEXTURE] = ppCPSOs[PSO::ILLUMINATEDTEXTURE]->GetPipelineState();
 	m_ppPipelineStates[PSO::MODEL] = ppCPSOs[PSO::MODEL]->GetPipelineState();
 	m_ppPipelineStates[PSO::DEBUG] = ppCPSOs[PSO::DEBUG]->GetPipelineState();
+
 
 	// 메쉬만드는 곳
 	CTestMesh *pTestMesh = new CTestMesh(pd3dDevice, pd3dCommandList);
@@ -405,22 +406,23 @@ void CEnterRoomScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComman
 
 	/*여기가 박스 모델*/
 	for (int i = 0; i < m_nObjects; i++) {
-		CCollideObejct *pObj = new CCollideObejct();
-		CTestMesh *pLevelMesh = new CTestMesh(pd3dDevice, pd3dCommandList, m_pLevel->m_pLevelBlocks[i].extent);
-		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
+		if (i < m_pLevel->m_nLevelBlocks) {
 
-		CModel *model = new CModel();
-		model->AddMesh(pLevelMesh);
+			CCollideObejct *pObj = new CCollideObejct();
+			CTestMesh *pLevelMesh = new CTestMesh(pd3dDevice, pd3dCommandList, m_pLevel->m_pLevelBlocks[i].extent);
+			XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
 
-		pObj->SetModel(model);
-		pObj->SetPosition(m_pLevel->m_pLevelBlocks[i].pos);
-		if (i == 5 || i == 3) pObj->SetMaterial(m_ppMaterial[2]);
-		else pObj->SetMaterial(m_ppMaterial[0]);
-		pObj->SetOOBB(m_pLevel->m_pLevelBlocks[i].pos, m_pLevel->m_pLevelBlocks[i].extent, orientation);
-		pObj->SetOOBBMesh(pd3dDevice, pd3dCommandList);
+			CModel *model = new CModel();
+			model->AddMesh(pLevelMesh);
 
-		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
-		m_ppObjects[i] = pObj;
+			pObj->SetModel(model);
+			pObj->SetPosition(m_pLevel->m_pLevelBlocks[i].pos);
+			pObj->SetOOBB(m_pLevel->m_pLevelBlocks[i].pos, m_pLevel->m_pLevelBlocks[i].extent, orientation);
+			pObj->SetOOBBMesh(pd3dDevice, pd3dCommandList);
+
+			pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
+			m_ppObjects[i] = pObj;
+		}
 	}
 
 	/*여기가 움직이는 모델*/
@@ -675,7 +677,7 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	m_pLevel->FileRead("Assets/Levels/Level_0.dat");
 
 	//CreateObjects();
-	m_nObjects = m_pLevel->m_nLevelBlocks;
+	m_nObjects = m_pLevel->m_nLevelBlocks + 3;
 	m_ppObjects = new CCollideObejct*[m_nObjects];
 
 	m_nPlayers = m_pLevel->m_nSpawnPoints;
@@ -749,6 +751,8 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	CreateShaderVariables(m_pd3dDevice, m_pd3dCommandList, nObjects);
 	CreateConstantBufferViews(m_pd3dDevice, m_pd3dCommandList, nObjects, m_pd3dcbObjects, ncbElementBytes);
 
+
+
 	// 마테리얼에 텍스처 등록하는 곳
 
 	/*
@@ -779,21 +783,41 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 
 	/*여기가 박스 모델*/
 	for (int i = 0; i < m_nObjects; i++) {
-		CCollideObejct *pObj = new CCollideObejct();
-		CTestMesh *pLevelMesh = new CTestMesh(pd3dDevice, pd3dCommandList, m_pLevel->m_pLevelBlocks[i].extent);
-		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
+		if (i < m_pLevel->m_nLevelBlocks) {
 
-		CModel *model = new CModel();
-		model->AddMesh(pLevelMesh);
-		model->SetTexture(textures[2]);
+			CCollideObejct *pObj = new CCollideObejct();
+			CTestMesh *pLevelMesh = new CTestMesh(pd3dDevice, pd3dCommandList, m_pLevel->m_pLevelBlocks[i].extent);
+			XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
 
-		pObj->SetModel(model);
-		pObj->SetPosition(m_pLevel->m_pLevelBlocks[i].pos);
-		pObj->SetOOBB(m_pLevel->m_pLevelBlocks[i].pos, m_pLevel->m_pLevelBlocks[i].extent, orientation);
-		pObj->SetOOBBMesh(pd3dDevice, pd3dCommandList);
+			CModel *model = new CModel();
+			model->AddMesh(pLevelMesh);
+			model->SetTexture(textures[0]);
 
-		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
-		m_ppObjects[i] = pObj;
+			pObj->SetModel(model);
+			pObj->SetPosition(m_pLevel->m_pLevelBlocks[i].pos);
+			pObj->SetOOBB(m_pLevel->m_pLevelBlocks[i].pos, m_pLevel->m_pLevelBlocks[i].extent, orientation);
+			pObj->SetOOBBMesh(pd3dDevice, pd3dCommandList);
+
+			pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
+			m_ppObjects[i] = pObj;
+		}
+		else {
+			CCollideObejct *pObj = new CCollideObejct();
+			CTestMesh *pLevelMesh = new CTestMesh(pd3dDevice, pd3dCommandList, XMFLOAT3(1, 1, 1));
+			XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
+
+			CModel *model = new CModel();
+			model->AddMesh(pLevelMesh);
+			model->SetTexture(textures[0]);
+
+			pObj->SetModel(model);
+			pObj->SetPosition(anim.bones[i - m_pLevel->m_nLevelBlocks]->translation);
+			pObj->SetOOBB(anim.bones[i - m_pLevel->m_nLevelBlocks]->translation, XMFLOAT3(5, 5, 5), orientation);
+			pObj->SetOOBBMesh(pd3dDevice, pd3dCommandList);
+
+			pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
+			m_ppObjects[i] = pObj;
+		}
 	}
 
 	/*여기가 움직이는 모델*/
@@ -916,7 +940,7 @@ void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 	for (int i = 0; i < m_nPlayers; i++) m_ppPlayers[i]->Render(pd3dCommandList, m_pCamera);
 
 	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::ILLUMINATEDTEXTURE]);
-	for (int i = 0; i < m_nObjects; ++i) m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
+	for (int i = m_pLevel->m_nLevelBlocks; i < m_nObjects; ++i) m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
 	for (int i = 0 ; i < m_nProjectileObjects; ++i) m_ppProjectileObjects[i]->Render(pd3dCommandList, m_pCamera);
 
 	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::DEBUG]);

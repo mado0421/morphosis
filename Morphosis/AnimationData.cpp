@@ -6,9 +6,12 @@ CAnimationData::CAnimationData()
 	numOfBones = 3;
 	bones = new Bone*[numOfBones];
 
-	XMFLOAT3 a = XMFLOAT3(0, 0, 0);
+	bones[0] = new Bone();
+	bones[1] = new Bone();
+	bones[2] = new Bone();
 
-	bones[0]->translation = XMFLOAT3( -0.0176298636943102,9.85627174377441,4.30831335052062e-07 );
+
+	bones[0]->translation = XMFLOAT3(-0.0176298636943102, 9.85627174377441, 4.30831335052062e-07);
 	bones[0]->rotation = XMFLOAT3( 90.0000193525796,-89.5907443911997,0 );
 	bones[0]->numOfSibling = 0;
 	bones[0]->parent = NULL;	//it means root;
@@ -79,6 +82,10 @@ CAnimationData::CAnimationData()
 	}
 	bones[2]->numOfKeys = 7;
 	bones[2]->keys = new Key*[bones[2]->numOfKeys];
+
+	for (int i = 0; i < bones[0]->numOfKeys; ++i) bones[0]->keys[i] = new Key();
+	for (int i = 0; i < bones[1]->numOfKeys; ++i) bones[1]->keys[i] = new Key();
+	for (int i = 0; i < bones[2]->numOfKeys; ++i) bones[2]->keys[i] = new Key();
 
 	bones[0]->keys[0]->time = GetTime(0);
 	bones[0]->keys[1]->time = GetTime(7697693000);
