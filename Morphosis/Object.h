@@ -1,6 +1,7 @@
 #pragma once
 #include "Model.h"
 #include "Camera.h"
+#include "AnimationData.h"
 
 
 // 기본적인 오브젝트들 전용(크기 변동이 없는 기본적인 UI
@@ -31,6 +32,7 @@ public:
 	ID3D12Resource					*m_pd3dcbObject = NULL;
 
 	bool							isAlive = true;
+
 
 public:
 	CObject();

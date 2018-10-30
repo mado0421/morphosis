@@ -146,6 +146,7 @@ void CObject::SetRight(XMFLOAT3 right)
 	m_xmf4x4World._13 = right.z;
 }
 
+
 void CMovingObject::Update(float fTimeElapsed)
 {
 	if (!isAlive) return;

@@ -912,17 +912,17 @@ void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppUIObjects[i]->m_xmf4x4World)));
 	}
 
-	//if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::MODEL]);
-	//for (int i = 0; i < m_nPlayers; i++) m_ppPlayers[i]->Render(pd3dCommandList, m_pCamera);
+	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::MODEL]);
+	for (int i = 0; i < m_nPlayers; i++) m_ppPlayers[i]->Render(pd3dCommandList, m_pCamera);
 
-	//if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::ILLUMINATEDTEXTURE]);
-	//for (int i = 0; i < m_nObjects; ++i) m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
-	//for (int i = 0 ; i < m_nProjectileObjects; ++i) m_ppProjectileObjects[i]->Render(pd3dCommandList, m_pCamera);
+	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::ILLUMINATEDTEXTURE]);
+	for (int i = 0; i < m_nObjects; ++i) m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
+	for (int i = 0 ; i < m_nProjectileObjects; ++i) m_ppProjectileObjects[i]->Render(pd3dCommandList, m_pCamera);
 
-	//if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::DEBUG]);
-	//for (int i = 0; i < m_nObjects; ++i) m_ppObjects[i]->TestRender(pd3dCommandList, m_pCamera);
-	//for (int i = 0; i < m_nPlayers; i++) m_ppPlayers[i]->TestRender(pd3dCommandList, m_pCamera);
-	//for (int i = 0; i < m_nProjectileObjects; ++i) m_ppProjectileObjects[i]->TestRender(pd3dCommandList, m_pCamera);
+	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::DEBUG]);
+	for (int i = 0; i < m_nObjects; ++i) m_ppObjects[i]->TestRender(pd3dCommandList, m_pCamera);
+	for (int i = 0; i < m_nPlayers; i++) m_ppPlayers[i]->TestRender(pd3dCommandList, m_pCamera);
+	for (int i = 0; i < m_nProjectileObjects; ++i) m_ppProjectileObjects[i]->TestRender(pd3dCommandList, m_pCamera);
 
 	if (m_ppPipelineStates) pd3dCommandList->SetPipelineState(m_ppPipelineStates[PSO::UI]);
 	for (int i = 0; i < m_nUIObjects; i++) m_ppUIObjects[i]->Render(pd3dCommandList, m_pCamera);

@@ -148,6 +148,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AnimationData.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="LevelData.cpp" />
     <ClCompile Include="DDSTextureLoader12.cpp" />
@@ -174,6 +175,7 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnimationData.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="LevelData.h" />
     <ClInclude Include="d3dx12.h" />
