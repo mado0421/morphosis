@@ -14,11 +14,16 @@
 #define Client_To_Server
 #define CS_MatchingING 1
 
-#define CS_MOVE
+#define CS_MOVE 2
 #define CS_ATTACK
 #define CS_SKILL0
 #define CS_SKILL1
 #define CS_SKILL2
+
+
+#define SC_IDENTIFY	100
+#define SC_POS	101
+#define SC_MOVE	102
 
 #define TT_ECHO	10
 
