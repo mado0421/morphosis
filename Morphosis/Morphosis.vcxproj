@@ -159,6 +159,7 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Morphosis.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="PSO.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Skill.cpp" />
     <ClCompile Include="stdafx.cpp" />
@@ -177,6 +178,7 @@
   <ItemGroup>
     <ClInclude Include="AnimationData.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="PSO.h" />
     <ClInclude Include="LevelData.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DDSTextureLoader12.h" />
