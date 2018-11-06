@@ -160,7 +160,6 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Morphosis.cpp" />
     <ClCompile Include="Object.cpp" />
-    <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="PSO.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Skill.cpp" />
@@ -181,7 +180,6 @@
     <ClInclude Include="AnimationData.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CTest.h" />
-    <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="PSO.h" />
     <ClInclude Include="LevelData.h" />
     <ClInclude Include="d3dx12.h" />

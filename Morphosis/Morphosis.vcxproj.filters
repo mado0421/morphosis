@@ -132,9 +132,6 @@
     <ClCompile Include="CTest.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectManager.cpp">
-      <Filter>소스 파일\Object</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Morphosis.rc">
@@ -218,9 +215,6 @@
     </ClInclude>
     <ClInclude Include="CTest.h">
       <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectManager.h">
-      <Filter>소스 파일\Object</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

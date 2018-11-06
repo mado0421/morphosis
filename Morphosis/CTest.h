@@ -1,47 +1,31 @@
 #pragma once
 
 //this class is made for test object class
-class Object {
+class object {
 public:
 	//functions
-	void Render();
-	void Update();
+
 
 public:
 	//constructor and destructer
-	Object();
-	~Object();
+	object();
+	~object();
 
 private:
 	//variables
 
 };
 
-//object + texture + material?
-class ObjectManager {
+class manageObject {
 public:
 	void Render();
-	void Update();
+	void 
 
-	void CreateCbvDescriptorHeaps();
-	void CreateObjectResource();
-	void CreateConstantBufferViews();
 
-	void LoadLevelData();
-	
+
 public:
-	ObjectManager();
-	ObjectManager(ID3D12GraphicsCommandList *CommandList);
-	~ObjectManager();
-
+	manageObject();
+	~manageObject();
 private:
-	D3D12_CPU_DESCRIPTOR_HANDLE CPUDescriptorStartHandle;
-	D3D12_GPU_DESCRIPTOR_HANDLE GPUDescriptorStartHandle;
-	ID3D12Resource				*pCBObjectResource = NULL;
 
-	ID3D12GraphicsCommandList	*pCommandList		= NULL;
-	ID3D12Device				*pDevice			= NULL;
-	ID3D12DescriptorHeap		*pCbvDescriptorHeap = NULL;
-
-	int nObjects;
 };
