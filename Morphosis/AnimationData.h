@@ -50,6 +50,15 @@ public:
 	float *weights;
 };
 
+
+
+
+
+
+
+
+
+
 class CAnimationData
 {
 public:
