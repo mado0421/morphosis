@@ -70,3 +70,20 @@ VS_UI_OUTPUT VSUI(VS_UI_INPUT input)
 
 	return(output);
 }
+
+VS_TEXTURED_ILLUMINATED_OUTPUT VSAnimated(VS_ANIMATED_INPUT input)
+{
+	VS_TEXTURED_ILLUMINATED_OUTPUT output;
+
+	float3 weightedPos = 0;
+	for (int i = 0; i < 4; ++i) {
+		int idx = boneIdx[i];
+		float4 bonePos = mul(BoneBuffer[idx], float4(input.position, 1));
+		weightedPos += weight[i] * bonePos.xyz;
+	}
+	output.positionW = (float3)mul(float4(weightedPos, 1.0f), gmtxGameObject);
+	output.position = mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection);
+	output.uv = input.uv;
+
+	return output;
+}
