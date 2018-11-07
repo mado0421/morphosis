@@ -338,8 +338,9 @@ void CFramework::BuildScenes()
 	m_ppScenes[Scenes::ENTERROOM] = new CEnterRoomScene();
 	m_ppScenes[Scenes::MATCHING] = new CMatchingScene();
 	m_ppScenes[Scenes::RESULT] = new CResultScene();
+	m_ppScenes[Scenes::TEST] = new CTestGroundScene();
 
-	m_pCurrentScene = m_ppScenes[Scenes::PLAY];
+	m_pCurrentScene = m_ppScenes[Scenes::TEST];
 	m_pCurrentScene->Initialize(m_pd3dDevice, m_pd3dCommandList, this);
 
 	m_pd3dCommandList->Close();
@@ -362,6 +363,7 @@ void CFramework::ChangeScene(int targetSceneIdx, void * subData)
 	case Scenes::MATCHING:	m_pCurrentScene = m_ppScenes[Scenes::MATCHING];	break;
 	case Scenes::PLAY:		m_pCurrentScene = m_ppScenes[Scenes::PLAY];		break;
 	case Scenes::RESULT:	m_pCurrentScene = m_ppScenes[Scenes::RESULT];	break;
+	case Scenes::TEST:		m_pCurrentScene = m_ppScenes[Scenes::TEST];		break;
 	default: assert(!"으악 너 지금 Scene Change에 뭐 넣은거야!!"); break;
 	}
 

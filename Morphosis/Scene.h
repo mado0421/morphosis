@@ -278,5 +278,18 @@ public:
 };
 
 class CTestGroundScene : public CGroundScene {
+public:
+	virtual ID3D12RootSignature *CreateRootSignature(ID3D12Device *pd3dDevice);
+
+	virtual void Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext);
+	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
+	virtual void Update(float fTimeElapsed);
+
+	virtual void ProcessInput(UCHAR * pKeysBuffer);
+	virtual void OnProcessingMouseMessage();
+	virtual void OnProcessingKeyboardMessage();
+
+private:
+	ID3D12PipelineState * pso = NULL;
 
 };

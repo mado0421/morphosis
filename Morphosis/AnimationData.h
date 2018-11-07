@@ -1,9 +1,9 @@
 #pragma once
 
-inline float GetTime(__int64 int64time) {
+inline double GetTime(__int64 int64time) {
 	__int64 i64 = int64time * 0.01;
-	double i64d = i64 / 30790772.f;
-	return (i64d / 30.0f);
+	double i64d = i64 / 30790772.0;
+	return (i64d / 30.0);
 }
 
 //struct AnimCurveNode {
@@ -109,7 +109,7 @@ public:
 };
 
 struct CKey {
-	double keyTime;
+	float keyTime;
 
 	CBone ** boneList;
 	int nBones;
@@ -118,7 +118,7 @@ struct CKey {
 class Anim {
 public:
 	// 몇 번째 본의 로컬 행렬 보간 내용을 주는 함수
-	XMMATRIX InterpolateBones(int boneIdx, double time) {
+	XMMATRIX InterpolateBones(int boneIdx, float time) {
 		// nBone이 1개면 그냥 바로 반환
 		if (nKeys == 1) return XMLoadFloat4x4(&keyList[0]->boneList[boneIdx]->local);
 

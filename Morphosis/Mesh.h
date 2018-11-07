@@ -50,16 +50,31 @@ public:
 	~CIlluminatedTexturedVertex() { }
 };
 
-class CAnimatedTexturedVertex : public CTexturedVertex
+class CAnimatedTexturedVertex : public CIlluminatedTexturedVertex
 {
 protected:
 	XMINT4 xmi4BoneIdx;
 	XMFLOAT4 xmf4Weight;
 
 public:
-	CAnimatedTexturedVertex() { m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f); m_xmf2TexCoord = XMFLOAT2(0.0f, 0.0f); xmi4BoneIdx.x = xmi4BoneIdx.y = xmi4BoneIdx.z = xmi4BoneIdx.w = 0; }
-	CAnimatedTexturedVertex(float x, float y, float z, XMFLOAT2 xmf2TexCoord) { m_xmf3Position = XMFLOAT3(x, y, z); m_xmf2TexCoord = xmf2TexCoord; }
-	CAnimatedTexturedVertex(XMFLOAT3 xmf3Position, XMFLOAT2 xmf2TexCoord = XMFLOAT2(0.0f, 0.0f)) { m_xmf3Position = xmf3Position; m_xmf2TexCoord = xmf2TexCoord; }
+	CAnimatedTexturedVertex() 
+	{ 
+		m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f); m_xmf2TexCoord = XMFLOAT2(0.0f, 0.0f); m_xmf3Normal = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		xmi4BoneIdx.x = xmi4BoneIdx.y = xmi4BoneIdx.z = xmi4BoneIdx.w = 0;
+		xmf4Weight.x = xmf4Weight.y = xmf4Weight.z = xmf4Weight.w = 0;
+	}
+	CAnimatedTexturedVertex(float x, float y, float z, XMFLOAT2 xmf2TexCoord, XMFLOAT3 xmf3Normal = XMFLOAT3(0.0f, 0.0f, 0.0f), XMINT4 xmi4Idx = XMINT4(0, 0, 0 ,0), XMFLOAT4 xmf4weight = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f))
+	{
+		m_xmf3Position = XMFLOAT3(x, y, z); m_xmf2TexCoord = xmf2TexCoord; m_xmf3Normal = xmf3Normal;
+		xmi4BoneIdx = xmi4Idx;
+		xmf4Weight = xmf4weight;
+	}
+	CAnimatedTexturedVertex(XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Normal = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT2 xmf2TexCoord = XMFLOAT2(0.0f, 0.0f), XMINT4 xmi4Idx = XMINT4(0, 0, 0, 0), XMFLOAT4 xmf4weight = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f))
+	{ 
+		m_xmf3Position = xmf3Position; m_xmf2TexCoord = xmf2TexCoord; m_xmf3Normal = xmf3Normal;
+		xmi4BoneIdx = xmi4Idx;
+		xmf4Weight = xmf4weight;
+	}
 	~CAnimatedTexturedVertex() { }
 };
 
@@ -158,9 +173,7 @@ protected:
 	ID3D12Resource *m_pVertexResource	= NULL;
 	ID3D12Resource *m_pUVResource		= NULL;
 
-private:
 	CFBXData *m_model;
-
 public:
 	CModelMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, const char * fileName);
 	~CModelMesh();

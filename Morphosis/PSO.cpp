@@ -126,10 +126,6 @@ D3D12_SHADER_BYTECODE CPSO::CompileShaderFromFile(const WCHAR * pszFileName, LPC
 	ID3DBlob *pd3dErrorBlob = NULL;
 	HRESULT result = ::D3DCompileFromFile(pszFileName, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, pszShaderName, pszShaderProfile, nCompileFlags, 0, ppd3dShaderBlob, &pd3dErrorBlob);
 	//	assert(result == S_OK);
-	if (result != S_OK)
-	{
-		printf("aaa");
-	}
 	char *pErrorString = NULL;
 	if (pd3dErrorBlob)pErrorString = (char *)pd3dErrorBlob->GetBufferPointer();
 
@@ -348,3 +344,30 @@ D3D12_SHADER_BYTECODE CUIPSO::CreatePixelShader(ID3DBlob ** ppd3dShaderBlob)
 
 }
 
+D3D12_INPUT_LAYOUT_DESC CAnimatedPSO::CreateInputLayout()
+{
+	UINT nInputElementDescs = 4;
+	D3D12_INPUT_ELEMENT_DESC *pd3dInputElementDescs = new D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
+
+	pd3dInputElementDescs[0] = { "POSITION",	0, DXGI_FORMAT_R32G32B32_FLOAT,		0, 0,	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[1] = { "UV",			0, DXGI_FORMAT_R32G32_FLOAT,		0, 12,	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[2] = { "WEIGHT",		0, DXGI_FORMAT_R32G32B32A32_FLOAT,	0, 20,	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[3] = { "BONEIDX",		0, DXGI_FORMAT_R32_SINT,			0, 36,	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+
+	D3D12_INPUT_LAYOUT_DESC d3dInputLayoutDesc;
+	d3dInputLayoutDesc.pInputElementDescs = pd3dInputElementDescs;
+	d3dInputLayoutDesc.NumElements = nInputElementDescs;
+
+	return(d3dInputLayoutDesc);
+}
+
+D3D12_SHADER_BYTECODE CAnimatedPSO::CreateVertexShader(ID3DBlob ** ppd3dShaderBlob)
+{
+	return(CompileShaderFromFile(L"VertexShader.hlsl", "VSAnimated", "vs_5_1", ppd3dShaderBlob));
+}
+
+D3D12_SHADER_BYTECODE CAnimatedPSO::CreatePixelShader(ID3DBlob ** ppd3dShaderBlob)
+{
+	return(CompileShaderFromFile(L"PixelShader.hlsl", "PSTexturedIlluminated", "ps_5_1", ppd3dShaderBlob));
+
+}

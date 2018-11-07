@@ -65,8 +65,6 @@ public:
 	void SetLook(XMFLOAT3 look);
 	void SetUp(XMFLOAT3 up);
 	void SetRight(XMFLOAT3 right);
-
-
 };
 
 class CCollideObejct : public CObject
@@ -119,7 +117,7 @@ public:
 	}
 	void FallingOOBB(float fTimeElapsed) {
 		prevHeight = m_collisionBox.Center.y;
-		m_fGravityAccel += fTimeElapsed * G * 1.5;
+		m_fGravityAccel += fTimeElapsed * G * 1.5f;
 		m_collisionBox.Center.y -= m_fGravityAccel;
 	}
 
