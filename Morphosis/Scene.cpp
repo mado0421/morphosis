@@ -126,6 +126,11 @@ ID3D12RootSignature * CScene::CreateRootSignature(ID3D12Device * pd3dDevice)
 	pd3dRootParameters[RootParameter::UI].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[RootDescriptor::UI]; //Game UI
 	pd3dRootParameters[RootParameter::UI].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
+	pd3dRootParameters[RootParameter::ANIM].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+	pd3dRootParameters[RootParameter::ANIM].Descriptor.ShaderRegister = RootParameter::ANIM; //t8
+	pd3dRootParameters[RootParameter::ANIM].Descriptor.RegisterSpace = 0;
+	pd3dRootParameters[RootParameter::ANIM].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+
 	/*
 	Root Signiature 추가 필요
 	*/
@@ -677,7 +682,7 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 	m_pLevel->FileRead("Assets/Levels/Level_0.dat");
 
 	//CreateObjects();
-	m_nObjects = m_pLevel->m_nLevelBlocks + 3;
+	m_nObjects = m_pLevel->m_nLevelBlocks;
 	m_ppObjects = new CCollideObejct*[m_nObjects];
 
 	m_nPlayers = m_pLevel->m_nSpawnPoints;
@@ -783,8 +788,6 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 
 	/*여기가 박스 모델*/
 	for (int i = 0; i < m_nObjects; i++) {
-		if (i < m_pLevel->m_nLevelBlocks) {
-
 			CCollideObejct *pObj = new CCollideObejct();
 			CTestMesh *pLevelMesh = new CTestMesh(pd3dDevice, pd3dCommandList, m_pLevel->m_pLevelBlocks[i].extent);
 			XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
@@ -800,24 +803,6 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 
 			pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
 			m_ppObjects[i] = pObj;
-		}
-		else {
-			CCollideObejct *pObj = new CCollideObejct();
-			CTestMesh *pLevelMesh = new CTestMesh(pd3dDevice, pd3dCommandList, XMFLOAT3(1, 1, 1));
-			XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
-
-			CModel *model = new CModel();
-			model->AddMesh(pLevelMesh);
-			model->SetTexture(textures[0]);
-
-			pObj->SetModel(model);
-			pObj->SetPosition(anim.bones[i - m_pLevel->m_nLevelBlocks]->translation);
-			pObj->SetOOBB(anim.bones[i - m_pLevel->m_nLevelBlocks]->translation, XMFLOAT3(5, 5, 5), orientation);
-			pObj->SetOOBBMesh(pd3dDevice, pd3dCommandList);
-
-			pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
-			m_ppObjects[i] = pObj;
-		}
 	}
 
 	/*여기가 움직이는 모델*/

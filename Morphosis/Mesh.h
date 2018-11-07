@@ -50,6 +50,19 @@ public:
 	~CIlluminatedTexturedVertex() { }
 };
 
+class CAnimatedTexturedVertex : public CTexturedVertex
+{
+protected:
+	XMINT4 xmi4BoneIdx;
+	XMFLOAT4 xmf4Weight;
+
+public:
+	CAnimatedTexturedVertex() { m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f); m_xmf2TexCoord = XMFLOAT2(0.0f, 0.0f); xmi4BoneIdx.x = xmi4BoneIdx.y = xmi4BoneIdx.z = xmi4BoneIdx.w = 0; }
+	CAnimatedTexturedVertex(float x, float y, float z, XMFLOAT2 xmf2TexCoord) { m_xmf3Position = XMFLOAT3(x, y, z); m_xmf2TexCoord = xmf2TexCoord; }
+	CAnimatedTexturedVertex(XMFLOAT3 xmf3Position, XMFLOAT2 xmf2TexCoord = XMFLOAT2(0.0f, 0.0f)) { m_xmf3Position = xmf3Position; m_xmf2TexCoord = xmf2TexCoord; }
+	~CAnimatedTexturedVertex() { }
+};
+
 class CMesh
 {
 protected:

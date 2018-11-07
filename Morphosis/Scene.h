@@ -97,8 +97,6 @@ protected:
 
 	CLevelData *m_pLevel = NULL;
 
-	CAnimationData anim;
-
 
 public:
 	CGroundScene();

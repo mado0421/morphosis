@@ -65,6 +65,7 @@ struct VS_TEXTURED_ILLUMINATED_INPUT
 	float3 normal : NORMAL;
 	float2 uv : TEXCOORD;
 };
+
 struct VS_TEXTURED_ILLUMINATED_OUTPUT
 {
 	float4 position : SV_POSITION;
@@ -110,3 +111,20 @@ struct VS_UI_OUTPUT
 	float4 position : SV_POSITION;
 	float2 uv : TEXCOORD;
 };
+
+
+
+struct BoneInfo
+{
+	matrix animMatrix;
+};
+StructuredBuffer<BoneInfo>BoneBuffer : register(t8);
+struct VS_ANIMATED_INPUT
+{
+	float3 position : POSITION;
+	float2 uv : TEXCOORD0;
+	float4 weight : TEXCOORD1;
+	int4 boneIdx : TEXCOORD2;
+};
+
+
