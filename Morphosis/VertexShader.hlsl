@@ -50,6 +50,7 @@
 //
 //	return(output);
 //}
+
 //
 //VS_DEBUG_OUTPUT VSDebug(VS_DEBUG_INPUT input)
 //{
@@ -92,13 +93,19 @@ VS_TEXTURED_ILLUMINATED_VERTEX_OUTPUT VSAnimated(VS_ANIMATED_VERTEX_INPUT input)
 {
 	VS_TEXTURED_ILLUMINATED_VERTEX_OUTPUT output;
 
+	Matrix m;
 	float3 weightedPos = 0;
 	for (int i = 0; i < 4; ++i) {
-		int idx = input.boneIdx[i];
-		float4 bonePos = mul(AnimMatrixBuffer[idx], float4(input.position, 1));
+		m = AnimMatrixBuffer[input.boneIdx[i]];
+		float4 bonePos = mul(m.AnimMatrix, float4(input.position, 1));
 		weightedPos += input.weight[i] * bonePos.xyz;
 	}
-	output.positionW = (float3)mul(float4(weightedPos, 1.0f), gmtxGameObject);
+
+	//output.positionW = (float3)mul(float4(weightedPos, 1.0f), gmtxGameObject);
+	output.positionW = (float3)mul(float4(input.position, 1.0f), gmtxGameObject);
+
+
+
 	output.position = mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection);
 	output.uv = input.uv;
 

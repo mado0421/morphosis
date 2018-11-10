@@ -290,6 +290,8 @@ public:
 	virtual void OnProcessingKeyboardMessage();
 
 private:
-	ID3D12PipelineState * pso = NULL;
-
+	ID3D12PipelineState ** pso							= NULL;
+	ID3D12Resource		* interpolatedMatrixResource	= NULL;
+	CB_ANIMDATA_INFO	* pCBMappedMatrix				= NULL;
+	Anim				animData;
 };

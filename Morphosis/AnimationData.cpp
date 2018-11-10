@@ -140,137 +140,53 @@
 //	그 노드의 키 타임별 값을 넣으면 됨
 //	*/
 //
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(0)]->translation.x = -0.01762986;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(0)]->translation.y = 4.308313e-07;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(0)]->translation.z = 9.856272;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(7697693000)]->translation.x = -0.01762986;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(7697693000)]->translation.y = 4.308313e-07;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(7697693000)]->translation.z = 9.856272;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(15395386000)]->translation.x = -0.01762986;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(15395386000)]->translation.y = 4.308313e-07;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(15395386000)]->translation.z = 9.856272;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(23093079000)]->translation.x = -0.01762986;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(23093079000)]->translation.y = 4.308313e-07;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(23093079000)]->translation.z = 9.856272;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(30790772000)]->translation.x = -0.01762986;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(30790772000)]->translation.y = 4.308313e-07;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(30790772000)]->translation.z = 9.856272;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(38488465000)]->translation.x = -0.01762986;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(38488465000)]->translation.y = 4.308313e-07;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(38488465000)]->translation.z = 9.856272;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(46186158000)]->translation.x = -0.01762986;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(46186158000)]->translation.y = 4.308313e-07;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(46186158000)]->translation.z = 9.856272;
+//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(0)]->translation.x =				-0.01762986,4.308313e-07,9.856272;
+//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(7697693000)]->translation.x =		-0.01762986,4.308313e-07,9.856272;
+//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(15395386000)]->translation.x =	-0.01762986,4.308313e-07,9.856272;
+//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(23093079000)]->translation.x =	-0.01762986,4.308313e-07,9.856272;
+//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(30790772000)]->translation.x =	-0.01762986,4.308313e-07,9.856272;
+//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(38488465000)]->translation.x =	-0.01762986,4.308313e-07,9.856272;
+//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(46186158000)]->translation.x =	-0.01762986,4.308313e-07,9.856272;
 //
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(0)]->translation.x = 10.23817;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(0)]->translation.y = 1.244247e-06;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(0)]->translation.z = 1.336819e-07;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(7697693000)]->translation.x = 10.23817;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(7697693000)]->translation.y = 1.244247e-06;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(7697693000)]->translation.z = 1.336819e-07;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(15395386000)]->translation.x = 10.23817;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(15395386000)]->translation.y = 1.244247e-06;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(15395386000)]->translation.z = 1.336819e-07;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(23093079000)]->translation.x = 10.23817;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(23093079000)]->translation.y = 1.244247e-06;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(23093079000)]->translation.z = 1.336819e-07;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(30790772000)]->translation.x = 10.23817;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(30790772000)]->translation.y = 1.244247e-06;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(30790772000)]->translation.z = 1.336819e-07;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(38488465000)]->translation.x = 10.23817;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(38488465000)]->translation.y = 1.244247e-06;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(38488465000)]->translation.z = 1.336819e-07;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(46186158000)]->translation.x = 10.23817;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(46186158000)]->translation.y = 1.244247e-06;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(46186158000)]->translation.z = 1.336819e-07;
+//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(0)]->translation.x =				10.23817,1.244247e-06,1.336819e-07;
+//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(7697693000)]->translation.x =		10.23817,1.244247e-06,1.336819e-07;
+//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(15395386000)]->translation.x =	10.23817,1.244247e-06,1.336819e-07;
+//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(23093079000)]->translation.x =	10.23817,1.244247e-06,1.336819e-07;
+//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(30790772000)]->translation.x =	10.23817,1.244247e-06,1.336819e-07;
+//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(38488465000)]->translation.x =	10.23817,1.244247e-06,1.336819e-07;
+//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(46186158000)]->translation.x =	10.23817,1.244247e-06,1.336819e-07;
 //
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(0)]->translation.x = 9.872274;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(0)]->translation.y = 0;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(0)]->translation.z = 7.21544e-07;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(7697693000)]->translation.x = 9.872274;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(7697693000)]->translation.y = 0;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(7697693000)]->translation.z = 7.21544e-07;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(15395386000)]->translation.x = 9.872274;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(15395386000)]->translation.y = 0;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(15395386000)]->translation.z = 7.21544e-07;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(23093079000)]->translation.x = 9.872274;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(23093079000)]->translation.y = 0;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(23093079000)]->translation.z = 7.21544e-07;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(30790772000)]->translation.x = 9.872274;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(30790772000)]->translation.y = 0;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(30790772000)]->translation.z = 7.21544e-07;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(38488465000)]->translation.x = 9.872274;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(38488465000)]->translation.y = 0;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(38488465000)]->translation.z = 7.21544e-07;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(46186158000)]->translation.x = 9.872274;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(46186158000)]->translation.y = 0;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(46186158000)]->translation.z = 7.21544e-07;
+//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(0)]->translation.x =				9.872274,0,7.21544e-07;
+//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(7697693000)]->translation.x =		9.872274,0,7.21544e-07;
+//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(15395386000)]->translation.x =	9.872274,0,7.21544e-07;
+//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(23093079000)]->translation.x =	9.872274,0,7.21544e-07;
+//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(30790772000)]->translation.x =	9.872274,0,7.21544e-07;
+//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(38488465000)]->translation.x =	9.872274,0,7.21544e-07;
+//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(46186158000)]->translation.x =	9.872274,0,7.21544e-07;
 //
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(0)]->rotation.x = 450;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(0)]->rotation.y = -89.59074;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(0)]->rotation.z = 0;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(7697693000)]->rotation.x = 450;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(7697693000)]->rotation.y = -89.59074;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(7697693000)]->rotation.z = 0;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(15395386000)]->rotation.x = 450;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(15395386000)]->rotation.y = -89.59074;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(15395386000)]->rotation.z = 0;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(23093079000)]->rotation.x = 540.0001;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(23093079000)]->rotation.y = 0;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(23093079000)]->rotation.z = -89.59074;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(30790772000)]->rotation.x = 450;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(30790772000)]->rotation.y = -89.59074;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(30790772000)]->rotation.z = 0;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(38488465000)]->rotation.x = 450;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(38488465000)]->rotation.y = -89.59074;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(38488465000)]->rotation.z = 0;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(46186158000)]->rotation.x = 450;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(46186158000)]->rotation.y = -89.59074;
-//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(46186158000)]->rotation.z = 0;
+//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(0)]->rotation.x =				450,-89.59074,0
+//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(7697693000)]->rotation.x =	450,-89.59074,0
+//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(15395386000)]->rotation.x =	450,-89.59074,0
+//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(23093079000)]->rotation.x =	540.0001,0,-89.59074
+//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(30790772000)]->rotation.x =	450,-89.59074,0
+//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(38488465000)]->rotation.x =	450,-89.59074,0
+//	bones[0]->keys[bones[0]->FindKeyIdxByBookmark(46186158000)]->rotation.x =	450,-89.59074,0
 //
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(0)]->rotation.x = -2.732076e-05;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(0)]->rotation.y = 0;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(0)]->rotation.z = 0.4092556;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(7697693000)]->rotation.x = -2.732076e-05;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(7697693000)]->rotation.y = 0;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(7697693000)]->rotation.z = 0.4092556;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(15395386000)]->rotation.x = -2.732076e-05;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(15395386000)]->rotation.y = 0;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(15395386000)]->rotation.z = 45.40925;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(23093079000)]->rotation.x = -2.732076e-05;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(23093079000)]->rotation.y = 0;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(23093079000)]->rotation.z = 45.40925;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(30790772000)]->rotation.x = -2.732076e-05;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(30790772000)]->rotation.y = 0;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(30790772000)]->rotation.z = 45.40925;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(38488465000)]->rotation.x = -2.732076e-05;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(38488465000)]->rotation.y = 0;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(38488465000)]->rotation.z = 0.4092556;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(46186158000)]->rotation.x = -2.732076e-05;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(46186158000)]->rotation.y = 0;
-//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(46186158000)]->rotation.z = 0.4092556;
+//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(0)]->rotation.x =				-2.732076e-05,0,0.4092556
+//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(7697693000)]->rotation.x =	-2.732076e-05,0,0.4092556
+//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(15395386000)]->rotation.x =	-2.732076e-05,0,45.40925
+//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(23093079000)]->rotation.x =	-2.732076e-05,0,45.40925
+//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(30790772000)]->rotation.x =	-2.732076e-05,0,45.40925
+//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(38488465000)]->rotation.x =	-2.732076e-05,0,0.4092556
+//	bones[1]->keys[bones[1]->FindKeyIdxByBookmark(46186158000)]->rotation.x =	-2.732076e-05,0,0.4092556
 //
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(0)]->rotation.x = 7.951189e-06;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(0)]->rotation.y = 0;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(0)]->rotation.z = 0.4182099;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(7697693000)]->rotation.x = 7.951189e-06;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(7697693000)]->rotation.y = 30;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(7697693000)]->rotation.z = 0.4182099;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(15395386000)]->rotation.x = 7.951189e-06;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(15395386000)]->rotation.y = 30;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(15395386000)]->rotation.z = 0.4182099;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(23093079000)]->rotation.x = 7.951189e-06;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(23093079000)]->rotation.y = 30;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(23093079000)]->rotation.z = 0.4182099;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(30790772000)]->rotation.x = 7.951189e-06;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(30790772000)]->rotation.y = 30;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(30790772000)]->rotation.z = 0.4182099;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(38488465000)]->rotation.x = 7.951189e-06;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(38488465000)]->rotation.y = 30;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(38488465000)]->rotation.z = 0.4182099;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(46186158000)]->rotation.x = 7.951189e-06;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(46186158000)]->rotation.y = 0;
-//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(46186158000)]->rotation.z = 0.4182099;
+//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(0)]->rotation.x =				7.951189e-06,0,0.4182099
+//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(7697693000)]->rotation.x =	7.951189e-06,30,0.4182099
+//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(15395386000)]->rotation.x =	7.951189e-06,30,0.4182099
+//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(23093079000)]->rotation.x =	7.951189e-06,30,0.4182099
+//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(30790772000)]->rotation.x =	7.951189e-06,30,0.4182099
+//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(38488465000)]->rotation.x =	7.951189e-06,30,0.4182099
+//	bones[2]->keys[bones[2]->FindKeyIdxByBookmark(46186158000)]->rotation.x =	7.951189e-06,0,0.4182099
 //
 //}
 //
@@ -278,3 +194,137 @@
 //CAnimationData::~CAnimationData()
 //{
 //}
+
+Anim::Anim()
+{
+	nKeys = 7;
+	nBones = 3;
+	keyList = new CKey*[nKeys];
+
+	CBone ** boneList = new CBone*[nBones];
+
+	{
+		CBone * pB;
+		pB = new CBone();
+
+		// lcl 값을 본마다 넣는다.
+		pB->position = XMFLOAT3(-0.0176298636943102, 9.85627174377441, 4.30831335052062e-07);
+		pB->rotation = XMFLOAT3(90.0000193525796, -89.5907443911997, 0);
+
+		// 부모 본의 주소를 넣는다.
+		pB->parent = NULL;
+
+		// toParent 행렬을 만든다.
+		pB->MakeToParentMatrix();
+
+		// Local 행렬을 만든다.(지금 Offset 행렬 만들려고)
+		pB->MakeLocalMatrix();
+
+		// Offset 행렬을 만든다.
+		pB->MakeOffsetMatrix();
+		boneList[0] = pB;
+	}
+
+	{
+		CBone * pB;
+		pB = new CBone();
+		pB->position = XMFLOAT3(10.2381744384766, 1.24424695968628e-06, 1.33681851366418e-07);
+		pB->rotation = XMFLOAT3(-2.73207566987348e-05, -0, 0.40925563548);
+
+		pB->parent = boneList[0];
+
+		pB->MakeToParentMatrix();
+		pB->MakeLocalMatrix();
+		pB->MakeOffsetMatrix();
+		boneList[1] = pB;
+	}
+
+	{
+		CBone * pB;
+		pB = new CBone();
+		pB->position = XMFLOAT3(9.87227439880371, 0, 7.21543983672746e-07);
+		pB->rotation = XMFLOAT3(7.95118888487746e-06, -0, 0.418209901769637);
+
+		pB->parent = boneList[1];
+
+		pB->MakeToParentMatrix();
+		pB->MakeLocalMatrix();
+		pB->MakeOffsetMatrix();
+		boneList[2] = pB;
+	}
+
+
+	float time[7] = {
+	GetTime(0),
+	GetTime(7697693000),
+	GetTime(15395386000),
+	GetTime(23093079000),
+	GetTime(30790772000),
+	GetTime(38488465000),
+	GetTime(46186158000)
+	};
+	// Key마다 본의 값을 복사해서 넣는다.
+	for (int i = 0; i < nKeys; ++i) {
+		CKey * pk = new CKey();
+		pk->nBones = nBones;
+		pk->boneList = new CBone*[pk->nBones];
+		for (int j = 0; j < nBones; ++j) {
+			pk->boneList[j] = new CBone(*boneList[j]);
+		}
+		pk->keyTime = time[i];
+		keyList[i] = pk;
+	}
+
+	// Key마다 본들의 Lcl 값을 넣는다.
+	keyList[0]->boneList[0]->position = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
+	keyList[1]->boneList[0]->position = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
+	keyList[2]->boneList[0]->position = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
+	keyList[3]->boneList[0]->position = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
+	keyList[4]->boneList[0]->position = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
+	keyList[5]->boneList[0]->position = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
+	keyList[6]->boneList[0]->position = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
+
+	keyList[0]->boneList[1]->position = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
+	keyList[1]->boneList[1]->position = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
+	keyList[2]->boneList[1]->position = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
+	keyList[3]->boneList[1]->position = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
+	keyList[4]->boneList[1]->position = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
+	keyList[5]->boneList[1]->position = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
+	keyList[6]->boneList[1]->position = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
+
+	keyList[0]->boneList[2]->position = XMFLOAT3(9.872274, 0, 7.21544e-07);
+	keyList[1]->boneList[2]->position = XMFLOAT3(9.872274, 0, 7.21544e-07);
+	keyList[2]->boneList[2]->position = XMFLOAT3(9.872274, 0, 7.21544e-07);
+	keyList[3]->boneList[2]->position = XMFLOAT3(9.872274, 0, 7.21544e-07);
+	keyList[4]->boneList[2]->position = XMFLOAT3(9.872274, 0, 7.21544e-07);
+	keyList[5]->boneList[2]->position = XMFLOAT3(9.872274, 0, 7.21544e-07);
+	keyList[6]->boneList[2]->position = XMFLOAT3(9.872274, 0, 7.21544e-07);
+
+	keyList[0]->boneList[0]->rotation = XMFLOAT3(450, -89.59074, 0);
+	keyList[1]->boneList[0]->rotation = XMFLOAT3(450, -89.59074, 0);
+	keyList[2]->boneList[0]->rotation = XMFLOAT3(450, -89.59074, 0);
+	keyList[3]->boneList[0]->rotation = XMFLOAT3(540.0001, 0, -89.59074);
+	keyList[4]->boneList[0]->rotation = XMFLOAT3(450, -89.59074, 0);
+	keyList[5]->boneList[0]->rotation = XMFLOAT3(450, -89.59074, 0);
+	keyList[6]->boneList[0]->rotation = XMFLOAT3(450, -89.59074, 0);
+
+	keyList[0]->boneList[1]->rotation = XMFLOAT3(-2.732076e-05, 0, 0.4092556);
+	keyList[1]->boneList[1]->rotation = XMFLOAT3(-2.732076e-05, 0, 0.4092556);
+	keyList[2]->boneList[1]->rotation = XMFLOAT3(-2.732076e-05, 0, 45.40925);
+	keyList[3]->boneList[1]->rotation = XMFLOAT3(-2.732076e-05, 0, 45.40925);
+	keyList[4]->boneList[1]->rotation = XMFLOAT3(-2.732076e-05, 0, 45.40925);
+	keyList[5]->boneList[1]->rotation = XMFLOAT3(-2.732076e-05, 0, 0.4092556);
+	keyList[6]->boneList[1]->rotation = XMFLOAT3(-2.732076e-05, 0, 0.4092556);
+
+	keyList[0]->boneList[2]->rotation = XMFLOAT3(7.951189e-06, 0, 0.4182099);
+	keyList[1]->boneList[2]->rotation = XMFLOAT3(7.951189e-06, 30, 0.4182099);
+	keyList[2]->boneList[2]->rotation = XMFLOAT3(7.951189e-06, 30, 0.4182099);
+	keyList[3]->boneList[2]->rotation = XMFLOAT3(7.951189e-06, 30, 0.4182099);
+	keyList[4]->boneList[2]->rotation = XMFLOAT3(7.951189e-06, 30, 0.4182099);
+	keyList[5]->boneList[2]->rotation = XMFLOAT3(7.951189e-06, 30, 0.4182099);
+	keyList[6]->boneList[2]->rotation = XMFLOAT3(7.951189e-06, 0, 0.4182099);
+}
+
+Anim::~Anim()
+{
+}
