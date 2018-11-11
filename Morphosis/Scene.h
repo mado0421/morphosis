@@ -320,11 +320,6 @@ private:
 	CB_ANIMDATA_INFO	* pCBMappedMatrix				= NULL;
 	Anim				animData;
 
-	CB_DESC				m_cbInterpolatedMatrixDesc;
-	CB_DESC				m_cbGameObjectsDesc;
-	XMMATRIX			*m_pmtxCurrInterpolatedMatrix = NULL;
-	XMMATRIX			*m_pcbMappedInterpolatedMatrix = NULL;
-
 	CPlayerObject		**ppPlayers = NULL;
 	int					nPlayers = 0;
 };
