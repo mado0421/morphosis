@@ -1285,8 +1285,8 @@ ID3D12RootSignature * CTestGroundScene::CreateRootSignature(ID3D12Device * pd3dD
 	pd3dRootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	
 	//Anim
-	pd3dRootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	pd3dRootParameters[3].Descriptor.ShaderRegister = 3; //b3
+	pd3dRootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+	pd3dRootParameters[3].Descriptor.ShaderRegister = 3;
 	pd3dRootParameters[3].Descriptor.RegisterSpace = 0;
 	pd3dRootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 
@@ -1382,17 +1382,17 @@ public:
 		pos[i++] = XMFLOAT3(5, -5, 0);
 		pos[i++] = XMFLOAT3(-5, 5, 0);
 		pos[i++] = XMFLOAT3(5, 5, 0);
-		pos[i++] = XMFLOAT3(-5, -5, 3);
+		pos[i++] = XMFLOAT3(-5, -5, 30);
 
 		pos[i++] = XMFLOAT3(5, -5, 30);
 		pos[i++] = XMFLOAT3(-5, 5, 30);
 		pos[i++] = XMFLOAT3(5, 5, 30);
-		pos[i++] = XMFLOAT3(-5, -5, 1);
+		pos[i++] = XMFLOAT3(-5, -5, 10);
 		pos[i++] = XMFLOAT3(5, -5, 10);
 
 		pos[i++] = XMFLOAT3(5, 5, 10);
 		pos[i++] = XMFLOAT3(-5, 5, 10);
-		pos[i++] = XMFLOAT3(-5, -5, 2);
+		pos[i++] = XMFLOAT3(-5, -5, 20);
 		pos[i++] = XMFLOAT3(5, -5, 20);
 		pos[i++] = XMFLOAT3(5, 5, 20);
 
@@ -1475,93 +1475,113 @@ public:
 		boneIdx[i++] = XMINT4(1, 2, 0, 0);
 		boneIdx[i++] = XMINT4(1, 2, 0, 0);
 
+		int posIdx[84] =
+		{
+			1,0,-4,0,2,-4,7,6,-5,7,4,-6,9,8,-1,9,0,-2,13,12,-9,13,8,-10,5,4,-13,5,12,-14,10,9,-2,10,1,-4,14,13,-10,14,9,-11,7,5,-14,7,13,-15,11,10,-4,11,3,-3,15,14,-11,15,10,-12,6,7,-15,6,14,-16,8,11,-3,8,2,-1,12,15,-12,12,11,-9,4,6,-16,4,15,-13
+		};
+
+		int uvIdx[84] =
+		{
+			3,0,2,0,1,2,6,7,4,6,4,5,9,10,0,9,0,8,11,12,10,11,10,9,13,4,12,13,12,11,18,19,16,18,16,17,20,21,19,20,19,18,22,23,21,22,21,20,14,18,17,14,17,1,15,20,18,15,18,14,7,22,20,7,20,15,10,14,1,10,1,0,12,15,14,12,14,10,4,7,15,4,15,12
+		};
+
+		for (int i = 0; i < 84; ++i) {
+			if (((i + 1) % 3) == 0) {
+				posIdx[i] *= -1;
+				posIdx[i] -= 1;
+			}
+		}
+
+
 		CAnimVertex vertex[84];
 		i = 0;
 
-		vertex[i++].Init(pos[1], uv[3], weight[1],	boneIdx[1]);
-		vertex[i++].Init(pos[0], uv[0], weight[0], boneIdx[0]);
-		vertex[i++].Init(pos[4], uv[2], weight[4], boneIdx[4]);
-		vertex[i++].Init(pos[0], uv[0], weight[0], boneIdx[0]);
-		vertex[i++].Init(pos[2], uv[1], weight[2], boneIdx[2]);
-		vertex[i++].Init(pos[4], uv[2], weight[4], boneIdx[4]);
-		vertex[i++].Init(pos[7], uv[6], weight[7], boneIdx[7]);
-		vertex[i++].Init(pos[6], uv[7], weight[6], boneIdx[6]);
-		vertex[i++].Init(pos[5], uv[4], weight[5], boneIdx[5]);
-		vertex[i++].Init(pos[7], uv[6], weight[7], boneIdx[7]);
-		vertex[i++].Init(pos[4], uv[4], weight[4], boneIdx[4]);
-		vertex[i++].Init(pos[6], uv[5], weight[6], boneIdx[6]);
-		vertex[i++].Init(pos[9], uv[9], weight[9], boneIdx[9]);
-		vertex[i++].Init(pos[8], uv[10], weight[8], boneIdx[8]);
-		vertex[i++].Init(pos[1], uv[0], weight[1], boneIdx[1]);
-		vertex[i++].Init(pos[9], uv[9], weight[9], boneIdx[9]);
-		vertex[i++].Init(pos[0], uv[0], weight[0], boneIdx[0]);
-		vertex[i++].Init(pos[2], uv[8], weight[2], boneIdx[2]);
-		vertex[i++].Init(pos[13], uv[11], weight[13], boneIdx[13]);
-		vertex[i++].Init(pos[12], uv[12], weight[12], boneIdx[12]);
-		vertex[i++].Init(pos[9], uv[10], weight[9], boneIdx[9]);
-		vertex[i++].Init(pos[13], uv[11], weight[13], boneIdx[13]);
-		vertex[i++].Init(pos[8], uv[10], weight[8], boneIdx[8]);
-		vertex[i++].Init(pos[10], uv[9], weight[10], boneIdx[10]);
-		vertex[i++].Init(pos[5], uv[13], weight[5], boneIdx[5]);
-		vertex[i++].Init(pos[4], uv[4], weight[4], boneIdx[4]);
-		vertex[i++].Init(pos[13], uv[12], weight[13], boneIdx[13]);
-		vertex[i++].Init(pos[5], uv[13], weight[5], boneIdx[5]);
-		vertex[i++].Init(pos[12], uv[12], weight[12], boneIdx[12]);
-		vertex[i++].Init(pos[14], uv[11], weight[14], boneIdx[14]);
-		vertex[i++].Init(pos[10], uv[18], weight[10], boneIdx[10]);
-		vertex[i++].Init(pos[9], uv[19], weight[9], boneIdx[9]);
-		vertex[i++].Init(pos[2], uv[16], weight[2], boneIdx[2]);
-		vertex[i++].Init(pos[10], uv[18], weight[10], boneIdx[10]);
-		vertex[i++].Init(pos[1], uv[16], weight[1], boneIdx[1]);
-		vertex[i++].Init(pos[4], uv[17], weight[4], boneIdx[4]);
-		vertex[i++].Init(pos[14], uv[20], weight[14], boneIdx[14]);
-		vertex[i++].Init(pos[13], uv[21], weight[13], boneIdx[13]);
-		vertex[i++].Init(pos[10], uv[19], weight[10], boneIdx[10]);
-		vertex[i++].Init(pos[14], uv[20], weight[14], boneIdx[14]);
-		vertex[i++].Init(pos[9], uv[19], weight[9], boneIdx[9]);
-		vertex[i++].Init(pos[11], uv[18], weight[11], boneIdx[11]);
-		vertex[i++].Init(pos[7], uv[22], weight[7], boneIdx[7]);
-		vertex[i++].Init(pos[5], uv[23], weight[5], boneIdx[5]);
-		vertex[i++].Init(pos[14], uv[21], weight[14], boneIdx[14]);
-		vertex[i++].Init(pos[7], uv[22], weight[7], boneIdx[7]);
-		vertex[i++].Init(pos[13], uv[21], weight[13], boneIdx[13]);
-		vertex[i++].Init(pos[15], uv[20], weight[15], boneIdx[15]);
-		vertex[i++].Init(pos[11], uv[14], weight[11], boneIdx[11]);
-		vertex[i++].Init(pos[10], uv[18], weight[10], boneIdx[10]);
-		vertex[i++].Init(pos[4], uv[17], weight[4], boneIdx[4]);
-		vertex[i++].Init(pos[11], uv[14], weight[11], boneIdx[11]);
-		vertex[i++].Init(pos[3], uv[17], weight[3], boneIdx[3]);
-		vertex[i++].Init(pos[3], uv[1], weight[3], boneIdx[3]);
-		vertex[i++].Init(pos[15], uv[15], weight[15], boneIdx[15]);
-		vertex[i++].Init(pos[14], uv[20], weight[14], boneIdx[14]);
-		vertex[i++].Init(pos[11], uv[18], weight[11], boneIdx[11]);
-		vertex[i++].Init(pos[15], uv[15], weight[15], boneIdx[15]);
-		vertex[i++].Init(pos[10], uv[18], weight[10], boneIdx[10]);
-		vertex[i++].Init(pos[12], uv[14], weight[12], boneIdx[12]);
-		vertex[i++].Init(pos[6], uv[7], weight[6], boneIdx[6]);
-		vertex[i++].Init(pos[7], uv[22], weight[7], boneIdx[7]);
-		vertex[i++].Init(pos[15], uv[20], weight[15], boneIdx[15]);
-		vertex[i++].Init(pos[6], uv[7], weight[6], boneIdx[6]);
-		vertex[i++].Init(pos[14], uv[20], weight[14], boneIdx[14]);
-		vertex[i++].Init(pos[16], uv[15], weight[16], boneIdx[16]);
-		vertex[i++].Init(pos[8], uv[10], weight[8], boneIdx[8]);
-		vertex[i++].Init(pos[11], uv[14], weight[11], boneIdx[11]);
-		vertex[i++].Init(pos[3], uv[1], weight[3], boneIdx[3]);
-		vertex[i++].Init(pos[8], uv[10], weight[8], boneIdx[8]);
-		vertex[i++].Init(pos[2], uv[1], weight[2], boneIdx[2]);
-		vertex[i++].Init(pos[1], uv[0], weight[1], boneIdx[1]);
-		vertex[i++].Init(pos[12], uv[12], weight[12], boneIdx[12]);
-		vertex[i++].Init(pos[15], uv[15], weight[15], boneIdx[15]);
-		vertex[i++].Init(pos[12], uv[14], weight[12], boneIdx[12]);
-		vertex[i++].Init(pos[12], uv[12], weight[12], boneIdx[12]);
-		vertex[i++].Init(pos[11], uv[14], weight[11], boneIdx[11]);
-		vertex[i++].Init(pos[9], uv[10], weight[9], boneIdx[9]);
-		vertex[i++].Init(pos[4], uv[4], weight[4], boneIdx[4]);
-		vertex[i++].Init(pos[6], uv[7], weight[6], boneIdx[6]);
-		vertex[i++].Init(pos[16], uv[15], weight[16], boneIdx[16]);
-		vertex[i++].Init(pos[4], uv[4], weight[4], boneIdx[4]);
-		vertex[i++].Init(pos[15], uv[15], weight[15], boneIdx[15]);
-		vertex[i++].Init(pos[13], uv[12], weight[13], boneIdx[13]);
+		for (int i = 0; i < 84; ++i) vertex[i].Init(pos[posIdx[i]], uv[uvIdx[i]], weight[posIdx[i]], boneIdx[posIdx[i]]);
+
+		//vertex[i++].Init(pos[1], uv[3],	weight[1],	boneIdx[1]);
+		//vertex[i++].Init(pos[0], uv[0], weight[0], boneIdx[0]);
+		//vertex[i++].Init(pos[3], uv[2], weight[3], boneIdx[3]);
+		//vertex[i++].Init(pos[0], uv[0], weight[0], boneIdx[0]);
+		//vertex[i++].Init(pos[2], uv[1], weight[2], boneIdx[2]);
+		//vertex[i++].Init(pos[3], uv[2], weight[3], boneIdx[3]);
+		//vertex[i++].Init(pos[7], uv[6], weight[7], boneIdx[7]);
+		//vertex[i++].Init(pos[6], uv[7], weight[6], boneIdx[6]);
+		//vertex[i++].Init(pos[4], uv[4], weight[4], boneIdx[4]);
+		//vertex[i++].Init(pos[7], uv[6], weight[7], boneIdx[7]);
+		//vertex[i++].Init(pos[4], uv[4], weight[4], boneIdx[4]);
+		//vertex[i++].Init(pos[5], uv[5], weight[5], boneIdx[5]);
+		//vertex[i++].Init(pos[9], uv[9], weight[9], boneIdx[9]);
+		//vertex[i++].Init(pos[8], uv[10], weight[8], boneIdx[8]);
+		//vertex[i++].Init(pos[0], uv[0], weight[0], boneIdx[0]);
+		//vertex[i++].Init(pos[9], uv[9], weight[9], boneIdx[9]);
+		//vertex[i++].Init(pos[0], uv[0], weight[0], boneIdx[0]);
+		//vertex[i++].Init(pos[1], uv[8], weight[1], boneIdx[1]);
+		//vertex[i++].Init(pos[13], uv[11], weight[13], boneIdx[13]);
+		//vertex[i++].Init(pos[12], uv[12], weight[12], boneIdx[12]);
+		//vertex[i++].Init(pos[8], uv[10], weight[8], boneIdx[8]);
+		//vertex[i++].Init(pos[13], uv[11], weight[13], boneIdx[13]);
+		//vertex[i++].Init(pos[8], uv[10], weight[8], boneIdx[8]);
+		//vertex[i++].Init(pos[9], uv[9], weight[9], boneIdx[9]);
+		//vertex[i++].Init(pos[5], uv[13], weight[5], boneIdx[5]);
+		//vertex[i++].Init(pos[4], uv[4], weight[4], boneIdx[4]);
+		//vertex[i++].Init(pos[12], uv[12], weight[12], boneIdx[12]);
+		//vertex[i++].Init(pos[5], uv[13], weight[5], boneIdx[5]);
+		//vertex[i++].Init(pos[12], uv[12], weight[12], boneIdx[12]);
+		//vertex[i++].Init(pos[13], uv[11], weight[13], boneIdx[13]);
+		//vertex[i++].Init(pos[10], uv[18], weight[10], boneIdx[10]);
+		//vertex[i++].Init(pos[9], uv[19], weight[9], boneIdx[9]);
+		//vertex[i++].Init(pos[1], uv[16], weight[1], boneIdx[1]);
+		//vertex[i++].Init(pos[10], uv[18], weight[10], boneIdx[10]);
+		//vertex[i++].Init(pos[1], uv[16], weight[1], boneIdx[1]);
+		//vertex[i++].Init(pos[3], uv[17], weight[3], boneIdx[3]);
+		//vertex[i++].Init(pos[14], uv[20], weight[14], boneIdx[14]);
+		//vertex[i++].Init(pos[13], uv[21], weight[13], boneIdx[13]);
+		//vertex[i++].Init(pos[9], uv[19], weight[9], boneIdx[9]);
+		//vertex[i++].Init(pos[14], uv[20], weight[14], boneIdx[14]);
+		//vertex[i++].Init(pos[9], uv[19], weight[9], boneIdx[9]);
+		//vertex[i++].Init(pos[10], uv[18], weight[10], boneIdx[10]);
+		//vertex[i++].Init(pos[7], uv[22], weight[7], boneIdx[7]);
+		//vertex[i++].Init(pos[5], uv[23], weight[5], boneIdx[5]);
+		//vertex[i++].Init(pos[13], uv[21], weight[13], boneIdx[13]);
+		//vertex[i++].Init(pos[7], uv[22], weight[7], boneIdx[7]);
+		//vertex[i++].Init(pos[13], uv[21], weight[13], boneIdx[13]);
+		//vertex[i++].Init(pos[14], uv[20], weight[14], boneIdx[14]);
+		//vertex[i++].Init(pos[11], uv[14], weight[11], boneIdx[11]);
+		//vertex[i++].Init(pos[10], uv[18], weight[10], boneIdx[10]);
+		//vertex[i++].Init(pos[3], uv[17], weight[3], boneIdx[3]);
+		//vertex[i++].Init(pos[11], uv[14], weight[11], boneIdx[11]);
+		//vertex[i++].Init(pos[3], uv[17], weight[3], boneIdx[3]);
+		//vertex[i++].Init(pos[2], uv[1], weight[2], boneIdx[2]);
+		//vertex[i++].Init(pos[15], uv[15], weight[15], boneIdx[15]);
+		//vertex[i++].Init(pos[14], uv[20], weight[14], boneIdx[14]);
+		//vertex[i++].Init(pos[10], uv[18], weight[10], boneIdx[10]);
+		//vertex[i++].Init(pos[15], uv[15], weight[15], boneIdx[15]);
+		//vertex[i++].Init(pos[10], uv[18], weight[10], boneIdx[10]);
+		//vertex[i++].Init(pos[11], uv[14], weight[11], boneIdx[11]);
+		//vertex[i++].Init(pos[6], uv[7], weight[6], boneIdx[6]);
+		//vertex[i++].Init(pos[7], uv[22], weight[7], boneIdx[7]);
+		//vertex[i++].Init(pos[14], uv[20], weight[14], boneIdx[14]);
+		//vertex[i++].Init(pos[6], uv[7], weight[6], boneIdx[6]);
+		//vertex[i++].Init(pos[14], uv[20], weight[14], boneIdx[14]);
+		//vertex[i++].Init(pos[15], uv[15], weight[15], boneIdx[15]);
+		//vertex[i++].Init(pos[8], uv[10], weight[8], boneIdx[8]);
+		//vertex[i++].Init(pos[11], uv[14], weight[11], boneIdx[11]);
+		//vertex[i++].Init(pos[2], uv[1], weight[2], boneIdx[2]);
+		//vertex[i++].Init(pos[8], uv[10], weight[8], boneIdx[8]);
+		//vertex[i++].Init(pos[2], uv[1], weight[2], boneIdx[2]);
+		//vertex[i++].Init(pos[0], uv[0], weight[0], boneIdx[0]);
+		//vertex[i++].Init(pos[12], uv[12], weight[12], boneIdx[12]);
+		//vertex[i++].Init(pos[15], uv[15], weight[15], boneIdx[15]);
+		//vertex[i++].Init(pos[11], uv[14], weight[11], boneIdx[11]);
+		//vertex[i++].Init(pos[12], uv[12], weight[12], boneIdx[12]);
+		//vertex[i++].Init(pos[11], uv[14], weight[11], boneIdx[11]);
+		//vertex[i++].Init(pos[8], uv[10], weight[8], boneIdx[8]);
+		//vertex[i++].Init(pos[4], uv[4], weight[4], boneIdx[4]);
+		//vertex[i++].Init(pos[6], uv[7], weight[6], boneIdx[6]);
+		//vertex[i++].Init(pos[15], uv[15], weight[15], boneIdx[15]);
+		//vertex[i++].Init(pos[4], uv[4], weight[4], boneIdx[4]);
+		//vertex[i++].Init(pos[15], uv[15], weight[15], boneIdx[15]);
+		//vertex[i++].Init(pos[12], uv[12], weight[12], boneIdx[12]);
 
 
 
@@ -1571,88 +1591,88 @@ public:
 			
 			1
 			0
-			4
+			3
 			0
 			2
-			4
+			3			
 			7
 			6
-			5
+			4			
 			7
 			4
-			6
+			5			
 			9
 			8
-			1
+			0			
 			9
 			0
-			2
+			1			
 			13
 			12
-			9
+			8			
 			13
 			8
-			10
+			9			
 			5
 			4
-			13
+			12			
 			5
 			12
-			14
+			13			
 			10
 			9
-			2
+			1
 			10
 			1
-			4
+			3			
 			14
 			13
-			10
+			9			
 			14
 			9
-			11
+			10			
 			7
 			5
-			14
+			13			
 			7
 			13
-			15
+			14			
 			11
 			10
-			4
+			3			
 			11
 			3
-			3
+			2			
 			15
 			14
-			11
+			10			
 			15
 			10
-			12
+			11			
 			6
 			7
-			15
+			14			
 			6
 			14
-			16
+			15			
 			8
 			11
-			3
+			2			
 			8
 			2
-			1
+			0		
 			12
 			15
-			12
+			11			
 			12
 			11
-			9
+			8			
 			4
 			6
-			16
+			15
 			4
 			15
-			13
+			12
 			
 			*/
 
@@ -1853,12 +1873,12 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
 
 
-	m_nObjects = 1;
-	m_ppObjects = new CCollideObejct*[m_nObjects];
+	nPlayers = 2;
+	ppPlayers = new CPlayerObject*[nPlayers];
 
 	// 서술자 힙 생성
 	D3D12_DESCRIPTOR_HEAP_DESC d3dDescriptorHeapDesc;
-	d3dDescriptorHeapDesc.NumDescriptors = m_nObjects + 1; //CBVs + SRVs 
+	d3dDescriptorHeapDesc.NumDescriptors = nPlayers + 1; //CBVs + SRVs 
 	d3dDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	d3dDescriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	d3dDescriptorHeapDesc.NodeMask = 0;
@@ -1868,8 +1888,8 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 
 	m_d3dCbvCPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	m_d3dCbvGPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart();
-	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * m_nObjects);
-	m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * m_nObjects);
+	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * nPlayers);
+	m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * nPlayers);
 
 	CTexture **textures = new CTexture*[1];
 	textures[0] = new CTexture(RESOURCE_TEXTURE2D);
@@ -1877,7 +1897,7 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 	CreateShaderResourceViews(pd3dDevice, pd3dCommandList, textures[0], 2, false);
 
 	// 상수버퍼 매핑
-	m_pd3dcbObjects = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes * m_nObjects,
+	m_pd3dcbObjects = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes * nPlayers,
 		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
 	m_pd3dcbObjects->Map(0, NULL, (void **)&m_pcbMappedGameObjects);
 
@@ -1885,7 +1905,7 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbObjects->GetGPUVirtualAddress();
 	D3D12_CONSTANT_BUFFER_VIEW_DESC d3dCBVDesc;
 	d3dCBVDesc.SizeInBytes = ncbElementBytes;
-	for (int j = 0; j < m_nObjects; j++)
+	for (int j = 0; j < nPlayers; j++)
 	{
 		d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * j);
 		D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
@@ -1894,9 +1914,9 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 	}
 
 	// 오브젝트 내용 채우기
-	for (int i = 0; i < m_nObjects; i++) {
+	for (int i = 0; i < nPlayers; i++) {
 
-		CCollideObejct *pObj	= new CCollideObejct();
+		CPlayerObject *pObj	= new CPlayerObject();
 		XMFLOAT4 orientation	= XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
 
 		CModel *model = new CModel();
@@ -1904,18 +1924,22 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 		model->SetTexture(textures[0]);
 
 		pObj->SetModel(model);
-		pObj->SetPosition(0, 50, 0);
-		pObj->SetOOBB(XMFLOAT3(0, 50, 0), XMFLOAT3(20, 20, 20), orientation);
+		pObj->SetPosition(0, 0, i * 100);
+		pObj->SetOOBB(XMFLOAT3(0, 0, i * 100), XMFLOAT3(20, 20, 20), orientation);
 		pObj->SetOOBBMesh(pd3dDevice, pd3dCommandList);
 
 		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
-		m_ppObjects[i] = pObj;
+		ppPlayers[i] = pObj;
 	}
 
+	UINT nStride = sizeof(XMMATRIX);
 
-	interpolatedMatrixResource = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, sizeof(XMFLOAT4X4)*animData.nBones,
-	D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-	interpolatedMatrixResource->Map(0, NULL, (void**)pCBMappedMatrix);
+	XMMATRIX *pInterpolatedMatrix = new XMMATRIX[animData.nBones];
+	for (UINT i = 0; i < animData.nBones; i++) pInterpolatedMatrix[i] = XMMatrixIdentity();
+
+	interpolatedMatrixResource = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pInterpolatedMatrix, nStride*animData.nBones,
+		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	interpolatedMatrixResource->Map(0, NULL, (void **)&pCBMappedMatrix);
 
 	//D3D12Resource *m_pVertexResource = NULL;
 	//UINT nStride;
@@ -1930,42 +1954,56 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 	//	D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
 
 	// 처음 따라갈 캐릭터 정해주기
-	m_pCamera->SetTarget(m_ppObjects[0]);
+	m_pCamera->SetTarget(ppPlayers[0]);
 }
 
 void CTestGroundScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 {
 	pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);	// 이 루트 시그니처를 쓸 것
 	pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);	// 이 서술자 힙을 쓸 것
+	pd3dCommandList->SetGraphicsRootShaderResourceView(3, interpolatedMatrixResource->GetGPUVirtualAddress());
 
 	// HLSL에 넣어줄 카메라 정보 갱신부분
 	m_pCamera->SetViewportsAndScissorRects(pd3dCommandList);
 	m_pCamera->UpdateShaderVariables(pd3dCommandList);
 
 	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
-	for (int i = 0; i < m_nObjects; i++)
+	for (int i = 0; i < nPlayers; i++)
 	{
 		CB_OBJECT_INFO *pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pcbMappedGameObjects + (i * ncbElementBytes));
-		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppObjects[i]->m_xmf4x4World)));
+		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&ppPlayers[i]->m_xmf4x4World)));
 	}
 
 	if (pso) pd3dCommandList->SetPipelineState(pso[0]);
-	for (int i = 0; i < m_nObjects; ++i) m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
+	for (int i = 0; i < nPlayers; ++i) ppPlayers[i]->Render(pd3dCommandList, m_pCamera);
 }
 
 void CTestGroundScene::Update(float fTimeElapsed)
 {
+	static float time;
+	time += fTimeElapsed * 0.05;
+
+	animData.GenerateToWorld(time);
+
 	UINT ncbElementBytes = ((sizeof(CB_ANIMDATA_INFO) + 255) & ~255);
 	for (int i = 0; i < animData.nBones; i++)
 	{
-		CB_ANIMDATA_INFO *pbMappedcbObject = (CB_ANIMDATA_INFO *)((UINT8 *)m_pcbMappedGameObjects + (i * ncbElementBytes));
-		XMStoreFloat4x4(&pbMappedcbObject->interpolatedMatrix, XMMatrixTranspose(animData.OffsetXtoParentXLocalMatrix(i, fTimeElapsed)));
+		CB_ANIMDATA_INFO *pbMappedcbObject = (CB_ANIMDATA_INFO *)((UINT8 *)pCBMappedMatrix + (i * ncbElementBytes));
+		XMStoreFloat4x4(&pbMappedcbObject->interpolatedMatrix, XMMatrixTranspose(animData.GetToWorldMatrix(i)));
 	}
-
+	for (int i = 0; i < nPlayers; i++) if (!ppPlayers[i]->IsDead()) ppPlayers[i]->Update(fTimeElapsed);
 }
 
 void CTestGroundScene::ProcessInput(UCHAR * pKeysBuffer)
 {
+	XMFLOAT3 xmf3temp;
+	if (pKeysBuffer[KEY::W] & 0xF0) { xmf3temp = ppPlayers[0]->GetLook(); ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, MOVE_SPEED)); }
+	if (pKeysBuffer[KEY::A] & 0xF0) { xmf3temp = ppPlayers[0]->GetRight(); ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -MOVE_SPEED)); }
+	if (pKeysBuffer[KEY::S] & 0xF0) { xmf3temp = ppPlayers[0]->GetLook(); ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -MOVE_SPEED)); }
+	if (pKeysBuffer[KEY::D] & 0xF0) { xmf3temp = ppPlayers[0]->GetRight(); ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, MOVE_SPEED)); }
+	if (pKeysBuffer[KEY::Q] & 0xF0) { ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, -ROTATE_SPEED, 0 }); }
+	if (pKeysBuffer[KEY::E] & 0xF0) { ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, ROTATE_SPEED, 0 }); }
+
 }
 
 void CTestGroundScene::OnProcessingMouseMessage()

@@ -294,4 +294,7 @@ private:
 	ID3D12Resource		* interpolatedMatrixResource	= NULL;
 	CB_ANIMDATA_INFO	* pCBMappedMatrix				= NULL;
 	Anim				animData;
+
+	CPlayerObject		**ppPlayers = NULL;
+	int					nPlayers = 0;
 };

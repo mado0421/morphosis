@@ -1,16 +1,24 @@
 SamplerState gSamplerState					: register(s0);
 cbuffer cbCameraInfo						: register(b0)
 {
-	matrix		gmtxView : packoffset(c0);
-	matrix		gmtxProjection : packoffset(c4);
-	float3		gvCameraPosition : packoffset(c8);
+	matrix		gmtxView			: packoffset(c0);
+	matrix		gmtxProjection		: packoffset(c4);
+	float3		gvCameraPosition	: packoffset(c8);
 };
 cbuffer cbGameObjectInfo					: register(b1)
 {
-	matrix		gmtxGameObject : packoffset(c0);
-	uint		gnMaterial : packoffset(c4);
+	matrix		gmtxGameObject		: packoffset(c0);
+	uint		gnMaterial			: packoffset(c4);
 };
 Texture2D gtxtTexture						: register(t2);
+//cbuffer cbAnimMatrixInfo					: register(b3);
+//{
+//	matrix		AnimMatrix			: packoffset(c0);
+//};
+//cbuffer cbAnimMatrixInfo					: register(b3)
+//{
+//	matrix		AnimMatrix[50]			: packoffset(c0);
+//};
 
 struct Matrix
 {
@@ -38,6 +46,9 @@ struct VS_TEXTURED_ILLUMINATED_VERTEX_OUTPUT
 	float4 position : SV_POSITION;
 	float3 positionW : POSITION;
 	float2 uv : TEXCOORD;
+	matrix test0 : ASDASD;
+	matrix test1 : AS;
+	matrix test2 : ASDAS;
 };
 
 //StructuredBuffer<sVertex>sVertexBuffer : register(t5);

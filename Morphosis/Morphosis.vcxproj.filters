@@ -225,8 +225,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Header.hlsli" />
-    <None Include="VertexShader.hlsl" />
     <None Include="ClassDiagram.cd" />
+    <None Include="VertexShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PixelShader.hlsl" />

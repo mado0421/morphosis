@@ -206,50 +206,30 @@ Anim::Anim()
 	{
 		CBone * pB;
 		pB = new CBone();
-
-		// lcl 값을 본마다 넣는다.
-		pB->position = XMFLOAT3(-0.0176298636943102, 9.85627174377441, 4.30831335052062e-07);
-		pB->rotation = XMFLOAT3(90.0000193525796, -89.5907443911997, 0);
-
-		// 부모 본의 주소를 넣는다.
-		pB->parent = NULL;
-
-		// toParent 행렬을 만든다.
-		pB->MakeToParentMatrix();
-
-		// Local 행렬을 만든다.(지금 Offset 행렬 만들려고)
-		pB->MakeLocalMatrix();
-
-		// Offset 행렬을 만든다.
-		pB->MakeOffsetMatrix();
+		pB->Initialize(
+			XMFLOAT3(-0.0176298636943102, 9.85627174377441, 4.30831335052062e-07),
+			XMFLOAT3(90.0000193525796, -89.5907443911997, 0),
+			NULL);
 		boneList[0] = pB;
 	}
 
 	{
 		CBone * pB;
 		pB = new CBone();
-		pB->position = XMFLOAT3(10.2381744384766, 1.24424695968628e-06, 1.33681851366418e-07);
-		pB->rotation = XMFLOAT3(-2.73207566987348e-05, -0, 0.40925563548);
-
-		pB->parent = boneList[0];
-
-		pB->MakeToParentMatrix();
-		pB->MakeLocalMatrix();
-		pB->MakeOffsetMatrix();
+		pB->Initialize(
+			XMFLOAT3(10.2381744384766, 1.24424695968628e-06, 1.33681851366418e-07),
+			XMFLOAT3(-2.73207566987348e-05, -0, 0.40925563548),
+			boneList[0]);
 		boneList[1] = pB;
 	}
 
 	{
 		CBone * pB;
 		pB = new CBone();
-		pB->position = XMFLOAT3(9.87227439880371, 0, 7.21543983672746e-07);
-		pB->rotation = XMFLOAT3(7.95118888487746e-06, -0, 0.418209901769637);
-
-		pB->parent = boneList[1];
-
-		pB->MakeToParentMatrix();
-		pB->MakeLocalMatrix();
-		pB->MakeOffsetMatrix();
+		pB->Initialize(
+			XMFLOAT3(9.87227439880371, 0, 7.21543983672746e-07),
+			XMFLOAT3(7.95118888487746e-06, -0, 0.418209901769637),
+			boneList[1]);
 		boneList[2] = pB;
 	}
 
@@ -275,54 +255,59 @@ Anim::Anim()
 		keyList[i] = pk;
 	}
 
+	keyList[0]->boneList[0]->parent = NULL;
+	keyList[0]->boneList[1]->parent = keyList[0]->boneList[0];
+	keyList[0]->boneList[2]->parent = keyList[0]->boneList[1];
+
+
 	// Key마다 본들의 Lcl 값을 넣는다.
-	keyList[0]->boneList[0]->position = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
-	keyList[1]->boneList[0]->position = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
-	keyList[2]->boneList[0]->position = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
-	keyList[3]->boneList[0]->position = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
-	keyList[4]->boneList[0]->position = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
-	keyList[5]->boneList[0]->position = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
-	keyList[6]->boneList[0]->position = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
+	keyList[0]->boneList[0]->Pos = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
+	keyList[1]->boneList[0]->Pos = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
+	keyList[2]->boneList[0]->Pos = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
+	keyList[3]->boneList[0]->Pos = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
+	keyList[4]->boneList[0]->Pos = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
+	keyList[5]->boneList[0]->Pos = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
+	keyList[6]->boneList[0]->Pos = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
 
-	keyList[0]->boneList[1]->position = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
-	keyList[1]->boneList[1]->position = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
-	keyList[2]->boneList[1]->position = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
-	keyList[3]->boneList[1]->position = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
-	keyList[4]->boneList[1]->position = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
-	keyList[5]->boneList[1]->position = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
-	keyList[6]->boneList[1]->position = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
+	keyList[0]->boneList[1]->Pos = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
+	keyList[1]->boneList[1]->Pos = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
+	keyList[2]->boneList[1]->Pos = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
+	keyList[3]->boneList[1]->Pos = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
+	keyList[4]->boneList[1]->Pos = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
+	keyList[5]->boneList[1]->Pos = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
+	keyList[6]->boneList[1]->Pos = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
 
-	keyList[0]->boneList[2]->position = XMFLOAT3(9.872274, 0, 7.21544e-07);
-	keyList[1]->boneList[2]->position = XMFLOAT3(9.872274, 0, 7.21544e-07);
-	keyList[2]->boneList[2]->position = XMFLOAT3(9.872274, 0, 7.21544e-07);
-	keyList[3]->boneList[2]->position = XMFLOAT3(9.872274, 0, 7.21544e-07);
-	keyList[4]->boneList[2]->position = XMFLOAT3(9.872274, 0, 7.21544e-07);
-	keyList[5]->boneList[2]->position = XMFLOAT3(9.872274, 0, 7.21544e-07);
-	keyList[6]->boneList[2]->position = XMFLOAT3(9.872274, 0, 7.21544e-07);
+	keyList[0]->boneList[2]->Pos = XMFLOAT3(9.872274, 0, 7.21544e-07);
+	keyList[1]->boneList[2]->Pos = XMFLOAT3(9.872274, 0, 7.21544e-07);
+	keyList[2]->boneList[2]->Pos = XMFLOAT3(9.872274, 0, 7.21544e-07);
+	keyList[3]->boneList[2]->Pos = XMFLOAT3(9.872274, 0, 7.21544e-07);
+	keyList[4]->boneList[2]->Pos = XMFLOAT3(9.872274, 0, 7.21544e-07);
+	keyList[5]->boneList[2]->Pos = XMFLOAT3(9.872274, 0, 7.21544e-07);
+	keyList[6]->boneList[2]->Pos = XMFLOAT3(9.872274, 0, 7.21544e-07);
 
-	keyList[0]->boneList[0]->rotation = XMFLOAT3(450, -89.59074, 0);
-	keyList[1]->boneList[0]->rotation = XMFLOAT3(450, -89.59074, 0);
-	keyList[2]->boneList[0]->rotation = XMFLOAT3(450, -89.59074, 0);
-	keyList[3]->boneList[0]->rotation = XMFLOAT3(540.0001, 0, -89.59074);
-	keyList[4]->boneList[0]->rotation = XMFLOAT3(450, -89.59074, 0);
-	keyList[5]->boneList[0]->rotation = XMFLOAT3(450, -89.59074, 0);
-	keyList[6]->boneList[0]->rotation = XMFLOAT3(450, -89.59074, 0);
+	keyList[0]->boneList[0]->Rot = XMFLOAT3(450, -89.59074, 0);
+	keyList[1]->boneList[0]->Rot = XMFLOAT3(450, -89.59074, 0);
+	keyList[2]->boneList[0]->Rot = XMFLOAT3(450, -89.59074, 0);
+	keyList[3]->boneList[0]->Rot = XMFLOAT3(540.0001, 0, -89.59074);
+	keyList[4]->boneList[0]->Rot = XMFLOAT3(450, -89.59074, 0);
+	keyList[5]->boneList[0]->Rot = XMFLOAT3(450, -89.59074, 0);
+	keyList[6]->boneList[0]->Rot = XMFLOAT3(450, -89.59074, 0);
 
-	keyList[0]->boneList[1]->rotation = XMFLOAT3(-2.732076e-05, 0, 0.4092556);
-	keyList[1]->boneList[1]->rotation = XMFLOAT3(-2.732076e-05, 0, 0.4092556);
-	keyList[2]->boneList[1]->rotation = XMFLOAT3(-2.732076e-05, 0, 45.40925);
-	keyList[3]->boneList[1]->rotation = XMFLOAT3(-2.732076e-05, 0, 45.40925);
-	keyList[4]->boneList[1]->rotation = XMFLOAT3(-2.732076e-05, 0, 45.40925);
-	keyList[5]->boneList[1]->rotation = XMFLOAT3(-2.732076e-05, 0, 0.4092556);
-	keyList[6]->boneList[1]->rotation = XMFLOAT3(-2.732076e-05, 0, 0.4092556);
+	keyList[0]->boneList[1]->Rot = XMFLOAT3(-2.732076e-05, 0, 0.4092556);
+	keyList[1]->boneList[1]->Rot = XMFLOAT3(-2.732076e-05, 0, 0.4092556);
+	keyList[2]->boneList[1]->Rot = XMFLOAT3(-2.732076e-05, 0, 45.40925);
+	keyList[3]->boneList[1]->Rot = XMFLOAT3(-2.732076e-05, 0, 45.40925);
+	keyList[4]->boneList[1]->Rot = XMFLOAT3(-2.732076e-05, 0, 45.40925);
+	keyList[5]->boneList[1]->Rot = XMFLOAT3(-2.732076e-05, 0, 0.4092556);
+	keyList[6]->boneList[1]->Rot = XMFLOAT3(-2.732076e-05, 0, 0.4092556);
 
-	keyList[0]->boneList[2]->rotation = XMFLOAT3(7.951189e-06, 0, 0.4182099);
-	keyList[1]->boneList[2]->rotation = XMFLOAT3(7.951189e-06, 30, 0.4182099);
-	keyList[2]->boneList[2]->rotation = XMFLOAT3(7.951189e-06, 30, 0.4182099);
-	keyList[3]->boneList[2]->rotation = XMFLOAT3(7.951189e-06, 30, 0.4182099);
-	keyList[4]->boneList[2]->rotation = XMFLOAT3(7.951189e-06, 30, 0.4182099);
-	keyList[5]->boneList[2]->rotation = XMFLOAT3(7.951189e-06, 30, 0.4182099);
-	keyList[6]->boneList[2]->rotation = XMFLOAT3(7.951189e-06, 0, 0.4182099);
+	keyList[0]->boneList[2]->Rot = XMFLOAT3(7.951189e-06, 0, 0.4182099);
+	keyList[1]->boneList[2]->Rot = XMFLOAT3(7.951189e-06, 30, 0.4182099);
+	keyList[2]->boneList[2]->Rot = XMFLOAT3(7.951189e-06, 30, 0.4182099);
+	keyList[3]->boneList[2]->Rot = XMFLOAT3(7.951189e-06, 30, 0.4182099);
+	keyList[4]->boneList[2]->Rot = XMFLOAT3(7.951189e-06, 30, 0.4182099);
+	keyList[5]->boneList[2]->Rot = XMFLOAT3(7.951189e-06, 30, 0.4182099);
+	keyList[6]->boneList[2]->Rot = XMFLOAT3(7.951189e-06, 0, 0.4182099);
 }
 
 Anim::~Anim()
