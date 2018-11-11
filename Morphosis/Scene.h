@@ -277,6 +277,12 @@ public:
 	virtual void ReleaseObjectBuffers();
 };
 
+struct CB_DESC {
+	UINT nMappedData;
+	D3D12_CONSTANT_BUFFER_VIEW_DESC view_desc;
+	LPVOID pMappedPtr;
+};
+
 class CTestGroundScene : public CGroundScene {
 public:
 	virtual ID3D12RootSignature *CreateRootSignature(ID3D12Device *pd3dDevice);
@@ -289,11 +295,35 @@ public:
 	virtual void OnProcessingMouseMessage();
 	virtual void OnProcessingKeyboardMessage();
 
+	bool AllocUploadBuffer(CB_DESC& cb_desc, UINT nBytes) {
+		if (m_pcbUploadBuffer == nullptr) return false;
+		UINT ncbElementBytes = ((nBytes + 255) & ~255);
+
+		cb_desc.nMappedData = ncbElementBytes;
+		cb_desc.view_desc.SizeInBytes = ncbElementBytes;
+		cb_desc.view_desc.BufferLocation = m_pcbUploadBuffer->GetGPUVirtualAddress() + m_UBStartIdx;
+
+		cb_desc.pMappedPtr = reinterpret_cast<LPVOID>(
+			m_UBStartIdx + reinterpret_cast<long long>(m_pcbUBMappedPtr));
+		m_UBStartIdx += ncbElementBytes;
+		return true;
+	}
+
 private:
 	ID3D12PipelineState ** pso							= NULL;
+
+	ID3D12Resource*				m_pcbUploadBuffer = NULL;
+	D3D12_GPU_VIRTUAL_ADDRESS	m_UBStartIdx;
+
 	ID3D12Resource		* interpolatedMatrixResource	= NULL;
+	LPVOID				* m_pcbUBMappedPtr = nullptr;
 	CB_ANIMDATA_INFO	* pCBMappedMatrix				= NULL;
 	Anim				animData;
+
+	CB_DESC				m_cbInterpolatedMatrixDesc;
+	CB_DESC				m_cbGameObjectsDesc;
+	XMMATRIX			*m_pmtxCurrInterpolatedMatrix = NULL;
+	XMMATRIX			*m_pcbMappedInterpolatedMatrix = NULL;
 
 	CPlayerObject		**ppPlayers = NULL;
 	int					nPlayers = 0;

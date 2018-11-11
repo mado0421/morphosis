@@ -181,6 +181,8 @@ void CGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLi
 {
 	m_pFramework = (CFramework*)pContext;
 	GetCursorPos(&m_ptOldCursorPos);
+	m_pd3dDevice = pd3dDevice;
+	m_pd3dCommandList = pd3dCommandList;
 }
 
 void CGroundScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
@@ -1250,7 +1252,7 @@ void CScene::ReleaseShaderVariables()
 ID3D12RootSignature * CTestGroundScene::CreateRootSignature(ID3D12Device * pd3dDevice)
 {
 	ID3D12RootSignature *pd3dGraphicsRootSignature = NULL;
-	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[2];	// Object and Texture
+	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[3];	// Object and Texture
 
 	pd3dDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
 	pd3dDescriptorRanges[0].NumDescriptors = 1;
@@ -1263,6 +1265,12 @@ ID3D12RootSignature * CTestGroundScene::CreateRootSignature(ID3D12Device * pd3dD
 	pd3dDescriptorRanges[1].BaseShaderRegister = 2; //t2
 	pd3dDescriptorRanges[1].RegisterSpace = 0;
 	pd3dDescriptorRanges[1].OffsetInDescriptorsFromTableStart = 0;
+
+	pd3dDescriptorRanges[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+	pd3dDescriptorRanges[2].NumDescriptors = 1;
+	pd3dDescriptorRanges[2].BaseShaderRegister = 3;
+	pd3dDescriptorRanges[2].RegisterSpace = 0;
+	pd3dDescriptorRanges[2].OffsetInDescriptorsFromTableStart = 0;
 
 	D3D12_ROOT_PARAMETER pd3dRootParameters[4];	//Camera, Obejct, texture, anim
 
@@ -1285,10 +1293,14 @@ ID3D12RootSignature * CTestGroundScene::CreateRootSignature(ID3D12Device * pd3dD
 	pd3dRootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	
 	//Anim
-	pd3dRootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
-	pd3dRootParameters[3].Descriptor.ShaderRegister = 3;
-	pd3dRootParameters[3].Descriptor.RegisterSpace = 0;
-	pd3dRootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+	pd3dRootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	pd3dRootParameters[3].DescriptorTable.NumDescriptorRanges = 1;
+	pd3dRootParameters[3].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[2];
+	pd3dRootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	//pd3dRootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+	//pd3dRootParameters[3].Descriptor.ShaderRegister = 3;
+	//pd3dRootParameters[3].Descriptor.RegisterSpace = 0;
+	//pd3dRootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 
 	///*
 	//Root Signiature 추가 필요
@@ -1872,46 +1884,72 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 
 	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
 
-
 	nPlayers = 2;
 	ppPlayers = new CPlayerObject*[nPlayers];
 
 	// 서술자 힙 생성
 	D3D12_DESCRIPTOR_HEAP_DESC d3dDescriptorHeapDesc;
-	d3dDescriptorHeapDesc.NumDescriptors = nPlayers + 1; //CBVs + SRVs 
+	d3dDescriptorHeapDesc.NumDescriptors = nPlayers + animData.nBones + 1;
 	d3dDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	d3dDescriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	d3dDescriptorHeapDesc.NodeMask = 0;
 	HRESULT result = pd3dDevice->CreateDescriptorHeap(&d3dDescriptorHeapDesc, __uuidof(ID3D12DescriptorHeap), (void **)&m_pd3dCbvSrvDescriptorHeap);
 
-	HRESULT reason = pd3dDevice->GetDeviceRemovedReason();
-
 	m_d3dCbvCPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	m_d3dCbvGPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart();
-	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * nPlayers);
-	m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * nPlayers);
+	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (nPlayers + animData.nBones));
+	m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (nPlayers + animData.nBones));
 
 	CTexture **textures = new CTexture*[1];
 	textures[0] = new CTexture(RESOURCE_TEXTURE2D);
 	textures[0]->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Assets/Textures/TEST/box_diff.dds");
 	CreateShaderResourceViews(pd3dDevice, pd3dCommandList, textures[0], 2, false);
 
-	// 상수버퍼 매핑
-	m_pd3dcbObjects = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes * nPlayers,
+	m_pcbUploadBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, 
+		((sizeof(CB_OBJECT_INFO) + 255) & ~255) * nPlayers + ((sizeof(XMMATRIX) + 255) & ~255) * animData.nBones,
 		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-	m_pd3dcbObjects->Map(0, NULL, (void **)&m_pcbMappedGameObjects);
+	m_pcbUploadBuffer->Map(0, NULL, (void **)&m_pcbUBMappedPtr);
 
-	// 오브젝트마다 상수버퍼 뷰를 생성
-	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbObjects->GetGPUVirtualAddress();
-	D3D12_CONSTANT_BUFFER_VIEW_DESC d3dCBVDesc;
-	d3dCBVDesc.SizeInBytes = ncbElementBytes;
-	for (int j = 0; j < nPlayers; j++)
-	{
-		d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * j);
-		D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
-		d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * j);
-		pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
-	}
+	AllocUploadBuffer(m_cbGameObjectsDesc, sizeof(CB_OBJECT_INFO)*nPlayers);
+	m_pcbMappedGameObjects = static_cast<CB_OBJECT_INFO*>(m_cbGameObjectsDesc.pMappedPtr);
+
+	AllocUploadBuffer(m_cbInterpolatedMatrixDesc, sizeof(XMMATRIX)*animData.nBones);
+	m_pcbMappedInterpolatedMatrix = static_cast<XMMATRIX*>(m_cbInterpolatedMatrixDesc.pMappedPtr);
+
+	//// 상수버퍼 매핑
+	//m_pd3dcbObjects = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes * nPlayers,
+	//	D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	//m_pd3dcbObjects->Map(0, NULL, (void **)&m_pcbMappedGameObjects);
+	//// 오브젝트마다 상수버퍼 뷰를 생성
+	//D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbObjects->GetGPUVirtualAddress();
+	//D3D12_CONSTANT_BUFFER_VIEW_DESC d3dCBVDesc;
+	//d3dCBVDesc.SizeInBytes = ncbElementBytes;
+	//for (int j = 0; j < nPlayers; j++)
+	//{
+	//	d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * j);
+	//	D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
+	//	d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * j);
+	//	pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
+	//}
+	//==============================================================================================================
+	// 애니메이션 행렬 관련
+	//UINT prev = ncbElementBytes;
+	//ncbElementBytes = (((sizeof(XMMATRIX) * animData.nBones) + 255) & ~255);
+	//m_cbInterpolatedMatrixDesc.nMappedData = ncbElementBytes;
+	//m_cbInterpolatedMatrixDesc.view_desc.SizeInBytes = ncbElementBytes;
+	//m_cbInterpolatedMatrixDesc.view_desc.BufferLocation = m_pd3dcbObjects->GetGPUVirtualAddress() + (prev * nPlayers);
+	//m_cbInterpolatedMatrixDesc.pMappedPtr = reinterpret_cast<LPVOID>(
+	//	(prev * nPlayers) + reinterpret_cast<long long>(m_pcbMappedGameObjects));
+	//m_pcbMappedInterpolatedMatrix = static_cast<XMMATRIX*>(m_cbInterpolatedMatrixDesc.pMappedPtr);
+	//
+	////UINT nStride = sizeof(XMMATRIX);
+	////XMMATRIX *pInterpolatedMatrix = new XMMATRIX[animData.nBones];
+	////for (UINT i = 0; i < animData.nBones; i++) pInterpolatedMatrix[i] = XMMatrixIdentity();
+	//interpolatedMatrixResource = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, sizeof(XMMATRIX) * animData.nBones,
+	//	D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	//interpolatedMatrixResource->Map(0, NULL, (void **)&pCBMappedMatrix);
+	//==============================================================================================================
+	m_pmtxCurrInterpolatedMatrix = new XMMATRIX[animData.nBones];
 
 	// 오브젝트 내용 채우기
 	for (int i = 0; i < nPlayers; i++) {
@@ -1931,15 +1969,6 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
 		ppPlayers[i] = pObj;
 	}
-
-	UINT nStride = sizeof(XMMATRIX);
-
-	XMMATRIX *pInterpolatedMatrix = new XMMATRIX[animData.nBones];
-	for (UINT i = 0; i < animData.nBones; i++) pInterpolatedMatrix[i] = XMMatrixIdentity();
-
-	interpolatedMatrixResource = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pInterpolatedMatrix, nStride*animData.nBones,
-		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-	interpolatedMatrixResource->Map(0, NULL, (void **)&pCBMappedMatrix);
 
 	//D3D12Resource *m_pVertexResource = NULL;
 	//UINT nStride;
@@ -1961,7 +1990,10 @@ void CTestGroundScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 {
 	pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);	// 이 루트 시그니처를 쓸 것
 	pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);	// 이 서술자 힙을 쓸 것
-	pd3dCommandList->SetGraphicsRootShaderResourceView(3, interpolatedMatrixResource->GetGPUVirtualAddress());
+	//pd3dCommandList->SetGraphicsRootShaderResourceView(3, interpolatedMatrixResource->GetGPUVirtualAddress());
+
+	memcpy(m_pcbMappedInterpolatedMatrix, m_pmtxCurrInterpolatedMatrix, sizeof(XMMATRIX) * animData.nBones);
+	m_pd3dCommandList->SetGraphicsRootConstantBufferView(3, m_cbInterpolatedMatrixDesc.view_desc.BufferLocation);
 
 	// HLSL에 넣어줄 카메라 정보 갱신부분
 	m_pCamera->SetViewportsAndScissorRects(pd3dCommandList);
@@ -1985,12 +2017,13 @@ void CTestGroundScene::Update(float fTimeElapsed)
 
 	animData.GenerateToWorld(time);
 
-	UINT ncbElementBytes = ((sizeof(CB_ANIMDATA_INFO) + 255) & ~255);
-	for (int i = 0; i < animData.nBones; i++)
-	{
-		CB_ANIMDATA_INFO *pbMappedcbObject = (CB_ANIMDATA_INFO *)((UINT8 *)pCBMappedMatrix + (i * ncbElementBytes));
-		XMStoreFloat4x4(&pbMappedcbObject->interpolatedMatrix, XMMatrixTranspose(animData.GetToWorldMatrix(i)));
-	}
+	//UINT ncbElementBytes = ((sizeof(CB_ANIMDATA_INFO) + 255) & ~255);
+	//for (int i = 0; i < animData.nBones; i++)
+	//{
+	//	CB_ANIMDATA_INFO *pbMappedcbObject = (CB_ANIMDATA_INFO *)((UINT8 *)pCBMappedMatrix + (i * ncbElementBytes));
+	//	XMStoreFloat4x4(&pbMappedcbObject->interpolatedMatrix, XMMatrixTranspose(animData.GetToWorldMatrix(i)));
+	//}
+	for (int i = 0; i < animData.nBones; ++i) m_pmtxCurrInterpolatedMatrix[i] = XMMatrixTranspose(animData.GetToWorldMatrix(i));
 	for (int i = 0; i < nPlayers; i++) if (!ppPlayers[i]->IsDead()) ppPlayers[i]->Update(fTimeElapsed);
 }
 
