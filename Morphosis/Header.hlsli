@@ -11,34 +11,23 @@ cbuffer cbGameObjectInfo					: register(b1)
 	uint		gnMaterial			: packoffset(c4);
 };
 Texture2D gtxtTexture						: register(t2);
-//cbuffer cbAnimMatrixInfo					: register(b3);
-//{
-//	matrix		AnimMatrix			: packoffset(c0);
-//};
-//cbuffer cbAnimMatrixInfo					: register(b3)
-//{
-//	matrix		AnimMatrix[50]			: packoffset(c0);
-//};
-
-struct Matrix
+cbuffer cbAnimMatrixInfo					: register(b3)
 {
-	matrix AnimMatrix;
+	matrix		AnimMatrix[64]		: packoffset(c0);
 };
-
-StructuredBuffer<Matrix>AnimMatrixBuffer	: register(t3);
+//struct Matrix
+//{
+//	matrix AnimMatrix[20];
+//};
+//
+//StructuredBuffer<Matrix>AnimMatrixBuffer	: register(t3);
 
 struct VS_ANIMATED_VERTEX_INPUT
 {
 	float3	position	: POSITION;
 	float2	uv			: TEXCOORD0;
 	float4	weight		: BLENDWEIGHT0;
-	//float	weight1		: BLENDWEIGHT1;
-	//float	weight2		: BLENDWEIGHT2;
-	//float	weight3		: BLENDWEIGHT3;
 	int4	boneIdx		: BLENDINDICES0;
-	//int		boneIdx1	: BLENDINDICES1;
-	//int		boneIdx2	: BLENDINDICES2;
-	//int		boneIdx3	: BLENDINDICES3;
 };
 
 struct VS_TEXTURED_ILLUMINATED_VERTEX_OUTPUT
