@@ -1398,6 +1398,9 @@ public:
 
 		pos[i++] = XMFLOAT3(-5, 5, 20);
 
+		//for (int j = 0; j < 16; ++j) pos[j].z+=10;
+		//for (int j = 0; j < 16; ++j) swap(pos[j].y, pos[j].z);
+
 		XMFLOAT2 uv[24];
 		i = 0;
 		uv[i++] = XMFLOAT2(0.662188231945038,  0.211878150701523);
@@ -1994,8 +1997,8 @@ void CTestGroundScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 
 void CTestGroundScene::Update(float fTimeElapsed)
 {
-	static float time;
-	time += fTimeElapsed * 0.05;
+	static float time = 0.0001;
+	if(isTimeflow)	time += fTimeElapsed * 0.05;
 
 	animData.GenerateToWorld(time);
 
@@ -2022,6 +2025,7 @@ void CTestGroundScene::ProcessInput(UCHAR * pKeysBuffer)
 	if (pKeysBuffer[KEY::Q] & 0xF0) { ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, -ROTATE_SPEED, 0 }); }
 	if (pKeysBuffer[KEY::E] & 0xF0) { ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, ROTATE_SPEED, 0 }); }
 
+	if (pKeysBuffer[VK_SPACE] & 0xF0) if (isTimeflow) isTimeflow = false; else isTimeflow = true;
 }
 
 void CTestGroundScene::OnProcessingMouseMessage()

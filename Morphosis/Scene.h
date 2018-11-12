@@ -290,6 +290,8 @@ public:
 	virtual void OnProcessingKeyboardMessage();
 
 private:
+	bool isTimeflow = true;
+
 	ID3D12PipelineState ** pso							= NULL;
 	ID3D12Resource		* interpolatedMatrixResource	= NULL;
 	XMMATRIX	* pCBMappedMatrix				= NULL;

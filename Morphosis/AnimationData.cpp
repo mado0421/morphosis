@@ -210,6 +210,14 @@ Anim::Anim()
 			XMFLOAT3(-0.0176298636943102, 9.85627174377441, 4.30831335052062e-07),
 			XMFLOAT3(90.0000193525796, -89.5907443911997, 0),
 			NULL);
+		//pB->Initialize(
+		//	XMFLOAT3(-0.0176298636943102, 9.85627174377441, 4.30831335052062e-07),
+		//	XMFLOAT3(0, 0, 0),
+		//	NULL);
+		//pB->Initialize(
+		//	XMFLOAT3(-0.0176298636943102,  4.30831335052062e-07, 9.85627174377441),
+		//	XMFLOAT3(90.0000193525796, 0, -89.5907443911997),
+		//	NULL);
 		boneList[0] = pB;
 	}
 
@@ -220,6 +228,14 @@ Anim::Anim()
 			XMFLOAT3(10.2381744384766, 1.24424695968628e-06, 1.33681851366418e-07),
 			XMFLOAT3(-2.73207566987348e-05, -0, 0.40925563548),
 			boneList[0]);
+		//pB->Initialize(
+		//	XMFLOAT3( 1.24424695968628e-06, 10.2381744384766, 1.33681851366418e-07),
+		//	XMFLOAT3(-2.73207566987348e-05, -0, 0.40925563548),
+		//	boneList[0]);
+		//pB->Initialize(
+		//	XMFLOAT3(10.2381744384766, 1.33681851366418e-07, 1.24424695968628e-06),
+		//	XMFLOAT3(-2.73207566987348e-05, 0.40925563548, -0),
+		//	boneList[0]);
 		boneList[1] = pB;
 	}
 
@@ -230,9 +246,20 @@ Anim::Anim()
 			XMFLOAT3(9.87227439880371, 0, 7.21543983672746e-07),
 			XMFLOAT3(7.95118888487746e-06, -0, 0.418209901769637),
 			boneList[1]);
+		//pB->Initialize(
+		//	XMFLOAT3( 0, 9.87227439880371, 7.21543983672746e-07),
+		//	XMFLOAT3(7.95118888487746e-06, -0, 0.418209901769637),
+		//	boneList[1]);
+		//pB->Initialize(
+		//	XMFLOAT3(9.87227439880371, 7.21543983672746e-07, 0),
+		//	XMFLOAT3(7.95118888487746e-06, 0.418209901769637, -0),
+		//	boneList[1]);
 		boneList[2] = pB;
 	}
 
+	
+
+	
 
 	float time[7] = {
 	GetTime(0),
@@ -295,7 +322,7 @@ Anim::Anim()
 
 	keyList[0]->boneList[1]->Rot = XMFLOAT3(-2.732076e-05, 0, 0.4092556);
 	keyList[1]->boneList[1]->Rot = XMFLOAT3(-2.732076e-05, 0, 0.4092556);
-	keyList[2]->boneList[1]->Rot = XMFLOAT3(-2.732076e-05, 0, 45.40925);
+	keyList[2]->boneList[1]->Rot = XMFLOAT3(-2.732076e-05, 0, 45.40925);//각도? 기준점이 이상한 것 같은데? 피봇때문에 이동하려고 길어지는 것 같음
 	keyList[3]->boneList[1]->Rot = XMFLOAT3(-2.732076e-05, 0, 45.40925);
 	keyList[4]->boneList[1]->Rot = XMFLOAT3(-2.732076e-05, 0, 45.40925);
 	keyList[5]->boneList[1]->Rot = XMFLOAT3(-2.732076e-05, 0, 0.4092556);
@@ -308,6 +335,13 @@ Anim::Anim()
 	keyList[4]->boneList[2]->Rot = XMFLOAT3(7.951189e-06, 30, 0.4182099);
 	keyList[5]->boneList[2]->Rot = XMFLOAT3(7.951189e-06, 30, 0.4182099);
 	keyList[6]->boneList[2]->Rot = XMFLOAT3(7.951189e-06, 0, 0.4182099);
+
+	for (int i = 0; i < 7; ++i) {
+		for (int j = 0; j < 3; ++j) {
+			swap(keyList[i]->boneList[j]->Pos.y, keyList[i]->boneList[j]->Pos.z);
+			swap(keyList[i]->boneList[j]->Rot.y, keyList[i]->boneList[j]->Rot.z);
+		}
+	}
 }
 
 Anim::~Anim()

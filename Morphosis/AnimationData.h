@@ -132,8 +132,11 @@ public:
 
 		time = (time - keyList[n]->keyTime) / (keyList[n + 1]->keyTime - keyList[n]->keyTime);
 
-		XMVECTOR t0 = XMLoadFloat3(&keyList[n]->boneList[boneIdx]->Pos);
-		XMVECTOR t1 = XMLoadFloat3(&keyList[n + 1]->boneList[boneIdx]->Pos);
+		//XMVECTOR t0 = XMLoadFloat3(&keyList[n]->boneList[boneIdx]->Pos);
+		//XMVECTOR t1 = XMLoadFloat3(&keyList[n + 1]->boneList[boneIdx]->Pos);
+
+		XMVECTOR t0 = { 0,0,0,1 };
+		XMVECTOR t1 = { 0,0,0,1 };
 		/*XMVECTOR interpolatedT = XMVectorLerp(t0, t1, time);*/
 
 		// È¸Àü
@@ -152,6 +155,7 @@ public:
 	void GenerateToWorld(float time) {
 		for (int i = 0; i < nBones; ++i) {
 			XMStoreFloat4x4(&keyList[0]->boneList[i]->Local, GetInterpolatedLocalMatrix(i, time));
+			//if (i < 2) XMStoreFloat4x4(&keyList[0]->boneList[i]->Local, XMMatrixIdentity());
 			keyList[0]->boneList[i]->MakeToWorldMatrix();
 		}
 	}
