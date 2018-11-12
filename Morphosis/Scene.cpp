@@ -1995,7 +1995,7 @@ void CTestGroundScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 void CTestGroundScene::Update(float fTimeElapsed)
 {
 	static float time;
-	time += fTimeElapsed * 0.05;
+	time += fTimeElapsed;
 
 	animData.GenerateToWorld(time);
 
@@ -2003,7 +2003,7 @@ void CTestGroundScene::Update(float fTimeElapsed)
 	XMMATRIX *pbMappedcbObject = new XMMATRIX[64];
 	for (int i = 0; i < animData.nBones; i++)
 	{
-		pbMappedcbObject[i] = XMMatrixTranspose(animData.GetToWorldMatrix(i));
+		pbMappedcbObject[i] = XMMatrixTranspose(animData.GetFinalMatrix(i));
 		//XMMATRIX *pbMappedcbObject = (XMMATRIX *)((UINT8 *)pCBMappedMatrix + (i * ncbElementBytes));
 		//XMStoreFloat4x4(&pbMappedcbObject[i], XMMatrixTranspose(animData.GetToWorldMatrix(i)));
 	}
