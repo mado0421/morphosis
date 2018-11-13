@@ -310,14 +310,15 @@ public:
 	}
 
 private:
+	bool isTimeflow = true;
+
 	ID3D12PipelineState ** pso							= NULL;
 
 	ID3D12Resource*				m_pcbUploadBuffer = NULL;
 	D3D12_GPU_VIRTUAL_ADDRESS	m_UBStartIdx;
 
 	ID3D12Resource		* interpolatedMatrixResource	= NULL;
-	LPVOID				* m_pcbUBMappedPtr = nullptr;
-	CB_ANIMDATA_INFO	* pCBMappedMatrix				= NULL;
+	XMMATRIX	* pCBMappedMatrix				= NULL;
 	Anim				animData;
 
 	CPlayerObject		**ppPlayers = NULL;

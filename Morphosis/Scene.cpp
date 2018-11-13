@@ -1293,7 +1293,7 @@ ID3D12RootSignature * CTestGroundScene::CreateRootSignature(ID3D12Device * pd3dD
 	pd3dRootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	
 	//Anim
-	pd3dRootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+	pd3dRootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	pd3dRootParameters[3].Descriptor.ShaderRegister = 3;
 	pd3dRootParameters[3].Descriptor.RegisterSpace = 0;
 	pd3dRootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
@@ -1406,35 +1406,38 @@ public:
 
 		pos[i++] = XMFLOAT3(-5, 5, 20);
 
+		//for (int j = 0; j < 16; ++j) pos[j].z+=10;
+		//for (int j = 0; j < 16; ++j) swap(pos[j].y, pos[j].z);
+
 		XMFLOAT2 uv[24];
 		i = 0;
-		uv[i++] = XMFLOAT2(0.662188231945038, 0.211878150701523);
-		uv[i++] = XMFLOAT2(0.470026254653931, 0.210712149739265);
-		uv[i++] = XMFLOAT2(0.471194267272949, 0.0185497961938381);
-		uv[i++] = XMFLOAT2(0.663355886936188, 0.0197173245251179);
-		uv[i++] = XMFLOAT2(0.658694684505463, 0.788360178470612);
-
-		uv[i++] = XMFLOAT2(0.657529950141907, 0.980520665645599);
-		uv[i++] = XMFLOAT2(0.465368896722794, 0.979356229305267);
-		uv[i++] = XMFLOAT2(0.466534465551376, 0.787195682525635);
-		uv[i++] = XMFLOAT2(0.854349792003632, 0.213043943047523);
-		uv[i++] = XMFLOAT2(0.853183507919312, 0.405204921960831);
-
-		uv[i++] = XMFLOAT2(0.661022424697876, 0.404038995504379);
-		uv[i++] = XMFLOAT2(0.852018535137177, 0.597365260124207);
-		uv[i++] = XMFLOAT2(0.659858047962189, 0.596199691295624);
-		uv[i++] = XMFLOAT2(0.850854456424713, 0.789525866508484);
-		uv[i++] = XMFLOAT2(0.468861073255539, 0.402874052524567);
-
-		uv[i++] = XMFLOAT2(0.467697262763977, 0.595035076141357);
+		uv[i++] = XMFLOAT2(0.662188231945038,  0.211878150701523);
+		uv[i++] = XMFLOAT2(0.470026254653931,  0.210712149739265);
+		uv[i++] = XMFLOAT2(0.471194267272949,  0.0185497961938381);
+		uv[i++] = XMFLOAT2(0.663355886936188,  0.0197173245251179);
+		uv[i++] = XMFLOAT2(0.658694684505463,  0.788360178470612);
+											   
+		uv[i++] = XMFLOAT2(0.657529950141907,  0.980520665645599);
+		uv[i++] = XMFLOAT2(0.465368896722794,  0.979356229305267);
+		uv[i++] = XMFLOAT2(0.466534465551376,  0.787195682525635);
+		uv[i++] = XMFLOAT2(0.854349792003632,  0.213043943047523);
+		uv[i++] = XMFLOAT2(0.853183507919312,  0.405204921960831);
+											   
+		uv[i++] = XMFLOAT2(0.661022424697876,  0.404038995504379);
+		uv[i++] = XMFLOAT2(0.852018535137177,  0.597365260124207);
+		uv[i++] = XMFLOAT2(0.659858047962189,  0.596199691295624);
+		uv[i++] = XMFLOAT2(0.850854456424713,  0.789525866508484);
+		uv[i++] = XMFLOAT2(0.468861073255539,  0.402874052524567);
+											   
+		uv[i++] = XMFLOAT2(0.467697262763977,  0.595035076141357);
 		uv[i++] = XMFLOAT2(0.0857004299759865, 0.208387553691864);
-		uv[i++] = XMFLOAT2(0.277862906455994, 0.209549739956856);
-		uv[i++] = XMFLOAT2(0.276699095964432, 0.401711255311966);
+		uv[i++] = XMFLOAT2(0.277862906455994,  0.209549739956856);
+		uv[i++] = XMFLOAT2(0.276699095964432,  0.401711255311966);
 		uv[i++] = XMFLOAT2(0.0845372900366783, 0.400549292564392);
-
-		uv[i++] = XMFLOAT2(0.275536239147186, 0.593872666358948);
-		uv[i++] = XMFLOAT2(0.083374910056591, 0.592711269855499);
-		uv[i++] = XMFLOAT2(0.274374693632126, 0.786034047603607);
+											   
+		uv[i++] = XMFLOAT2(0.275536239147186,  0.593872666358948);
+		uv[i++] = XMFLOAT2(0.083374910056591,  0.592711269855499);
+		uv[i++] = XMFLOAT2(0.274374693632126,  0.786034047603607);
 		uv[i++] = XMFLOAT2(0.0822138711810112, 0.784872829914093);
 
 		XMFLOAT4 weight[16];
@@ -1886,7 +1889,7 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 
 	// 서술자 힙 생성
 	D3D12_DESCRIPTOR_HEAP_DESC d3dDescriptorHeapDesc;
-	d3dDescriptorHeapDesc.NumDescriptors = nPlayers + 1; //CBVs + SRVs 
+	d3dDescriptorHeapDesc.NumDescriptors = nPlayers + animData.nBones + 1; //CBVs + SRVs 
 	d3dDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	d3dDescriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	d3dDescriptorHeapDesc.NodeMask = 0;
@@ -1894,8 +1897,8 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 
 	m_d3dCbvCPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	m_d3dCbvGPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart();
-	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * nPlayers);
-	m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * nPlayers);
+	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (nPlayers + animData.nBones));
+	m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (nPlayers + animData.nBones));
 
 	CTexture **textures = new CTexture*[1];
 	textures[0] = new CTexture(RESOURCE_TEXTURE2D);
@@ -1949,9 +1952,22 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 	XMMATRIX *pInterpolatedMatrix = new XMMATRIX[animData.nBones];
 	for (UINT i = 0; i < animData.nBones; i++) pInterpolatedMatrix[i] = XMMatrixIdentity();
 
-	interpolatedMatrixResource = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pInterpolatedMatrix, nStride*animData.nBones,
+	interpolatedMatrixResource = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pInterpolatedMatrix, nStride * 64,
 		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
 	interpolatedMatrixResource->Map(0, NULL, (void **)&pCBMappedMatrix);
+
+	ncbElementBytes = ((sizeof(XMMATRIX) + 255) & ~255);
+
+	d3dGpuVirtualAddress = interpolatedMatrixResource->GetGPUVirtualAddress();
+	d3dCBVDesc;
+	d3dCBVDesc.SizeInBytes = ncbElementBytes;
+	for (int j = 0; j < animData.nBones; j++)
+	{
+		d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * j);
+		D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
+		d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (j+nPlayers));
+		pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
+	}
 
 	//D3D12Resource *m_pVertexResource = NULL;
 	//UINT nStride;
@@ -1973,7 +1989,8 @@ void CTestGroundScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 {
 	pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);	// 이 루트 시그니처를 쓸 것
 	pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);	// 이 서술자 힙을 쓸 것
-	pd3dCommandList->SetGraphicsRootShaderResourceView(3, interpolatedMatrixResource->GetGPUVirtualAddress());
+	//pd3dCommandList->SetGraphicsRootShaderResourceView(3, interpolatedMatrixResource->GetGPUVirtualAddress());
+	pd3dCommandList->SetGraphicsRootConstantBufferView(3, interpolatedMatrixResource->GetGPUVirtualAddress());
 
 	// HLSL에 넣어줄 카메라 정보 갱신부분
 	m_pCamera->SetViewportsAndScissorRects(pd3dCommandList);
@@ -1992,17 +2009,21 @@ void CTestGroundScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 
 void CTestGroundScene::Update(float fTimeElapsed)
 {
-	static float time;
-	time += fTimeElapsed * 0.05;
+	static float time = 0.0001;
+	if(isTimeflow)	time += fTimeElapsed * 0.05;
 
 	animData.GenerateToWorld(time);
 
-	UINT ncbElementBytes = ((sizeof(CB_ANIMDATA_INFO) + 255) & ~255);
+	UINT ncbElementBytes = ((sizeof(XMMATRIX) + 255) & ~255);
+	XMMATRIX *pbMappedcbObject = new XMMATRIX[64];
 	for (int i = 0; i < animData.nBones; i++)
 	{
-		CB_ANIMDATA_INFO *pbMappedcbObject = (CB_ANIMDATA_INFO *)((UINT8 *)pCBMappedMatrix + (i * ncbElementBytes));
-		XMStoreFloat4x4(&pbMappedcbObject->interpolatedMatrix, XMMatrixTranspose(animData.GetToWorldMatrix(i)));
+		pbMappedcbObject[i] = XMMatrixTranspose(animData.GetFinalMatrix(i));
+		//XMMATRIX *pbMappedcbObject = (XMMATRIX *)((UINT8 *)pCBMappedMatrix + (i * ncbElementBytes));
+		//XMStoreFloat4x4(&pbMappedcbObject[i], XMMatrixTranspose(animData.GetToWorldMatrix(i)));
 	}
+	memcpy(pCBMappedMatrix, pbMappedcbObject, ncbElementBytes * animData.nBones);
+
 	for (int i = 0; i < nPlayers; i++) if (!ppPlayers[i]->IsDead()) ppPlayers[i]->Update(fTimeElapsed);
 }
 
@@ -2016,6 +2037,7 @@ void CTestGroundScene::ProcessInput(UCHAR * pKeysBuffer)
 	if (pKeysBuffer[KEY::Q] & 0xF0) { ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, -ROTATE_SPEED, 0 }); }
 	if (pKeysBuffer[KEY::E] & 0xF0) { ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, ROTATE_SPEED, 0 }); }
 
+	if (pKeysBuffer[VK_SPACE] & 0xF0) if (isTimeflow) isTimeflow = false; else isTimeflow = true;
 }
 
 void CTestGroundScene::OnProcessingMouseMessage()

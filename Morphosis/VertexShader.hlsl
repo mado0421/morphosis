@@ -93,33 +93,31 @@ VS_TEXTURED_ILLUMINATED_VERTEX_OUTPUT VSAnimated(VS_ANIMATED_VERTEX_INPUT input)
 {
 	VS_TEXTURED_ILLUMINATED_VERTEX_OUTPUT output;
 
-	float3 weightedPos = 0;
-	for (int i = 0; i < 4; ++i) {
-		float4 bonePos = mul(float4(input.position, 1) ,AnimMatrixBuffer[input.boneIdx[i]].AnimMatrix);
-		weightedPos += input.weight[i] * bonePos.xyz;
-	}
-	output.positionW = (float3)mul(float4(weightedPos * 2, 1.0f), gmtxGameObject);
-	output.test0 = AnimMatrixBuffer[0].AnimMatrix;
-	output.test1 = AnimMatrixBuffer[1].AnimMatrix;
-	output.test2 = AnimMatrixBuffer[2].AnimMatrix;
-	output.position = mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection);
-	output.uv = input.uv;
-
 	//float3 weightedPos = 0;
 	//for (int i = 0; i < 4; ++i) {
-
-	//	float4 bonePos = mul(float4(input.position, 1), AnimMatrix[input.boneIdx[i]]);
+	//	float4 bonePos = mul(float4(input.position, 1) ,AnimMatrixBuffer[0].AnimMatrix[input.boneIdx[i]]);
 	//	weightedPos += input.weight[i] * bonePos.xyz;
 	//}
-
 	//output.positionW = (float3)mul(float4(weightedPos * 2, 1.0f), gmtxGameObject);
-
-	//output.test0 = AnimMatrix[0];
-	//output.test1 = AnimMatrix[1];
-	//output.test2 = AnimMatrix[2];
-
+	//output.test0 = AnimMatrixBuffer[0].AnimMatrix[0];
+	//output.test1 = AnimMatrixBuffer[0].AnimMatrix[1];
+	//output.test2 = AnimMatrixBuffer[2].AnimMatrix[0];
 	//output.position = mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection);
 	//output.uv = input.uv;
+
+	float3 weightedPos = 0;
+	for (int i = 0; i < 4; ++i) {
+
+		float4 bonePos = mul(float4(input.position * 0.8, 1), AnimMatrix[input.boneIdx[i]]);
+		weightedPos += input.weight[i] * bonePos.xyz;
+	}
+
+	output.positionW = (float3)mul(float4(weightedPos, 1.0f), gmtxGameObject);
+	output.test0 = AnimMatrix[0];
+	output.test1 = AnimMatrix[1];
+	output.test2 = AnimMatrix[2];
+	output.position = mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection);
+	output.uv = input.uv;
 
 	return output;
 }
