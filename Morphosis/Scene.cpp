@@ -1883,7 +1883,6 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 
 	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
 
-
 	nPlayers = 2;
 	ppPlayers = new CPlayerObject*[nPlayers];
 
@@ -1905,8 +1904,8 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 	textures[0]->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Assets/Textures/TEST/box_diff.dds");
 	CreateShaderResourceViews(pd3dDevice, pd3dCommandList, textures[0], 2, false);
 
-	// 상수버퍼 매핑
-	m_pd3dcbObjects = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes * nPlayers,
+	m_pcbUploadBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, 
+		((sizeof(CB_OBJECT_INFO) + 255) & ~255) * nPlayers + ((sizeof(XMMATRIX) + 255) & ~255) * animData.nBones,
 		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
 	m_pcbUploadBuffer->Map(0, NULL, (void **)&m_pcbUBMappedPtr);
 
@@ -1916,17 +1915,40 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 	AllocUploadBuffer(m_cbInterpolatedMatrixDesc, sizeof(XMMATRIX)*animData.nBones);
 	m_pcbMappedInterpolatedMatrix = static_cast<XMMATRIX*>(m_cbInterpolatedMatrixDesc.pMappedPtr);
 
-	// 오브젝트마다 상수버퍼 뷰를 생성
-	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbObjects->GetGPUVirtualAddress();
-	D3D12_CONSTANT_BUFFER_VIEW_DESC d3dCBVDesc;
-	d3dCBVDesc.SizeInBytes = ncbElementBytes;
-	for (int j = 0; j < nPlayers; j++)
-	{
-		d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * j);
-		D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
-		d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * j);
-		pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
-	}
+	//// 상수버퍼 매핑
+	//m_pd3dcbObjects = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes * nPlayers,
+	//	D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	//m_pd3dcbObjects->Map(0, NULL, (void **)&m_pcbMappedGameObjects);
+	//// 오브젝트마다 상수버퍼 뷰를 생성
+	//D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbObjects->GetGPUVirtualAddress();
+	//D3D12_CONSTANT_BUFFER_VIEW_DESC d3dCBVDesc;
+	//d3dCBVDesc.SizeInBytes = ncbElementBytes;
+	//for (int j = 0; j < nPlayers; j++)
+	//{
+	//	d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * j);
+	//	D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
+	//	d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * j);
+	//	pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
+	//}
+	//==============================================================================================================
+	// 애니메이션 행렬 관련
+	//UINT prev = ncbElementBytes;
+	//ncbElementBytes = (((sizeof(XMMATRIX) * animData.nBones) + 255) & ~255);
+	//m_cbInterpolatedMatrixDesc.nMappedData = ncbElementBytes;
+	//m_cbInterpolatedMatrixDesc.view_desc.SizeInBytes = ncbElementBytes;
+	//m_cbInterpolatedMatrixDesc.view_desc.BufferLocation = m_pd3dcbObjects->GetGPUVirtualAddress() + (prev * nPlayers);
+	//m_cbInterpolatedMatrixDesc.pMappedPtr = reinterpret_cast<LPVOID>(
+	//	(prev * nPlayers) + reinterpret_cast<long long>(m_pcbMappedGameObjects));
+	//m_pcbMappedInterpolatedMatrix = static_cast<XMMATRIX*>(m_cbInterpolatedMatrixDesc.pMappedPtr);
+	//
+	////UINT nStride = sizeof(XMMATRIX);
+	////XMMATRIX *pInterpolatedMatrix = new XMMATRIX[animData.nBones];
+	////for (UINT i = 0; i < animData.nBones; i++) pInterpolatedMatrix[i] = XMMatrixIdentity();
+	//interpolatedMatrixResource = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, sizeof(XMMATRIX) * animData.nBones,
+	//	D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	//interpolatedMatrixResource->Map(0, NULL, (void **)&pCBMappedMatrix);
+	//==============================================================================================================
+	m_pmtxCurrInterpolatedMatrix = new XMMATRIX[animData.nBones];
 
 	// 오브젝트 내용 채우기
 	for (int i = 0; i < nPlayers; i++) {
