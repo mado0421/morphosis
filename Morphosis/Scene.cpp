@@ -181,6 +181,8 @@ void CGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLi
 {
 	m_pFramework = (CFramework*)pContext;
 	GetCursorPos(&m_ptOldCursorPos);
+	m_pd3dDevice = pd3dDevice;
+	m_pd3dCommandList = pd3dCommandList;
 }
 
 void CGroundScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
@@ -1250,7 +1252,7 @@ void CScene::ReleaseShaderVariables()
 ID3D12RootSignature * CTestGroundScene::CreateRootSignature(ID3D12Device * pd3dDevice)
 {
 	ID3D12RootSignature *pd3dGraphicsRootSignature = NULL;
-	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[2];	// Object and Texture
+	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[3];	// Object and Texture
 
 	pd3dDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
 	pd3dDescriptorRanges[0].NumDescriptors = 1;
@@ -1263,6 +1265,12 @@ ID3D12RootSignature * CTestGroundScene::CreateRootSignature(ID3D12Device * pd3dD
 	pd3dDescriptorRanges[1].BaseShaderRegister = 2; //t2
 	pd3dDescriptorRanges[1].RegisterSpace = 0;
 	pd3dDescriptorRanges[1].OffsetInDescriptorsFromTableStart = 0;
+
+	pd3dDescriptorRanges[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+	pd3dDescriptorRanges[2].NumDescriptors = 1;
+	pd3dDescriptorRanges[2].BaseShaderRegister = 3;
+	pd3dDescriptorRanges[2].RegisterSpace = 0;
+	pd3dDescriptorRanges[2].OffsetInDescriptorsFromTableStart = 0;
 
 	D3D12_ROOT_PARAMETER pd3dRootParameters[4];	//Camera, Obejct, texture, anim
 
@@ -1887,8 +1895,6 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 	d3dDescriptorHeapDesc.NodeMask = 0;
 	HRESULT result = pd3dDevice->CreateDescriptorHeap(&d3dDescriptorHeapDesc, __uuidof(ID3D12DescriptorHeap), (void **)&m_pd3dCbvSrvDescriptorHeap);
 
-	HRESULT reason = pd3dDevice->GetDeviceRemovedReason();
-
 	m_d3dCbvCPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	m_d3dCbvGPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart();
 	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (nPlayers + animData.nBones));
@@ -1902,7 +1908,13 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 	// 상수버퍼 매핑
 	m_pd3dcbObjects = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes * nPlayers,
 		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-	m_pd3dcbObjects->Map(0, NULL, (void **)&m_pcbMappedGameObjects);
+	m_pcbUploadBuffer->Map(0, NULL, (void **)&m_pcbUBMappedPtr);
+
+	AllocUploadBuffer(m_cbGameObjectsDesc, sizeof(CB_OBJECT_INFO)*nPlayers);
+	m_pcbMappedGameObjects = static_cast<CB_OBJECT_INFO*>(m_cbGameObjectsDesc.pMappedPtr);
+
+	AllocUploadBuffer(m_cbInterpolatedMatrixDesc, sizeof(XMMATRIX)*animData.nBones);
+	m_pcbMappedInterpolatedMatrix = static_cast<XMMATRIX*>(m_cbInterpolatedMatrixDesc.pMappedPtr);
 
 	// 오브젝트마다 상수버퍼 뷰를 생성
 	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbObjects->GetGPUVirtualAddress();
