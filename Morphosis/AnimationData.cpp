@@ -207,8 +207,8 @@ Anim::Anim()
 		CBone * pB;
 		pB = new CBone();
 		pB->Initialize(
-			XMFLOAT3(-0.0176298636943102, 9.85627174377441, 4.30831335052062e-07),
-			XMFLOAT3(90.0000193525796, -89.5907443911997, 0),
+			XMFLOAT3(0, 10, 0),
+			XMFLOAT3(90, -90, 0),
 			NULL);
 		//pB->Initialize(
 		//	XMFLOAT3(-0.0176298636943102, 9.85627174377441, 4.30831335052062e-07),
@@ -225,8 +225,8 @@ Anim::Anim()
 		CBone * pB;
 		pB = new CBone();
 		pB->Initialize(
-			XMFLOAT3(10.2381744384766, 1.24424695968628e-06, 1.33681851366418e-07),
-			XMFLOAT3(-2.73207566987348e-05, -0, 0.40925563548),
+			XMFLOAT3(10, 0, 0),
+			XMFLOAT3(0, 0, 0),
 			boneList[0]);
 		//pB->Initialize(
 		//	XMFLOAT3( 1.24424695968628e-06, 10.2381744384766, 1.33681851366418e-07),
@@ -243,8 +243,8 @@ Anim::Anim()
 		CBone * pB;
 		pB = new CBone();
 		pB->Initialize(
-			XMFLOAT3(9.87227439880371, 0, 7.21543983672746e-07),
-			XMFLOAT3(7.95118888487746e-06, -0, 0.418209901769637),
+			XMFLOAT3(10, 0, 0),
+			XMFLOAT3(0, 0, 0),
 			boneList[1]);
 		//pB->Initialize(
 		//	XMFLOAT3( 0, 9.87227439880371, 7.21543983672746e-07),
@@ -288,53 +288,77 @@ Anim::Anim()
 
 
 	// Key마다 본들의 Lcl 값을 넣는다.
-	keyList[0]->boneList[0]->Pos = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
-	keyList[1]->boneList[0]->Pos = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
-	keyList[2]->boneList[0]->Pos = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
-	keyList[3]->boneList[0]->Pos = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
-	keyList[4]->boneList[0]->Pos = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
-	keyList[5]->boneList[0]->Pos = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
-	keyList[6]->boneList[0]->Pos = XMFLOAT3(-0.01762986, 4.308313e-07, 9.856272);
+	keyList[0]->boneList[0]->Pos = XMFLOAT3(0, 0, 10);
+	keyList[1]->boneList[0]->Pos = XMFLOAT3(0, 0, 10);
+	keyList[2]->boneList[0]->Pos = XMFLOAT3(0, 0, 10);
+	keyList[3]->boneList[0]->Pos = XMFLOAT3(0, 0, 10);
+	keyList[4]->boneList[0]->Pos = XMFLOAT3(0, 0, 10);
+	keyList[5]->boneList[0]->Pos = XMFLOAT3(0, 0, 10);
+	keyList[6]->boneList[0]->Pos = XMFLOAT3(0, 0, 10);
 
-	keyList[0]->boneList[1]->Pos = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
-	keyList[1]->boneList[1]->Pos = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
-	keyList[2]->boneList[1]->Pos = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
-	keyList[3]->boneList[1]->Pos = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
-	keyList[4]->boneList[1]->Pos = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
-	keyList[5]->boneList[1]->Pos = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
-	keyList[6]->boneList[1]->Pos = XMFLOAT3(10.23817, 1.244247e-06, 1.336819e-07);
+	keyList[0]->boneList[1]->Pos = XMFLOAT3(10, 0, 0);
+	keyList[1]->boneList[1]->Pos = XMFLOAT3(10, 0, 0);
+	keyList[2]->boneList[1]->Pos = XMFLOAT3(10, 0, 0);
+	keyList[3]->boneList[1]->Pos = XMFLOAT3(10, 0, 0);
+	keyList[4]->boneList[1]->Pos = XMFLOAT3(10, 0, 0);
+	keyList[5]->boneList[1]->Pos = XMFLOAT3(10, 0, 0);
+	keyList[6]->boneList[1]->Pos = XMFLOAT3(10, 0, 0);
 
-	keyList[0]->boneList[2]->Pos = XMFLOAT3(9.872274, 0, 7.21544e-07);
-	keyList[1]->boneList[2]->Pos = XMFLOAT3(9.872274, 0, 7.21544e-07);
-	keyList[2]->boneList[2]->Pos = XMFLOAT3(9.872274, 0, 7.21544e-07);
-	keyList[3]->boneList[2]->Pos = XMFLOAT3(9.872274, 0, 7.21544e-07);
-	keyList[4]->boneList[2]->Pos = XMFLOAT3(9.872274, 0, 7.21544e-07);
-	keyList[5]->boneList[2]->Pos = XMFLOAT3(9.872274, 0, 7.21544e-07);
-	keyList[6]->boneList[2]->Pos = XMFLOAT3(9.872274, 0, 7.21544e-07);
+	keyList[0]->boneList[2]->Pos = XMFLOAT3(10, 0, 0);
+	keyList[1]->boneList[2]->Pos = XMFLOAT3(10, 0, 0);
+	keyList[2]->boneList[2]->Pos = XMFLOAT3(10, 0, 0);
+	keyList[3]->boneList[2]->Pos = XMFLOAT3(10, 0, 0);
+	keyList[4]->boneList[2]->Pos = XMFLOAT3(10, 0, 0);
+	keyList[5]->boneList[2]->Pos = XMFLOAT3(10, 0, 0);
+	keyList[6]->boneList[2]->Pos = XMFLOAT3(10, 0, 0);
 
-	keyList[0]->boneList[0]->Rot = XMFLOAT3(450, -89.59074, 0);
-	keyList[1]->boneList[0]->Rot = XMFLOAT3(450, -89.59074, 0);
-	keyList[2]->boneList[0]->Rot = XMFLOAT3(450, -89.59074, 0);
-	keyList[3]->boneList[0]->Rot = XMFLOAT3(540.0001, 0, -89.59074);
-	keyList[4]->boneList[0]->Rot = XMFLOAT3(450, -89.59074, 0);
-	keyList[5]->boneList[0]->Rot = XMFLOAT3(450, -89.59074, 0);
-	keyList[6]->boneList[0]->Rot = XMFLOAT3(450, -89.59074, 0);
+	keyList[0]->boneList[0]->Rot = XMFLOAT3(90, -90, 0);
+	keyList[1]->boneList[0]->Rot = XMFLOAT3(90, -90, 0);
+	keyList[2]->boneList[0]->Rot = XMFLOAT3(90, -90, 0);
+	keyList[3]->boneList[0]->Rot = XMFLOAT3(90, -90, 0);
+	keyList[4]->boneList[0]->Rot = XMFLOAT3(90, -90, 0);
+	keyList[5]->boneList[0]->Rot = XMFLOAT3(90, -90, 0);
+	keyList[6]->boneList[0]->Rot = XMFLOAT3(90, -90, 0);
 
-	keyList[0]->boneList[1]->Rot = XMFLOAT3(-2.732076e-05, 0, 0.4092556);
-	keyList[1]->boneList[1]->Rot = XMFLOAT3(-2.732076e-05, 0, 0.4092556);
-	keyList[2]->boneList[1]->Rot = XMFLOAT3(-2.732076e-05, 0, 45.40925);//각도? 기준점이 이상한 것 같은데? 피봇때문에 이동하려고 길어지는 것 같음
-	keyList[3]->boneList[1]->Rot = XMFLOAT3(-2.732076e-05, 0, 45.40925);
-	keyList[4]->boneList[1]->Rot = XMFLOAT3(-2.732076e-05, 0, 45.40925);
-	keyList[5]->boneList[1]->Rot = XMFLOAT3(-2.732076e-05, 0, 0.4092556);
-	keyList[6]->boneList[1]->Rot = XMFLOAT3(-2.732076e-05, 0, 0.4092556);
+	keyList[0]->boneList[1]->Rot = XMFLOAT3(0, 0, 0);
+	keyList[1]->boneList[1]->Rot = XMFLOAT3(0, 0, 0);
+	keyList[2]->boneList[1]->Rot = XMFLOAT3(0, 90, 0);//각도? 기준점이 이상한 것 같은데? 피봇때문에 이동하려고 길어지는 것 같음
+	keyList[3]->boneList[1]->Rot = XMFLOAT3(0, 90, 0);
+	keyList[4]->boneList[1]->Rot = XMFLOAT3(0, 90, 0);
+	keyList[5]->boneList[1]->Rot = XMFLOAT3(0, 0, 0);
+	keyList[6]->boneList[1]->Rot = XMFLOAT3(0, 0, 0);
 
-	keyList[0]->boneList[2]->Rot = XMFLOAT3(7.951189e-06, 0, 0.4182099);
-	keyList[1]->boneList[2]->Rot = XMFLOAT3(7.951189e-06, 30, 0.4182099);
-	keyList[2]->boneList[2]->Rot = XMFLOAT3(7.951189e-06, 30, 0.4182099);
-	keyList[3]->boneList[2]->Rot = XMFLOAT3(7.951189e-06, 30, 0.4182099);
-	keyList[4]->boneList[2]->Rot = XMFLOAT3(7.951189e-06, 30, 0.4182099);
-	keyList[5]->boneList[2]->Rot = XMFLOAT3(7.951189e-06, 30, 0.4182099);
-	keyList[6]->boneList[2]->Rot = XMFLOAT3(7.951189e-06, 0, 0.4182099);
+	keyList[0]->boneList[2]->Rot = XMFLOAT3(0, 0, 0);
+	keyList[1]->boneList[2]->Rot = XMFLOAT3(0, 0, 0);
+	keyList[2]->boneList[2]->Rot = XMFLOAT3(0, 90, 0);
+	keyList[3]->boneList[2]->Rot = XMFLOAT3(0, 90, 0);
+	keyList[4]->boneList[2]->Rot = XMFLOAT3(0, 90, 0);
+	keyList[5]->boneList[2]->Rot = XMFLOAT3(0, 0, 0);
+	keyList[6]->boneList[2]->Rot = XMFLOAT3(0, 0, 0);
+
+	//keyList[0]->boneList[0]->Rot = XMFLOAT3(90, -90, 0);
+	//keyList[1]->boneList[0]->Rot = XMFLOAT3(90, -90, 0);
+	//keyList[2]->boneList[0]->Rot = XMFLOAT3(90, -90, 0);
+	//keyList[3]->boneList[0]->Rot = XMFLOAT3(180, 0, -90);
+	//keyList[4]->boneList[0]->Rot = XMFLOAT3(90, -90, 0);
+	//keyList[5]->boneList[0]->Rot = XMFLOAT3(90, -90, 0);
+	//keyList[6]->boneList[0]->Rot = XMFLOAT3(90, -90, 0);
+
+	//keyList[0]->boneList[1]->Rot = XMFLOAT3(0, 0, 0);
+	//keyList[1]->boneList[1]->Rot = XMFLOAT3(0, 0, 0);
+	//keyList[2]->boneList[1]->Rot = XMFLOAT3(0, 0, 45);//각도? 기준점이 이상한 것 같은데? 피봇때문에 이동하려고 길어지는 것 같음
+	//keyList[3]->boneList[1]->Rot = XMFLOAT3(0, 0, 45);
+	//keyList[4]->boneList[1]->Rot = XMFLOAT3(0, 0, 45);
+	//keyList[5]->boneList[1]->Rot = XMFLOAT3(0, 0, 0);
+	//keyList[6]->boneList[1]->Rot = XMFLOAT3(0, 0, 0);
+
+	//keyList[0]->boneList[2]->Rot = XMFLOAT3(0, 0, 0);
+	//keyList[1]->boneList[2]->Rot = XMFLOAT3(0, 30, 0);
+	//keyList[2]->boneList[2]->Rot = XMFLOAT3(0, 30, 0);
+	//keyList[3]->boneList[2]->Rot = XMFLOAT3(0, 30, 0);
+	//keyList[4]->boneList[2]->Rot = XMFLOAT3(0, 30, 0);
+	//keyList[5]->boneList[2]->Rot = XMFLOAT3(0, 30, 0);
+	//keyList[6]->boneList[2]->Rot = XMFLOAT3(0, 0, 0);
 
 	for (int i = 0; i < 7; ++i) {
 		for (int j = 0; j < 3; ++j) {
