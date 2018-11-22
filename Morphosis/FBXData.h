@@ -3,9 +3,6 @@
 
 #define NUMOFBONE 4
 
-
-
-
 namespace FBX
 {
 	struct float3
@@ -167,3 +164,32 @@ public:
 
 };
 
+struct Geometry {
+	__int64		ID;
+
+	UINT		nVertices;
+	XMFLOAT3	*pVertices;
+	UINT		nPolygonVertexIndex;
+	UINT		*pPolygonVertexIndex;
+	UINT		nNormals;
+	XMFLOAT3	*pNormals;
+	UINT		nUV;
+	XMFLOAT2	*pUV;
+	UINT		nUVIndex;
+	UINT		*pUVIndex;
+
+	XMFLOAT3	LclTranslation = { 0,0,0 };
+	XMFLOAT3	LclRotation = { 0,0,0 };
+};
+
+class CFBXMesh {
+public:
+	void ReadFile(const char * fileName);
+
+public:
+	~CFBXMesh();
+
+public:
+	Geometry *geo = nullptr;
+
+};

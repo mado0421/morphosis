@@ -70,6 +70,12 @@
     <Filter Include="소스 파일\PSO">
       <UniqueIdentifier>{1e5b2257-ce89-4e34-9f16-23c090883874}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Scene\GroundScene">
+      <UniqueIdentifier>{f1f9868b-6abd-41e2-99af-f483bfd71255}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Scene\LoadingScene">
+      <UniqueIdentifier>{36d8da1a-4c52-4df7-9bbf-3badde0f3eb0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Morphosis.cpp">

@@ -126,3 +126,30 @@ CFBXData::CFBXData()
 CFBXData::~CFBXData()
 {
 }
+
+void CFBXMesh::ReadFile(const char * fileName)
+{
+	char * filePath = nullptr;
+
+	strcpy(filePath, ASSETPATH);
+	strcat(filePath, "Meshes//");
+	strcat(filePath, fileName);
+	strcat(filePath, ".dat");
+
+	ifstream file(filePath, ifstream::binary);
+	assert(file.is_open() && "파일이 제대로 열리지 않았습니다.\n");
+
+	file.read((char *)geo, sizeof(Geometry));
+
+	file.close();
+}
+
+CFBXMesh::~CFBXMesh()
+{/*
+	if (!geo) return;
+	delete[] geo->pVertices;
+	delete[] geo->pVertices;
+	delete[] geo->pVertices;
+	delete[] geo->pVertices;
+	delete[] geo->pVertices;*/
+}

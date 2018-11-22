@@ -74,39 +74,88 @@ public:
 	virtual ID3D12RootSignature *CreateRootSignature(ID3D12Device *pd3dDevice);
 };
 
+struct CB_DESC {
+	UINT								nMappedData;
+	LPVOID								pMappedPtr;
+	UINT								RootParamIdx;
+	D3D12_CONSTANT_BUFFER_VIEW_DESC		view_desc;
+	D3D12_CPU_DESCRIPTOR_HANDLE			hCPUDescTable;
+	D3D12_GPU_DESCRIPTOR_HANDLE			hGPUDescTable;
+};
+
+bool AllocUploadBuffer(
+	CB_DESC& cb_desc, 
+	UINT nBytes, 
+	ID3D12Resource *resource, 
+	UINT *UploadBufferCurrentIdx, 
+	void *UploadBufferMappedPtr) 
+{
+	if (nullptr == resource) return false;
+	UINT ncbElementBytes = ((nBytes + 255) & ~255);
+
+	cb_desc.nMappedData = ncbElementBytes;
+	cb_desc.view_desc.SizeInBytes = ncbElementBytes;
+	cb_desc.view_desc.BufferLocation = resource->GetGPUVirtualAddress() + (*UploadBufferCurrentIdx);
+	cb_desc.pMappedPtr = reinterpret_cast<LPVOID>(
+		(*UploadBufferCurrentIdx) + reinterpret_cast<long long>(UploadBufferMappedPtr));
+
+	(*UploadBufferCurrentIdx) += ncbElementBytes;
+	return true;
+}
+
 class CGroundScene : public CScene 
 {
 protected:
 	/////////////////////////////////////////////////////////////
 	// 테스트용으로 만든 Object 변수들
-	CCollideObejct		**m_ppObjects			= NULL;
-	int					m_nObjects				= 0;
-
-	CObject				**m_ppDebugObjects		= NULL;
-	int					m_nDebugObjects			= 0;
-
-	CPlayerObject		**m_ppPlayers			= NULL;
-	int					m_nPlayers				= 0;
-
-	CProjectileObject	**m_ppProjectileObjects = NULL;
-	int					m_nProjectileObjects	= 0;
-
-	CDefaultUI			**m_ppUIObjects = NULL;
-	int					m_nUIObjects = 0;
+	//CCollideObejct		**m_ppObjects			= NULL;
+	//int					m_nObjects				= 0;
+	//CObject				**m_ppDebugObjects		= NULL;
+	//int					m_nDebugObjects			= 0;
+	//CPlayerObject		**m_ppPlayers			= NULL;
+	//int					m_nPlayers				= 0;
+	//CProjectileObject	**m_ppProjectileObjects = NULL;
+	//int					m_nProjectileObjects	= 0;
+	//CDefaultUI			**m_ppUIObjects = NULL;
+	//int					m_nUIObjects = 0;
 	/////////////////////////////////////////////////////////////
 
-	CLevelData *m_pLevel = NULL;
+	CLevelData				*m_pLevelData				= nullptr;
 
+	CCollideObejct			**m_ppObjCollTerrain		= nullptr;
+	CCollideObejct			**m_ppObjProp				= nullptr;
+	CObject					**m_ppObjRenderTerrain		= nullptr;
+	CMovingObject			**m_ppObjProjectile			= nullptr;
+	CPlayerObject			**m_ppObjPlayer				= nullptr;
 
-public:
-	CGroundScene();
-	~CGroundScene();
+	short					m_nObjCollTerrain			= 0;
+	short					m_nObjProp					= 0;
+	short					m_nObjRenderTerrain			= 0;
+	short					m_nObjProjectile			= 0;
+	short					m_nObjPlayer				= 0;
+
+	ID3D12PipelineState		**m_ppPSO					= nullptr;
+
+	ID3D12Resource			*m_pcbUploadBufferResource	= nullptr;
+	UINT					UploadBufferCurrentIdx = 0;
+
+	CB_DESC					m_cbDescObj;
+	CB_DESC					m_cbDescAnim;
+	CB_DESC					m_cbDescMat;
+	CB_DESC					m_cbDescLight;
+
+	CB_OBJECT_INFO			*m_pcbMappedObj			= nullptr;
+	XMMATRIX				*m_pcbMappedAnim		= nullptr;
+	XMMATRIX				*m_pcbMappedMat			= nullptr;
+	XMMATRIX				*m_pcbMappedLight		= nullptr;
 
 public:
 	// Scene의 기본적인 함수들
 	virtual void Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext);
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
 	virtual void Update(float fTimeElapsed);
+
+	virtual ID3D12RootSignature *CreateRootSignature(ID3D12Device *pd3dDevice);
 
 	//// Scene 별로 키 Input을 달리 처리하기 위한 함수들
 	//virtual void ProcessInput(UCHAR * pKeysBuffer);
@@ -294,7 +343,7 @@ private:
 
 	ID3D12PipelineState ** pso							= NULL;
 	ID3D12Resource		* interpolatedMatrixResource	= NULL;
-	XMMATRIX	* pCBMappedMatrix				= NULL;
+	XMMATRIX			* pCBMappedMatrix				= NULL;
 	Anim				animData;
 
 	CPlayerObject		**ppPlayers = NULL;
