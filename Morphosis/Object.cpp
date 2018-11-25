@@ -343,3 +343,22 @@ void CDefaultUI::Update(float fTimeElapsed)
 		if (curLife < 0) isAlive = false;
 	}
 }
+
+void Object::Render(ID3D12GraphicsCommandList * pd3dCommandList)
+{
+	if (!m_pModel) return;
+	pd3dCommandList->SetGraphicsRootDescriptorTable(m_iRootParameterIdx, m_d3dCbvGPUDescriptorHandle);
+	m_pModel->Render(pd3dCommandList);
+}
+
+void Object::Update(float fTimeElapsed)
+{
+	m_fAnimTime += fTimeElapsed;
+}
+
+Object::Object()
+{
+	XMStoreFloat4x4(&m_xmf4x4World, XMMatrixIdentity());
+	m_pModel		= nullptr;
+	m_fAnimTime		= 0;
+}

@@ -194,3 +194,50 @@ class CFlexibleUI : public CDefaultUI
 {
 
 };
+
+//======================================================================================================//
+//======================================================================================================//
+//======================================================================================================//
+
+class Object {
+public:	// 함수 파트
+	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
+	virtual void TestRender(ID3D12GraphicsCommandList *pd3dCommandList) {}
+	virtual void Update(float fTimeElapsed);
+
+public:	// 생성자 소멸자 파트
+	Object();
+
+protected:	// 변수 파트
+	// for Position and Rotation
+	XMFLOAT4X4					m_xmf4x4World;
+
+	// for Render
+	Model						*m_pModel;
+	D3D12_GPU_DESCRIPTOR_HANDLE m_d3dCbvGPUDescriptorHandle;
+	byte						m_iRootParameterIdx;
+
+	// for Animation
+	float						m_fAnimTime;
+};
+
+class CollideObject : public Object {
+public:
+	void SetOOBB(XMFLOAT3& xmCenter, XMFLOAT3& xmExtents, XMFLOAT4& xmOrientation) { m_OOBB = BoundingOrientedBox(xmCenter, xmExtents, xmOrientation); }
+	bool IsCollide(const BoundingOrientedBox& other) { return m_OOBB.Intersects(other); }
+
+protected:
+	BoundingOrientedBox m_OOBB;
+};
+
+class MovingObejct : public CollideObject {
+
+};
+
+
+
+
+
+//======================================================================================================//
+//======================================================================================================//
+//======================================================================================================//

@@ -49,3 +49,29 @@ CModel::CModel()
 CModel::~CModel()
 {
 }
+
+void Model::Render(ID3D12GraphicsCommandList *pd3dCommandList)
+{
+	//==================================================================
+	// Upload Interpolated Bone Animation Matrix
+	//==================================================================
+	if (m_pAnimData) {
+
+	}
+
+	for (auto iter = m_texMeshes.begin(); iter != m_texMeshes.end(); ++iter)
+	{
+		iter->tex->UpdateShaderVariables(pd3dCommandList);
+		iter->mesh->Render(pd3dCommandList);
+	}
+}
+
+void Model::AddTexMesh(CMesh * pMesh, CTexture * pTex)
+{
+	m_texMeshes.emplace_back(pMesh, pTex);
+}
+
+void Model::GenerateInterpolatedAnimMatrix(float fTime)
+{
+	if(m_pAnimData)	m_pAnimData->GenerateToWorld(fTime);
+}

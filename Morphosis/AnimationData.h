@@ -12,28 +12,6 @@ inline double GetTime(__int64 int64time) {
 	return (i64d / 30.0);
 }
 
-//inline void Print(const XMFLOAT4X4 &m) {
-//	cout.setf(ios::fixed, ios::floatfield);
-//	cout << setw(10) << m._11 << " " << setw(10) << m._12 << " " << setw(10) << m._13 << " " << setw(10) << m._14 << "\n";
-//	cout << setw(10) << m._21 << " " << setw(10) << m._22 << " " << setw(10) << m._23 << " " << setw(10) << m._24 << "\n";
-//	cout << setw(10) << m._31 << " " << setw(10) << m._32 << " " << setw(10) << m._33 << " " << setw(10) << m._34 << "\n";
-//	cout << setw(10) << m._41 << " " << setw(10) << m._42 << " " << setw(10) << m._43 << " " << setw(10) << m._44 << "\n\n";
-//}
-//inline void Print(const XMMATRIX & m) {
-//	XMFLOAT4X4 temp;
-//	XMStoreFloat4x4(&temp, m);
-//	Print(temp);
-//}
-//inline void Print(const XMFLOAT4 &v) {
-//	cout.setf(ios::fixed, ios::floatfield);
-//	cout << setw(10) << v.x << " " << setw(10) << v.y << " " << setw(10) << v.z << " " << setw(10) << v.w << "\n\n";
-//}
-//inline void Print(const XMVECTOR &v) {
-//	XMFLOAT4 temp;
-//	XMStoreFloat4(&temp, v);
-//	Print(temp);
-//}
-
 struct CBone {
 public:
 	XMMATRIX GetLocalMatrix() {
@@ -117,7 +95,25 @@ struct CKey {
 };
 
 class Anim {
-public:
+public:	// 이것만 보여주면 됨
+	// 하기 전에 한 번 불러주세여~~~
+	void GenerateToWorld(float time) {
+		for (int i = 0; i < nBones; ++i) {
+			XMStoreFloat4x4(&keyList[0]->boneList[i]->Local, GetInterpolatedLocalMatrix(i, time));
+			//if (i < 2) XMStoreFloat4x4(&keyList[0]->boneList[i]->Local, XMMatrixIdentity());
+			keyList[0]->boneList[i]->MakeToWorldMatrix();
+		}
+	}
+
+	// 이건 행렬마다 매번 부르기
+	XMMATRIX GetFinalMatrix(int boneIdx) {
+		XMMATRIX finalMatrix = XMMatrixMultiply(
+			XMLoadFloat4x4(&keyList[0]->boneList[boneIdx]->toDressposeInverse),
+			XMLoadFloat4x4(&keyList[0]->boneList[boneIdx]->toWorld));
+		return finalMatrix;
+	}
+
+private:	// 이건 이 클래스 안에서만 쓸거야
 	XMMATRIX GetInterpolatedLocalMatrix(int boneIdx, float time) {
 		if (nKeys == 1) return keyList[0]->boneList[boneIdx]->GetLocalMatrix();
 
@@ -150,26 +146,6 @@ public:
 		return XMMatrixAffineTransformation(XMVectorSplatOne(), XMVectorZero(), XMQuaternionSlerp(q0, q1, time), XMVectorLerp(t0, t1, time));
 
 	}
-
-	// 하기 전에 한 번 불러주세여~~~
-	void GenerateToWorld(float time) {
-		for (int i = 0; i < nBones; ++i) {
-			XMStoreFloat4x4(&keyList[0]->boneList[i]->Local, GetInterpolatedLocalMatrix(i, time));
-			//if (i < 2) XMStoreFloat4x4(&keyList[0]->boneList[i]->Local, XMMatrixIdentity());
-			keyList[0]->boneList[i]->MakeToWorldMatrix();
-		}
-	}
-
-	// 이건 행렬마다 매번 부르기
-	XMMATRIX GetFinalMatrix(int boneIdx) {
-		XMMATRIX finalMatrix = XMMatrixMultiply(
-			XMLoadFloat4x4(&keyList[0]->boneList[boneIdx]->toDressposeInverse),
-			XMLoadFloat4x4(&keyList[0]->boneList[boneIdx]->toWorld));
-		return finalMatrix;
-	}
-
-
-public:
 	// helper
 	bool IsFurtherThanFront(float time) 
 	{ return (time <= keyList[0]->keyTime); }
