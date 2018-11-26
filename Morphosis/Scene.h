@@ -83,7 +83,7 @@ struct CB_DESC {
 	D3D12_GPU_DESCRIPTOR_HANDLE			hGPUDescTable;
 };
 
-bool AllocUploadBuffer(
+inline bool AllocUploadBuffer(
 	CB_DESC& cb_desc, 
 	UINT nBytes, 
 	ID3D12Resource *resource, 
@@ -121,33 +121,34 @@ protected:
 	/////////////////////////////////////////////////////////////
 
 	CLevelData				*m_pLevelData				= nullptr;
-
-	CCollideObejct			**m_ppObjCollTerrain		= nullptr;
-	CCollideObejct			**m_ppObjProp				= nullptr;
-	CObject					**m_ppObjRenderTerrain		= nullptr;
-	CMovingObject			**m_ppObjProjectile			= nullptr;
-	CPlayerObject			**m_ppObjPlayer				= nullptr;
-
-	short					m_nObjCollTerrain			= 0;
-	short					m_nObjProp					= 0;
-	short					m_nObjRenderTerrain			= 0;
-	short					m_nObjProjectile			= 0;
-	short					m_nObjPlayer				= 0;
-
 	ID3D12PipelineState		**m_ppPSO					= nullptr;
+	ObjectManager			*m_pObjectMng				= nullptr;
 
-	ID3D12Resource			*m_pcbUploadBufferResource	= nullptr;
-	UINT					UploadBufferCurrentIdx = 0;
+	//CCollideObejct			**m_ppObjCollTerrain		= nullptr;
+	//CCollideObejct			**m_ppObjProp				= nullptr;
+	//CObject					**m_ppObjRenderTerrain		= nullptr;
+	//CMovingObject			**m_ppObjProjectile			= nullptr;
+	//CPlayerObject			**m_ppObjPlayer				= nullptr;
 
-	CB_DESC					m_cbDescObj;
-	CB_DESC					m_cbDescAnim;
-	CB_DESC					m_cbDescMat;
-	CB_DESC					m_cbDescLight;
+	//short					m_nObjCollTerrain			= 0;
+	//short					m_nObjProp					= 0;
+	//short					m_nObjRenderTerrain			= 0;
+	//short					m_nObjProjectile			= 0;
+	//short					m_nObjPlayer				= 0;
 
-	CB_OBJECT_INFO			*m_pcbMappedObj			= nullptr;
-	XMMATRIX				*m_pcbMappedAnim		= nullptr;
-	XMMATRIX				*m_pcbMappedMat			= nullptr;
-	XMMATRIX				*m_pcbMappedLight		= nullptr;
+
+	//ID3D12Resource			*m_pcbUploadBufferResource	= nullptr;
+	//UINT					UploadBufferCurrentIdx = 0;
+
+	//CB_DESC					m_cbDescObj;
+	//CB_DESC					m_cbDescAnim;
+	//CB_DESC					m_cbDescMat;
+	//CB_DESC					m_cbDescLight;
+
+	//CB_OBJECT_INFO			*m_pcbMappedObj			= nullptr;
+	//XMMATRIX				*m_pcbMappedAnim		= nullptr;
+	//XMMATRIX				*m_pcbMappedMat			= nullptr;
+	//XMMATRIX				*m_pcbMappedLight		= nullptr;
 
 public:
 	// Scene의 기본적인 함수들

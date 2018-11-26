@@ -364,6 +364,7 @@ Object::Object()
 	XMStoreFloat4x4(&m_xmf4x4World, XMMatrixIdentity());
 	m_pModel		= nullptr;
 	m_fAnimTime		= 0;
+	m_iRootParameterIdx = GS::RootParameter::OBJECT;
 }
 
 void MovingObejct::Update(float fTimeElapsed)
@@ -395,22 +396,6 @@ CollideObject::CollideObject() : Object()
 {
 }
 
-void ObjectManager::Render(ID3D12GraphicsCommandList * pd3dCommandList)
-{
-	for (auto p = m_terrainMeshes.begin(); p != m_terrainMeshes.end(); ++p) p->Render(pd3dCommandList);
-
-	for (auto p = m_props.begin(); p != m_props.end(); ++p) p->Render(pd3dCommandList);
-	for (auto p = m_terrainCollisionBoxes.begin(); p != m_terrainCollisionBoxes.end(); ++p) p->Render(pd3dCommandList);
-	for (auto p = m_skillJudgeObjects.begin(); p != m_skillJudgeObjects.end(); ++p) p->Render(pd3dCommandList);
-
-	for (auto p = m_players.begin(); p != m_players.end(); ++p) p->Render(pd3dCommandList);
-	for (auto p = m_bullets.begin(); p != m_bullets.end(); ++p) p->Render(pd3dCommandList);
-	for (auto p = m_skillProjectiles.begin(); p != m_skillProjectiles.end(); ++p) p->Render(pd3dCommandList);
-
-	for (auto p = m_particles.begin(); p != m_particles.end(); ++p) p->Render(pd3dCommandList);
-	for (auto p = m_effects.begin(); p != m_effects.end(); ++p) p->Render(pd3dCommandList);
-}
-
 void ObjectManager::Update(float fTimeElapsed)
 {
 	for (auto p = m_terrainMeshes.begin(); p != m_terrainMeshes.end(); ++p) p->Update(fTimeElapsed);
@@ -431,6 +416,7 @@ void ObjectManager::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandL
 {
 	CreateResource(pd3dDevice, pd3dCommandList);
 	CreateConstantBufferView(pd3dDevice, d3dCbvCPUDescriptorStartHandle);
+	BuildObjects(pd3dDevice, pd3dCommandList);
 }
 
 void ObjectManager::CreateConstantBufferView(ID3D12Device * pd3dDevice, D3D12_CPU_DESCRIPTOR_HANDLE	d3dCbvCPUDescriptorStartHandle)

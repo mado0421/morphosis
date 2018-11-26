@@ -127,7 +127,7 @@ CFollowCamera::~CFollowCamera()
 #define CAM_Y_DISTANCE 15
 void CFollowCamera::SetTarget(void * target)
 {
-	m_pTarget = (CObject*)target;
+	m_pTarget = (Object*)target;
 	XMFLOAT3 pos = m_pTarget->GetPosition();
 	pos.y += CAM_Y_DISTANCE;
 	/*포지션을 정하고 오프셋을 주어 포지션을 변경 시킨 뒤에 LookAt을 하지 않으면 
@@ -137,7 +137,7 @@ void CFollowCamera::SetTarget(void * target)
 	SetLookAt(pos);
 }
 
-CObject * CFollowCamera::GetTarget()
+Object * CFollowCamera::GetTarget()
 {
 	return m_pTarget;
 }

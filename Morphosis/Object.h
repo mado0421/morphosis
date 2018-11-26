@@ -205,6 +205,22 @@ public:	// 함수 파트
 	virtual void TestRender(ID3D12GraphicsCommandList *pd3dCommandList) {}
 	virtual void Update(float fTimeElapsed);
 
+	const XMFLOAT3 GetPosition() {
+		return XMFLOAT3(m_xmf4x4World._41, m_xmf4x4World._42, m_xmf4x4World._43);
+	}
+	const XMFLOAT3 GetLook() {
+		XMFLOAT3 vector = { m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33 };
+		return Vector3::Normalize(vector);
+	}
+	const XMFLOAT3 GetUp() {
+		XMFLOAT3 vector = { m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23 };
+		return Vector3::Normalize(vector);
+	}
+	const XMFLOAT3 GetRight() {
+		XMFLOAT3 vector = { m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13 };
+		return Vector3::Normalize(vector);
+	}
+
 	virtual void Initialize(XMFLOAT3 pos, XMFLOAT3 dir, void * pAddress = nullptr) {
 		SetPosition(pos);
 		SetDirection(dir);
@@ -236,9 +252,6 @@ private: // 내부에서만 쓸 함수들
 		m_pcbMappedObjectAddress = (CB_OBJECT_INFO*)pAddress;
 	}
 
-	const XMFLOAT3 GetPosition() {
-		return XMFLOAT3(m_xmf4x4World._41, m_xmf4x4World._42, m_xmf4x4World._43);
-	}
 
 	void SetLook(XMFLOAT3 look) {
 		m_xmf4x4World._31 = look.x;
@@ -367,7 +380,7 @@ public:
 		//return m_terrainMeshes.size() + m_props.size() + m_terrainCollisionBoxes.size() + m_skillJudgeObjects.size() +
 		//	m_players.size() + m_bullets.size() + m_skillProjectiles.size() + m_particles.size() + m_effects.size();
 	}
-	void Render(ID3D12GraphicsCommandList *pd3dCommandList);
+	//void Render(ID3D12GraphicsCommandList *pd3dCommandList);
 	void Update(float fTimeElapsed);
 
 	// terrainMeshes, terrainCollisionBoxes, props, light, spawnPoint, targetArea, texture 등에서
@@ -375,6 +388,34 @@ public:
 	void GenerateTerrain();
 
 	void Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, D3D12_CPU_DESCRIPTOR_HANDLE	d3dCbvCPUDescriptorStartHandle);
+
+	void RenderTerrainMeshes(ID3D12GraphicsCommandList *pd3dCommandList) {
+		for (auto p = m_terrainMeshes.begin(); p != m_terrainMeshes.end(); ++p) p->Render(pd3dCommandList);
+	}
+	void RenderCollideObjects(ID3D12GraphicsCommandList *pd3dCommandList) {
+		for (auto p = m_props.begin(); p != m_props.end(); ++p) p->Render(pd3dCommandList);
+		for (auto p = m_terrainCollisionBoxes.begin(); p != m_terrainCollisionBoxes.end(); ++p) p->Render(pd3dCommandList);
+		for (auto p = m_skillJudgeObjects.begin(); p != m_skillJudgeObjects.end(); ++p) p->Render(pd3dCommandList);
+
+	}
+	void RenderMovingObjects(ID3D12GraphicsCommandList *pd3dCommandList) {
+		for (auto p = m_players.begin(); p != m_players.end(); ++p) p->Render(pd3dCommandList);
+		for (auto p = m_bullets.begin(); p != m_bullets.end(); ++p) p->Render(pd3dCommandList);
+		for (auto p = m_skillProjectiles.begin(); p != m_skillProjectiles.end(); ++p) p->Render(pd3dCommandList);
+
+	}
+	void RenderParticles(ID3D12GraphicsCommandList *pd3dCommandList) {
+		for (auto p = m_particles.begin(); p != m_particles.end(); ++p) p->Render(pd3dCommandList);
+
+	}
+	void RenderEffects(ID3D12GraphicsCommandList *pd3dCommandList) {
+		for (auto p = m_effects.begin(); p != m_effects.end(); ++p) p->Render(pd3dCommandList);
+
+	}
+
+	Object* GetTarget(int idx) {
+		return &(m_players.at(idx));
+	}
 
 private:
 	void CreateConstantBufferView(ID3D12Device * pd3dDevice, D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorStartHandle);

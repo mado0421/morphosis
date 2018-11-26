@@ -340,7 +340,7 @@ void CFramework::BuildScenes()
 	m_ppScenes[Scenes::RESULT] = new CResultScene();
 	m_ppScenes[Scenes::TEST] = new CTestGroundScene();
 
-	m_pCurrentScene = m_ppScenes[Scenes::TEST];
+	m_pCurrentScene = m_ppScenes[Scenes::PLAY];
 	m_pCurrentScene->Initialize(m_pd3dDevice, m_pd3dCommandList, this);
 
 	m_pd3dCommandList->Close();

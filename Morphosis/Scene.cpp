@@ -189,17 +189,22 @@ void CGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLi
 	tempPso[1]->Initialize(pd3dDevice, m_pd3dGraphicsRootSignature);
 	m_ppPSO[1] = tempPso[1]->GetPipelineState();
 
+	//===================================================================================
+	// Create ObjectMng 
+	//===================================================================================
+
+	m_pObjectMng = new ObjectManager();
 
 	//===================================================================================
 	// Descriptor Heap
 	//===================================================================================
 
-	int nObjects
-		= m_nObjCollTerrain
-		+ m_nObjProp
-		+ m_nObjRenderTerrain
-		+ m_nObjProjectile
-		+ m_nObjPlayer;
+	int nObjects = m_pObjectMng->GetNumTotalObjects();
+		//= m_nObjCollTerrain
+		//+ m_nObjProp
+		//+ m_nObjRenderTerrain
+		//+ m_nObjProjectile
+		//+ m_nObjPlayer;
 	int nMaxBone = 64;
 	int nMaxMat = 64;
 	int nMaxLight = 64;
@@ -215,8 +220,8 @@ void CGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLi
 
 	m_d3dCbvCPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	m_d3dCbvGPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart();
-	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (nPlayers + animData.nBones));
-	m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (nPlayers + animData.nBones));
+	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (nDescriptors - nSRVForTextrue));
+	m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (nDescriptors - nSRVForTextrue));
 
 	//===================================================================================
 	// Textures
@@ -242,46 +247,54 @@ void CGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLi
 	// Create CB Objects
 	//===================================================================================
 
-	AllocUploadBuffer(
-		m_cbDescObj, sizeof(CB_OBJECT_INFO) * nObjects,
-		m_pcbUploadBufferResource, UploadBufferCurrentIdx, m_pcbMappedObj);
+	//AllocUploadBuffer(
+	//	m_cbDescObj, sizeof(CB_OBJECT_INFO) * nObjects,
+	//	m_pcbUploadBufferResource, UploadBufferCurrentIdx, m_pcbMappedObj);
+	//AllocUploadBuffer(
+	//	m_cbDescAnim, sizeof(XMMATRIX) * nMaxBone,
+	//	m_pcbUploadBufferResource, UploadBufferCurrentIdx, m_pcbMappedAnim);
+	//AllocUploadBuffer(
+	//	m_cbDescMat, sizeof(XMMATRIX) * nMaxMat,
+	//	m_pcbUploadBufferResource, UploadBufferCurrentIdx, m_pcbMappedMat);
+	//AllocUploadBuffer(
+	//	m_cbDescLight, sizeof(XMMATRIX) * nMaxLight,
+	//	m_pcbUploadBufferResource, UploadBufferCurrentIdx, m_pcbMappedLight);
+	//D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_cbDescObj.view_desc.BufferLocation;
+	//for (int j = 0; j < nPlayers; j++)
+	//{
+	//	d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (m_cbDescObj.nMappedData * j);
+	//	D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
+	//	d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * j);
+	//	pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
+	//}
 
-	AllocUploadBuffer(
-		m_cbDescAnim, sizeof(XMMATRIX) * nMaxBone,
-		m_pcbUploadBufferResource, UploadBufferCurrentIdx, m_pcbMappedAnim);
+	m_pObjectMng->Initialize(pd3dDevice, pd3dCommandList, m_d3dCbvCPUDescriptorStartHandle);
 
-	AllocUploadBuffer(
-		m_cbDescMat, sizeof(XMMATRIX) * nMaxMat,
-		m_pcbUploadBufferResource, UploadBufferCurrentIdx, m_pcbMappedMat);
-
-	AllocUploadBuffer(
-		m_cbDescLight, sizeof(XMMATRIX) * nMaxLight,
-		m_pcbUploadBufferResource, UploadBufferCurrentIdx, m_pcbMappedLight);
-
-	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_cbDescObj.view_desc.BufferLocation;
-	for (int j = 0; j < nPlayers; j++)
-	{
-		d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (m_cbDescObj.nMappedData * j);
-		D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
-		d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * j);
-		pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
-	}
-
-
-
-
-
-
+	m_pCamera->SetTarget(m_pObjectMng->GetTarget(0));
 }
 
 void CGroundScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 {
+	pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
+
+	pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);
+
+	// HLSL에 넣어줄 카메라 정보 갱신부분
+	m_pCamera->SetViewportsAndScissorRects(pd3dCommandList);
+	m_pCamera->UpdateShaderVariables(pd3dCommandList);
+
+	m_pObjectMng->RenderTerrainMeshes(pd3dCommandList);
+	m_pObjectMng->RenderCollideObjects(pd3dCommandList);
+	m_pObjectMng->RenderMovingObjects(pd3dCommandList);
+	m_pObjectMng->RenderParticles(pd3dCommandList);
+	m_pObjectMng->RenderEffects(pd3dCommandList);
 }
 
 void CGroundScene::Update(float fTimeElapsed)
 {
 	// 여기서 GPU에서 사용할 변수들 갱신을 해줘야 한다!
 	// 카메라, 오브젝트 등등
+	m_pObjectMng->Update(fTimeElapsed);
 }
 
 ID3D12RootSignature * CGroundScene::CreateRootSignature(ID3D12Device * pd3dDevice)

@@ -5,7 +5,7 @@
 #define CAM_MOVE_SPEED		3
 #define CAM_ROTATE_SPEED	3
 
-class CObject;
+class Object;
 
 struct VS_CB_CAMERA_INFO
 {
@@ -80,7 +80,7 @@ public:
 	virtual void SetLookAt(XMFLOAT3& xmf3LookAt) { }
 
 	virtual void SetTarget(void *target) {}
-	virtual CObject* GetTarget() { return nullptr; }
+	virtual Object* GetTarget() { return nullptr; }
 };
 
 class CBoardCamera : public CCamera
@@ -98,7 +98,7 @@ public:
 class CFollowCamera : public CCamera
 {
 private:
-	CObject * m_pTarget = NULL;
+	Object * m_pTarget = NULL;
 
 public:
 	CFollowCamera();
@@ -106,7 +106,7 @@ public:
 
 public:
 	virtual void SetTarget(void *target);
-	virtual CObject* GetTarget();
+	virtual Object* GetTarget();
 	virtual void Update(float fTimeElapsed);
 	virtual void SetLookAt(XMFLOAT3& xmf3LookAt);
 };
