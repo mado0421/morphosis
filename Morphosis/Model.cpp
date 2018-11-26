@@ -52,6 +52,7 @@ CModel::~CModel()
 
 void Model::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 {
+
 	//==================================================================
 	// Upload Interpolated Bone Animation Matrix
 	//==================================================================

@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "Scene.h"
 #include "Framework.h"
+#include "Scene.h"
 
 #define MOUSE_XSPEED 10
 #define MOVE_SPEED 1.5
@@ -169,15 +169,6 @@ ID3D12RootSignature * CScene::CreateRootSignature(ID3D12Device * pd3dDevice)
 	return(pd3dGraphicsRootSignature);
 }
 
-CGroundScene::CGroundScene()
-{
-
-}
-
-CGroundScene::~CGroundScene()
-{
-}
-
 void CGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext)
 {
 	m_pFramework = (CFramework*)pContext;
@@ -203,16 +194,16 @@ void CGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLi
 	// Descriptor Heap
 	//===================================================================================
 
-	int nObjects 
+	int nObjects
 		= m_nObjCollTerrain
 		+ m_nObjProp
 		+ m_nObjRenderTerrain
 		+ m_nObjProjectile
 		+ m_nObjPlayer;
-	int nMaxBone		= 64;
-	int nMaxMat			= 64;
-	int nMaxLight		= 64;
-	int nSRVForTextrue	= 1;
+	int nMaxBone = 64;
+	int nMaxMat = 64;
+	int nMaxLight = 64;
+	int nSRVForTextrue = 1;
 	int nDescriptors = nObjects + nMaxBone + nMaxMat + nMaxLight + nSRVForTextrue;
 
 	D3D12_DESCRIPTOR_HEAP_DESC d3dDescriptorHeapDesc;
@@ -275,6 +266,10 @@ void CGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLi
 		d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * j);
 		pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
 	}
+
+
+
+
 
 
 }
@@ -1129,130 +1124,130 @@ void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 
 void CPlayScene::Update(float fTimeElapsed)
 {
-////	for (int i = 0; i < m_nPlayers; i++) if (!m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->MoveOOBB(fTimeElapsed);
-//	for (int i = 0; i < m_nProjectileObjects; i++) if (m_ppProjectileObjects[i]->isAlive) m_ppProjectileObjects[i]->MoveOOBB(fTimeElapsed);
-//	XMFLOAT3 pos = m_ppPlayers[0]->GetPosition();
-//	pos.y += 50;
-//	for (int i = 0; i < m_nUIObjects; i++) m_ppUIObjects[i]->SetPosition(pos);
-//
-//	for (int i = 0; i < m_nPlayers; i++)
-//		if (!m_ppPlayers[i]->IsDead()) {
-//			/*탄과 충돌체크*/
-//			for(int j = 0; j < m_nProjectileObjects; ++j)
-//				if(m_ppPlayers[i]->m_team != m_ppProjectileObjects[j]->m_team)
-//					if(m_ppProjectileObjects[j]->isAlive)
-//						if (m_ppPlayers[i]->IsCollide(m_ppProjectileObjects[j]->m_collisionBox)) {
-//							printf("col");
-//							m_ppProjectileObjects[j]->isAlive = false;
-//							m_ppPlayers[i]->Damaged(10);
-//
-//							if (m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->isAlive = false;
-//							break;
-//						}
-//
-//			//먼저 이동
-//			m_ppPlayers[i]->MoveOOBB(fTimeElapsed);
-//			/*지형과 충돌체크*/
-//			for(int j = 0; j < m_nObjects; ++j)
-//				if (m_ppPlayers[i]->IsCollide(m_ppObjects[j]->m_collisionBox)) {
-//					//m_ppPlayers[i]->isCollide = true;
-//					//충돌했으니까 이동은 무효로
-//					m_ppPlayers[i]->MoveOOBB(-fTimeElapsed);
-//					break;
-//				}
-//
-//			//먼저 떨어짐
-//			m_ppPlayers[i]->FallingOOBB(fTimeElapsed);
-//			m_ppPlayers[i]->isFalling = true;
-//
-//			for (int j = 0; j < m_nObjects; ++j)
-//				if (m_ppPlayers[i]->IsCollide(m_ppObjects[j]->m_collisionBox)) {
-//					//충돌했으니까 이동은 무효로
-//					m_ppPlayers[i]->isFalling = false;
-//					m_ppPlayers[i]->m_collisionBox.Center.y = m_ppPlayers[i]->prevHeight;
-//					m_ppPlayers[i]->m_fGravityAccel = 0;
-//					break;
-//				}
-//		}
-//
-//	//가만히 있는 오브젝트를 갱신을 해줘야 할까? 저는 아니라고 생각합니다.
-//	for (int i = 0; i < m_nPlayers; i++) if (!m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->Update(fTimeElapsed);
-//	for (int i = 0; i < m_nProjectileObjects; i++) m_ppProjectileObjects[i]->Update(fTimeElapsed);
-//
-//	m_pCamera->Update(fTimeElapsed);
+	////	for (int i = 0; i < m_nPlayers; i++) if (!m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->MoveOOBB(fTimeElapsed);
+	//	for (int i = 0; i < m_nProjectileObjects; i++) if (m_ppProjectileObjects[i]->isAlive) m_ppProjectileObjects[i]->MoveOOBB(fTimeElapsed);
+	//	XMFLOAT3 pos = m_ppPlayers[0]->GetPosition();
+	//	pos.y += 50;
+	//	for (int i = 0; i < m_nUIObjects; i++) m_ppUIObjects[i]->SetPosition(pos);
+	//
+	//	for (int i = 0; i < m_nPlayers; i++)
+	//		if (!m_ppPlayers[i]->IsDead()) {
+	//			/*탄과 충돌체크*/
+	//			for(int j = 0; j < m_nProjectileObjects; ++j)
+	//				if(m_ppPlayers[i]->m_team != m_ppProjectileObjects[j]->m_team)
+	//					if(m_ppProjectileObjects[j]->isAlive)
+	//						if (m_ppPlayers[i]->IsCollide(m_ppProjectileObjects[j]->m_collisionBox)) {
+	//							printf("col");
+	//							m_ppProjectileObjects[j]->isAlive = false;
+	//							m_ppPlayers[i]->Damaged(10);
+	//
+	//							if (m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->isAlive = false;
+	//							break;
+	//						}
+	//
+	//			//먼저 이동
+	//			m_ppPlayers[i]->MoveOOBB(fTimeElapsed);
+	//			/*지형과 충돌체크*/
+	//			for(int j = 0; j < m_nObjects; ++j)
+	//				if (m_ppPlayers[i]->IsCollide(m_ppObjects[j]->m_collisionBox)) {
+	//					//m_ppPlayers[i]->isCollide = true;
+	//					//충돌했으니까 이동은 무효로
+	//					m_ppPlayers[i]->MoveOOBB(-fTimeElapsed);
+	//					break;
+	//				}
+	//
+	//			//먼저 떨어짐
+	//			m_ppPlayers[i]->FallingOOBB(fTimeElapsed);
+	//			m_ppPlayers[i]->isFalling = true;
+	//
+	//			for (int j = 0; j < m_nObjects; ++j)
+	//				if (m_ppPlayers[i]->IsCollide(m_ppObjects[j]->m_collisionBox)) {
+	//					//충돌했으니까 이동은 무효로
+	//					m_ppPlayers[i]->isFalling = false;
+	//					m_ppPlayers[i]->m_collisionBox.Center.y = m_ppPlayers[i]->prevHeight;
+	//					m_ppPlayers[i]->m_fGravityAccel = 0;
+	//					break;
+	//				}
+	//		}
+	//
+	//	//가만히 있는 오브젝트를 갱신을 해줘야 할까? 저는 아니라고 생각합니다.
+	//	for (int i = 0; i < m_nPlayers; i++) if (!m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->Update(fTimeElapsed);
+	//	for (int i = 0; i < m_nProjectileObjects; i++) m_ppProjectileObjects[i]->Update(fTimeElapsed);
+	//
+	//	m_pCamera->Update(fTimeElapsed);
 }
 
 
 void CPlayScene::ProcessInput(UCHAR * pKeysBuffer)
 {
-//	float cxDelta = 0.0f, cyDelta = 0.0f;
-//	POINT ptCursorPos;
-//
-//	GetCursorPos(&ptCursorPos);
-//	cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
-//	cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
-////	SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
-//
-//	//if (cxDelta) m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, cxDelta * MOUSE_XSPEED, 0 });
-//
-//	XMFLOAT3 xmf3temp;
-//	if (pKeysBuffer[KEY::W] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetLook(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp,	MOVE_SPEED)); }
-//	if (pKeysBuffer[KEY::A] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetRight(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp,  -MOVE_SPEED)); }
-//	if (pKeysBuffer[KEY::S] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetLook(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp,   -MOVE_SPEED)); }
-//	if (pKeysBuffer[KEY::D] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetRight(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp,   MOVE_SPEED)); }
-//	if (pKeysBuffer[KEY::Q] & 0xF0) { m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, -ROTATE_SPEED, 0 }); }
-//	if (pKeysBuffer[KEY::E] & 0xF0) { m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, ROTATE_SPEED, 0 }); }
-//
-//	if (pKeysBuffer[KEY::_1] & 0xF0)
-//		if(m_pCamera->GetTarget() != m_ppPlayers[0])
-//			m_pCamera->SetTarget(m_ppPlayers[0]);
-//
-//	if (pKeysBuffer[KEY::_2] & 0xF0)
-//		if (m_pCamera->GetTarget() != m_ppPlayers[1])
-//			m_pCamera->SetTarget(m_ppPlayers[1]);
-//
-//	if (pKeysBuffer[VK_LBUTTON] & 0xF0) { 
-//		//attack
-//
-//		if (m_ppPlayers[0]->IsFireable()) {
-//			m_ppPlayers[0]->Attack();
-//			for (int i = 0; i < PO_PER_PLAYER; ++i) {
-//				if (!m_ppProjectileObjects[(m_nPlayers * 0) + i]->isAlive) {
-//					m_ppProjectileObjects[(m_nPlayers * 0) + i]->isAlive = true;
-//					m_ppProjectileObjects[(m_nPlayers * 0) + i]->Initialize(m_ppPlayers[0]);
-//					printf("fire");
-//					break;
-//				}
-//			}
-//		}
-//	}
-//
-//	if (pKeysBuffer[VK_RBUTTON] & 0xF0) {
-//		//attack
-//
-//		m_ppPlayers[1]->Damaged(100);
-//		if (m_ppPlayers[1]->IsDead()) m_ppPlayers[1]->isAlive = false;
-//
-//
-//	}
-//
-//	if (pKeysBuffer[VK_SPACE] & 0xF0) {
-//		//jump
-//		if(!m_ppPlayers[0]->isFalling) m_ppPlayers[0]->Jump();
-//
-//		//XMFLOAT4X4 matrix = m_ppPlayers[0]->m_xmf4x4World;
-//		//printf("matrix is\n");
-//		//printf("%f %f %f %f\n", matrix._11, matrix._12, matrix._13, matrix._14);
-//		//printf("%f %f %f %f\n", matrix._21, matrix._22, matrix._23, matrix._24);
-//		//printf("%f %f %f %f\n", matrix._31, matrix._32, matrix._33, matrix._34);
-//		//printf("%f %f %f %f\n", matrix._41, matrix._42, matrix._43, matrix._44);
-//	}
-//
-//	if (pKeysBuffer[VK_RETURN] & 0xF0) {
-//		//jump
-//		m_pFramework->ChangeScene(Scenes::ENTERROOM, m_pFramework);
-//	}
-//
+	//	float cxDelta = 0.0f, cyDelta = 0.0f;
+	//	POINT ptCursorPos;
+	//
+	//	GetCursorPos(&ptCursorPos);
+	//	cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
+	//	cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
+	////	SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
+	//
+	//	//if (cxDelta) m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, cxDelta * MOUSE_XSPEED, 0 });
+	//
+	//	XMFLOAT3 xmf3temp;
+	//	if (pKeysBuffer[KEY::W] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetLook(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp,	MOVE_SPEED)); }
+	//	if (pKeysBuffer[KEY::A] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetRight(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp,  -MOVE_SPEED)); }
+	//	if (pKeysBuffer[KEY::S] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetLook(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp,   -MOVE_SPEED)); }
+	//	if (pKeysBuffer[KEY::D] & 0xF0) { xmf3temp = m_ppPlayers[0]->GetRight(); m_ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp,   MOVE_SPEED)); }
+	//	if (pKeysBuffer[KEY::Q] & 0xF0) { m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, -ROTATE_SPEED, 0 }); }
+	//	if (pKeysBuffer[KEY::E] & 0xF0) { m_ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, ROTATE_SPEED, 0 }); }
+	//
+	//	if (pKeysBuffer[KEY::_1] & 0xF0)
+	//		if(m_pCamera->GetTarget() != m_ppPlayers[0])
+	//			m_pCamera->SetTarget(m_ppPlayers[0]);
+	//
+	//	if (pKeysBuffer[KEY::_2] & 0xF0)
+	//		if (m_pCamera->GetTarget() != m_ppPlayers[1])
+	//			m_pCamera->SetTarget(m_ppPlayers[1]);
+	//
+	//	if (pKeysBuffer[VK_LBUTTON] & 0xF0) { 
+	//		//attack
+	//
+	//		if (m_ppPlayers[0]->IsFireable()) {
+	//			m_ppPlayers[0]->Attack();
+	//			for (int i = 0; i < PO_PER_PLAYER; ++i) {
+	//				if (!m_ppProjectileObjects[(m_nPlayers * 0) + i]->isAlive) {
+	//					m_ppProjectileObjects[(m_nPlayers * 0) + i]->isAlive = true;
+	//					m_ppProjectileObjects[(m_nPlayers * 0) + i]->Initialize(m_ppPlayers[0]);
+	//					printf("fire");
+	//					break;
+	//				}
+	//			}
+	//		}
+	//	}
+	//
+	//	if (pKeysBuffer[VK_RBUTTON] & 0xF0) {
+	//		//attack
+	//
+	//		m_ppPlayers[1]->Damaged(100);
+	//		if (m_ppPlayers[1]->IsDead()) m_ppPlayers[1]->isAlive = false;
+	//
+	//
+	//	}
+	//
+	//	if (pKeysBuffer[VK_SPACE] & 0xF0) {
+	//		//jump
+	//		if(!m_ppPlayers[0]->isFalling) m_ppPlayers[0]->Jump();
+	//
+	//		//XMFLOAT4X4 matrix = m_ppPlayers[0]->m_xmf4x4World;
+	//		//printf("matrix is\n");
+	//		//printf("%f %f %f %f\n", matrix._11, matrix._12, matrix._13, matrix._14);
+	//		//printf("%f %f %f %f\n", matrix._21, matrix._22, matrix._23, matrix._24);
+	//		//printf("%f %f %f %f\n", matrix._31, matrix._32, matrix._33, matrix._34);
+	//		//printf("%f %f %f %f\n", matrix._41, matrix._42, matrix._43, matrix._44);
+	//	}
+	//
+	//	if (pKeysBuffer[VK_RETURN] & 0xF0) {
+	//		//jump
+	//		m_pFramework->ChangeScene(Scenes::ENTERROOM, m_pFramework);
+	//	}
+	//
 }
 
 void CPlayScene::OnProcessingMouseMessage()
@@ -1471,7 +1466,7 @@ ID3D12RootSignature * CTestGroundScene::CreateRootSignature(ID3D12Device * pd3dD
 	pd3dRootParameters[2].DescriptorTable.NumDescriptorRanges = 1;
 	pd3dRootParameters[2].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[1];
 	pd3dRootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	
+
 	//Anim
 	pd3dRootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	pd3dRootParameters[3].Descriptor.ShaderRegister = 3;
@@ -1579,8 +1574,8 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 	// 오브젝트 내용 채우기
 	for (int i = 0; i < nPlayers; i++) {
 
-		CPlayerObject *pObj	= new CPlayerObject();
-		XMFLOAT4 orientation	= XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
+		CPlayerObject *pObj = new CPlayerObject();
+		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
 
 		CModel *model = new CModel();
 		model->AddMesh(pAnimTest);
@@ -1613,7 +1608,7 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 	{
 		d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * j);
 		D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
-		d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (j+nPlayers));
+		d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (j + nPlayers));
 		pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
 	}
 
@@ -1658,7 +1653,7 @@ void CTestGroundScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 void CTestGroundScene::Update(float fTimeElapsed)
 {
 	static float time = 0.0001;
-	if(isTimeflow)	time += fTimeElapsed * 0.05;
+	if (isTimeflow)	time += fTimeElapsed * 0.05;
 
 	animData.GenerateToWorld(time);
 

@@ -347,6 +347,9 @@ void CDefaultUI::Update(float fTimeElapsed)
 void Object::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 {
 	if (!m_pModel) return;
+
+	XMStoreFloat4x4(&m_pcbMappedObjectAddress->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_xmf4x4World)));
+
 	pd3dCommandList->SetGraphicsRootDescriptorTable(m_iRootParameterIdx, m_d3dCbvGPUDescriptorHandle);
 	m_pModel->Render(pd3dCommandList);
 }
@@ -361,4 +364,143 @@ Object::Object()
 	XMStoreFloat4x4(&m_xmf4x4World, XMMatrixIdentity());
 	m_pModel		= nullptr;
 	m_fAnimTime		= 0;
+}
+
+void MovingObejct::Update(float fTimeElapsed)
+{
+	Object::Update(fTimeElapsed);
+
+	XMMATRIX tempWorld = XMLoadFloat4x4(&m_xmf4x4World);
+	XMFLOAT3 position = GetPosition();
+	XMVECTOR rotateOrigin = XMLoadFloat3(&position);
+	XMVECTOR rotation = XMQuaternionRotationRollPitchYawFromVector(XMVectorScale(XMLoadFloat3(&m_xmf3RotationRad), fTimeElapsed));
+	XMVECTOR translation = XMVectorScale(XMLoadFloat3(&m_xmf3TranslationValue), fTimeElapsed);
+
+	tempWorld = XMMatrixAffineTransformation(XMVectorSplatOne(), rotateOrigin, rotation, translation);
+	XMStoreFloat4x4(&m_xmf4x4World, tempWorld);
+
+	// 변화량을 초기화시킴
+	m_xmf3RotationRad		= XMFLOAT3(0, 0, 0);
+	m_xmf3TranslationValue	= XMFLOAT3(0, 0, 0);
+}
+
+MovingObejct::MovingObejct() : CollideObject()
+{
+	m_fGravityFactor		= 1.0f;
+	m_xmf3RotationRad		= XMFLOAT3(0, 0, 0);
+	m_xmf3TranslationValue	= XMFLOAT3(0, 0, 0);
+}
+
+CollideObject::CollideObject() : Object()
+{
+}
+
+void ObjectManager::Render(ID3D12GraphicsCommandList * pd3dCommandList)
+{
+	for (auto p = m_terrainMeshes.begin(); p != m_terrainMeshes.end(); ++p) p->Render(pd3dCommandList);
+
+	for (auto p = m_props.begin(); p != m_props.end(); ++p) p->Render(pd3dCommandList);
+	for (auto p = m_terrainCollisionBoxes.begin(); p != m_terrainCollisionBoxes.end(); ++p) p->Render(pd3dCommandList);
+	for (auto p = m_skillJudgeObjects.begin(); p != m_skillJudgeObjects.end(); ++p) p->Render(pd3dCommandList);
+
+	for (auto p = m_players.begin(); p != m_players.end(); ++p) p->Render(pd3dCommandList);
+	for (auto p = m_bullets.begin(); p != m_bullets.end(); ++p) p->Render(pd3dCommandList);
+	for (auto p = m_skillProjectiles.begin(); p != m_skillProjectiles.end(); ++p) p->Render(pd3dCommandList);
+
+	for (auto p = m_particles.begin(); p != m_particles.end(); ++p) p->Render(pd3dCommandList);
+	for (auto p = m_effects.begin(); p != m_effects.end(); ++p) p->Render(pd3dCommandList);
+}
+
+void ObjectManager::Update(float fTimeElapsed)
+{
+	for (auto p = m_terrainMeshes.begin(); p != m_terrainMeshes.end(); ++p) p->Update(fTimeElapsed);
+
+	for (auto p = m_props.begin(); p != m_props.end(); ++p) p->Update(fTimeElapsed);
+	for (auto p = m_terrainCollisionBoxes.begin(); p != m_terrainCollisionBoxes.end(); ++p) p->Update(fTimeElapsed);
+	for (auto p = m_skillJudgeObjects.begin(); p != m_skillJudgeObjects.end(); ++p) p->Update(fTimeElapsed);
+
+	for (auto p = m_players.begin(); p != m_players.end(); ++p) p->Update(fTimeElapsed);
+	for (auto p = m_bullets.begin(); p != m_bullets.end(); ++p) p->Update(fTimeElapsed);
+	for (auto p = m_skillProjectiles.begin(); p != m_skillProjectiles.end(); ++p) p->Update(fTimeElapsed);
+
+	for (auto p = m_particles.begin(); p != m_particles.end(); ++p) p->Update(fTimeElapsed);
+	for (auto p = m_effects.begin(); p != m_effects.end(); ++p) p->Update(fTimeElapsed);
+}
+
+void ObjectManager::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, D3D12_CPU_DESCRIPTOR_HANDLE	d3dCbvCPUDescriptorStartHandle)
+{
+	CreateResource(pd3dDevice, pd3dCommandList);
+	CreateConstantBufferView(pd3dDevice, d3dCbvCPUDescriptorStartHandle);
+}
+
+void ObjectManager::CreateConstantBufferView(ID3D12Device * pd3dDevice, D3D12_CPU_DESCRIPTOR_HANDLE	d3dCbvCPUDescriptorStartHandle)
+{
+	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
+
+	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbResource->GetGPUVirtualAddress();
+	D3D12_CONSTANT_BUFFER_VIEW_DESC d3dCBVDesc;
+	d3dCBVDesc.SizeInBytes = ncbElementBytes;
+	for (int i = 0; i < GetNumTotalObjects(); ++i)
+	{
+		d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * i);
+		D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
+		d3dCbvCPUDescriptorHandle.ptr = d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * i);
+		pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
+	}
+}
+
+void ObjectManager::CreateResource(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
+{
+	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
+
+	m_pd3dcbResource = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes * GetNumTotalObjects(),
+		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	m_pd3dcbResource->Map(0, NULL, (void **)&m_pcbMappedObjects);
+}
+
+void ObjectManager::BuildObjects(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
+{
+	UINT totalIdx = 0;
+	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
+
+	//m_terrainMeshes.resize(m_levelData.nTerrainMeshes);
+	m_terrainMeshes.resize(1);
+	for (auto p = m_terrainMeshes.begin(); p != m_terrainMeshes.end(); ++p) 
+		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
+	
+
+	m_props.resize(0);
+	for (auto p = m_props.begin(); p != m_props.end(); ++p)
+		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), XMFLOAT3(1, 1, 1), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
+
+	m_terrainCollisionBoxes.resize(1);
+	for (auto p = m_terrainCollisionBoxes.begin(); p != m_terrainCollisionBoxes.end(); ++p)
+		p->Initialize(XMFLOAT3(0, -100, 0), XMFLOAT3(1, 0, 0), XMFLOAT3(100, 1, 100), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
+
+	m_skillJudgeObjects.resize(MAX_PLAYER * SKILLJUDGE_PER_PL);
+	for (auto p = m_skillJudgeObjects.begin(); p != m_skillJudgeObjects.end(); ++p)
+		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), XMFLOAT3(1, 1, 1), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
+
+
+	m_players.resize(MAX_PLAYER);
+	for (auto p = m_players.begin(); p != m_players.end(); ++p)
+		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), XMFLOAT3(1, 1, 1),m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
+
+	m_bullets.resize(MAX_PLAYER * BULLET_PER_PL);
+	for (auto p = m_bullets.begin(); p != m_bullets.end(); ++p)
+		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), XMFLOAT3(1, 1, 1), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
+
+	m_skillProjectiles.resize(MAX_PLAYER * PROJECTILE_PER_PL);
+	for (auto p = m_skillProjectiles.begin(); p != m_skillProjectiles.end(); ++p)
+		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), XMFLOAT3(1, 1, 1), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
+
+
+	m_particles.resize(MAX_PARTICLE);
+	for (auto p = m_particles.begin(); p != m_particles.end(); ++p)
+		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), XMFLOAT3(1, 1, 1), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
+
+	m_effects.resize(MAX_EFFECT);
+	for (auto p = m_effects.begin(); p != m_effects.end(); ++p)
+		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
+
 }
