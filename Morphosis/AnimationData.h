@@ -1,4 +1,5 @@
 #pragma once
+#include "stdafx.h"
 #include <iostream>
 #include <iomanip>
 
@@ -20,7 +21,7 @@ public:
 		return XMMatrixMultiply(trsM, rotM);
 	}
 	void Initialize(XMFLOAT3 LclTrans, XMFLOAT3 LclRotate, CBone*parent) {
-		
+
 		//부모 주소 줌
 		this->parent = parent;
 
@@ -45,8 +46,8 @@ public:
 	}
 	void MakeToParentMatrix(XMFLOAT3 LclTrans, XMFLOAT3 LclRotate) {
 		XMStoreFloat4x4(&toParent, XMMatrixRotationRollPitchYaw(
-			XMConvertToRadians(LclRotate.x), 
-			XMConvertToRadians(LclRotate.y), 
+			XMConvertToRadians(LclRotate.x),
+			XMConvertToRadians(LclRotate.y),
 			XMConvertToRadians(LclRotate.z)
 		));
 		toParent._41 = LclTrans.x;
@@ -107,6 +108,15 @@ public:	// 이것만 보여주면 됨
 
 	// 이건 행렬마다 매번 부르기
 	XMMATRIX GetFinalMatrix(int boneIdx) {
+#ifdef TEST_
+		//return XMMatrixIdentity();
+		//return XMMatrixIdentity();
+		//if(boneIdx!=0) return XMMatrixIdentity();
+		//else return XMLoadFloat4x4(&keyList[0]->boneList[boneIdx]->toDressposeInverse);
+
+#endif
+
+
 		XMMATRIX finalMatrix = XMMatrixMultiply(
 			XMLoadFloat4x4(&keyList[0]->boneList[boneIdx]->toDressposeInverse),
 			XMLoadFloat4x4(&keyList[0]->boneList[boneIdx]->toWorld));
@@ -128,11 +138,11 @@ private:	// 이건 이 클래스 안에서만 쓸거야
 
 		time = (time - keyList[n]->keyTime) / (keyList[n + 1]->keyTime - keyList[n]->keyTime);
 
-		//XMVECTOR t0 = XMLoadFloat3(&keyList[n]->boneList[boneIdx]->Pos);
-		//XMVECTOR t1 = XMLoadFloat3(&keyList[n + 1]->boneList[boneIdx]->Pos);
+		XMVECTOR t0 = XMLoadFloat3(&keyList[n]->boneList[boneIdx]->Pos);
+		XMVECTOR t1 = XMLoadFloat3(&keyList[n + 1]->boneList[boneIdx]->Pos);
 
-		XMVECTOR t0 = { 0,0,0,1 };
-		XMVECTOR t1 = { 0,0,0,1 };
+		//XMVECTOR t0 = { 0,0,0,1 };
+		//XMVECTOR t1 = { 0,0,0,1 };
 		/*XMVECTOR interpolatedT = XMVectorLerp(t0, t1, time);*/
 
 		// 회전
@@ -141,18 +151,42 @@ private:	// 이건 이 클래스 안에서만 쓸거야
 		q0 = XMQuaternionRotationRollPitchYawFromVector(q0);
 		q1 = XMQuaternionRotationRollPitchYawFromVector(q1);
 		/*XMVECTOR interpolatedR = XMQuaternionSlerp(q0, q1, time);*/
+		XMFLOAT3 rotateOriginTemp;
+		XMVECTOR rotateOrigin;
+		if (boneIdx != 0) {
+			rotateOriginTemp = XMFLOAT3(
+				keyList[0]->boneList[boneIdx-1]->toWorld._41, 
+				keyList[0]->boneList[boneIdx-1]->toWorld._42, 
+				keyList[0]->boneList[boneIdx-1]->toWorld._43
+			);
+			rotateOrigin = XMLoadFloat3(&rotateOriginTemp);
+		}
+		else {
+			rotateOriginTemp = XMFLOAT3(
+				keyList[0]->boneList[boneIdx]->toDresspose._41,
+				keyList[0]->boneList[boneIdx]->toDresspose._42,
+				keyList[0]->boneList[boneIdx]->toDresspose._43
+			);
+			rotateOrigin = XMLoadFloat3(&rotateOriginTemp);
+		}
 
 		// 아핀변환
-		return XMMatrixAffineTransformation(XMVectorSplatOne(), XMVectorZero(), XMQuaternionSlerp(q0, q1, time), XMVectorLerp(t0, t1, time));
+		return XMMatrixAffineTransformation(XMVectorSplatOne(), rotateOrigin, XMQuaternionSlerp(q0, q1, time), XMVectorLerp(t0, t1, time));
 
 	}
 	// helper
-	bool IsFurtherThanFront(float time) 
-	{ return (time <= keyList[0]->keyTime); }
-	bool IsFurtherThanBack(float time) 
-	{ return (time >= keyList[nKeys - 1]->keyTime); }
-	float ClampTime(float time) 
-	{ return (time - ((int)(time / keyList[nKeys - 1]->keyTime) * keyList[nKeys - 1]->keyTime)); }
+	bool IsFurtherThanFront(float time)
+	{
+		return (time <= keyList[0]->keyTime);
+	}
+	bool IsFurtherThanBack(float time)
+	{
+		return (time >= keyList[nKeys - 1]->keyTime);
+	}
+	float ClampTime(float time)
+	{
+		return (time - ((int)(time / keyList[nKeys - 1]->keyTime) * keyList[nKeys - 1]->keyTime));
+	}
 
 public:
 	Anim();

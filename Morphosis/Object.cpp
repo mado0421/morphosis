@@ -452,41 +452,52 @@ void ObjectManager::BuildObjects(ID3D12Device * pd3dDevice, ID3D12GraphicsComman
 	//m_terrainMeshes.resize(m_levelData.nTerrainMeshes);
 	m_terrainMeshes.resize(1);
 	for (auto p = m_terrainMeshes.begin(); p != m_terrainMeshes.end(); ++p) 
-		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
+		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), m_d3dCbvGPUDescriptorHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * totalIdx,
+			m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
 	
 
 	m_props.resize(0);
 	for (auto p = m_props.begin(); p != m_props.end(); ++p)
-		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), XMFLOAT3(1, 1, 1), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
+		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), m_d3dCbvGPUDescriptorHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * totalIdx,
+			XMFLOAT3(1, 1, 1), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
 
 	m_terrainCollisionBoxes.resize(1);
 	for (auto p = m_terrainCollisionBoxes.begin(); p != m_terrainCollisionBoxes.end(); ++p)
-		p->Initialize(XMFLOAT3(0, -100, 0), XMFLOAT3(1, 0, 0), XMFLOAT3(100, 1, 100), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
+		p->Initialize(XMFLOAT3(0, -100, 0), XMFLOAT3(1, 0, 0), m_d3dCbvGPUDescriptorHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * totalIdx,
+			XMFLOAT3(100, 1, 100), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
 
 	m_skillJudgeObjects.resize(MAX_PLAYER * SKILLJUDGE_PER_PL);
 	for (auto p = m_skillJudgeObjects.begin(); p != m_skillJudgeObjects.end(); ++p)
-		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), XMFLOAT3(1, 1, 1), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
+		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), m_d3dCbvGPUDescriptorHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * totalIdx,
+			XMFLOAT3(1, 1, 1), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
 
 
 	m_players.resize(MAX_PLAYER);
-	for (auto p = m_players.begin(); p != m_players.end(); ++p)
-		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), XMFLOAT3(1, 1, 1),m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
+	for (auto p = m_players.begin(); p != m_players.end(); ++p) {
+		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), m_d3dCbvGPUDescriptorHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * totalIdx,
+			XMFLOAT3(1, 1, 1), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
+		p->AddMesh(m_meshes.at(0), m_textures.at(0));
+	}
 
 	m_bullets.resize(MAX_PLAYER * BULLET_PER_PL);
 	for (auto p = m_bullets.begin(); p != m_bullets.end(); ++p)
-		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), XMFLOAT3(1, 1, 1), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
+		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), m_d3dCbvGPUDescriptorHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * totalIdx,
+			XMFLOAT3(1, 1, 1), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
 
 	m_skillProjectiles.resize(MAX_PLAYER * PROJECTILE_PER_PL);
 	for (auto p = m_skillProjectiles.begin(); p != m_skillProjectiles.end(); ++p)
-		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), XMFLOAT3(1, 1, 1), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
+		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), m_d3dCbvGPUDescriptorHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * totalIdx,
+			XMFLOAT3(1, 1, 1), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
 
 
 	m_particles.resize(MAX_PARTICLE);
 	for (auto p = m_particles.begin(); p != m_particles.end(); ++p)
-		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), XMFLOAT3(1, 1, 1), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
+		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), m_d3dCbvGPUDescriptorHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * totalIdx,
+			XMFLOAT3(1, 1, 1), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
 
 	m_effects.resize(MAX_EFFECT);
 	for (auto p = m_effects.begin(); p != m_effects.end(); ++p)
-		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
+		p->Initialize(XMFLOAT3(0, 0, 0), XMFLOAT3(1, 0, 0), m_d3dCbvGPUDescriptorHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * totalIdx,
+			m_pcbMappedObjects + (totalIdx++ * ncbElementBytes));
 
 }

@@ -221,13 +221,19 @@ public:	// 함수 파트
 		return Vector3::Normalize(vector);
 	}
 
-	virtual void Initialize(XMFLOAT3 pos, XMFLOAT3 dir, void * pAddress = nullptr) {
+	virtual void Initialize(XMFLOAT3 pos, XMFLOAT3 dir, UINT64 nCbvGPUDescriptorHandlePtr, void * pAddress = nullptr) {
 		SetPosition(pos);
 		SetDirection(dir);
 		SetMappedAddress(pAddress);
+		SetCbvGPUDescriptorHandlePtr(nCbvGPUDescriptorHandlePtr);
+	}
+	void AddMesh(CMesh *pMesh, CTexture *pTexture) {
+		if (!m_pModel) m_pModel = new Model();
+		m_pModel->AddTexMesh(pMesh, pTexture);
 	}
 
 private: // 내부에서만 쓸 함수들
+	void SetCbvGPUDescriptorHandlePtr(UINT64 nCbvGPUDescriptorHandlePtr) { m_d3dCbvGPUDescriptorHandle.ptr = nCbvGPUDescriptorHandlePtr; }
 	void SetPosition(XMFLOAT3 pos) {
 		m_xmf4x4World._41 = pos.x;
 		m_xmf4x4World._42 = pos.y;
@@ -251,7 +257,6 @@ private: // 내부에서만 쓸 함수들
 	void SetMappedAddress(void * pAddress) {
 		m_pcbMappedObjectAddress = (CB_OBJECT_INFO*)pAddress;
 	}
-
 
 	void SetLook(XMFLOAT3 look) {
 		m_xmf4x4World._31 = look.x;
@@ -279,7 +284,7 @@ protected:	// 변수 파트
 	// for Render
 	Model						*m_pModel;
 	D3D12_GPU_DESCRIPTOR_HANDLE m_d3dCbvGPUDescriptorHandle;
-	byte						m_iRootParameterIdx;
+	UINT						m_iRootParameterIdx;
 
 	// for Animation
 	float						m_fAnimTime;
@@ -302,8 +307,8 @@ public:
 		pd3dCommandList->SetGraphicsRootDescriptorTable(m_iRootParameterIdx, m_d3dCbvGPUDescriptorHandle);
 		m_pCollisionModel->Render(pd3dCommandList);
 	}
-	virtual void Initialize(XMFLOAT3 pos, XMFLOAT3 dir, XMFLOAT3 extents, void * pAddress = nullptr) {
-		Object::Initialize(pos, dir, pAddress);
+	virtual void Initialize(XMFLOAT3 pos, XMFLOAT3 dir, UINT64 nCbvGPUDescriptorHandlePtr, XMFLOAT3 extents, void * pAddress = nullptr) {
+		Object::Initialize(pos, dir, nCbvGPUDescriptorHandlePtr, pAddress);
 		SetOOBB(pos, extents, XMFLOAT4(0, 0, 0, 1));
 
 		// 여기서 m_pCollisionModel 넣어줘야 됨~~~~
@@ -357,11 +362,11 @@ protected:
 };
 
 #define MAX_PLAYER 8
-#define BULLET_PER_PL 32
-#define PROJECTILE_PER_PL 4
-#define SKILLJUDGE_PER_PL 4
-#define MAX_PARTICLE 2048
-#define MAX_EFFECT 512
+#define BULLET_PER_PL 1
+#define PROJECTILE_PER_PL 1
+#define SKILLJUDGE_PER_PL 1
+#define MAX_PARTICLE 1
+#define MAX_EFFECT 1
 
 class ObjectManager {
 public:
@@ -417,6 +422,14 @@ public:
 		return &(m_players.at(idx));
 	}
 
+	void AddMesh(CMesh *pMesh) {
+		m_meshes.emplace_back(pMesh);
+	}
+	void AddTexture(CTexture *pTex) {
+		m_textures.emplace_back(pTex);
+	}
+	void SetCbvGPUDescriptorHandlePtr(UINT64 nCbvGPUDescriptorHandlePtr) { m_d3dCbvGPUDescriptorHandle.ptr = nCbvGPUDescriptorHandlePtr; }
+
 private:
 	void CreateConstantBufferView(ID3D12Device * pd3dDevice, D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorStartHandle);
 	void CreateResource(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList);
@@ -441,6 +454,10 @@ private:
 
 	ID3D12Resource				*m_pd3dcbResource;
 	CB_OBJECT_INFO				*m_pcbMappedObjects;
+	D3D12_GPU_DESCRIPTOR_HANDLE m_d3dCbvGPUDescriptorHandle;
+
+	std::vector<CMesh*>			m_meshes;
+	std::vector<CTexture*>		m_textures;
 };
 
 

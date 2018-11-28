@@ -172,6 +172,8 @@ ID3D12RootSignature * CScene::CreateRootSignature(ID3D12Device * pd3dDevice)
 void CGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext)
 {
 	m_pFramework = (CFramework*)pContext;
+	m_pd3dDevice = pd3dDevice;
+	m_pd3dCommandList = pd3dCommandList;
 	GetCursorPos(&m_ptOldCursorPos);
 
 	m_pCamera = new CFollowCamera();
@@ -223,11 +225,13 @@ void CGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLi
 	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (nDescriptors - nSRVForTextrue));
 	m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (nDescriptors - nSRVForTextrue));
 
+	m_pObjectMng->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr);
+
 	//===================================================================================
 	// Textures
 	//===================================================================================
 
-	int nTexture = 64;
+	int nTexture = 6;
 
 	CTexture **textures = new CTexture*[nTexture];
 	wchar_t **text = new wchar_t*[nTexture];
@@ -239,9 +243,19 @@ void CGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLi
 	text[5] = L"Assets/Textures/TEST/hpbar_out.dds";
 	for (int i = 0; i < nTexture; ++i) {
 		textures[i] = new CTexture(RESOURCE_TEXTURE2D);
-		textures[i]->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, text[i]);
-		CreateShaderResourceViews(m_pd3dDevice, m_pd3dCommandList, textures[i], GS::RootParameter::TEXTURE, false);
+		textures[i]->LoadTextureFromFile(pd3dDevice, pd3dCommandList, text[i]);
+		CreateShaderResourceViews(pd3dDevice, pd3dCommandList, textures[i], GS::RootParameter::TEXTURE, false);
+		m_pObjectMng->AddTexture(textures[i]);
 	}
+
+	//===================================================================================
+	// Meshes
+	//===================================================================================
+
+	int nMeshes = 1;
+
+	CTestMesh *pMesh = new CTestMesh(pd3dDevice, pd3dCommandList, 100.0f);
+	m_pObjectMng->AddMesh(pMesh);
 
 	//===================================================================================
 	// Create CB Objects
@@ -275,13 +289,14 @@ void CGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLi
 
 void CGroundScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 {
-	pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
-
-	pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);
+	pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);	// 이 루트 시그니처를 쓸 것
+	pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);	// 이 서술자 힙을 쓸 것
 
 	// HLSL에 넣어줄 카메라 정보 갱신부분
 	m_pCamera->SetViewportsAndScissorRects(pd3dCommandList);
 	m_pCamera->UpdateShaderVariables(pd3dCommandList);
+
+	if (m_ppPSO) pd3dCommandList->SetPipelineState(m_ppPSO[0]);
 
 	m_pObjectMng->RenderTerrainMeshes(pd3dCommandList);
 	m_pObjectMng->RenderCollideObjects(pd3dCommandList);
@@ -451,6 +466,10 @@ void CGroundScene::CreateShaderResourceViews(ID3D12Device * pd3dDevice, ID3D12Gr
 		D3D12_RESOURCE_DESC d3dResourceDesc = pShaderResource->GetDesc();
 		D3D12_SHADER_RESOURCE_VIEW_DESC d3dShaderResourceViewDesc = GetShaderResourceViewDesc(d3dResourceDesc, nTextureType);
 		pd3dDevice->CreateShaderResourceView(pShaderResource, &d3dShaderResourceViewDesc, d3dSrvCPUDescriptorHandle);
+
+
+
+
 		m_d3dSrvCPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
 
 		pTexture->SetRootArgument((bAutoIncrement) ? (nRootParameterStartIndex + i) : nRootParameterStartIndex, d3dSrvGPUDescriptorHandle);
@@ -869,6 +888,7 @@ CPlayScene::~CPlayScene()
 
 void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext)
 {
+	CGroundScene::Initialize(pd3dDevice, pd3dCommandList, pContext);
 	//CGroundScene::Initialize(pd3dDevice, pd3dCommandList, pContext);
 	//m_pd3dDevice = pd3dDevice;
 	//m_pd3dCommandList = pd3dCommandList;
@@ -1082,6 +1102,7 @@ void CPlayScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList
 
 void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 {
+	CGroundScene::Render(pd3dCommandList);
 	//pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
 
 	//pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);
@@ -1137,6 +1158,7 @@ void CPlayScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 
 void CPlayScene::Update(float fTimeElapsed)
 {
+	CGroundScene::Update(fTimeElapsed);
 	////	for (int i = 0; i < m_nPlayers; i++) if (!m_ppPlayers[i]->IsDead()) m_ppPlayers[i]->MoveOOBB(fTimeElapsed);
 	//	for (int i = 0; i < m_nProjectileObjects; i++) if (m_ppProjectileObjects[i]->isAlive) m_ppProjectileObjects[i]->MoveOOBB(fTimeElapsed);
 	//	XMFLOAT3 pos = m_ppPlayers[0]->GetPosition();
@@ -1525,7 +1547,12 @@ ID3D12RootSignature * CTestGroundScene::CreateRootSignature(ID3D12Device * pd3dD
 
 void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext)
 {
-	CGroundScene::Initialize(pd3dDevice, pd3dCommandList, pContext);
+	//CGroundScene::Initialize(pd3dDevice, pd3dCommandList, pContext);
+
+	m_pFramework = (CFramework*)pContext;
+	m_pd3dDevice = pd3dDevice;
+	m_pd3dCommandList = pd3dCommandList;
+	GetCursorPos(&m_ptOldCursorPos);
 
 	m_pCamera = new CFollowCamera();
 	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
