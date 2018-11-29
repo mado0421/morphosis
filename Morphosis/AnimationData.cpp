@@ -348,7 +348,7 @@ Anim::Anim()
 	keyList[0]->boneList[0]->Rot = XMFLOAT3(450, -89.59074, 0);
 	keyList[1]->boneList[0]->Rot = XMFLOAT3(450, -89.59074, 0);
 	keyList[2]->boneList[0]->Rot = XMFLOAT3(450, -89.59074, 0);
-	keyList[3]->boneList[0]->Rot = XMFLOAT3(540.0001, 0, -89.59074);
+	keyList[3]->boneList[0]->Rot = XMFLOAT3(450, 0, 0);
 	keyList[4]->boneList[0]->Rot = XMFLOAT3(450, -89.59074, 0);
 	keyList[5]->boneList[0]->Rot = XMFLOAT3(450, -89.59074, 0);
 	keyList[6]->boneList[0]->Rot = XMFLOAT3(450, -89.59074, 0);

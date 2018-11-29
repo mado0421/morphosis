@@ -24,7 +24,6 @@ cbuffer cbLightlInfo					: register(b5)
 	matrix		Light[64]				: packoffset(c0);
 };
 
-
 struct VS_ANIMATED_VERTEX_INPUT
 {
 	float3	position	: POSITION;

@@ -95,6 +95,8 @@ struct CKey {
 	int nBones;
 };
 
+
+
 class Anim {
 public:	// 이것만 보여주면 됨
 	// 하기 전에 한 번 불러주세여~~~
@@ -120,6 +122,10 @@ public:	// 이것만 보여주면 됨
 		XMMATRIX finalMatrix = XMMatrixMultiply(
 			XMLoadFloat4x4(&keyList[0]->boneList[boneIdx]->toDressposeInverse),
 			XMLoadFloat4x4(&keyList[0]->boneList[boneIdx]->toWorld));
+
+#ifdef TEST_
+		return XMMatrixMultiply(finalMatrix, a);
+#endif
 		return finalMatrix;
 	}
 
@@ -199,4 +205,12 @@ public:
 	int nBones;
 
 	bool isLoop = true;
+
+	// y축으로 -90도 회전 후 y축 반전!
+	XMMATRIX a = {
+		0, 0, -1, 0,
+		0, -1, 0, 0,
+		1, 0, 0, 0,
+		0, 0, 0, 1
+	};
 };

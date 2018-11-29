@@ -10,7 +10,14 @@ VS_TEXTURED_ILLUMINATED_VERTEX_OUTPUT VSAnimated(VS_ANIMATED_VERTEX_INPUT input)
 		weightedPos += input.weight[i] * bonePos.xyz;
 	}
 
+
+
 	output.positionW = (float3)mul(float4(weightedPos, 1.0f), gmtxGameObject);
+	//output.positionW = mul(output.positionW, a);
+	//output.positionW.y = -output.positionW.y;
+
+	//output.positionW.x = -output.positionW.x;
+	//output.positionW.z = -output.positionW.z;
 	output.position = mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection);
 	output.uv = input.uv;
 
