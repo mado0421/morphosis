@@ -1566,7 +1566,7 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 	tempPso[0]->Initialize(pd3dDevice, m_pd3dGraphicsRootSignature);
 	pso[0] = tempPso[0]->GetPipelineState();
 
-	CAnimMesh *pAnimTest = new CAnimMesh(pd3dDevice, pd3dCommandList);
+	CAnimMesh *pAnimTest = new CAnimMesh(pd3dDevice, pd3dCommandList, "animation_character_0_mesh_(0)");
 
 	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
 
