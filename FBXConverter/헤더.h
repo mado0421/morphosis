@@ -3,6 +3,8 @@
 #include <fstream>		// for read/write file
 #include <Windows.h>	// for use UINT
 #include <DirectXMath.h>// for use types
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 using namespace DirectX;
@@ -36,90 +38,82 @@ struct Geometry {
 	XMFLOAT3	LclRotation = { 0,0,0 };
 };
 
-struct Model {
-	__int64 ID;
-
-	XMFLOAT3 LclTranslation = { 0,0,0 };
-	XMFLOAT3 LclRotation	= { 0,0,0 };
-};
-
-
-struct LimbNode {
-	__int64 ID;
-	XMFLOAT3 LclTranslation;
-	XMFLOAT3 LclRotation;
-};
-
-struct Cluster {
-	__int64 ID;
-	UINT nIndexes;
-	UINT *pIndexes;
-	UINT nWeights;
-	float *pWeights;
-	XMFLOAT4X4 Transform;
-	XMFLOAT4X4 TransformLink;
-};
-
 struct AnimationCurve {
 	__int64 ID;
-	UINT nKeyTime;
+	UINT	nKeyTime;
 	__int64 *pKeyTime;
-	UINT nKeyValueFloat;
-	float *pKeyValueFloat;
+	UINT	nKeyValueFloat;
+	float	*pKeyValueFloat;
 };
 
 struct AnimationCurveNode {
-	__int64 SubDeformerID;
-	__int64 ID;
-	XMFLOAT3 value;
+	__int64		ID;
 
-	AnimationCurve *x, *y, *z;
+	AnimationCurve *animCurve[3] = { nullptr,nullptr,nullptr };
+	XMFLOAT3		animCurveValue;
 };
 
-struct SubDeformer {
-	Cluster *p;
+struct Model {
+	__int64		ID;
+	XMFLOAT3	PreRotaion		= { 0,0,0 };
+	XMFLOAT3	LclTranslation	= { 0,0,0 };
+	XMFLOAT3	LclRotation		= { 0,0,0 };
+	XMFLOAT3	LclScale		= { 0,0,0 };
+
+	AnimationCurveNode *ACN[3] = { nullptr,nullptr,nullptr };
 };
 
-
-struct Bone {
-	__int64 ID;
-	Bone * parent;
-	LimbNode * limbnodeData;
-	AnimationCurve *x, *y, *z;
-	Cluster *cluster;
+struct Cluster {
+	__int64		ID;
+	UINT		nIndexes;
+	UINT		*pIndexes;
+	UINT		nWeights;
+	float		*pWeights;
+	XMFLOAT4X4	Transform;
+	XMFLOAT4X4	TransformLink;
 };
 
-namespace TYPE {
-	enum {
-		NONE = -1,
-		MODEL,
-		ANIMCURVENODE,
-		ANIMCURVE,
-		DEFORMER,
-		SUBDEFORMER,
-
-		count
-	};
-}
-
-namespace SUBTYPE {
-	enum {
-		NONE = -1,
-		DX,
-		DY,
-		DZ,
-
-		count
-	};
-}
+//struct Bone {
+//	__int64 ID;
+//	Bone * parent;
+//	LimbNode * limbnodeData;
+//	AnimationCurve *x, *y, *z;
+//	Cluster *cluster;
+//};
 
 struct Connection {
-	__int64 ID;
-	int type;
-	void * data;
+	__int64 left, right;
+
+	Connection(__int64 l, __int64 r) : left(l), right(r) {}
 };
 
-struct ConnectionPair {
-	__int64 leftID, rightID;
-	int subtype;
+struct Deformer {
+	__int64 ID;
 };
+
+struct Key {
+	float ketTime;
+	float value;
+};
+
+struct EXBone {
+	// PreRotation, LclInfos
+	Model		*modelData;
+
+	// AnimCurveInfo
+	vector<Key> animCurve[3];
+	XMFLOAT3	animCurveValue;
+};
+
+struct EXGeometry {
+	// PreRotation, LclInfos
+	Model		*modelData;
+
+	// Vertices, PolygonVertexIndex, Normals, UV, UVIndex
+	Geometry	*geoData;
+
+	// per PolygonVertexIndex ¸¶´Ù boneIdx, weight
+	XMINT4		*pBoneIdx;
+	XMFLOAT4	*pWeight;
+};
+
