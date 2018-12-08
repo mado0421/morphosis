@@ -54,6 +54,7 @@ struct AnimationCurveNode {
 };
 
 struct Model {
+	Model		*parent			= nullptr;
 	__int64		ID;
 	XMFLOAT3	PreRotaion		= { 0,0,0 };
 	XMFLOAT3	LclTranslation	= { 0,0,0 };
@@ -65,6 +66,9 @@ struct Model {
 
 struct Cluster {
 	__int64		ID;
+
+	int			boneIdx;
+
 	UINT		nIndexes;
 	UINT		*pIndexes;
 	UINT		nWeights;
@@ -80,15 +84,25 @@ struct Cluster {
 //	AnimationCurve *x, *y, *z;
 //	Cluster *cluster;
 //};
+namespace C {
+	enum {
+		t = 0,
+		r,
+		s
+	};
+}
 
 struct Connection {
 	__int64 left, right;
+	int type;
 
-	Connection(__int64 l, __int64 r) : left(l), right(r) {}
+	Connection(__int64 l, __int64 r, int type = -1) : left(l), right(r), type(type) {}
 };
 
 struct Deformer {
 	__int64 ID;
+
+	Cluster *cluster;
 };
 
 struct Key {
@@ -100,9 +114,9 @@ struct EXBone {
 	// PreRotation, LclInfos
 	Model		*modelData;
 
-	// AnimCurveInfo
-	vector<Key> animCurve[3];
-	XMFLOAT3	animCurveValue;
+	//// AnimCurveInfo
+	//vector<Key> animCurve[3];
+	//XMFLOAT3	animCurveValue;
 };
 
 struct EXGeometry {
@@ -113,6 +127,7 @@ struct EXGeometry {
 	Geometry	*geoData;
 
 	// per PolygonVertexIndex ¸¶´Ù boneIdx, weight
+	UINT		*EffectedCount;
 	XMINT4		*pBoneIdx;
 	XMFLOAT4	*pWeight;
 };
