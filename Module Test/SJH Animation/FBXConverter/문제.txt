@@ -1,1 +1,0 @@
-기존 animation fbx 파일에 bind pose 정보를 못 찾겠음
