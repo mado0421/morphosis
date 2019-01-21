@@ -1549,6 +1549,16 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 {
 	//CGroundScene::Initialize(pd3dDevice, pd3dCommandList, pContext);
 
+/****************************************************************************************
+
+
+
+****************************************************************************************/
+
+
+
+
+
 	m_pFramework = (CFramework*)pContext;
 	m_pd3dDevice = pd3dDevice;
 	m_pd3dCommandList = pd3dCommandList;
