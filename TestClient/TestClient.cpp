@@ -79,33 +79,54 @@ int main(int argc, char* argv[])
 	retval = connect(sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
 	if (retval == SOCKET_ERROR)err_quit("connect()");
 
+	/***********************************************************
+	연결 테스트 용
+	***********************************************************/
 	//데이터 통신에 사용할 변수
+	//int test = 0;
+	////서버와 데이터 통신
+	//while (1) {
+	//	retval = send(sock, (char*)&test, sizeof(int), 0);
+	//	if (retval == SOCKET_ERROR) {
+	//		err_display("send()");
+	//		break;
+	//	}
+	//	//데이터 받기
+	//	retval = recvn(sock, (char*)&test, sizeof(int), 0);
+	//	if (retval == SOCKET_ERROR) {
+	//		err_display("recv()");
+	//		break;
+	//	}
+	//	else if (retval == 0)
+	//		break;
+	//	std::cout << test << "\n";
+	//	if (test > 100) break;
+	//}
 
-	int test = 0;
+	/***********************************************************
+	메세지 테스트 용
+	***********************************************************/
 
-	//서버와 데이터 통신
-	while (1) {
+	char test;
+	PlayerInfo playerInfo;
+	playerInfo.socket = sock;
 
-		retval = send(sock, (char*)&test, sizeof(int), 0);
-		if (retval == SOCKET_ERROR) {
-			err_display("send()");
-			break;
-		}
+	/*playerInfo*/
+	playerInfo.modelType = 1;		send(playerInfo.socket, (char*)&test, sizeof(char), 0);
+	playerInfo.techniqueSet = 2;	send(playerInfo.socket, (char*)&test, sizeof(char), 0);
+	playerInfo.weapon = 3;			send(playerInfo.socket, (char*)&test, sizeof(char), 0);
 
-		//데이터 받기
-		retval = recvn(sock, (char*)&test, sizeof(int), 0);
-		if (retval == SOCKET_ERROR) {
-			err_display("recv()");
-			break;
-		}
-		else if (retval == 0)
-			break;
+	/*levelInfo, playerNumber*/
+	recvn(playerInfo.socket, (char*)&test, sizeof(char), 0); std::cout << test << "\n";
+	recvn(playerInfo.socket, (char*)&test, sizeof(char), 0); playerInfo.playerIdx = test;
 
+	/*Check*/
+	recvn(playerInfo.socket, (char*)&test, sizeof(char), 0);
+	if (GameMsg::Check == test) std::cout << "Check\n";
+	else std::cout << "?\n";
 
-		std::cout << test << "\n";
-
-		if (test > 100) break;
-	}
+	test = GameMsg::OK;
+	send(playerInfo.socket, (char*)&test, sizeof(char), 0);
 
 	//close_socket()
 	closesocket(sock);

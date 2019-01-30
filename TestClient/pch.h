@@ -14,3 +14,24 @@
 #endif //PCH_H
 
 #pragma comment(lib, "ws2_32")
+
+namespace GameMsg {
+	enum {
+		LevelIdx = 0,
+		PlayerInfo,
+		PlayerLeave,
+		Check,
+		OK,
+		StartGame,
+
+		count
+	};
+}
+
+struct PlayerInfo {
+	SOCKET socket;
+	int playerIdx;
+	int modelType;
+	int techniqueSet;
+	int weapon;
+};
