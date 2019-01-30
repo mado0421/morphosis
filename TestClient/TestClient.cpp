@@ -2,8 +2,7 @@
 //
 
 #include "pch.h"
-#include <WinSock2.h>
-#include <iostream>
+
 
 #define SERVERIP	"121.170.59.114"
 #define	SERVERPORT	9000
@@ -112,13 +111,13 @@ int main(int argc, char* argv[])
 	playerInfo.socket = sock;
 
 	/*playerInfo*/
-	playerInfo.modelType = 1;		send(playerInfo.socket, (char*)&test, sizeof(char), 0);
-	playerInfo.techniqueSet = 2;	send(playerInfo.socket, (char*)&test, sizeof(char), 0);
-	playerInfo.weapon = 3;			send(playerInfo.socket, (char*)&test, sizeof(char), 0);
+	test = 1;	send(playerInfo.socket, (char*)&test, sizeof(char), 0);
+	test = 2;	send(playerInfo.socket, (char*)&test, sizeof(char), 0);
+	test = 3;	send(playerInfo.socket, (char*)&test, sizeof(char), 0);
 
 	/*levelInfo, playerNumber*/
-	recvn(playerInfo.socket, (char*)&test, sizeof(char), 0); std::cout << test << "\n";
-	recvn(playerInfo.socket, (char*)&test, sizeof(char), 0); playerInfo.playerIdx = test;
+	recvn(playerInfo.socket, (char*)&test, sizeof(char), 0); std::cout << (int)test << "\n";
+	recvn(playerInfo.socket, (char*)&test, sizeof(char), 0); std::cout << (int)test << "\n";
 
 	/*Check*/
 	recvn(playerInfo.socket, (char*)&test, sizeof(char), 0);
