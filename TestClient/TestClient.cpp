@@ -54,6 +54,7 @@ void err_display(const char *msg)
 	printf("[%s] %s", msg, (char *)lpMsgBuf);
 	LocalFree(lpMsgBuf);
 }
+
 int main(int argc, char* argv[])
 {
 	int retval;
@@ -105,27 +106,41 @@ int main(int argc, char* argv[])
 	/***********************************************************
 	메세지 테스트 용
 	***********************************************************/
+	//char test;
+	//PlayerInfo playerInfo;
+	//playerInfo.socket = sock;
+	//test = 1;	send(playerInfo.socket, (char*)&test, sizeof(char), 0);
+	//test = 2;	send(playerInfo.socket, (char*)&test, sizeof(char), 0);
+	//test = 3;	send(playerInfo.socket, (char*)&test, sizeof(char), 0);
+	//recvn(playerInfo.socket, (char*)&test, sizeof(char), 0); std::cout << (int)test << "\n";
+	//recvn(playerInfo.socket, (char*)&test, sizeof(char), 0); std::cout << (int)test << "\n";
+	//recvn(playerInfo.socket, (char*)&test, sizeof(char), 0);
+	//if (GameMsg::Check == test) std::cout << "Check\n";
+	//else std::cout << "?\n";
+	//test = GameMsg::OK;
+	//send(playerInfo.socket, (char*)&test, sizeof(char), 0);
 
-	char test;
-	PlayerInfo playerInfo;
-	playerInfo.socket = sock;
+	/***********************************************************
+	동시접속 테스트 용
+	***********************************************************/
+	PlayerInfo	tempPIf;
+	PlayerInfo	playerInfo[4];
+	char		msg;
+	tempPIf.modelType		= rand() % 8;
+	tempPIf.techniqueSet	= rand() % 8;
+	tempPIf.weapon			= rand() % 8;
+	SendPlayerInfo(tempPIf);
+	recvn(tempPIf.socket, (char*)&msg, sizeof(char), 0);
+	tempPIf.playerIdx = msg;
+	
+	playerInfo[tempPIf.playerIdx] = tempPIf;
+	for (int i = 0; i < tempPIf.playerIdx; ++i) RecvPlayerInfo(tempPIf.socket, playerInfo);
 
-	/*playerInfo*/
-	test = 1;	send(playerInfo.socket, (char*)&test, sizeof(char), 0);
-	test = 2;	send(playerInfo.socket, (char*)&test, sizeof(char), 0);
-	test = 3;	send(playerInfo.socket, (char*)&test, sizeof(char), 0);
+	for (int i = 0; i < 4 - tempPIf.playerIdx; ++i) {
+		RecvPlayerInfo(tempPIf.socket, playerInfo);
+	}
 
-	/*levelInfo, playerNumber*/
-	recvn(playerInfo.socket, (char*)&test, sizeof(char), 0); std::cout << (int)test << "\n";
-	recvn(playerInfo.socket, (char*)&test, sizeof(char), 0); std::cout << (int)test << "\n";
 
-	/*Check*/
-	recvn(playerInfo.socket, (char*)&test, sizeof(char), 0);
-	if (GameMsg::Check == test) std::cout << "Check\n";
-	else std::cout << "?\n";
-
-	test = GameMsg::OK;
-	send(playerInfo.socket, (char*)&test, sizeof(char), 0);
 
 	//close_socket()
 	closesocket(sock);

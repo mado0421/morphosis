@@ -36,3 +36,30 @@ struct PlayerInfo {
 	int techniqueSet;
 	int weapon;
 };
+
+inline void SendPlayerInfo(PlayerInfo& pIf) {
+	char msg;
+	msg = pIf.modelType;	send(pIf.socket, (char*)&msg, sizeof(char), 0);
+	msg = pIf.techniqueSet;	send(pIf.socket, (char*)&msg, sizeof(char), 0);
+	msg = pIf.weapon;		send(pIf.socket, (char*)&msg, sizeof(char), 0);
+}
+
+inline void RecvPlayerInfo(SOCKET& socket, PlayerInfo * p) {
+	char msg;
+	int idx;
+
+	recvn(socket, (char*)&msg, sizeof(char), 0);
+	idx = msg;
+	p[idx].playerIdx = idx;
+	recvn(socket, (char*)&msg, sizeof(char), 0);	p[idx].modelType	= msg;
+	recvn(socket, (char*)&msg, sizeof(char), 0);	p[idx].techniqueSet = msg;
+	recvn(socket, (char*)&msg, sizeof(char), 0);	p[idx].weapon		= msg;
+
+	std::cout
+		<< "================================================\n"
+		<< "ModelType : " << p[idx].playerIdx			<< "\n"
+		<< "ModelType : " << p[idx].modelType			<< "\n"
+		<< "Technique : " << p[idx].techniqueSet		<< "\n"
+		<< "Weapon	  : " << p[idx].weapon				<< "\n"
+		<< "================================================\n";
+}
