@@ -94,7 +94,8 @@ int main(int argc, char* argv[])
 		RecvPlayerInfo(tempPIf.socket, playerInfo);
 	}
 
-
+	recvn(tempPIf.socket, (char*)&msg, sizeof(char), 0);
+	if (GameMsg::StartGame == msg) std::cout << "Start\n";
 
 	//close_socket()
 	closesocket(sock);
