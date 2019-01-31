@@ -4,7 +4,7 @@
 #include "pch.h"
 
 
-#define SERVERIP	"121.170.59.114"
+#define SERVERIP	"127.0.0.1"
 #define	SERVERPORT	9000
 #define BUFSIZE		512
 
