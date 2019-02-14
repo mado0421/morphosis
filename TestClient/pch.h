@@ -10,73 +10,13 @@
 #define PCH_H
 #include <WinSock2.h>
 #include <iostream>
+
+#include "..\Morphosis\ConsoleApplication1\Network.h"
 // TODO: 여기에 미리 컴파일하려는 헤더 추가
 
 #endif //PCH_H
 
 #pragma comment(lib, "ws2_32")
-
-
-inline int recvn(SOCKET s, char *buf, int len, int flags)
-{
-	int received;
-	char *ptr = buf;
-	int left = len;
-
-	while (left > 0)
-	{
-		received = recv(s, ptr, left, flags);
-		if (received == SOCKET_ERROR)
-			return SOCKET_ERROR;
-		else if (received == 0)
-			break;
-		left -= received;
-		ptr += received;
-	}
-
-	return (len - left);
-}
-
-// 소켓 함수 오류 출력 후 종료
-inline void err_quit(const char *msg)
-{
-	LPVOID lpMsgBuf;
-	FormatMessage(
-		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-		NULL, WSAGetLastError(),
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPTSTR)&lpMsgBuf, 0, NULL);
-	MessageBox(NULL, (LPCTSTR)lpMsgBuf, msg, MB_ICONERROR);
-	LocalFree(lpMsgBuf);
-	exit(1);
-}
-
-// 소켓 함수 오류 출력
-inline void err_display(const char *msg)
-{
-	LPVOID lpMsgBuf;
-	FormatMessage(
-		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-		NULL, WSAGetLastError(),
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPTSTR)&lpMsgBuf, 0, NULL);
-	printf("[%s] %s", msg, (char *)lpMsgBuf);
-	LocalFree(lpMsgBuf);
-}
-
-
-namespace GameMsg {
-	enum {
-		LevelIdx = 0,
-		PlayerInfo,
-		PlayerLeave,
-		Check,
-		OK,
-		StartGame,
-
-		count
-	};
-}
 
 struct PlayerInfo {
 	SOCKET socket;
@@ -112,3 +52,35 @@ inline void RecvPlayerInfo(SOCKET& socket, PlayerInfo * p) {
 		<< "Weapon	  : " << p[idx].weapon				<< "\n"
 		<< "================================================\n";
 }
+
+inline void RecvPacket() {
+	C2SPacket recvPacket;
+	ZeroMemory(&recvPacket, sizeof(C2SPacket));
+
+
+	//recvn(m_playerInfo[playerIdx].socket, (char*)&recvPacket, sizeof(C2SPacket), 0);
+
+	switch ((int)recvPacket.type)
+	{
+	case C2SType::Move:
+
+		break;
+	case C2SType::Fire:
+
+		break;
+	case C2SType::Jump:
+
+		break;
+	default:
+		std::cout << "?????\n";
+		break;
+	}
+
+}
+
+inline void RecvThread() {
+	while (true) {
+		RecvPacket();
+	}
+}
+
