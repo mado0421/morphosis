@@ -15,6 +15,8 @@ TestFramework g_framework;
 
 int main(int argc, char* argv[])
 {
+	srand((unsigned int)time(0));
+
 	int retval;
 
 	//윈속 초기화

@@ -28,11 +28,17 @@ struct PlayerInfo {
 	int		modelType;
 	int		techniqueSet;
 	int		weapon;
+	//bool	isRoomAssigned;
 
 	int		hp;
 	Float3	position;
 	Float3	Velocity;
 	Float3	lookVector;
+
+	PlayerInfo() {}
+	PlayerInfo(SOCKET& soc) {
+		socket = soc;
+	}
 };
 
 struct ProjectileInfo {
