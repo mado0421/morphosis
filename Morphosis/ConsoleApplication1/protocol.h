@@ -22,6 +22,30 @@ struct Float3 {
 	{}
 };
 
+struct PlayerInfo {
+	SOCKET	socket = NULL;
+	int		playerIdx;
+	int		modelType;
+	int		techniqueSet;
+	int		weapon;
+
+	int		hp;
+	Float3	position;
+	Float3	Velocity;
+	Float3	lookVector;
+};
+
+struct ProjectileInfo {
+	int		playerIdx;
+	Float3	position;
+	Float3	Velocity;
+
+	ProjectileInfo() {}
+	ProjectileInfo(int idx, Float3 pos, Float3 dir) :
+		playerIdx(idx), position(pos), Velocity(dir)
+	{}
+};
+
 /***********************************************
 고정크기 패킷을 주고 받고,
 맨 앞의 타입으로 어떻게 해석할 것인지 판단.
@@ -158,6 +182,22 @@ Rotate만 float 보내고 나머지는 따로 뭐 필요 없을거 같은데
 msg를 보내서 type을 알게 하고
 rotate는 추가적으로 보내는걸로 하자
 ***********************************************/
+
+namespace KeyInput {
+	enum {
+		MoveForward,
+		MoveBackward,
+		MoveLeft,
+		MoveRight,
+		Jump,
+		Rotate,
+		Attack0,
+		Attack1,
+		Attack2,
+		Attack3,
+		Reload
+	};
+}
 
 //struct C2SDefaultPacket {
 //	byte	type;

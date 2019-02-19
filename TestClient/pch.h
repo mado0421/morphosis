@@ -21,33 +21,6 @@
 
 #pragma comment(lib, "ws2_32")
 
-namespace KeyInput {
-	enum {
-		MoveForward,
-		MoveBackward,
-		MoveLeft,
-		MoveRight,
-		Jump,
-		Rotate,
-		Attack0,
-		Attack1,
-		Attack2,
-		Attack3,
-		Reload
-	};
-}
-
-struct PlayerInfo {
-	SOCKET	socket;
-	int		playerIdx;
-	int		modelType;
-	int		techniqueSet;
-	int		weapon;
-
-	int		hp;
-	Float3	dir;
-};
-
 inline void SendPlayerInfo(PlayerInfo& pIf) {
 	char msg;
 	msg = pIf.modelType;	send(pIf.socket, (char*)&msg, sizeof(char), 0);
