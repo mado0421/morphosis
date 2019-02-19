@@ -2,6 +2,26 @@
 
 #define MAX_PLAYER 4
 
+struct Float3 {
+	float x, y, z;
+
+	Float3() 
+		: x(0)
+		, y(0)
+		, z(0) 
+	{}
+	Float3(float x, float y, float z)
+		: x(x)
+		, y(y)
+		, z(z)
+	{}
+	Float3(Float3& other)
+		: x(other.x)
+		, y(other.y)
+		, z(other.z)
+	{}
+};
+
 /***********************************************
 고정크기 패킷을 주고 받고,
 맨 앞의 타입으로 어떻게 해석할 것인지 판단.
@@ -117,30 +137,67 @@ struct C2SPacket {
 };
 
 /***********************************************
+테스트용 클라이언트->서버 패킷 구조체
+종류는 
+ - MoveForward
+ - MoveBackward
+ - MoveLeft
+ - MoveRight
+ - Jump
+ - Rotate
+ - Attack0
+ - Attack1
+ - Attack2
+ - Attack3
+ - Reload
+패킷 크게 보내느니 차라리 종류를 많이 나눠서 짧게 보내자!
+이름은 C2S + 종류 이름
+Rotate만 float 보내고 나머지는 따로 뭐 필요 없을거 같은데
+시간을 보내줄까?
+
+msg를 보내서 type을 알게 하고
+rotate는 추가적으로 보내는걸로 하자
+***********************************************/
+
+//struct C2SDefaultPacket {
+//	byte	type;
+//	//float	time;
+//};
+//
+//struct C2SRotate {
+//	byte	type;
+//	float	dir[3];
+//	//float time;
+//};
+
+/***********************************************
 종류별 패킷 구조체
 이름은 C2S or S2C + GameMsg 으로 통일
 ***********************************************/
 
-struct C2SClientAccept {
-	char ID[16];
-	char PW[16];
-};
-
-struct S2CClientAccountData {
-	char playerName[16];
-	int	 money;
-	int	 skillPoint;
-	byte weaponType;
-	byte techniqueType[3][4];
-	byte customizeType[4];
-};
-
-struct C2SRequestChangeWeapon {
-	byte weaponType;
-};
-
-struct C2SRequestChangeTechnique {
-	byte techniqueIdx;
-	byte techniqueType[4];
-};
-
+//struct C2SClientAccept {
+//	char ID[16];
+//	char PW[16];
+//};
+//
+//struct S2CClientAccountData {
+//	char playerName[16];
+//	int	 money;
+//	int	 skillPoint;
+//	byte weaponType;
+//	byte techniqueType[3][4];
+//	byte customizeType[4];
+//};
+//
+//struct C2SRequestChangeWeapon {
+//	byte weaponType;
+//};
+//
+//struct C2SRequestChangeTechnique {
+//	byte techniqueIdx;
+//	byte techniqueType[4];
+//};
+//
+//struct S2CClinetPlayerData {
+//
+//};
