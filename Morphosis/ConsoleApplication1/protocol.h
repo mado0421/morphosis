@@ -15,7 +15,7 @@ struct Float3 {
 		, y(y)
 		, z(z)
 	{}
-	Float3(Float3& other)
+	Float3(const Float3& other)
 		: x(other.x)
 		, y(other.y)
 		, z(other.z)
@@ -34,6 +34,8 @@ struct PlayerInfo {
 	Float3	position;
 	Float3	Velocity;
 	Float3	lookVector;
+	bool	move[5];
+
 
 	PlayerInfo() {}
 	PlayerInfo(SOCKET& soc) {
@@ -49,6 +51,9 @@ struct ProjectileInfo {
 	ProjectileInfo() {}
 	ProjectileInfo(int idx, Float3 pos, Float3 dir) :
 		playerIdx(idx), position(pos), Velocity(dir)
+	{}
+	ProjectileInfo(const ProjectileInfo& other) :
+		playerIdx(other.playerIdx), position(other.position), Velocity(other.Velocity)
 	{}
 };
 
@@ -112,6 +117,18 @@ namespace RoomState {
 	enum {
 		Ready = 0,
 		Playing
+	};
+}
+
+namespace MoveDir {
+	enum {
+		Forward,
+		Backward,
+		Left,
+		Right,
+		Jump,
+
+		count
 	};
 }
 
