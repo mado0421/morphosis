@@ -37,46 +37,81 @@
 #include "DisplayUserProperties.h"
 #include "DisplayGenericInfo.h"
 
+#include <iostream>
 #include <list>
-#include <map>
+#include <set>
+
+// Local function prototypes.
+void DisplayContent(FbxScene* pScene);
+void DisplayContent(FbxNode* pNode);
+void DisplayTarget(FbxNode* pNode);
+void DisplayTransformPropagation(FbxNode* pNode);
+void DisplayGeometricTransform(FbxNode* pNode);
+void DisplayMetaData(FbxScene* pScene);
+
+
+namespace K {
+	enum {
+		T = 0,
+		R,
+
+		X = 0,
+		Y,
+		Z
+	};
+}
 
 struct Float3 {
 	float x, y, z;
 };
 
 struct Bone {
-	Float3	LclTranslation;
-	Float3	LclRotation;
-	Bone*	parent = NULL;
+	std::string name;
+	Float3		LclTranslation;
+	Float3		LclRotation;
+	Bone*		parent = NULL;
+
+	Bone& operator=(const Bone& other) {
+		this->name				= other.name;
+		this->LclTranslation	= other.LclTranslation;
+		this->LclRotation		= other.LclRotation;
+		this->parent			= other.parent;
+	}
+
+	bool operator==(const Bone& other) {
+		if (this->name != other.name) return false;
+		//if (this->LclTranslation != other.LclTranslation) return false;
+		return true;
+	}
 };
 
 struct KeyframeData {
 	/* 어떤 bone의 어떤 Component가 언제 어떤 값인지 저장해야 함. */
-	Bone*	b;
+	Bone	b;
 	Float3	t;
 	Float3	r;
 
-	KeyframeData(Bone* bone, int Component, int Axis, float value) {
+	KeyframeData(Bone& bone, int Component, int Axis, float value) {
 		b = bone;
 		AddValue(Component, Axis, value);
 	}
 
 	void AddValue(int Component, int Axis, float value) {
 		switch (Component) {
-		case Key::T:
+		case K::T:
 			switch (Axis) {
-			case Key::X: t.x = value; break;
-			case Key::Y: t.y = value; break;
-			case Key::Z: t.z = value; break;
+			case K::X: t.x = value; break;
+			case K::Y: t.y = value; break;
+			case K::Z: t.z = value; break;
 
 			default: break;
 			}
 			break;
-		case Key::R:
+		case K::R:
 			switch (Axis) {
-			case Key::X: r.x = value; break;
-			case Key::Y: r.y = value; break;
-			case Key::Z: r.z = value; break;
+			case K::X: r.x = value; break;
+			case K::Y: r.y = value; break;
+			case K::Z: r.z = value; break;
 
 			default: break;
 			}
@@ -87,20 +122,22 @@ struct KeyframeData {
 };
 
 struct Key {
-	enum {
-		T = 0,
-		R,
 
-		X = 0,
-		Y,
-		Z
-	};
 
 	/* 시간별로 저장하자. */
 	float time;
 	std::list<KeyframeData> data;
 
-	void Add(const Bone* bone, int Component, int Axis, float value) {
+	//bool operator<(const Key& other) const {
+	//	return (this->time < other.time);
+	//}
+
+	Key(float time, Bone& bone, int Component, int Axis, float value) {
+		this->time = time;
+		Add(bone, Component, Axis, value);
+	}
+
+	void Add(Bone& bone, int Component, int Axis, float value) {
 		for (auto p = data.begin(); p != data.end(); ++p) {
 			if (p->b == bone) {
 				p->AddValue(Component, Axis, value);
@@ -113,19 +150,127 @@ struct Key {
 };
 
 struct AnimationData {
+	std::set<Key> KeySet;
 
+	void Add(float time, Bone& bone, int Component, int Axis, float value) {
+		for (auto p = KeySet.begin(); p != KeySet.end(); ++p) {
+			if (p->time == time) {
+				/**********************************************************
+				여기 지금 stl 컨테이너에 직접 값을 수정하려고 해서 문제가 생기는거 같음
+				저걸 아 어캐 해 하여간 여기까지 했고 스터디 들으러 가자.
+				**********************************************************/
+				p->Add(bone, Component, Axis, value);
+				return;
+			}
+		}
+		KeySet.insert(Key(time, bone, Component, Axis, value));
+	}
+
+	void Print() {
+		for (Key k : KeySet) {
+			std::cout << "[" << k.time << "]\n";
+			for (KeyframeData d : k.data) {
+				std::cout << d.b.name.c_str() << "\t - t ("
+					<< d.t.x << ", " << d.t.y << ", " << d.t.z << ") ,r ("
+					<< d.r.x << ", " << d.r.y << ", " << d.r.z << ")\n";
+			}
+			std::cout << "\n";
+		}
+	}
 };
 
-
-// Local function prototypes.
-void DisplayContent(FbxScene* pScene);
-void DisplayContent(FbxNode* pNode);
-void DisplayTarget(FbxNode* pNode);
-void DisplayTransformPropagation(FbxNode* pNode);
-void DisplayGeometricTransform(FbxNode* pNode);
-void DisplayMetaData(FbxScene* pScene);
-
 static bool gVerbose = true;
+AnimationData animData;
+
+void GetCurve(FbxAnimCurve* lAnimCurve, FbxNode* pNode, int com, int axi) {
+	int			lKeyCount = lAnimCurve->KeyGetCount();
+	FbxTime		lKeyTime;
+	float		lKeyValue;
+	int			lCount;
+
+	for (lCount = 0; lCount < lKeyCount; lCount++)
+	{
+		lKeyValue = static_cast<float>(lAnimCurve->KeyGetValue(lCount));
+		lKeyTime = lAnimCurve->KeyGetTime(lCount);
+		lKeyTime.GetSecondDouble();
+
+		/*****************************************************************
+		여기서 잠시 pNode로 Bone을 만드는 작업이 있을 것.
+		근데 이건 이 함수에서 할 필요는 없으니까 이후에 옮겨주자.
+		*****************************************************************/
+		FbxVector4 lTmpVector;
+		Bone tmp;
+
+		tmp.name = pNode->GetName();
+
+		lTmpVector = pNode->GetGeometricTranslation(FbxNode::eSourcePivot);
+		tmp.LclTranslation.x = lTmpVector[0];
+		tmp.LclTranslation.y = lTmpVector[1];
+		tmp.LclTranslation.z = lTmpVector[2];
+		lTmpVector = pNode->GetGeometricRotation(FbxNode::eSourcePivot);
+		tmp.LclRotation.x = lTmpVector[0];
+		tmp.LclRotation.y = lTmpVector[1];
+		tmp.LclRotation.z = lTmpVector[2];
+
+		//tmp.parent = pNode->GetParent();
+
+		animData.Add(lKeyTime.GetSecondDouble(), tmp, com, axi, lKeyValue);
+
+	}
+}
+
+void GetComponent(FbxAnimLayer* pAnimLayer, FbxNode* pNode) {
+	FbxAnimCurve* lAnimCurve = NULL;
+	lAnimCurve = pNode->LclTranslation.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_X);
+	if (lAnimCurve) GetCurve(lAnimCurve, pNode, K::T, K::X);
+
+	lAnimCurve = pNode->LclTranslation.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_Y);
+	if (lAnimCurve) GetCurve(lAnimCurve, pNode, K::T, K::Y);
+
+	lAnimCurve = pNode->LclTranslation.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_Z);
+	if (lAnimCurve) GetCurve(lAnimCurve, pNode, K::T, K::Z);
+
+	lAnimCurve = pNode->LclRotation.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_X);
+	if (lAnimCurve) GetCurve(lAnimCurve, pNode, K::R, K::X);
+
+	lAnimCurve = pNode->LclRotation.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_Y);
+	if (lAnimCurve) GetCurve(lAnimCurve, pNode, K::R, K::Y);
+
+	lAnimCurve = pNode->LclRotation.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_Z);
+	if (lAnimCurve) GetCurve(lAnimCurve, pNode, K::R, K::Z);
+
+
+	//lAnimCurve = pNode->LclScaling.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_X);
+	//if (lAnimCurve)
+	//{
+	//	FBXSDK_printf("        SX\n");
+	//	DisplayCurve(lAnimCurve);
+	//}
+	//lAnimCurve = pNode->LclScaling.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_Y);
+	//if (lAnimCurve)
+	//{
+	//	FBXSDK_printf("        SY\n");
+	//	DisplayCurve(lAnimCurve);
+	//}
+	//lAnimCurve = pNode->LclScaling.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_Z);
+	//if (lAnimCurve)
+	//{
+	//	FBXSDK_printf("        SZ\n");
+	//	DisplayCurve(lAnimCurve);
+	//}
+}
+
+void GetAnimationDataRec(FbxAnimLayer* pAnimLayer, FbxNode* pNode) {
+	int lModelCount;
+
+	GetComponent(pAnimLayer, pNode);
+
+	for (lModelCount = 0; lModelCount < pNode->GetChildCount(); lModelCount++)
+	{
+		GetAnimationDataRec(pAnimLayer, pNode->GetChild(lModelCount));
+	}
+}
+
 
 int main(int argc, char** argv)
 {
@@ -189,7 +334,20 @@ int main(int argc, char** argv)
 		*****************************************************************/
 
 
+		int i;
+		for (i = 0; i < lScene->GetSrcObjectCount<FbxAnimStack>(); i++)
+		{
+			FbxAnimStack* lAnimStack = lScene->GetSrcObject<FbxAnimStack>(i);
+			int l;
+			int nbAnimLayers = lAnimStack->GetMemberCount<FbxAnimLayer>();
+			for (l = 0; l < nbAnimLayers; l++)
+			{
+				FbxAnimLayer* lAnimLayer = lAnimStack->GetMember<FbxAnimLayer>(l);
 
+				GetAnimationDataRec(lAnimLayer, lScene->GetRootNode());
+			}
+		}
+		animData.Print();
 
 
     }
