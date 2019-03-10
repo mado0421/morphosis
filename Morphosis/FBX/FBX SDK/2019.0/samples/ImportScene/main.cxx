@@ -37,6 +37,86 @@
 #include "DisplayUserProperties.h"
 #include "DisplayGenericInfo.h"
 
+#include <list>
+#include <map>
+
+struct Float3 {
+	float x, y, z;
+};
+
+struct Bone {
+	Float3	LclTranslation;
+	Float3	LclRotation;
+	Bone*	parent = NULL;
+};
+
+struct KeyframeData {
+	/* 어떤 bone의 어떤 Component가 언제 어떤 값인지 저장해야 함. */
+	Bone*	b;
+	Float3	t;
+	Float3	r;
+
+	KeyframeData(Bone* bone, int Component, int Axis, float value) {
+		b = bone;
+		AddValue(Component, Axis, value);
+	}
+
+	void AddValue(int Component, int Axis, float value) {
+		switch (Component) {
+		case Key::T:
+			switch (Axis) {
+			case Key::X: t.x = value; break;
+			case Key::Y: t.y = value; break;
+			case Key::Z: t.z = value; break;
+
+			default: break;
+			}
+			break;
+		case Key::R:
+			switch (Axis) {
+			case Key::X: r.x = value; break;
+			case Key::Y: r.y = value; break;
+			case Key::Z: r.z = value; break;
+
+			default: break;
+			}
+			break;
+		default: break;
+		}
+	}
+};
+
+struct Key {
+	enum {
+		T = 0,
+		R,
+
+		X = 0,
+		Y,
+		Z
+	};
+
+	/* 시간별로 저장하자. */
+	float time;
+	std::list<KeyframeData> data;
+
+	void Add(const Bone* bone, int Component, int Axis, float value) {
+		for (auto p = data.begin(); p != data.end(); ++p) {
+			if (p->b == bone) {
+				p->AddValue(Component, Axis, value);
+				return;
+			}
+		}
+		/* 여기까지 왔다 -> 같은 bone이 없었다 -> 그러니 추가해주자. */
+		data.emplace_back(bone, Component, Axis, value);
+	}
+};
+
+struct AnimationData {
+
+};
+
+
 // Local function prototypes.
 void DisplayContent(FbxScene* pScene);
 void DisplayContent(FbxNode* pNode);
@@ -49,6 +129,8 @@ static bool gVerbose = true;
 
 int main(int argc, char** argv)
 {
+
+
     FbxManager* lSdkManager = NULL;
     FbxScene* lScene = NULL;
     bool lResult;
@@ -83,40 +165,33 @@ int main(int argc, char** argv)
     else 
     {
         // Display the scene.
-        DisplayMetaData(lScene);
+        //DisplayMetaData(lScene);
+        //FBXSDK_printf("\n\n---------------------\nGlobal Light Settings\n---------------------\n\n");
+        //if( gVerbose ) DisplayGlobalLightSettings(&lScene->GetGlobalSettings());
+        //FBXSDK_printf("\n\n----------------------\nGlobal Camera Settings\n----------------------\n\n");
+        //if( gVerbose ) DisplayGlobalCameraSettings(&lScene->GetGlobalSettings());
+        //FBXSDK_printf("\n\n--------------------\nGlobal Time Settings\n--------------------\n\n");
+        //if( gVerbose ) DisplayGlobalTimeSettings(&lScene->GetGlobalSettings());
+        //FBXSDK_printf("\n\n---------\nHierarchy\n---------\n\n");
+        //if( gVerbose ) DisplayHierarchy(lScene);
+        //FBXSDK_printf("\n\n------------\nNode Content\n------------\n\n");
+        //if( gVerbose ) DisplayContent(lScene);
+        //FBXSDK_printf("\n\n----\nPose\n----\n\n");
+        //if( gVerbose ) DisplayPose(lScene);
+ /*       FBXSDK_printf("\n\n---------\nAnimation\n---------\n\n");
+        if( gVerbose ) DisplayAnimation(lScene);*/
+        ////now display generic information
+        //FBXSDK_printf("\n\n---------\nGeneric Information\n---------\n\n");
+        //if( gVerbose ) DisplayGenericInfo(lScene);
 
-        FBXSDK_printf("\n\n---------------------\nGlobal Light Settings\n---------------------\n\n");
+		/*****************************************************************
+		먼저 Geometry Data를 얻어야 함.
+		*****************************************************************/
 
-        if( gVerbose ) DisplayGlobalLightSettings(&lScene->GetGlobalSettings());
 
-        FBXSDK_printf("\n\n----------------------\nGlobal Camera Settings\n----------------------\n\n");
 
-        if( gVerbose ) DisplayGlobalCameraSettings(&lScene->GetGlobalSettings());
 
-        FBXSDK_printf("\n\n--------------------\nGlobal Time Settings\n--------------------\n\n");
 
-        if( gVerbose ) DisplayGlobalTimeSettings(&lScene->GetGlobalSettings());
-
-        FBXSDK_printf("\n\n---------\nHierarchy\n---------\n\n");
-
-        if( gVerbose ) DisplayHierarchy(lScene);
-
-        FBXSDK_printf("\n\n------------\nNode Content\n------------\n\n");
-
-        if( gVerbose ) DisplayContent(lScene);
-
-        FBXSDK_printf("\n\n----\nPose\n----\n\n");
-
-        if( gVerbose ) DisplayPose(lScene);
-
-        FBXSDK_printf("\n\n---------\nAnimation\n---------\n\n");
-
-        if( gVerbose ) DisplayAnimation(lScene);
-
-        //now display generic information
-
-        FBXSDK_printf("\n\n---------\nGeneric Information\n---------\n\n");
-        if( gVerbose ) DisplayGenericInfo(lScene);
     }
 
     // Destroy all objects created by the FBX SDK.

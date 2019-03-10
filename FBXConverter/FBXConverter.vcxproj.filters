@@ -32,5 +32,8 @@
     <ClCompile Include="handConverter.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="converter.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

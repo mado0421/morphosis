@@ -132,6 +132,9 @@ void DisplayAnimation(FbxAnimLayer* pAnimLayer, FbxNode* pNode, bool isSwitcher)
     int lModelCount;
     FbxString lOutputString;
 
+	pNode->GetParent();
+
+
     lOutputString = "     Node Name: ";
     lOutputString += pNode->GetName();
     lOutputString += "\n\n";

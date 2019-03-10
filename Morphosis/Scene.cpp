@@ -1576,7 +1576,7 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 	tempPso[0]->Initialize(pd3dDevice, m_pd3dGraphicsRootSignature);
 	pso[0] = tempPso[0]->GetPipelineState();
 
-	CAnimMesh *pAnimTest = new CAnimMesh(pd3dDevice, pd3dCommandList, "animation_character_0_mesh_(0)");
+//	CAnimMesh *pAnimTest = new CAnimMesh(pd3dDevice, pd3dCommandList, "animation_character_0_mesh_(0)");
 
 	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
 
@@ -1628,7 +1628,7 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
 
 		CModel *model = new CModel();
-		model->AddMesh(pAnimTest);
+//		model->AddMesh(pAnimTest);
 		model->SetTexture(textures[0]);
 
 		pObj->SetModel(model);

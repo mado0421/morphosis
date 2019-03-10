@@ -189,7 +189,8 @@ private:	// 이건 이 클래스 안에서만 쓸거야
 	{
 		return (time >= keyList[nKeys - 1]->keyTime);
 	}
-	float ClampTime(float time)
+	float ClampTime(floa
+		t time)
 	{
 		return (time - ((int)(time / keyList[nKeys - 1]->keyTime) * keyList[nKeys - 1]->keyTime));
 	}

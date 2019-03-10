@@ -41,6 +41,8 @@ void DisplayHierarchy(FbxNode* pNode, int pDepth)
         lString += "     ";
     }
 
+	pNode->GetParent();
+
     lString += pNode->GetName();
     lString += "\n";
 

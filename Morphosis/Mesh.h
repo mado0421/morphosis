@@ -434,83 +434,83 @@ public:
 		if (pIndexUploadBuffer)		pIndexUploadBuffer->Release();
 	}
 
-	CAnimMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, 
-		const char * MeshFileName,
-		const char * ClusterFileName) : CMesh(pd3dDevice, pd3dCommandList) {
-		streampos size;
+	//CAnimMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, 
+	//	const char * MeshFileName,
+	//	const char * ClusterFileName) : CMesh(pd3dDevice, pd3dCommandList) {
+	//	streampos size;
 
-		char filePath[MAX_PATH];
-		strcpy(filePath, "Assets//Meshes//");
-		strcat(filePath, MeshFileName);
-		strcat(filePath, ".dat");
+	//	char filePath[MAX_PATH];
+	//	strcpy(filePath, "Assets//Meshes//");
+	//	strcat(filePath, MeshFileName);
+	//	strcat(filePath, ".dat");
 
-		Geometry * geo = new Geometry();
+	//	Geometry * geo = new Geometry();
 
-		ifstream in(filePath, ifstream::binary);
+	//	ifstream in(filePath, ifstream::binary);
 
-		in.read((char*)&geo->ID, sizeof(__int64));
+	//	in.read((char*)&geo->ID, sizeof(__int64));
 
-		in.read((char*)&geo->nVertices, sizeof(UINT));
-		geo->pVertices = new XMFLOAT3[geo->nVertices];
-		in.read((char*)geo->pVertices, sizeof(XMFLOAT3)*geo->nVertices);
+	//	in.read((char*)&geo->nVertices, sizeof(UINT));
+	//	geo->pVertices = new XMFLOAT3[geo->nVertices];
+	//	in.read((char*)geo->pVertices, sizeof(XMFLOAT3)*geo->nVertices);
 
-		in.read((char*)&geo->nPolygonVertexIndex, sizeof(UINT));
-		geo->pPolygonVertexIndex = new UINT[geo->nPolygonVertexIndex];
-		in.read((char*)geo->pPolygonVertexIndex, sizeof(UINT)*geo->nPolygonVertexIndex);
+	//	in.read((char*)&geo->nPolygonVertexIndex, sizeof(UINT));
+	//	geo->pPolygonVertexIndex = new UINT[geo->nPolygonVertexIndex];
+	//	in.read((char*)geo->pPolygonVertexIndex, sizeof(UINT)*geo->nPolygonVertexIndex);
 
-		in.read((char*)&geo->nNormals, sizeof(UINT));
-		geo->pNormals = new XMFLOAT3[geo->nNormals];
-		in.read((char*)geo->pNormals, sizeof(XMFLOAT3)*geo->nNormals);
+	//	in.read((char*)&geo->nNormals, sizeof(UINT));
+	//	geo->pNormals = new XMFLOAT3[geo->nNormals];
+	//	in.read((char*)geo->pNormals, sizeof(XMFLOAT3)*geo->nNormals);
 
-		in.read((char*)&geo->nUV, sizeof(UINT));
-		geo->pUV = new XMFLOAT2[geo->nUV];
-		in.read((char*)geo->pUV, sizeof(XMFLOAT2)*geo->nUV);
+	//	in.read((char*)&geo->nUV, sizeof(UINT));
+	//	geo->pUV = new XMFLOAT2[geo->nUV];
+	//	in.read((char*)geo->pUV, sizeof(XMFLOAT2)*geo->nUV);
 
-		in.read((char*)&geo->nUVIndex, sizeof(UINT));
-		geo->pUVIndex = new UINT[geo->nUVIndex];
-		in.read((char*)geo->pUVIndex, sizeof(UINT)*geo->nUVIndex);
+	//	in.read((char*)&geo->nUVIndex, sizeof(UINT));
+	//	geo->pUVIndex = new UINT[geo->nUVIndex];
+	//	in.read((char*)geo->pUVIndex, sizeof(UINT)*geo->nUVIndex);
 
-		in.read((char*)&geo->LclTranslation, sizeof(XMFLOAT3));
-		in.read((char*)&geo->LclRotation, sizeof(XMFLOAT3));
+	//	in.read((char*)&geo->LclTranslation, sizeof(XMFLOAT3));
+	//	in.read((char*)&geo->LclRotation, sizeof(XMFLOAT3));
 
-		in.close();
+	//	in.close();
 
-		UINT nStride = sizeof(CAnimVertex);
-		nVertices = geo->nPolygonVertexIndex;
+	//	UINT nStride = sizeof(CAnimVertex);
+	//	nVertices = geo->nPolygonVertexIndex;
 
-		for (int i = 0; i < geo->nPolygonVertexIndex; ++i) {
-			if (((i + 1) % 3) == 0) {
-				geo->pPolygonVertexIndex[i] *= -1;
-				geo->pPolygonVertexIndex[i] -= 1;
-			}
-		}
-
-
+	//	for (int i = 0; i < geo->nPolygonVertexIndex; ++i) {
+	//		if (((i + 1) % 3) == 0) {
+	//			geo->pPolygonVertexIndex[i] *= -1;
+	//			geo->pPolygonVertexIndex[i] -= 1;
+	//		}
+	//	}
 
 
 
 
 
 
-		CAnimVertex *vertex;
-		vertex = new CAnimVertex[geo->nPolygonVertexIndex];
 
-		for (int i = 0; i < geo->nPolygonVertexIndex; ++i) vertex[i].Init(
-			geo->pVertices[geo->pPolygonVertexIndex[i]], 
-			uv[uvIdx[i]], 
-			weight[posIdx[i]], 
-			boneIdx[posIdx[i]]
-		);
 
-		pVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
-			vertex, nStride * nVertices,
-			D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
-			&pVertexUploadBuffer);
+	//	CAnimVertex *vertex;
+	//	vertex = new CAnimVertex[geo->nPolygonVertexIndex];
 
-		vertexBufferView.BufferLocation = pVertexBuffer->GetGPUVirtualAddress();
-		vertexBufferView.StrideInBytes = nStride;
-		vertexBufferView.SizeInBytes = nStride * nVertices;
-	}
+	//	//for (int i = 0; i < geo->nPolygonVertexIndex; ++i) vertex[i].Init(
+	//	//	geo->pVertices[geo->pPolygonVertexIndex[i]], 
+	//	//	uv[uvIdx[i]], 
+	//	//	weight[posIdx[i]], 
+	//	//	boneIdx[posIdx[i]]
+	//	//);
+
+	//	pVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
+	//		vertex, nStride * nVertices,
+	//		D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+	//		&pVertexUploadBuffer);
+
+	//	vertexBufferView.BufferLocation = pVertexBuffer->GetGPUVirtualAddress();
+	//	vertexBufferView.StrideInBytes = nStride;
+	//	vertexBufferView.SizeInBytes = nStride * nVertices;
+	//}
 
 
 
