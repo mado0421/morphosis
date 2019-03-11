@@ -258,25 +258,31 @@ void GetAnimationDataRec(FbxAnimLayer* pAnimLayer, FbxNode* pNode) {
 	}
 }
 
-
 void GetGeometryData(FbxNode* pNode) {
 	int meshCount;
+	FbxNodeAttribute::EType type;
 	FbxGeometry* geo;
-	if (FbxNodeAttribute::eMesh == pNode->GetNodeAttribute()->GetAttributeType()) {
-		geo = pNode->GetGeometry();
-		int nSkinDeformers = geo->GetDeformerCount(FbxDeformer::eSkin);
-		for (int i = 0; i < nSkinDeformers; ++i) {
-			FbxSkin* skinDeformer = (FbxSkin*)(geo->GetDeformer(i, FbxDeformer::eSkin));
-			int nClusters = skinDeformer->GetClusterCount();
-			for (int j = 0; j < nClusters; ++j) {
-				FbxCluster* cluster = skinDeformer->GetCluster(j);
-				int nIdx = cluster->GetControlPointIndicesCount();
-				int* pIdx = cluster->GetControlPointIndices();
-				double* pWeights = cluster->GetControlPointWeights();
+	FbxNodeAttribute* lNodeAttribute = pNode->GetNodeAttribute();
+	if (NULL != lNodeAttribute) {
+		type = lNodeAttribute->GetAttributeType();
+		if (FbxNodeAttribute::eMesh == type) {
+			geo = pNode->GetGeometry();
+			int nSkinDeformers = geo->GetDeformerCount(FbxDeformer::eSkin);
+			for (int i = 0; i < nSkinDeformers; ++i) {
+				FbxSkin* skinDeformer = (FbxSkin*)(geo->GetDeformer(i, FbxDeformer::eSkin));
+				int nClusters = skinDeformer->GetClusterCount();
+				for (int j = 0; j < nClusters; ++j) {
+					FbxCluster* cluster = skinDeformer->GetCluster(j);
+					int nIdx = cluster->GetControlPointIndicesCount();
+					int* pIdx = cluster->GetControlPointIndices();
+					double* pWeights = cluster->GetControlPointWeights();
 
-				/* ... */
-				std::cout << pNode->GetName() << " - " << nIdx << "\n";
+					
 
+					/* ... */
+					std::cout << pNode->GetName() << " - " << cluster->GetLink()->GetName() << ", " << nIdx << "\n";
+
+				}
 			}
 		}
 	}
@@ -286,25 +292,8 @@ void GetGeometryData(FbxNode* pNode) {
 	}
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 int main(int argc, char** argv)
 {
-
-
     FbxManager* lSdkManager = NULL;
     FbxScene* lScene = NULL;
     bool lResult;
@@ -381,7 +370,6 @@ int main(int argc, char** argv)
 		//	}
 		//}
 		//for (int i = 0; i < tmp->GetChildCount(); ++i) {
-
 		//}
 
 		GetGeometryData(lScene->GetRootNode());
