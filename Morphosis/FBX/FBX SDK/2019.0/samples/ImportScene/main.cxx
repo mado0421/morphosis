@@ -39,7 +39,7 @@
 
 #include <iostream>
 #include <list>
-#include <set>
+#include <vector>
 
 // Local function prototypes.
 void DisplayContent(FbxScene* pScene);
@@ -76,6 +76,7 @@ struct Bone {
 		this->LclTranslation	= other.LclTranslation;
 		this->LclRotation		= other.LclRotation;
 		this->parent			= other.parent;
+		return *this;
 	}
 
 	bool operator==(const Bone& other) {
@@ -150,7 +151,7 @@ struct Key {
 };
 
 struct AnimationData {
-	std::set<Key> KeySet;
+	std::vector<Key> KeySet;
 
 	void Add(float time, Bone& bone, int Component, int Axis, float value) {
 		for (auto p = KeySet.begin(); p != KeySet.end(); ++p) {
@@ -160,10 +161,16 @@ struct AnimationData {
 				저걸 아 어캐 해 하여간 여기까지 했고 스터디 들으러 가자.
 				**********************************************************/
 				p->Add(bone, Component, Axis, value);
+				//for (auto d = p->data.begin(); d != p->data.end(); ++d) {
+				//	if (d->b == bone) {
+				//		d->AddValue(Component, Axis, value);
+				//		return;
+				//	}
+				//}
 				return;
 			}
 		}
-		KeySet.insert(Key(time, bone, Component, Axis, value));
+		KeySet.emplace_back(time, bone, Component, Axis, value);
 	}
 
 	void Print() {
@@ -238,26 +245,6 @@ void GetComponent(FbxAnimLayer* pAnimLayer, FbxNode* pNode) {
 
 	lAnimCurve = pNode->LclRotation.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_Z);
 	if (lAnimCurve) GetCurve(lAnimCurve, pNode, K::R, K::Z);
-
-
-	//lAnimCurve = pNode->LclScaling.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_X);
-	//if (lAnimCurve)
-	//{
-	//	FBXSDK_printf("        SX\n");
-	//	DisplayCurve(lAnimCurve);
-	//}
-	//lAnimCurve = pNode->LclScaling.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_Y);
-	//if (lAnimCurve)
-	//{
-	//	FBXSDK_printf("        SY\n");
-	//	DisplayCurve(lAnimCurve);
-	//}
-	//lAnimCurve = pNode->LclScaling.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_Z);
-	//if (lAnimCurve)
-	//{
-	//	FBXSDK_printf("        SZ\n");
-	//	DisplayCurve(lAnimCurve);
-	//}
 }
 
 void GetAnimationDataRec(FbxAnimLayer* pAnimLayer, FbxNode* pNode) {
@@ -270,6 +257,48 @@ void GetAnimationDataRec(FbxAnimLayer* pAnimLayer, FbxNode* pNode) {
 		GetAnimationDataRec(pAnimLayer, pNode->GetChild(lModelCount));
 	}
 }
+
+
+void GetGeometryData(FbxNode* pNode) {
+	int meshCount;
+	FbxGeometry* geo;
+	if (FbxNodeAttribute::eMesh == pNode->GetNodeAttribute()->GetAttributeType()) {
+		geo = pNode->GetGeometry();
+		int nSkinDeformers = geo->GetDeformerCount(FbxDeformer::eSkin);
+		for (int i = 0; i < nSkinDeformers; ++i) {
+			FbxSkin* skinDeformer = (FbxSkin*)(geo->GetDeformer(i, FbxDeformer::eSkin));
+			int nClusters = skinDeformer->GetClusterCount();
+			for (int j = 0; j < nClusters; ++j) {
+				FbxCluster* cluster = skinDeformer->GetCluster(j);
+				int nIdx = cluster->GetControlPointIndicesCount();
+				int* pIdx = cluster->GetControlPointIndices();
+				double* pWeights = cluster->GetControlPointWeights();
+
+				/* ... */
+				std::cout << pNode->GetName() << " - " << nIdx << "\n";
+
+			}
+		}
+	}
+	for (meshCount = 0; meshCount < pNode->GetChildCount(); meshCount++)
+	{
+		GetGeometryData(pNode->GetChild(meshCount));
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 int main(int argc, char** argv)
@@ -331,23 +360,50 @@ int main(int argc, char** argv)
 
 		/*****************************************************************
 		먼저 Geometry Data를 얻어야 함.
+
+		이거 또 재귀로 해줘야됨
 		*****************************************************************/
+		//FbxNodeAttribute::EType type;
+		//FbxNode* tmp = lScene->GetRootNode();
+		//FbxGeometry* geo = tmp->GetGeometry();
+		//type = tmp->GetNodeAttribute()->GetAttributeType();
+		//if (FbxNodeAttribute::eMesh == type) {
+		//	int nSkinDeformers = geo->GetDeformerCount(FbxDeformer::eSkin);
+		//	for (int i = 0; i < nSkinDeformers; ++i) {
+		//		FbxSkin* skinDeformer = (FbxSkin*)(geo->GetDeformer(i, FbxDeformer::eSkin));
+		//		int nClusters = skinDeformer->GetClusterCount();
+		//		for (int j = 0; j < nClusters; ++j) {
+		//			FbxCluster* cluster = skinDeformer->GetCluster(j);
+		//			int nIdx = cluster->GetControlPointIndicesCount();
+		//			int* pIdx = cluster->GetControlPointIndices();
+		//			double* pWeights = cluster->GetControlPointWeights();
+		//		}
+		//	}
+		//}
+		//for (int i = 0; i < tmp->GetChildCount(); ++i) {
+
+		//}
+
+		GetGeometryData(lScene->GetRootNode());
 
 
-		int i;
-		for (i = 0; i < lScene->GetSrcObjectCount<FbxAnimStack>(); i++)
-		{
-			FbxAnimStack* lAnimStack = lScene->GetSrcObject<FbxAnimStack>(i);
-			int l;
-			int nbAnimLayers = lAnimStack->GetMemberCount<FbxAnimLayer>();
-			for (l = 0; l < nbAnimLayers; l++)
-			{
-				FbxAnimLayer* lAnimLayer = lAnimStack->GetMember<FbxAnimLayer>(l);
 
-				GetAnimationDataRec(lAnimLayer, lScene->GetRootNode());
-			}
-		}
-		animData.Print();
+
+		/*****************************************************************
+		Animation Data를 얻는 부분
+		*****************************************************************/
+		//for (int i = 0; i < lScene->GetSrcObjectCount<FbxAnimStack>(); i++)
+		//{
+		//	FbxAnimStack* lAnimStack = lScene->GetSrcObject<FbxAnimStack>(i);
+		//	int l;
+		//	int nbAnimLayers = lAnimStack->GetMemberCount<FbxAnimLayer>();
+		//	for (l = 0; l < nbAnimLayers; l++)
+		//	{
+		//		FbxAnimLayer* lAnimLayer = lAnimStack->GetMember<FbxAnimLayer>(l);
+		//		GetAnimationDataRec(lAnimLayer, lScene->GetRootNode());
+		//	}
+		//}
+		//animData.Print();
 
 
     }
