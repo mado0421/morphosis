@@ -61,9 +61,10 @@ namespace K {
 	};
 }
 
-struct Float3 {
-	float x, y, z;
-};
+struct Int4 { int x, y, z, w; };
+struct Float2 { float x, y; };
+struct Float3 {	float x, y, z; };
+struct Float4 { float x, y, z, w; };
 
 struct Bone {
 	std::string name;
@@ -123,8 +124,6 @@ struct KeyframeData {
 };
 
 struct Key {
-
-
 	/* 시간별로 저장하자. */
 	float time;
 	std::list<KeyframeData> data;
@@ -153,6 +152,7 @@ struct Key {
 struct AnimationData {
 	std::vector<Key> KeySet;
 
+
 	void Add(float time, Bone& bone, int Component, int Axis, float value) {
 		for (auto p = KeySet.begin(); p != KeySet.end(); ++p) {
 			if (p->time == time) {
@@ -172,7 +172,6 @@ struct AnimationData {
 		}
 		KeySet.emplace_back(time, bone, Component, Axis, value);
 	}
-
 	void Print() {
 		for (Key k : KeySet) {
 			std::cout << "[" << k.time << "]\n";
@@ -184,6 +183,20 @@ struct AnimationData {
 			std::cout << "\n";
 		}
 	}
+};
+
+struct Vertex {
+	Float3	pos;
+	Int4	boneIdx;
+	Float4	weight;
+};
+
+struct GeometryData {
+	std::vector<Vertex> controlPoints;
+	std::vector<Float2> UVs;
+	std::vector<Float3> normals;
+	std::vector<int>	posIdx;
+	std::vector<int>	uvIdx;
 };
 
 static bool gVerbose = true;
@@ -258,7 +271,70 @@ void GetAnimationDataRec(FbxAnimLayer* pAnimLayer, FbxNode* pNode) {
 	}
 }
 
-void GetGeometryData(FbxNode* pNode) {
+
+void GetMeshData(FbxNode* pNode) {
+	//int meshCount;
+	//FbxMesh* pMesh = pNode->GetMesh();
+
+	//if (NULL != pMesh) {
+	//	int nControlPoints = pMesh->GetControlPointsCount();
+	//	int nElementNormals = pMesh->GetElementNormalCount();
+	//	FbxVector4* pControlPoints = pMesh->GetControlPoints();
+
+	//	std::cout << pNode->GetName() << "\n"
+	//		<< nControlPoints << "개\n\n";
+	//	//pNode->GetGeometry()->GetL
+
+
+	//	for (int i = 0; i < nControlPoints; ++i) {
+	//		FbxVector4 fbxVector4 = pControlPoints[i];
+	//		for (int j = 0; j < nElementNormals; ++j) {
+	//			FbxGeometryElementNormal* pNormals = pMesh->GetElementNormal(j);
+	//			if (pNormals->GetMappingMode() == FbxGeometryElement::eByControlPoint) {
+	//				if (pNormals->GetReferenceMode() == FbxGeometryElement::eDirect) {
+	//					fbxVector4 = pNormals->GetDirectArray().GetAt(i);
+
+	//					/* ... */
+
+	//					std::cout << "("
+	//						<< fbxVector4.mData[0] << ", "
+	//						<< fbxVector4.mData[1] << ", "
+	//						<< fbxVector4.mData[2] << ", "
+	//						<< fbxVector4.mData[3] << ")\n";
+
+	//				}
+	//			}
+	//		}
+	//	}
+
+	//	int nPolygons = pMesh->GetPolygonCount();
+	//	for (int i = 0, nIdx = 0; i < nPolygons; ++i) {
+	//		FbxVector4 fbxVector4;
+	//		int nPolygonSize = pMesh->GetPolygonSize(i);
+	//		for (int j = 0; j < nPolygonSize; ++j) {
+	//			int nControlPointIdx = pMesh->GetPolygonVertex(i, j);
+	//			fbxVector4 = pControlPoints[nControlPointIdx];
+
+	//			/* ... */
+	//			//std::cout
+	//			//	<< fbxVector4.mData[0] << ", "
+	//			//	<< fbxVector4.mData[1] << ", "
+	//			//	<< fbxVector4.mData[2] << ", "
+	//			//	<< fbxVector4.mData[3] << "\n";
+	//		}
+	//	}
+
+
+	//}
+
+	//for (meshCount = 0; meshCount < pNode->GetChildCount(); meshCount++)
+	//{
+	//	GetMeshData(pNode->GetChild(meshCount));
+	//}
+}
+
+
+void GetClusterData(FbxNode* pNode) {
 	int meshCount;
 	FbxNodeAttribute::EType type;
 	FbxGeometry* geo;
@@ -267,6 +343,7 @@ void GetGeometryData(FbxNode* pNode) {
 		type = lNodeAttribute->GetAttributeType();
 		if (FbxNodeAttribute::eMesh == type) {
 			geo = pNode->GetGeometry();
+			
 			int nSkinDeformers = geo->GetDeformerCount(FbxDeformer::eSkin);
 			for (int i = 0; i < nSkinDeformers; ++i) {
 				FbxSkin* skinDeformer = (FbxSkin*)(geo->GetDeformer(i, FbxDeformer::eSkin));
@@ -288,7 +365,7 @@ void GetGeometryData(FbxNode* pNode) {
 	}
 	for (meshCount = 0; meshCount < pNode->GetChildCount(); meshCount++)
 	{
-		GetGeometryData(pNode->GetChild(meshCount));
+		GetClusterData(pNode->GetChild(meshCount));
 	}
 }
 
@@ -372,7 +449,9 @@ int main(int argc, char** argv)
 		//for (int i = 0; i < tmp->GetChildCount(); ++i) {
 		//}
 
-		GetGeometryData(lScene->GetRootNode());
+		//GetClusterData(lScene->GetRootNode());
+
+		GetMeshData(lScene->GetRootNode());
 
 
 
