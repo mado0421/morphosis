@@ -38,6 +38,7 @@
 #include "DisplayGenericInfo.h"
 
 #include <iostream>
+#include <fstream>
 #include <list>
 #include <vector>
 
@@ -149,12 +150,28 @@ struct Key {
 	}
 };
 
+struct AnimationInfo {
+	char name[32];
+	float totalTime;
+	bool isLoopAnimation;
+	char nextName[32];
+};
+
 struct AnimationData {
-	std::vector<Key> KeySet;
+	std::vector<Key> Keys;
+	AnimationInfo info;
 
+	void SetInfo(const char* name, const char* nextName, bool isLoop) {
+		float maxTime = 0.0f;
 
+		strcpy_s(info.name, name);
+		strcpy_s(info.nextName, nextName);
+		info.isLoopAnimation = isLoop;
+		for (auto p = Keys.cbegin(); p != Keys.cend(); ++p) if (maxTime < p->time) maxTime = p->time;
+		info.totalTime = maxTime;
+	}
 	void Add(float time, Bone& bone, int Component, int Axis, float value) {
-		for (auto p = KeySet.begin(); p != KeySet.end(); ++p) {
+		for (auto p = Keys.begin(); p != Keys.end(); ++p) {
 			if (p->time == time) {
 				/**********************************************************
 				여기 지금 stl 컨테이너에 직접 값을 수정하려고 해서 문제가 생기는거 같음
@@ -170,10 +187,10 @@ struct AnimationData {
 				return;
 			}
 		}
-		KeySet.emplace_back(time, bone, Component, Axis, value);
+		Keys.emplace_back(time, bone, Component, Axis, value);
 	}
 	void Print() {
-		for (Key k : KeySet) {
+		for (Key k : Keys) {
 			std::cout << "[" << k.time << "]\n";
 			for (KeyframeData d : k.data) {
 				std::cout << d.b.name.c_str() << "\t - t ("
@@ -182,6 +199,37 @@ struct AnimationData {
 			}
 			std::cout << "\n";
 		}
+	}
+	void Export(const char* fileName) {
+		std::ofstream out;
+		out.open(fileName, std::ios::out | std::ios::binary);
+		/* 먼저 헤더 정보를 넣어준다. */
+		out.write((char*)&info.name,			sizeof(char) * 32);
+		out.write((char*)&info.nextName,		sizeof(char) * 32);
+		out.write((char*)&info.totalTime,		sizeof(float));
+		out.write((char*)&info.isLoopAnimation, sizeof(bool));
+
+		/* 키가 몇 개 있고, 각 키마다 Bone이 몇 개 있을 것인지 저장해야 함.*/
+		/* 일단은 모든 Bone이 xyz 요소값을 가지는 것으로 간주하고 작성하자.*/
+		int nKeys = Keys.size();
+		out.write((char*)&nKeys, sizeof(int));
+		for (int i = 0; i < nKeys; ++i) {
+			int nBones = Keys[i].data.size();
+			out.write((char*)&nBones, sizeof(int));
+		}
+
+		for (int i = 0; i < nKeys; ++i) {
+			int nBones		= Keys[i].data.size();
+			float keyTime	= Keys[i].time;
+
+			out.write((char*)&keyTime, sizeof(float));
+			for (auto p = Keys[i].data.cbegin(); p != Keys[i].data.cend(); ++p) {
+				//float temp = p->
+				//out.write((char*)&keyTime, sizeof(float));
+			}
+		}
+
+
 	}
 };
 
@@ -273,64 +321,158 @@ void GetAnimationDataRec(FbxAnimLayer* pAnimLayer, FbxNode* pNode) {
 
 
 void GetMeshData(FbxNode* pNode) {
+	int meshCount;
+	FbxMesh* pMesh = pNode->GetMesh();
+	if (NULL != pMesh) {
+		int nControlPoints = pMesh->GetControlPointsCount();
+		int nElementNormals = pMesh->GetElementNormalCount();
+		FbxVector4* pControlPoints = pMesh->GetControlPoints();
+		std::cout << pNode->GetName() << "\n"
+			<< nControlPoints << "개\n\n";
+		//pNode->GetGeometry()->GetL
+		//for (int i = 0; i < nControlPoints; ++i) {
+		//	FbxVector4 fbxVector4 = pControlPoints[i];
+		//	for (int j = 0; j < nElementNormals; ++j) {
+		//		FbxGeometryElementNormal* pNormals = pMesh->GetElementNormal(j);
+		//		if (pNormals->GetMappingMode() == FbxGeometryElement::eByControlPoint) {
+		//			if (pNormals->GetReferenceMode() == FbxGeometryElement::eDirect) {
+		//				fbxVector4 = pNormals->GetDirectArray().GetAt(i);
+		//				/* ... */
+		//				std::cout << "("
+		//					<< fbxVector4.mData[0] << ", "
+		//					<< fbxVector4.mData[1] << ", "
+		//					<< fbxVector4.mData[2] << ", "
+		//					<< fbxVector4.mData[3] << ")\n";
+		//			}
+		//		}
+		//	}
+		//}
+		int nPolygons = pMesh->GetPolygonCount();
+		for (int i = 0, nIdx = 0; i < nPolygons; ++i) {
+			FbxVector4 fbxVector4;
+			int nPolygonSize = pMesh->GetPolygonSize(i);
+			for (int j = 0; j < nPolygonSize; ++j) {
+				int nControlPointIdx = pMesh->GetPolygonVertex(i, j);
+				fbxVector4 = pControlPoints[nControlPointIdx];
+				/* ... */
+				std::cout
+					<< fbxVector4.mData[0] << ", "
+					<< fbxVector4.mData[1] << ", "
+					<< fbxVector4.mData[2] << ", "
+					<< fbxVector4.mData[3] << "\n";
+			}
+		}
+	}
+	for (meshCount = 0; meshCount < pNode->GetChildCount(); meshCount++)
+	{
+		GetMeshData(pNode->GetChild(meshCount));
+	}
+
 	//int meshCount;
-	//FbxMesh* pMesh = pNode->GetMesh();
+	//FbxNodeAttribute::EType type;
+	//FbxGeometry* geo;
+	//FbxMesh* pMesh;
+	//FbxNodeAttribute* lNodeAttribute = pNode->GetNodeAttribute();
 
-	//if (NULL != pMesh) {
-	//	int nControlPoints = pMesh->GetControlPointsCount();
-	//	int nElementNormals = pMesh->GetElementNormalCount();
-	//	FbxVector4* pControlPoints = pMesh->GetControlPoints();
+	//if (NULL != lNodeAttribute) {
+	//	type = lNodeAttribute->GetAttributeType();
+	//	if (FbxNodeAttribute::eMesh == type) {
+	//		geo = pNode->GetGeometry();
+	//		pMesh = pNode->GetMesh();
+	//		if (NULL != pMesh) {
+	//			std::cout
+	//				<< pMesh->GetTextureUVIndex(0, 0) << ", "
+	//				<< pMesh->GetTextureUVIndex(0, 1) << "\n";
 
-	//	std::cout << pNode->GetName() << "\n"
-	//		<< nControlPoints << "개\n\n";
-	//	//pNode->GetGeometry()->GetL
 
-
-	//	for (int i = 0; i < nControlPoints; ++i) {
-	//		FbxVector4 fbxVector4 = pControlPoints[i];
-	//		for (int j = 0; j < nElementNormals; ++j) {
-	//			FbxGeometryElementNormal* pNormals = pMesh->GetElementNormal(j);
-	//			if (pNormals->GetMappingMode() == FbxGeometryElement::eByControlPoint) {
-	//				if (pNormals->GetReferenceMode() == FbxGeometryElement::eDirect) {
-	//					fbxVector4 = pNormals->GetDirectArray().GetAt(i);
-
-	//					/* ... */
-
-	//					std::cout << "("
-	//						<< fbxVector4.mData[0] << ", "
-	//						<< fbxVector4.mData[1] << ", "
-	//						<< fbxVector4.mData[2] << ", "
-	//						<< fbxVector4.mData[3] << ")\n";
-
-	//				}
-	//			}
 	//		}
-	//	}
 
-	//	int nPolygons = pMesh->GetPolygonCount();
-	//	for (int i = 0, nIdx = 0; i < nPolygons; ++i) {
-	//		FbxVector4 fbxVector4;
-	//		int nPolygonSize = pMesh->GetPolygonSize(i);
-	//		for (int j = 0; j < nPolygonSize; ++j) {
-	//			int nControlPointIdx = pMesh->GetPolygonVertex(i, j);
-	//			fbxVector4 = pControlPoints[nControlPointIdx];
+	//		int nControlPoints = geo->GetControlPointsCount();
+	//		FbxVector4* pControlPoints = geo->GetControlPoints();
 
-	//			/* ... */
-	//			//std::cout
-	//			//	<< fbxVector4.mData[0] << ", "
-	//			//	<< fbxVector4.mData[1] << ", "
-	//			//	<< fbxVector4.mData[2] << ", "
-	//			//	<< fbxVector4.mData[3] << "\n";
+	//		std::cout << pNode->GetName() << " - "
+	//			<< nControlPoints << "\n";
+
+	//		for (int i = 0; i < nControlPoints; ++i) {
+	//			FbxVector4 tmpVec4 = pControlPoints[i];
+	//			//std::cout << "("
+	//			//	<< tmpVec4.mData[0] << ", "
+	//			//	<< tmpVec4.mData[1] << ", "
+	//			//	<< tmpVec4.mData[2] << ", "
+	//			//	<< tmpVec4.mData[3] << ")\n";
 	//		}
+
+	//		int nUV = geo->GetElementUVCount();
+	//		//nUV = 
+	//		for (int i = 0; i < nUV; ++i) {
+	//			FbxGeometryElementUV* pUV = geo->GetElementUV(i);
+	//			std::cout << "("
+	//				<< pUV->mDirectArray[0][i].mData[0] << ", "
+	//				<< pUV->mDirectArray[0][i].mData[1] << ")\n";
+	//		}
+	//		//pUV->mDirectArray[]
+
+
 	//	}
-
-
 	//}
 
 	//for (meshCount = 0; meshCount < pNode->GetChildCount(); meshCount++)
 	//{
 	//	GetMeshData(pNode->GetChild(meshCount));
 	//}
+
+	/*
+	void FBXExporter::ReadUV(FbxMesh* inMesh, int inCtrlPointIndex, int inTextureUVIndex, int inUVLayer, XMFLOAT2& outUV)
+{
+   if(inUVLayer >= 2 || inMesh->GetElementUVCount() <= inUVLayer)
+   {
+      throw std::exception("Invalid UV Layer Number");
+   }
+   FbxGeometryElementUV* vertexUV = inMesh->GetElementUV(inUVLayer);
+
+   switch(vertexUV->GetMappingMode())
+   {
+   case FbxGeometryElement::eByControlPoint:
+      switch(vertexUV->GetReferenceMode())
+      {
+      case FbxGeometryElement::eDirect:
+      {
+         outUV.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(inCtrlPointIndex).mData[0]);
+         outUV.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(inCtrlPointIndex).mData[1]);
+      }
+      break;
+
+      case FbxGeometryElement::eIndexToDirect:
+      {
+         int index = vertexUV->GetIndexArray().GetAt(inCtrlPointIndex);
+         outUV.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[0]);
+         outUV.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[1]);
+      }
+      break;
+
+      default:
+         throw std::exception("Invalid Reference");
+      }
+      break;
+
+   case FbxGeometryElement::eByPolygonVertex:
+      switch(vertexUV->GetReferenceMode())
+      {
+      case FbxGeometryElement::eDirect:
+      case FbxGeometryElement::eIndexToDirect:
+      {
+         outUV.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(inTextureUVIndex).mData[0]);
+         outUV.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(inTextureUVIndex).mData[1]);
+      }
+      break;
+
+      default:
+         throw std::exception("Invalid Reference");
+      }
+      break;
+   }
+}
+	*/
 }
 
 
@@ -348,16 +490,21 @@ void GetClusterData(FbxNode* pNode) {
 			for (int i = 0; i < nSkinDeformers; ++i) {
 				FbxSkin* skinDeformer = (FbxSkin*)(geo->GetDeformer(i, FbxDeformer::eSkin));
 				int nClusters = skinDeformer->GetClusterCount();
+
+				
+
 				for (int j = 0; j < nClusters; ++j) {
 					FbxCluster* cluster = skinDeformer->GetCluster(j);
 					int nIdx = cluster->GetControlPointIndicesCount();
 					int* pIdx = cluster->GetControlPointIndices();
 					double* pWeights = cluster->GetControlPointWeights();
 
-					
+					std::cout /*<< pNode->GetName()*/ << cluster->GetLink()->GetName() << " has " << nIdx << " Infos.\n";
+					for (int k = 0; k < nIdx; ++k) {
+						std::cout << "\t#" << k << " - " << pIdx[k] << " weight is " << pWeights[k] << "\n";
+					}
 
 					/* ... */
-					std::cout << pNode->GetName() << " - " << cluster->GetLink()->GetName() << ", " << nIdx << "\n";
 
 				}
 			}
@@ -449,32 +596,25 @@ int main(int argc, char** argv)
 		//for (int i = 0; i < tmp->GetChildCount(); ++i) {
 		//}
 
+		//GetMeshData(lScene->GetRootNode());
 		//GetClusterData(lScene->GetRootNode());
-
-		GetMeshData(lScene->GetRootNode());
-
-
-
 
 		/*****************************************************************
 		Animation Data를 얻는 부분
 		*****************************************************************/
-		//for (int i = 0; i < lScene->GetSrcObjectCount<FbxAnimStack>(); i++)
-		//{
-		//	FbxAnimStack* lAnimStack = lScene->GetSrcObject<FbxAnimStack>(i);
-		//	int l;
-		//	int nbAnimLayers = lAnimStack->GetMemberCount<FbxAnimLayer>();
-		//	for (l = 0; l < nbAnimLayers; l++)
-		//	{
-		//		FbxAnimLayer* lAnimLayer = lAnimStack->GetMember<FbxAnimLayer>(l);
-		//		GetAnimationDataRec(lAnimLayer, lScene->GetRootNode());
-		//	}
-		//}
-		//animData.Print();
-
-
+		for (int i = 0; i < lScene->GetSrcObjectCount<FbxAnimStack>(); i++)
+		{
+			FbxAnimStack* lAnimStack = lScene->GetSrcObject<FbxAnimStack>(i);
+			int l;
+			int nbAnimLayers = lAnimStack->GetMemberCount<FbxAnimLayer>();
+			for (l = 0; l < nbAnimLayers; l++)
+			{
+				FbxAnimLayer* lAnimLayer = lAnimStack->GetMember<FbxAnimLayer>(l);
+				GetAnimationDataRec(lAnimLayer, lScene->GetRootNode());
+			}
+		}
+		animData.Print();
     }
-
     // Destroy all objects created by the FBX SDK.
     DestroySdkObjects(lSdkManager, lResult);
 
