@@ -41,6 +41,7 @@
 #include <fstream>
 #include <list>
 #include <vector>
+#include <algorithm>
 
 // Local function prototypes.
 void DisplayContent(FbxScene* pScene);
@@ -62,10 +63,38 @@ namespace K {
 	};
 }
 
-struct Int4 { int x, y, z, w; };
+struct Int4 { 
+	int x, y, z, w;
+
+	Int4() :x(-1), y(-1), z(-1), w(-1) {}
+	int& operator[](int x) {
+		switch (x)
+		{
+		case 0: return this->x;
+		case 1: return this->y;
+		case 2: return this->z;
+		case 3: return this->w;
+		}
+	}
+};
 struct Float2 { float x, y; };
 struct Float3 {	float x, y, z; };
-struct Float4 { float x, y, z, w; };
+struct Float4 { 
+	float x, y, z, w;
+
+	Float4() :x(0), y(0), z(0), w(0) {}
+	Float4(float i) :x(i), y(i), z(i), w(i) {}
+
+	float& operator[](int x) {
+		switch (x)
+		{
+		case 0: return this->x;
+		case 1: return this->y;
+		case 2: return this->z;
+		case 3: return this->w;
+		}
+	}
+};
 
 struct Bone {
 	std::string name;
@@ -302,14 +331,15 @@ public:
 			}
 		}
 		ConnectBoneParent();
-		PrintBoneData();
+		//PrintBoneData();
 	}
 	void MakeMeshData() {
 		GetMeshDataRec(pScene->GetRootNode());
-		PrintMeshData();
+		//PrintMeshData();
 	}
 	void AddClusterWeights() {
 		GetClusterData(pScene->GetRootNode());
+		PrintMeshDataAfterClusterProcess();
 	}
 private:
 	//void GetBoneDataRec(FbxAnimLayer* pAnimLayer, FbxNode* pNode) {
@@ -447,12 +477,31 @@ private:
 		for (auto p = meshes.begin(); p != meshes.end(); ++p) {
 			std::cout << p->name.c_str() << "\n";
 			for (auto cp = p->controlPoints.begin(); cp != p->controlPoints.end(); ++cp) {
-				/*std::cout << "("
+				std::cout << "("
 					<< cp->pos.x << ", "
 					<< cp->pos.y << ", "
-					<< cp->pos.z << ")\n";*/
+					<< cp->pos.z << ")\n";
 			}
 		}
+	}
+	int GetBoneIdxByName(const char* name) {
+		for (auto p = bones.begin(); p != bones.end(); ++p) {
+			/* stringÀÌ¶û const char*¶û ¹Ù·Î ºñ±³°¡ µÊ?? */
+			if (name == p->name) return std::distance(bones.begin(), p);
+		}
+	}
+	int GetMeshIdxByName(const char* name) {
+		for (auto p = meshes.begin(); p != meshes.end(); ++p) {
+			/* stringÀÌ¶û const char*¶û ¹Ù·Î ºñ±³°¡ µÊ?? */
+			if (name == p->name) return std::distance(meshes.begin(), p);
+		}
+	}
+	int SetControlPointBoneIdx(int meshIdx, int cpIdx, int boneIdx) {
+		if (-1 == meshes[meshIdx].controlPoints[cpIdx].boneIdx.x) {meshes[meshIdx].controlPoints[cpIdx].boneIdx.x = boneIdx; return 0;}
+		if (-1 == meshes[meshIdx].controlPoints[cpIdx].boneIdx.y) {meshes[meshIdx].controlPoints[cpIdx].boneIdx.y = boneIdx; return 1;}
+		if (-1 == meshes[meshIdx].controlPoints[cpIdx].boneIdx.z) {meshes[meshIdx].controlPoints[cpIdx].boneIdx.z = boneIdx; return 2;}
+		if (-1 == meshes[meshIdx].controlPoints[cpIdx].boneIdx.w) {meshes[meshIdx].controlPoints[cpIdx].boneIdx.w = boneIdx; return 3;}
+		return -1;
 	}
 	void GetClusterData(FbxNode* pNode) {
 		int meshCount;
@@ -481,13 +530,18 @@ private:
 						int* pIdx = cluster->GetControlPointIndices();
 						double* pWeights = cluster->GetControlPointWeights();
 
-						std::cout /*<< pNode->GetName()*/ << cluster->GetLink()->GetName() << " has " << nIdx << " Infos.\n";
+						int boneIdx = GetBoneIdxByName(cluster->GetLink()->GetName());
+						int meshIdx = GetMeshIdxByName(pNode->GetName());
+
 						for (int k = 0; k < nIdx; ++k) {
-							std::cout << "\t#" << k << " - " << pIdx[k] << " weight is " << pWeights[k] << "\n";
+							for (int l = 0; l < 4; ++l) {
+								if (-1 == meshes[meshIdx].controlPoints[pIdx[k]].boneIdx[l]) {
+									meshes[meshIdx].controlPoints[pIdx[k]].boneIdx[l] = boneIdx;
+									meshes[meshIdx].controlPoints[pIdx[k]].weight[l] = pWeights[k];
+									break;
+								}
+							}
 						}
-
-						/* ... */
-
 					}
 				}
 			}
@@ -495,6 +549,23 @@ private:
 		for (meshCount = 0; meshCount < pNode->GetChildCount(); meshCount++)
 		{
 			GetClusterData(pNode->GetChild(meshCount));
+		}
+	}
+	void PrintMeshDataAfterClusterProcess() {
+		for (auto p = meshes.begin(); p != meshes.end(); ++p) {
+			std::cout << p->name.c_str() << "\n";
+			for (auto cp = p->controlPoints.begin(); cp != p->controlPoints.end(); ++cp) {
+				std::cout << "("
+					<< cp->pos.x << ", "
+					<< cp->pos.y << ", "
+					<< cp->pos.z << ")\n";
+				for (int i = 0; i < 4; ++i) {
+					if (-1 == cp->boneIdx[i]) continue;
+					std::cout << "\t"
+						<< cp->boneIdx[i] << " - "
+						<< cp->weight[i] << "\n";
+				}
+			}
 		}
 	}
 private:
@@ -786,6 +857,18 @@ void GetClusterData(FbxNode* pNode) {
 	}
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 int main(int argc, char** argv)
 {
     FbxManager* lSdkManager = NULL;
@@ -886,8 +969,8 @@ int main(int argc, char** argv)
 		//animData.Print();
 
 		dataManager.Init(lScene);
-		//dataManager.MakeBoneData();
-		//dataManager.MakeMeshData();
+		dataManager.MakeBoneData();
+		dataManager.MakeMeshData();
 		dataManager.AddClusterWeights();
     }
     // Destroy all objects created by the FBX SDK.
