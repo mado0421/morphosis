@@ -69,9 +69,11 @@ struct Float4 { float x, y, z, w; };
 
 struct Bone {
 	std::string name;
+	int			idx;
 	Float3		LclTranslation;
 	Float3		LclRotation;
 	Bone*		parent = NULL;
+	FbxNode*	node = NULL;
 
 	Bone& operator=(const Bone& other) {
 		this->name				= other.name;
@@ -85,6 +87,29 @@ struct Bone {
 		if (this->name != other.name) return false;
 		//if (this->LclTranslation != other.LclTranslation) return false;
 		return true;
+	}
+
+	Bone() {
+
+	}
+	Bone(const char* name, int idx, Float3 t, Float3 r, Bone* p) {
+		this->name = name;
+		this->idx = idx;
+		LclTranslation = t;
+		LclRotation = r;
+		parent = p;
+	}
+	Bone(const char* name, int idx, Float3 t, Float3 r, FbxNode* p) {
+		this->name = name;
+		this->idx = idx;
+		LclTranslation = t;
+		LclRotation = r;
+		node = p;
+	}
+	Bone(const char* name, int idx, FbxNode* p) {
+		this->name = name;
+		this->idx = idx;
+		node = p;
 	}
 };
 
@@ -239,6 +264,9 @@ struct Vertex {
 	Float3	pos;
 	Int4	boneIdx;
 	Float4	weight;
+
+	Vertex() {}
+	Vertex(Float3 p) :pos(p) {}
 };
 
 struct GeometryData {
@@ -249,8 +277,275 @@ struct GeometryData {
 	std::vector<int>	uvIdx;
 };
 
+struct Mesh {
+	std::string name;
+	std::vector<Vertex> controlPoints;
+
+	Mesh() {}
+	Mesh(const char* name) { this->name = name; }
+};
+
 static bool gVerbose = true;
 AnimationData animData;
+
+
+class DataManager {
+public:
+	void Init(FbxScene* scene) { pScene = scene; }
+	void MakeBoneData() {
+		for (int i = 0; i < pScene->GetSrcObjectCount<FbxAnimStack>(); ++i) {
+			FbxAnimStack* pAnimStack = pScene->GetSrcObject<FbxAnimStack>(i);
+			int nAnimLayers = pAnimStack->GetMemberCount<FbxAnimLayer>();
+			for (int j = 0; j < nAnimLayers; ++j) {
+				FbxAnimLayer* pAnimLayer = pAnimStack->GetMember<FbxAnimLayer>(j);
+				GetBoneDataRec(pAnimLayer, pScene->GetRootNode());
+			}
+		}
+		ConnectBoneParent();
+		PrintBoneData();
+	}
+	void MakeMeshData() {
+		GetMeshDataRec(pScene->GetRootNode());
+		PrintMeshData();
+	}
+	void AddClusterWeights() {
+		GetClusterData(pScene->GetRootNode());
+	}
+private:
+	//void GetBoneDataRec(FbxAnimLayer* pAnimLayer, FbxNode* pNode) {
+	//	int childCount;
+
+	//	// pass...
+	//	FbxVector4 lTmpVector;
+	//	Float3 t, r;
+
+	//	lTmpVector = pNode->GetGeometricTranslation(FbxNode::eSourcePivot);
+	//	t.x = lTmpVector[0];
+	//	t.y = lTmpVector[1];
+	//	t.z = lTmpVector[2];
+	//	lTmpVector = pNode->GetGeometricRotation(FbxNode::eSourcePivot);
+	//	r.x = lTmpVector[0];
+	//	r.y = lTmpVector[1];
+	//	r.z = lTmpVector[2];
+
+	//	bones.emplace_back(pNode->GetName(), bones.size(), t, r, pNode->GetParent());
+
+	//	for (childCount = 0; childCount < pNode->GetChildCount(); ++childCount) {
+	//		GetBoneDataRec(pAnimLayer, pNode->GetChild(childCount));
+	//	}
+	//}
+	//void ConnectBoneParent() {
+	//	for (auto p = bones.begin(); p != bones.end(); ++p) {
+	//		for (auto pp = bones.begin(); pp != bones.end(); ++pp) {
+	//			if (NULL == p->node) break;
+	//			//std::cout << p->node->GetName() << "\n";
+	//			if (p->node->GetName() == pp->name) {
+	//				p->parent = &(*pp);
+	//				break;
+	//			}
+	//		}
+	//	}
+	//}
+	//void PrintBoneData() {
+	//	for (auto p = bones.begin(); p != bones.end(); ++p) {
+	//		if (NULL == p->parent) {
+	//			std::cout
+	//				<< p->name.c_str() << " - "
+	//				<< p->idx << " - T("
+	//				<< p->LclTranslation.x << ", "
+	//				<< p->LclTranslation.y << ", "
+	//				<< p->LclTranslation.z << "), R( "
+	//				<< p->LclRotation.x << ", "
+	//				<< p->LclRotation.y << ", "
+	//				<< p->LclRotation.z << ")\n";
+	//			continue;
+	//		}
+	//		std::cout
+	//			<< p->name.c_str() << " - "
+	//			<< p->idx << " - T("
+	//			<< p->LclTranslation.x << ", "
+	//			<< p->LclTranslation.y << ", "
+	//			<< p->LclTranslation.z << "), R( "
+	//			<< p->LclRotation.x << ", "
+	//			<< p->LclRotation.y << ", "
+	//			<< p->LclRotation.z << "), Parent - "
+	//			<< p->parent->name.c_str() << "\n";
+
+	//	}
+	//}
+	void GetBoneDataRec(FbxAnimLayer* pAnimLayer, FbxNode* pNode) {
+		int childCount;
+		FbxVector4 lTmpVector;
+
+		bones.emplace_back(pNode->GetName(), bones.size(), pNode->GetParent());
+
+		for (childCount = 0; childCount < pNode->GetChildCount(); ++childCount) {
+			GetBoneDataRec(pAnimLayer, pNode->GetChild(childCount));
+		}
+	}
+	void ConnectBoneParent() {
+		for (auto p = bones.begin(); p != bones.end(); ++p) {
+			for (auto pp = bones.begin(); pp != bones.end(); ++pp) {
+				if (NULL == p->node) break;
+				//std::cout << p->node->GetName() << "\n";
+				if (p->node->GetName() == pp->name) {
+					p->parent = &(*pp);
+					break;
+				}
+			}
+		}
+	}
+	void PrintBoneData() {
+		for (auto p = bones.begin(); p != bones.end(); ++p) {
+			if (NULL == p->parent) {
+				std::cout
+					<< p->name.c_str() << " - "
+					<< p->idx << "\n";
+				continue;
+			}
+			std::cout
+				<< p->name.c_str() << " - "
+				<< p->idx << " - Parent - "
+				<< p->parent->name.c_str() << "\n";
+
+		}
+	}
+	void GetMeshDataRec(FbxNode* pNode) {
+		int meshCount;
+		FbxMesh* pMesh = pNode->GetMesh();
+		if (NULL != pMesh) {
+			int nControlPoints = pMesh->GetControlPointsCount();
+			int nElementNormals = pMesh->GetElementNormalCount();
+			FbxVector4* pControlPoints = pMesh->GetControlPoints();
+			int nPolygons = pMesh->GetPolygonCount();
+
+			int meshIdx = meshes.size();
+			meshes.emplace_back(pNode->GetName());
+
+			for (int i = 0, nIdx = 0; i < nPolygons; ++i) {
+				FbxVector4 fbxVector4;
+				int nPolygonSize = pMesh->GetPolygonSize(i);
+				for (int j = 0; j < nPolygonSize; ++j) {
+					int nControlPointIdx = pMesh->GetPolygonVertex(i, j);
+					Float3 p;
+
+					fbxVector4 = pControlPoints[nControlPointIdx];
+					p.x = fbxVector4.mData[0];
+					p.y = fbxVector4.mData[1];
+					p.z = fbxVector4.mData[2];
+
+					meshes[meshIdx].controlPoints.emplace_back(p);
+				}
+			}
+		}
+		for (meshCount = 0; meshCount < pNode->GetChildCount(); meshCount++)
+		{
+			GetMeshDataRec(pNode->GetChild(meshCount));
+		}
+	}
+	void PrintMeshData() {
+		for (auto p = meshes.begin(); p != meshes.end(); ++p) {
+			std::cout << p->name.c_str() << "\n";
+			for (auto cp = p->controlPoints.begin(); cp != p->controlPoints.end(); ++cp) {
+				/*std::cout << "("
+					<< cp->pos.x << ", "
+					<< cp->pos.y << ", "
+					<< cp->pos.z << ")\n";*/
+			}
+		}
+	}
+	void GetClusterData(FbxNode* pNode) {
+		int meshCount;
+		FbxNodeAttribute::EType type;
+		FbxGeometry* geo;
+		FbxNodeAttribute* lNodeAttribute = pNode->GetNodeAttribute();
+
+		if (NULL != lNodeAttribute) {
+			type = lNodeAttribute->GetAttributeType();
+
+
+			if (FbxNodeAttribute::eMesh == type) {
+				geo = pNode->GetGeometry();
+
+				std::cout << pNode->GetName() << "\n";
+				int nSkinDeformers = geo->GetDeformerCount(FbxDeformer::eSkin);
+				for (int i = 0; i < nSkinDeformers; ++i) {
+					FbxSkin* skinDeformer = (FbxSkin*)(geo->GetDeformer(i, FbxDeformer::eSkin));
+					int nClusters = skinDeformer->GetClusterCount();
+
+
+
+					for (int j = 0; j < nClusters; ++j) {
+						FbxCluster* cluster = skinDeformer->GetCluster(j);
+						int nIdx = cluster->GetControlPointIndicesCount();
+						int* pIdx = cluster->GetControlPointIndices();
+						double* pWeights = cluster->GetControlPointWeights();
+
+						std::cout /*<< pNode->GetName()*/ << cluster->GetLink()->GetName() << " has " << nIdx << " Infos.\n";
+						for (int k = 0; k < nIdx; ++k) {
+							std::cout << "\t#" << k << " - " << pIdx[k] << " weight is " << pWeights[k] << "\n";
+						}
+
+						/* ... */
+
+					}
+				}
+			}
+		}
+		for (meshCount = 0; meshCount < pNode->GetChildCount(); meshCount++)
+		{
+			GetClusterData(pNode->GetChild(meshCount));
+		}
+	}
+private:
+	/******************************************************************
+	Bone은 상대적 이동값과 회전값, 부모 Bone, Vector 내의 idx값을 가진다.
+	맨 처음 생성 시에는 idx랑 부모만 갖게 하고
+	Animation Data를 넣으면서 위치변환과 회전을 줌.
+	******************************************************************/
+	std::vector<Bone> bones;
+
+	/******************************************************************
+	Mesh는 일단 ControlPoint 값만 가진다.
+	Mesh가 여러 개 있을 수 있으므로 Mesh를 Vector로 관리하고
+	Mesh 내에서 ControlPoint 배열을 만들어 관리한다.
+	******************************************************************/
+	std::vector<Mesh> meshes;
+	
+	/******************************************************************
+	Animation은 Key값을 가져야 한다.
+	Key는 크게 KeyTime, BoneIdx, value 이 세 값을 가진다.
+	ex) 1.333s - Head001 - translate(0, 0, 0), rotate(0, 45, 0)
+	******************************************************************/
+	std::vector<Key> keys;
+
+	/******************************************************************
+	FbxScene 정보가 필요함.
+	******************************************************************/
+	FbxScene* pScene = NULL;
+};
+
+DataManager dataManager;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void GetCurve(FbxAnimCurve* lAnimCurve, FbxNode* pNode, int com, int axi) {
 	int			lKeyCount = lAnimCurve->KeyGetCount();
@@ -281,6 +576,8 @@ void GetCurve(FbxAnimCurve* lAnimCurve, FbxNode* pNode, int com, int axi) {
 		tmp.LclRotation.x = lTmpVector[0];
 		tmp.LclRotation.y = lTmpVector[1];
 		tmp.LclRotation.z = lTmpVector[2];
+
+		//std::cout << pNode->GetName() << "'s parent is " << pNode->GetParent()->GetName() << ".\n";
 
 		//tmp.parent = pNode->GetParent();
 
@@ -331,24 +628,6 @@ void GetMeshData(FbxNode* pNode) {
 		FbxVector4* pControlPoints = pMesh->GetControlPoints();
 		std::cout << pNode->GetName() << "\n"
 			<< nControlPoints << "개\n\n";
-		//pNode->GetGeometry()->GetL
-		//for (int i = 0; i < nControlPoints; ++i) {
-		//	FbxVector4 fbxVector4 = pControlPoints[i];
-		//	for (int j = 0; j < nElementNormals; ++j) {
-		//		FbxGeometryElementNormal* pNormals = pMesh->GetElementNormal(j);
-		//		if (pNormals->GetMappingMode() == FbxGeometryElement::eByControlPoint) {
-		//			if (pNormals->GetReferenceMode() == FbxGeometryElement::eDirect) {
-		//				fbxVector4 = pNormals->GetDirectArray().GetAt(i);
-		//				/* ... */
-		//				std::cout << "("
-		//					<< fbxVector4.mData[0] << ", "
-		//					<< fbxVector4.mData[1] << ", "
-		//					<< fbxVector4.mData[2] << ", "
-		//					<< fbxVector4.mData[3] << ")\n";
-		//			}
-		//		}
-		//	}
-		//}
 		int nPolygons = pMesh->GetPolygonCount();
 		for (int i = 0, nIdx = 0; i < nPolygons; ++i) {
 			FbxVector4 fbxVector4;
@@ -375,7 +654,6 @@ void GetMeshData(FbxNode* pNode) {
 	//FbxGeometry* geo;
 	//FbxMesh* pMesh;
 	//FbxNodeAttribute* lNodeAttribute = pNode->GetNodeAttribute();
-
 	//if (NULL != lNodeAttribute) {
 	//	type = lNodeAttribute->GetAttributeType();
 	//	if (FbxNodeAttribute::eMesh == type) {
@@ -385,16 +663,11 @@ void GetMeshData(FbxNode* pNode) {
 	//			std::cout
 	//				<< pMesh->GetTextureUVIndex(0, 0) << ", "
 	//				<< pMesh->GetTextureUVIndex(0, 1) << "\n";
-
-
 	//		}
-
 	//		int nControlPoints = geo->GetControlPointsCount();
 	//		FbxVector4* pControlPoints = geo->GetControlPoints();
-
 	//		std::cout << pNode->GetName() << " - "
 	//			<< nControlPoints << "\n";
-
 	//		for (int i = 0; i < nControlPoints; ++i) {
 	//			FbxVector4 tmpVec4 = pControlPoints[i];
 	//			//std::cout << "("
@@ -403,7 +676,6 @@ void GetMeshData(FbxNode* pNode) {
 	//			//	<< tmpVec4.mData[2] << ", "
 	//			//	<< tmpVec4.mData[3] << ")\n";
 	//		}
-
 	//		int nUV = geo->GetElementUVCount();
 	//		//nUV = 
 	//		for (int i = 0; i < nUV; ++i) {
@@ -413,16 +685,12 @@ void GetMeshData(FbxNode* pNode) {
 	//				<< pUV->mDirectArray[0][i].mData[1] << ")\n";
 	//		}
 	//		//pUV->mDirectArray[]
-
-
 	//	}
 	//}
-
 	//for (meshCount = 0; meshCount < pNode->GetChildCount(); meshCount++)
 	//{
 	//	GetMeshData(pNode->GetChild(meshCount));
 	//}
-
 	/*
 	void FBXExporter::ReadUV(FbxMesh* inMesh, int inCtrlPointIndex, int inTextureUVIndex, int inUVLayer, XMFLOAT2& outUV)
 {
@@ -604,18 +872,23 @@ int main(int argc, char** argv)
 		/*****************************************************************
 		Animation Data를 얻는 부분
 		*****************************************************************/
-		for (int i = 0; i < lScene->GetSrcObjectCount<FbxAnimStack>(); i++)
-		{
-			FbxAnimStack* lAnimStack = lScene->GetSrcObject<FbxAnimStack>(i);
-			int l;
-			int nbAnimLayers = lAnimStack->GetMemberCount<FbxAnimLayer>();
-			for (l = 0; l < nbAnimLayers; l++)
-			{
-				FbxAnimLayer* lAnimLayer = lAnimStack->GetMember<FbxAnimLayer>(l);
-				GetAnimationDataRec(lAnimLayer, lScene->GetRootNode());
-			}
-		}
-		animData.Print();
+		//for (int i = 0; i < lScene->GetSrcObjectCount<FbxAnimStack>(); i++)
+		//{
+		//	FbxAnimStack* lAnimStack = lScene->GetSrcObject<FbxAnimStack>(i);
+		//	int l;
+		//	int nbAnimLayers = lAnimStack->GetMemberCount<FbxAnimLayer>();
+		//	for (l = 0; l < nbAnimLayers; l++)
+		//	{
+		//		FbxAnimLayer* lAnimLayer = lAnimStack->GetMember<FbxAnimLayer>(l);
+		//		GetAnimationDataRec(lAnimLayer, lScene->GetRootNode());
+		//	}
+		//}
+		//animData.Print();
+
+		dataManager.Init(lScene);
+		//dataManager.MakeBoneData();
+		//dataManager.MakeMeshData();
+		dataManager.AddClusterWeights();
     }
     // Destroy all objects created by the FBX SDK.
     DestroySdkObjects(lSdkManager, lResult);
