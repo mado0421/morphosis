@@ -224,6 +224,8 @@ struct AnimationData {
 
 			out.write((char*)&keyTime, sizeof(float));
 			for (auto p = Keys[i].data.cbegin(); p != Keys[i].data.cend(); ++p) {
+				//pass
+
 				//float temp = p->
 				//out.write((char*)&keyTime, sizeof(float));
 			}
