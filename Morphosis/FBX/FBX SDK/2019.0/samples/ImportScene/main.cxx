@@ -309,6 +309,7 @@ struct GeometryData {
 struct Mesh {
 	std::string name;
 	std::vector<Vertex> controlPoints;
+	std::vector<int> polygonVertexIndex;
 
 	Mesh() {}
 	Mesh(const char* name) { this->name = name; }
@@ -339,70 +340,9 @@ public:
 	}
 	void AddClusterWeights() {
 		GetClusterData(pScene->GetRootNode());
-		PrintMeshDataAfterClusterProcess();
+		//PrintMeshDataAfterClusterProcess();
 	}
 private:
-	//void GetBoneDataRec(FbxAnimLayer* pAnimLayer, FbxNode* pNode) {
-	//	int childCount;
-
-	//	// pass...
-	//	FbxVector4 lTmpVector;
-	//	Float3 t, r;
-
-	//	lTmpVector = pNode->GetGeometricTranslation(FbxNode::eSourcePivot);
-	//	t.x = lTmpVector[0];
-	//	t.y = lTmpVector[1];
-	//	t.z = lTmpVector[2];
-	//	lTmpVector = pNode->GetGeometricRotation(FbxNode::eSourcePivot);
-	//	r.x = lTmpVector[0];
-	//	r.y = lTmpVector[1];
-	//	r.z = lTmpVector[2];
-
-	//	bones.emplace_back(pNode->GetName(), bones.size(), t, r, pNode->GetParent());
-
-	//	for (childCount = 0; childCount < pNode->GetChildCount(); ++childCount) {
-	//		GetBoneDataRec(pAnimLayer, pNode->GetChild(childCount));
-	//	}
-	//}
-	//void ConnectBoneParent() {
-	//	for (auto p = bones.begin(); p != bones.end(); ++p) {
-	//		for (auto pp = bones.begin(); pp != bones.end(); ++pp) {
-	//			if (NULL == p->node) break;
-	//			//std::cout << p->node->GetName() << "\n";
-	//			if (p->node->GetName() == pp->name) {
-	//				p->parent = &(*pp);
-	//				break;
-	//			}
-	//		}
-	//	}
-	//}
-	//void PrintBoneData() {
-	//	for (auto p = bones.begin(); p != bones.end(); ++p) {
-	//		if (NULL == p->parent) {
-	//			std::cout
-	//				<< p->name.c_str() << " - "
-	//				<< p->idx << " - T("
-	//				<< p->LclTranslation.x << ", "
-	//				<< p->LclTranslation.y << ", "
-	//				<< p->LclTranslation.z << "), R( "
-	//				<< p->LclRotation.x << ", "
-	//				<< p->LclRotation.y << ", "
-	//				<< p->LclRotation.z << ")\n";
-	//			continue;
-	//		}
-	//		std::cout
-	//			<< p->name.c_str() << " - "
-	//			<< p->idx << " - T("
-	//			<< p->LclTranslation.x << ", "
-	//			<< p->LclTranslation.y << ", "
-	//			<< p->LclTranslation.z << "), R( "
-	//			<< p->LclRotation.x << ", "
-	//			<< p->LclRotation.y << ", "
-	//			<< p->LclRotation.z << "), Parent - "
-	//			<< p->parent->name.c_str() << "\n";
-
-	//	}
-	//}
 	void GetBoneDataRec(FbxAnimLayer* pAnimLayer, FbxNode* pNode) {
 		int childCount;
 		FbxVector4 lTmpVector;
@@ -447,24 +387,28 @@ private:
 			int nControlPoints = pMesh->GetControlPointsCount();
 			int nElementNormals = pMesh->GetElementNormalCount();
 			FbxVector4* pControlPoints = pMesh->GetControlPoints();
+			FbxVector4 fbxVector4;
+			Float3 p;
 			int nPolygons = pMesh->GetPolygonCount();
-
 			int meshIdx = meshes.size();
+
 			meshes.emplace_back(pNode->GetName());
 
+			for (int i = 0; i < nControlPoints; ++i) {
+				fbxVector4 = pControlPoints[i];
+				p.x = fbxVector4.mData[0];
+				p.y = fbxVector4.mData[1];
+				p.z = fbxVector4.mData[2];
+				meshes[meshIdx].controlPoints.emplace_back(p);
+			}
+
+			int nPolygon = pMesh->GetPolygonCount();
 			for (int i = 0, nIdx = 0; i < nPolygons; ++i) {
 				FbxVector4 fbxVector4;
 				int nPolygonSize = pMesh->GetPolygonSize(i);
 				for (int j = 0; j < nPolygonSize; ++j) {
 					int nControlPointIdx = pMesh->GetPolygonVertex(i, j);
-					Float3 p;
-
-					fbxVector4 = pControlPoints[nControlPointIdx];
-					p.x = fbxVector4.mData[0];
-					p.y = fbxVector4.mData[1];
-					p.z = fbxVector4.mData[2];
-
-					meshes[meshIdx].controlPoints.emplace_back(p);
+					meshes[meshIdx].polygonVertexIndex.push_back(nControlPointIdx);
 				}
 			}
 		}
@@ -516,13 +460,11 @@ private:
 			if (FbxNodeAttribute::eMesh == type) {
 				geo = pNode->GetGeometry();
 
-				std::cout << pNode->GetName() << "\n";
+				//std::cout << pNode->GetName() << "\n";
 				int nSkinDeformers = geo->GetDeformerCount(FbxDeformer::eSkin);
 				for (int i = 0; i < nSkinDeformers; ++i) {
 					FbxSkin* skinDeformer = (FbxSkin*)(geo->GetDeformer(i, FbxDeformer::eSkin));
 					int nClusters = skinDeformer->GetClusterCount();
-
-
 
 					for (int j = 0; j < nClusters; ++j) {
 						FbxCluster* cluster = skinDeformer->GetCluster(j);
@@ -597,24 +539,6 @@ private:
 };
 
 DataManager dataManager;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -858,17 +782,6 @@ void GetClusterData(FbxNode* pNode) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
 int main(int argc, char** argv)
 {
     FbxManager* lSdkManager = NULL;
@@ -904,25 +817,6 @@ int main(int argc, char** argv)
     }
     else 
     {
-        // Display the scene.
-        //DisplayMetaData(lScene);
-        //FBXSDK_printf("\n\n---------------------\nGlobal Light Settings\n---------------------\n\n");
-        //if( gVerbose ) DisplayGlobalLightSettings(&lScene->GetGlobalSettings());
-        //FBXSDK_printf("\n\n----------------------\nGlobal Camera Settings\n----------------------\n\n");
-        //if( gVerbose ) DisplayGlobalCameraSettings(&lScene->GetGlobalSettings());
-        //FBXSDK_printf("\n\n--------------------\nGlobal Time Settings\n--------------------\n\n");
-        //if( gVerbose ) DisplayGlobalTimeSettings(&lScene->GetGlobalSettings());
-        //FBXSDK_printf("\n\n---------\nHierarchy\n---------\n\n");
-        //if( gVerbose ) DisplayHierarchy(lScene);
-        //FBXSDK_printf("\n\n------------\nNode Content\n------------\n\n");
-        //if( gVerbose ) DisplayContent(lScene);
-        //FBXSDK_printf("\n\n----\nPose\n----\n\n");
-        //if( gVerbose ) DisplayPose(lScene);
- /*       FBXSDK_printf("\n\n---------\nAnimation\n---------\n\n");
-        if( gVerbose ) DisplayAnimation(lScene);*/
-        ////now display generic information
-        //FBXSDK_printf("\n\n---------\nGeneric Information\n---------\n\n");
-        //if( gVerbose ) DisplayGenericInfo(lScene);
 
 		/*****************************************************************
 		먼저 Geometry Data를 얻어야 함.
