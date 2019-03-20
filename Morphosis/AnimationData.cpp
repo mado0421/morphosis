@@ -401,6 +401,60 @@ Anim::Anim()
 	//}
 }
 
+Anim::Anim(int Keys, int Bones, vector<CBone>& b, vector<CKey>& k)
+{
+	
+	nKeys = k.size();
+	nBones = b.size();
+	keyList = new CKey*[nKeys];
+	CBone ** boneList = new CBone*[nBones];
+
+	for (int i = 0; i < nBones; ++i) {
+		CBone * pB;
+		pB = new CBone();
+		
+		if(-1 == b[i].parentIdx)
+			pB->Initialize(
+				XMFLOAT3(0, 0, 0),
+				XMFLOAT3(0, 0, 0),
+				NULL);
+		else
+			pB->Initialize(
+				XMFLOAT3(0, 0, 0),
+				XMFLOAT3(0, 0, 0),
+				boneList[b[i].parentIdx]);
+		boneList[i] = pB;
+	}
+
+	float* time = new float[nKeys];
+	for (int i = 0; i < nKeys; ++i) {
+		time[i] = k[i].keyTime;
+	}
+
+	for (int i = 0; i < nKeys; ++i) {
+		CKey* pk = new CKey();
+		pk->nBones = k[i].nBones;
+		pk->boneList = new CBone*[pk->nBones];
+		for (int j = 0; j < pk->nBones; ++j) {
+			pk->boneList[j] = new CBone(*boneList[j]);
+
+		}
+		pk->keyTime = time[i];
+		keyList[i] = pk;
+		for (int j = 0; j < pk->nBones; ++j)
+			keyList[i]->boneList[j]->parent = boneList[boneList[j]->parentIdx];
+	}
+
+	for (int i = 0; i < nKeys; ++i) {
+		for (int j = 0; j < keyList[i]->nBones; ++j) {
+			keyList[i]->boneList[j]->Pos = k[i].bones[j].Pos;
+			keyList[i]->boneList[j]->Rot = k[i].bones[j].Rot;
+		}
+	}
+
+
+}
+
 Anim::~Anim()
 {
 }

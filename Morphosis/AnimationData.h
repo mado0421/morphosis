@@ -3,6 +3,7 @@
 #include <iostream>
 #include <iomanip>
 
+
 struct CB_ANIMDATA_INFO {
 	XMFLOAT4X4 interpolatedMatrix;
 };
@@ -13,87 +14,9 @@ inline double GetTime(__int64 int64time) {
 	return (i64d / 30.0);
 }
 
-struct CBone {
-public:
-	XMMATRIX GetLocalMatrix() {
-		XMMATRIX rotM = XMMatrixRotationRollPitchYaw(XMConvertToRadians(Rot.x), XMConvertToRadians(Rot.y), XMConvertToRadians(Rot.z));
-		XMMATRIX trsM = XMMatrixTranslation(Pos.x, Pos.y, Pos.z);
-		return XMMatrixMultiply(trsM, rotM);
-	}
-	void Initialize(XMFLOAT3 LclTrans, XMFLOAT3 LclRotate, CBone*parent) {
 
-		//부모 주소 줌
-		this->parent = parent;
 
-		//toParent 구함
-		MakeToParentMatrix(LclTrans, LclRotate);
 
-		//toDresspose 구함
-		MakeToDressposeMatrix();
-
-		//toDressposeInverse 구함
-		MakeToDressposeInverseMatrix();
-	}
-	void MakeToParentMatrix() {
-		if (!parent) { XMStoreFloat4x4(&toParent, XMMatrixIdentity()); return; }
-		XMFLOAT3 toParentTrans = XMFLOAT3(parent->Pos.x - Pos.x, parent->Pos.y - Pos.y, parent->Pos.z - Pos.z);
-		XMFLOAT3 toParentRotate = XMFLOAT3(parent->Rot.x - Rot.x, parent->Rot.y - Rot.y, parent->Rot.z - Rot.z);
-
-		XMStoreFloat4x4(&toParent, XMMatrixRotationRollPitchYaw(XMConvertToRadians(toParentRotate.x), XMConvertToRadians(toParentRotate.y), XMConvertToRadians(toParentRotate.z)));
-		toParent._41 = toParentTrans.x;
-		toParent._42 = toParentTrans.y;
-		toParent._43 = toParentTrans.z;
-	}
-	void MakeToParentMatrix(XMFLOAT3 LclTrans, XMFLOAT3 LclRotate) {
-		XMStoreFloat4x4(&toParent, XMMatrixRotationRollPitchYaw(
-			XMConvertToRadians(LclRotate.x),
-			XMConvertToRadians(LclRotate.y),
-			XMConvertToRadians(LclRotate.z)
-		));
-		toParent._41 = LclTrans.x;
-		toParent._42 = LclTrans.y;
-		toParent._43 = LclTrans.z;
-	}
-	void MakeToDressposeMatrix() {
-		if (!parent) XMStoreFloat4x4(&toDresspose, XMMatrixMultiply(XMLoadFloat4x4(&toParent), XMMatrixIdentity()));
-		else XMStoreFloat4x4(&toDresspose, XMMatrixMultiply(XMLoadFloat4x4(&toParent), XMLoadFloat4x4(&parent->toDresspose)));
-	}
-	void MakeToDressposeInverseMatrix() {
-		XMVECTOR det;
-		det = XMMatrixDeterminant(XMLoadFloat4x4(&toDresspose));
-		XMStoreFloat4x4(&toDressposeInverse, XMMatrixInverse(&det, XMLoadFloat4x4(&toDresspose)));
-	}
-	void MakeToWorldMatrix() {
-		XMMATRIX ToWorld;
-		if (!parent) ToWorld = XMMatrixMultiply(XMLoadFloat4x4(&Local), XMMatrixMultiply(XMLoadFloat4x4(&toParent), XMMatrixIdentity()));
-		else ToWorld = XMMatrixMultiply(XMLoadFloat4x4(&Local), XMMatrixMultiply(XMLoadFloat4x4(&toParent), XMLoadFloat4x4(&parent->toWorld)));
-		XMStoreFloat4x4(&toWorld, ToWorld);
-	}
-public:
-	CBone() = default;
-	CBone(const CBone& other) {
-		parent = other.parent;
-		toParent = other.toParent;
-		toDresspose = other.toDresspose;
-		toDressposeInverse = other.toDressposeInverse;
-	}
-public:
-	CBone * parent = NULL;
-	XMFLOAT3 Pos;
-	XMFLOAT3 Rot;
-	XMFLOAT4X4 toParent;
-	XMFLOAT4X4 toDresspose;
-	XMFLOAT4X4 toDressposeInverse;
-	XMFLOAT4X4 toWorld;
-	XMFLOAT4X4 Local;
-};
-
-struct CKey {
-	float keyTime;
-
-	CBone ** boneList;
-	int nBones;
-};
 
 
 
@@ -189,23 +112,26 @@ private:	// 이건 이 클래스 안에서만 쓸거야
 	{
 		return (time >= keyList[nKeys - 1]->keyTime);
 	}
-	float ClampTime(floa
-		t time)
+	float ClampTime(float time)
 	{
 		return (time - ((int)(time / keyList[nKeys - 1]->keyTime) * keyList[nKeys - 1]->keyTime));
 	}
 
 public:
 	Anim();
+	Anim(int nKeys, int nBones, vector<CBone>& b, vector<CKey>& k);
 	~Anim();
 
+
 public:
-	CKey * * keyList;
+	CKey ** keyList;
 	int nKeys;
 
 	int nBones;
-
 	bool isLoop = true;
+
+	vector<CKey> keys;
+
 
 	// y축으로 -90도 회전 후 y축 반전!
 	XMMATRIX a = {

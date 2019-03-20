@@ -2,6 +2,7 @@
 #include "Material.h"
 #include "FBXData.h"
 
+
 class CVertex
 {
 public:
@@ -236,6 +237,7 @@ namespace MeshTest {
 	};
 }
 
+
 class CAnimMesh : public CMesh {
 public:
 	CAnimMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList) : CMesh(pd3dDevice, pd3dCommandList)
@@ -434,87 +436,55 @@ public:
 		if (pIndexUploadBuffer)		pIndexUploadBuffer->Release();
 	}
 
-	//CAnimMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, 
-	//	const char * MeshFileName,
-	//	const char * ClusterFileName) : CMesh(pd3dDevice, pd3dCommandList) {
-	//	streampos size;
+	CAnimMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, TmpMesh& m) : CMesh(pd3dDevice, pd3dCommandList)
+	{
+		int nCPs = m.controlPoints.size();
+		int nPVI = m.polygonVertexIndex.size();
 
-	//	char filePath[MAX_PATH];
-	//	strcpy(filePath, "Assets//Meshes//");
-	//	strcat(filePath, MeshFileName);
-	//	strcat(filePath, ".dat");
+		UINT nStride = sizeof(CAnimVertex);
+		nVertices = nPVI;
 
-	//	Geometry * geo = new Geometry();
+		XMFLOAT3* pos = new XMFLOAT3[nCPs];
+		for (int j = 0; j < nCPs; ++j) {
+			pos[j] = XMFLOAT3(m.controlPoints[j].pos.x, m.controlPoints[j].pos.y, m.controlPoints[j].pos.z);
+		}
 
-	//	ifstream in(filePath, ifstream::binary);
+		XMFLOAT2 uv[1];
+		uv[0] = XMFLOAT2(1, 1);
 
-	//	in.read((char*)&geo->ID, sizeof(__int64));
+		XMFLOAT4* weight = new XMFLOAT4[nCPs];
+		for (int j = 0; j < nCPs; ++j) {
+			weight[j] = XMFLOAT4(m.controlPoints[j].weight.x, m.controlPoints[j].weight.y, m.controlPoints[j].weight.z, m.controlPoints[j].weight.z);
+		}
+		XMINT4* boneIdx = new XMINT4[nCPs];
+		for (int j = 0; j < nCPs; ++j) {
+			boneIdx[j] = XMINT4(m.controlPoints[j].boneIdx.x, m.controlPoints[j].boneIdx.y, m.controlPoints[j].boneIdx.z, m.controlPoints[j].boneIdx.z);
+		}
 
-	//	in.read((char*)&geo->nVertices, sizeof(UINT));
-	//	geo->pVertices = new XMFLOAT3[geo->nVertices];
-	//	in.read((char*)geo->pVertices, sizeof(XMFLOAT3)*geo->nVertices);
+		int* posIdx = new int[nPVI];
+		for (int j = 0; j < nPVI; ++j) {
+			posIdx[j] = m.polygonVertexIndex[j];
+		}
+		
+		int* uvIdx = new int[nPVI];
+		for (int j = 0; j < nPVI; ++j) {
+			uvIdx[j] = 0;
+		}
 
-	//	in.read((char*)&geo->nPolygonVertexIndex, sizeof(UINT));
-	//	geo->pPolygonVertexIndex = new UINT[geo->nPolygonVertexIndex];
-	//	in.read((char*)geo->pPolygonVertexIndex, sizeof(UINT)*geo->nPolygonVertexIndex);
+		CAnimVertex* vertex = new CAnimVertex[nPVI];
 
-	//	in.read((char*)&geo->nNormals, sizeof(UINT));
-	//	geo->pNormals = new XMFLOAT3[geo->nNormals];
-	//	in.read((char*)geo->pNormals, sizeof(XMFLOAT3)*geo->nNormals);
+		for (int i = 0; i < nPVI; ++i) vertex[i].Init(pos[posIdx[i]], uv[uvIdx[i]], weight[posIdx[i]], boneIdx[posIdx[i]]);
 
-	//	in.read((char*)&geo->nUV, sizeof(UINT));
-	//	geo->pUV = new XMFLOAT2[geo->nUV];
-	//	in.read((char*)geo->pUV, sizeof(XMFLOAT2)*geo->nUV);
+		pVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
+			vertex, nStride * nVertices,
+			D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+			&pVertexUploadBuffer);
 
-	//	in.read((char*)&geo->nUVIndex, sizeof(UINT));
-	//	geo->pUVIndex = new UINT[geo->nUVIndex];
-	//	in.read((char*)geo->pUVIndex, sizeof(UINT)*geo->nUVIndex);
+		vertexBufferView.BufferLocation = pVertexBuffer->GetGPUVirtualAddress();
+		vertexBufferView.StrideInBytes = nStride;
+		vertexBufferView.SizeInBytes = nStride * nVertices;
 
-	//	in.read((char*)&geo->LclTranslation, sizeof(XMFLOAT3));
-	//	in.read((char*)&geo->LclRotation, sizeof(XMFLOAT3));
-
-	//	in.close();
-
-	//	UINT nStride = sizeof(CAnimVertex);
-	//	nVertices = geo->nPolygonVertexIndex;
-
-	//	for (int i = 0; i < geo->nPolygonVertexIndex; ++i) {
-	//		if (((i + 1) % 3) == 0) {
-	//			geo->pPolygonVertexIndex[i] *= -1;
-	//			geo->pPolygonVertexIndex[i] -= 1;
-	//		}
-	//	}
-
-
-
-
-
-
-
-
-	//	CAnimVertex *vertex;
-	//	vertex = new CAnimVertex[geo->nPolygonVertexIndex];
-
-	//	//for (int i = 0; i < geo->nPolygonVertexIndex; ++i) vertex[i].Init(
-	//	//	geo->pVertices[geo->pPolygonVertexIndex[i]], 
-	//	//	uv[uvIdx[i]], 
-	//	//	weight[posIdx[i]], 
-	//	//	boneIdx[posIdx[i]]
-	//	//);
-
-	//	pVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
-	//		vertex, nStride * nVertices,
-	//		D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
-	//		&pVertexUploadBuffer);
-
-	//	vertexBufferView.BufferLocation = pVertexBuffer->GetGPUVirtualAddress();
-	//	vertexBufferView.StrideInBytes = nStride;
-	//	vertexBufferView.SizeInBytes = nStride * nVertices;
-	//}
-
-
-
-
+	}
 	virtual void Render(ID3D12GraphicsCommandList * pd3dCommandList)
 	{
 		pd3dCommandList->IASetPrimitiveTopology(primitiveTopology);

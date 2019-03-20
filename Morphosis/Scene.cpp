@@ -1576,9 +1576,12 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 	tempPso[0]->Initialize(pd3dDevice, m_pd3dGraphicsRootSignature);
 	pso[0] = tempPso[0]->GetPipelineState();
 
-//	CAnimMesh *pAnimTest = new CAnimMesh(pd3dDevice, pd3dCommandList, "animation_character_0_mesh_(0)");
+	CAnimMesh *pAnimTest = new CAnimMesh(pd3dDevice, pd3dCommandList/*, "animation_character_0_mesh_(0)"*/);
 
 	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
+
+	Importer tmpImporter;
+
 
 
 	nPlayers = 2;
@@ -1624,14 +1627,14 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 	// 오브젝트 내용 채우기
 	for (int i = 0; i < nPlayers; i++) {
 
-		CPlayerObject *pObj = new CPlayerObject();
+		CAnimationPlayerObject *pObj = new CAnimationPlayerObject();
 		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
+		tmpImporter.ExportFile(pd3dDevice, pd3dCommandList, textures[0], "Assets/TestAnimation.dat", *pObj);
+		//CModel *model = new CModel();
+		//model->AddMesh(pAnimTest);
+		//model->SetTexture(textures[0]);
 
-		CModel *model = new CModel();
-//		model->AddMesh(pAnimTest);
-		model->SetTexture(textures[0]);
-
-		pObj->SetModel(model);
+		//pObj->SetModel(model);
 		pObj->SetPosition(0, 0, i * 100);
 		pObj->SetOOBB(XMFLOAT3(0, 0, i * 100), XMFLOAT3(20, 20, 20), orientation);
 		pObj->SetOOBBMesh(pd3dDevice, pd3dCommandList);

@@ -152,6 +152,148 @@ public:
 	bool IsFireable() { return (m_attTimer <= 0) && !IsDead(); }
 };
 
+class CAnimationPlayerObject : public CPlayerObject
+{
+public:
+	Anim* anim;
+public:
+	void Animate(float time);
+};
+
+
+class Importer {
+	vector<CBone> bones;
+	vector<CKey> keys;
+	vector<TmpMesh> meshes;
+
+public:
+	void ExportFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, CTexture* pTexture, const char* fileName, CAnimationPlayerObject& obj) {
+		std::ifstream in;
+		in.open(fileName, std::ios::in | std::ios::binary);
+		/***************************************************************
+		bone 정보 쓰고 mesh 정보 쓰고 key 정보 쓰고
+		***************************************************************/
+		/***************************************************************
+		걍 몇 개 있는지랑 name이랑 부모boneIdx만 저장하자.
+		부모 없으면 부모 boneIdx 값 -1임
+		***************************************************************/
+		int nBones;
+		in.read((char*)&nBones, sizeof(int));
+		bones.resize(nBones);
+		for (int i = 0; i < nBones; ++i) {
+			in.read((char*)&(bones[i].parentIdx), sizeof(int));
+		}
+
+		/***************************************************************
+		mesh별로 ControlPoint 다 써야됨.
+		float3, int4, float4
+		그거하고 polygonVertexIndex도 쓰기
+		***************************************************************/
+		int nMeshes;
+		in.read((char*)&nMeshes, sizeof(int));
+		meshes.resize(nMeshes);
+		for (int i = 0; i < nMeshes; ++i) {
+			int nCPs;
+			in.read((char*)&nCPs, sizeof(int));
+			meshes[i].controlPoints.resize(nCPs);
+			for (int j = 0; j < nCPs; ++j) {
+				in.read((char*)&(meshes[i].controlPoints[j].pos), sizeof(Float3));
+				in.read((char*)&(meshes[i].controlPoints[j].boneIdx), sizeof(Int4));
+				in.read((char*)&(meshes[i].controlPoints[j].weight), sizeof(Float4));
+			}
+		}
+		for (int i = 0; i < nMeshes; ++i) {
+			int nPVI;
+			in.read((char*)&nPVI, sizeof(int));
+			meshes[i].polygonVertexIndex.resize(nPVI);
+			for (int j = 0; j < nPVI; ++j) {
+				in.read((char*)&(meshes[i].polygonVertexIndex[j]), sizeof(int));
+			}
+		}
+
+		CModel *model = new CModel();
+		for (int i = 0; i < nMeshes; ++i) {
+			CAnimMesh* tempMesh = new CAnimMesh(pd3dDevice, pd3dCommandList, meshes[i]);
+			model->AddMesh(tempMesh);
+		}
+		model->SetTexture(pTexture);
+		obj.SetModel(model);
+
+		/***************************************************************
+		키가 몇 개 있고, 각 키마다 Bone이 몇 개 있을 것인지 저장해야 함.
+		일단은 모든 Bone이 xyz 요소값을 가지는 것으로 간주하고 작성하자.
+		***************************************************************/
+		int nKeys;
+		in.read((char*)&nKeys, sizeof(int));
+
+		keys.resize(nKeys);
+
+		for (int i = 0; i < nKeys; ++i) {
+			int nBones;/* = keys[i].data.size();*/
+			in.read((char*)&nBones, sizeof(int));
+			keys[i].bones.resize(nBones);
+		}
+
+		for (int i = 0; i < nKeys; ++i) {
+			int nBones = keys[i].bones.size();
+			float keyTime;
+			in.read((char*)&keyTime, sizeof(float));
+
+			keys[i].keyTime = keyTime;
+
+			for (auto p = keys[i].bones.begin(); p != keys[i].bones.end(); ++p) {
+				int boneIdx;
+				in.read((char*)&(boneIdx), sizeof(int));
+				in.read((char*)&(p->Pos), sizeof(Float3));
+				in.read((char*)&(p->Rot), sizeof(Float3));
+			}
+		}
+
+		obj.anim = new Anim(nKeys, nBones, bones, keys);
+
+
+
+		in.close();
+	}
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class CProjectileObject : public CMovingObject
 {
 public:
@@ -360,6 +502,12 @@ protected:
 	// 중력 영향 받나요?? 100% 받으면 1.0f, 안 받으면 0.0f
 	float m_fGravityFactor;
 };
+
+//class AnimationObejct : public MovingObejct {
+//public:
+//public:
+//protected:
+//};
 
 #define MAX_PLAYER 8
 #define BULLET_PER_PL 1
