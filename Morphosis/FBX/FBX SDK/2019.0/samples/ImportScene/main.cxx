@@ -354,6 +354,10 @@ struct Mesh {
 	Mesh(const char* name) { this->name = name; }
 };
 
+static bool gVerbose = true;
+AnimationData animData;
+
+
 class DataManager {
 public:
 	void Init(FbxScene* scene) { pScene = scene; MakeObjectData(); }
@@ -399,6 +403,13 @@ public:
 				out.write((char*)&(meshes[i].controlPoints[j].pos),		sizeof(Float3));
 				out.write((char*)&(meshes[i].controlPoints[j].boneIdx), sizeof(Int4));
 				out.write((char*)&(meshes[i].controlPoints[j].weight),	sizeof(Float4));
+			}
+		}
+		for (int i = 0; i < nMeshes; ++i) {
+			int nPVI = meshes[i].polygonVertexIndex.size();
+			out.write((char*)&nPVI, sizeof(int));
+			for (int j = 0; j < nPVI; ++j) {
+				out.write((char*)&(meshes[i].polygonVertexIndex[j]), sizeof(int));
 			}
 		}
 
@@ -747,6 +758,177 @@ private:
 };
 
 DataManager dataManager;
+
+
+
+
+
+void GetMeshData(FbxNode* pNode) {
+	int meshCount;
+	FbxMesh* pMesh = pNode->GetMesh();
+	if (NULL != pMesh) {
+		int nControlPoints = pMesh->GetControlPointsCount();
+		int nElementNormals = pMesh->GetElementNormalCount();
+		FbxVector4* pControlPoints = pMesh->GetControlPoints();
+		std::cout << pNode->GetName() << "\n"
+			<< nControlPoints << "°³\n\n";
+		int nPolygons = pMesh->GetPolygonCount();
+		for (int i = 0, nIdx = 0; i < nPolygons; ++i) {
+			FbxVector4 fbxVector4;
+			int nPolygonSize = pMesh->GetPolygonSize(i);
+			for (int j = 0; j < nPolygonSize; ++j) {
+				int nControlPointIdx = pMesh->GetPolygonVertex(i, j);
+				fbxVector4 = pControlPoints[nControlPointIdx];
+				/* ... */
+				std::cout
+					<< fbxVector4.mData[0] << ", "
+					<< fbxVector4.mData[1] << ", "
+					<< fbxVector4.mData[2] << ", "
+					<< fbxVector4.mData[3] << "\n";
+			}
+		}
+	}
+	for (meshCount = 0; meshCount < pNode->GetChildCount(); meshCount++)
+	{
+		GetMeshData(pNode->GetChild(meshCount));
+	}
+
+	//int meshCount;
+	//FbxNodeAttribute::EType type;
+	//FbxGeometry* geo;
+	//FbxMesh* pMesh;
+	//FbxNodeAttribute* lNodeAttribute = pNode->GetNodeAttribute();
+	//if (NULL != lNodeAttribute) {
+	//	type = lNodeAttribute->GetAttributeType();
+	//	if (FbxNodeAttribute::eMesh == type) {
+	//		geo = pNode->GetGeometry();
+	//		pMesh = pNode->GetMesh();
+	//		if (NULL != pMesh) {
+	//			std::cout
+	//				<< pMesh->GetTextureUVIndex(0, 0) << ", "
+	//				<< pMesh->GetTextureUVIndex(0, 1) << "\n";
+	//		}
+	//		int nControlPoints = geo->GetControlPointsCount();
+	//		FbxVector4* pControlPoints = geo->GetControlPoints();
+	//		std::cout << pNode->GetName() << " - "
+	//			<< nControlPoints << "\n";
+	//		for (int i = 0; i < nControlPoints; ++i) {
+	//			FbxVector4 tmpVec4 = pControlPoints[i];
+	//			//std::cout << "("
+	//			//	<< tmpVec4.mData[0] << ", "
+	//			//	<< tmpVec4.mData[1] << ", "
+	//			//	<< tmpVec4.mData[2] << ", "
+	//			//	<< tmpVec4.mData[3] << ")\n";
+	//		}
+	//		int nUV = geo->GetElementUVCount();
+	//		//nUV = 
+	//		for (int i = 0; i < nUV; ++i) {
+	//			FbxGeometryElementUV* pUV = geo->GetElementUV(i);
+	//			std::cout << "("
+	//				<< pUV->mDirectArray[0][i].mData[0] << ", "
+	//				<< pUV->mDirectArray[0][i].mData[1] << ")\n";
+	//		}
+	//		//pUV->mDirectArray[]
+	//	}
+	//}
+	//for (meshCount = 0; meshCount < pNode->GetChildCount(); meshCount++)
+	//{
+	//	GetMeshData(pNode->GetChild(meshCount));
+	//}
+	/*
+	void FBXExporter::ReadUV(FbxMesh* inMesh, int inCtrlPointIndex, int inTextureUVIndex, int inUVLayer, XMFLOAT2& outUV)
+{
+   if(inUVLayer >= 2 || inMesh->GetElementUVCount() <= inUVLayer)
+   {
+      throw std::exception("Invalid UV Layer Number");
+   }
+   FbxGeometryElementUV* vertexUV = inMesh->GetElementUV(inUVLayer);
+
+   switch(vertexUV->GetMappingMode())
+   {
+   case FbxGeometryElement::eByControlPoint:
+      switch(vertexUV->GetReferenceMode())
+      {
+      case FbxGeometryElement::eDirect:
+      {
+         outUV.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(inCtrlPointIndex).mData[0]);
+         outUV.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(inCtrlPointIndex).mData[1]);
+      }
+      break;
+
+      case FbxGeometryElement::eIndexToDirect:
+      {
+         int index = vertexUV->GetIndexArray().GetAt(inCtrlPointIndex);
+         outUV.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[0]);
+         outUV.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[1]);
+      }
+      break;
+
+      default:
+         throw std::exception("Invalid Reference");
+      }
+      break;
+
+   case FbxGeometryElement::eByPolygonVertex:
+      switch(vertexUV->GetReferenceMode())
+      {
+      case FbxGeometryElement::eDirect:
+      case FbxGeometryElement::eIndexToDirect:
+      {
+         outUV.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(inTextureUVIndex).mData[0]);
+         outUV.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(inTextureUVIndex).mData[1]);
+      }
+      break;
+
+      default:
+         throw std::exception("Invalid Reference");
+      }
+      break;
+   }
+}
+	*/
+}
+
+
+void GetClusterData(FbxNode* pNode) {
+	int meshCount;
+	FbxNodeAttribute::EType type;
+	FbxGeometry* geo;
+	FbxNodeAttribute* lNodeAttribute = pNode->GetNodeAttribute();
+	if (NULL != lNodeAttribute) {
+		type = lNodeAttribute->GetAttributeType();
+		if (FbxNodeAttribute::eMesh == type) {
+			geo = pNode->GetGeometry();
+			
+			int nSkinDeformers = geo->GetDeformerCount(FbxDeformer::eSkin);
+			for (int i = 0; i < nSkinDeformers; ++i) {
+				FbxSkin* skinDeformer = (FbxSkin*)(geo->GetDeformer(i, FbxDeformer::eSkin));
+				int nClusters = skinDeformer->GetClusterCount();
+
+				
+
+				for (int j = 0; j < nClusters; ++j) {
+					FbxCluster* cluster = skinDeformer->GetCluster(j);
+					int nIdx = cluster->GetControlPointIndicesCount();
+					int* pIdx = cluster->GetControlPointIndices();
+					double* pWeights = cluster->GetControlPointWeights();
+
+					std::cout /*<< pNode->GetName()*/ << cluster->GetLink()->GetName() << " has " << nIdx << " Infos.\n";
+					for (int k = 0; k < nIdx; ++k) {
+						std::cout << "\t#" << k << " - " << pIdx[k] << " weight is " << pWeights[k] << "\n";
+					}
+
+					/* ... */
+
+				}
+			}
+		}
+	}
+	for (meshCount = 0; meshCount < pNode->GetChildCount(); meshCount++)
+	{
+		GetClusterData(pNode->GetChild(meshCount));
+	}
+}
 
 
 int main(int argc, char** argv)
