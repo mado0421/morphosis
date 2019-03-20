@@ -354,15 +354,78 @@ struct Mesh {
 	Mesh(const char* name) { this->name = name; }
 };
 
-static bool gVerbose = true;
-AnimationData animData;
-
-
 class DataManager {
 public:
 	void Init(FbxScene* scene) { pScene = scene; MakeObjectData(); }
 	void ExportFile(const char* fileName) {
+		std::ofstream out;
+		out.open(fileName, std::ios::out | std::ios::binary);
+		// 먼저 헤더 정보를 넣어준다.
+		//out.write((char*)&info.name, sizeof(char) * 32);
+		//out.write((char*)&info.nextName, sizeof(char) * 32);
+		//out.write((char*)&info.totalTime, sizeof(float));
+		//out.write((char*)&info.isLoopAnimation, sizeof(bool));
 
+		/***************************************************************
+		bone 정보 쓰고 mesh 정보 쓰고 key 정보 쓰고
+		***************************************************************/
+		/***************************************************************
+		걍 몇 개 있는지랑 name이랑 부모boneIdx만 저장하자.
+		부모 없으면 부모 boneIdx 값 -1임
+		***************************************************************/
+		int nBones = bones.size();
+		out.write((char*)&nBones, sizeof(int));
+		for (int i = 0; i < nBones; ++i) {
+			if (bones[i].parent) {
+				out.write((char*)&(bones[i].parent->idx), sizeof(int));
+			}
+			else {
+				int n = -1;
+				out.write((char*)&n, sizeof(int));
+			}
+		}
+
+		/***************************************************************
+		mesh별로 ControlPoint 다 써야됨.
+		float3, int4, float4
+		그거하고 polygonVertexIndex도 쓰기
+		***************************************************************/
+		int nMeshes = meshes.size();
+		out.write((char*)&nMeshes, sizeof(int));
+		for (int i = 0; i < nMeshes; ++i) {
+			int nCPs = meshes[i].controlPoints.size();
+			out.write((char*)&nCPs, sizeof(int));
+			for (int j = 0; j < nCPs; ++j) {
+				out.write((char*)&(meshes[i].controlPoints[j].pos),		sizeof(Float3));
+				out.write((char*)&(meshes[i].controlPoints[j].boneIdx), sizeof(Int4));
+				out.write((char*)&(meshes[i].controlPoints[j].weight),	sizeof(Float4));
+			}
+		}
+
+		/***************************************************************
+		키가 몇 개 있고, 각 키마다 Bone이 몇 개 있을 것인지 저장해야 함.
+		일단은 모든 Bone이 xyz 요소값을 가지는 것으로 간주하고 작성하자.
+		***************************************************************/
+		int nKeys = keys.size();
+		out.write((char*)&nKeys, sizeof(int));
+		for (int i = 0; i < nKeys; ++i) {
+			int nBones = keys[i].data.size();
+			out.write((char*)&nBones, sizeof(int));
+		}
+
+		for (int i = 0; i < nKeys; ++i) {
+			int nBones = keys[i].data.size();
+			float keyTime = keys[i].time;
+
+			out.write((char*)&keyTime, sizeof(float));
+			for (auto p = keys[i].data.cbegin(); p != keys[i].data.cend(); ++p) {
+				out.write((char*)&(p->boneIdx), sizeof(int));
+				out.write((char*)&(p->t), sizeof(Float3));
+				out.write((char*)&(p->r), sizeof(Float3));
+			}
+		}
+
+		out.close();
 	}
 
 private:
@@ -405,7 +468,7 @@ private:
 				GetAnimationDataRec(lAnimLayer, pScene->GetRootNode());
 			}
 		}
-		PrintAnimationData();
+		//PrintAnimationData();
 	}
 
 private:
@@ -686,177 +749,6 @@ private:
 DataManager dataManager;
 
 
-
-
-
-void GetMeshData(FbxNode* pNode) {
-	int meshCount;
-	FbxMesh* pMesh = pNode->GetMesh();
-	if (NULL != pMesh) {
-		int nControlPoints = pMesh->GetControlPointsCount();
-		int nElementNormals = pMesh->GetElementNormalCount();
-		FbxVector4* pControlPoints = pMesh->GetControlPoints();
-		std::cout << pNode->GetName() << "\n"
-			<< nControlPoints << "개\n\n";
-		int nPolygons = pMesh->GetPolygonCount();
-		for (int i = 0, nIdx = 0; i < nPolygons; ++i) {
-			FbxVector4 fbxVector4;
-			int nPolygonSize = pMesh->GetPolygonSize(i);
-			for (int j = 0; j < nPolygonSize; ++j) {
-				int nControlPointIdx = pMesh->GetPolygonVertex(i, j);
-				fbxVector4 = pControlPoints[nControlPointIdx];
-				/* ... */
-				std::cout
-					<< fbxVector4.mData[0] << ", "
-					<< fbxVector4.mData[1] << ", "
-					<< fbxVector4.mData[2] << ", "
-					<< fbxVector4.mData[3] << "\n";
-			}
-		}
-	}
-	for (meshCount = 0; meshCount < pNode->GetChildCount(); meshCount++)
-	{
-		GetMeshData(pNode->GetChild(meshCount));
-	}
-
-	//int meshCount;
-	//FbxNodeAttribute::EType type;
-	//FbxGeometry* geo;
-	//FbxMesh* pMesh;
-	//FbxNodeAttribute* lNodeAttribute = pNode->GetNodeAttribute();
-	//if (NULL != lNodeAttribute) {
-	//	type = lNodeAttribute->GetAttributeType();
-	//	if (FbxNodeAttribute::eMesh == type) {
-	//		geo = pNode->GetGeometry();
-	//		pMesh = pNode->GetMesh();
-	//		if (NULL != pMesh) {
-	//			std::cout
-	//				<< pMesh->GetTextureUVIndex(0, 0) << ", "
-	//				<< pMesh->GetTextureUVIndex(0, 1) << "\n";
-	//		}
-	//		int nControlPoints = geo->GetControlPointsCount();
-	//		FbxVector4* pControlPoints = geo->GetControlPoints();
-	//		std::cout << pNode->GetName() << " - "
-	//			<< nControlPoints << "\n";
-	//		for (int i = 0; i < nControlPoints; ++i) {
-	//			FbxVector4 tmpVec4 = pControlPoints[i];
-	//			//std::cout << "("
-	//			//	<< tmpVec4.mData[0] << ", "
-	//			//	<< tmpVec4.mData[1] << ", "
-	//			//	<< tmpVec4.mData[2] << ", "
-	//			//	<< tmpVec4.mData[3] << ")\n";
-	//		}
-	//		int nUV = geo->GetElementUVCount();
-	//		//nUV = 
-	//		for (int i = 0; i < nUV; ++i) {
-	//			FbxGeometryElementUV* pUV = geo->GetElementUV(i);
-	//			std::cout << "("
-	//				<< pUV->mDirectArray[0][i].mData[0] << ", "
-	//				<< pUV->mDirectArray[0][i].mData[1] << ")\n";
-	//		}
-	//		//pUV->mDirectArray[]
-	//	}
-	//}
-	//for (meshCount = 0; meshCount < pNode->GetChildCount(); meshCount++)
-	//{
-	//	GetMeshData(pNode->GetChild(meshCount));
-	//}
-	/*
-	void FBXExporter::ReadUV(FbxMesh* inMesh, int inCtrlPointIndex, int inTextureUVIndex, int inUVLayer, XMFLOAT2& outUV)
-{
-   if(inUVLayer >= 2 || inMesh->GetElementUVCount() <= inUVLayer)
-   {
-      throw std::exception("Invalid UV Layer Number");
-   }
-   FbxGeometryElementUV* vertexUV = inMesh->GetElementUV(inUVLayer);
-
-   switch(vertexUV->GetMappingMode())
-   {
-   case FbxGeometryElement::eByControlPoint:
-      switch(vertexUV->GetReferenceMode())
-      {
-      case FbxGeometryElement::eDirect:
-      {
-         outUV.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(inCtrlPointIndex).mData[0]);
-         outUV.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(inCtrlPointIndex).mData[1]);
-      }
-      break;
-
-      case FbxGeometryElement::eIndexToDirect:
-      {
-         int index = vertexUV->GetIndexArray().GetAt(inCtrlPointIndex);
-         outUV.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[0]);
-         outUV.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[1]);
-      }
-      break;
-
-      default:
-         throw std::exception("Invalid Reference");
-      }
-      break;
-
-   case FbxGeometryElement::eByPolygonVertex:
-      switch(vertexUV->GetReferenceMode())
-      {
-      case FbxGeometryElement::eDirect:
-      case FbxGeometryElement::eIndexToDirect:
-      {
-         outUV.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(inTextureUVIndex).mData[0]);
-         outUV.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(inTextureUVIndex).mData[1]);
-      }
-      break;
-
-      default:
-         throw std::exception("Invalid Reference");
-      }
-      break;
-   }
-}
-	*/
-}
-
-
-void GetClusterData(FbxNode* pNode) {
-	int meshCount;
-	FbxNodeAttribute::EType type;
-	FbxGeometry* geo;
-	FbxNodeAttribute* lNodeAttribute = pNode->GetNodeAttribute();
-	if (NULL != lNodeAttribute) {
-		type = lNodeAttribute->GetAttributeType();
-		if (FbxNodeAttribute::eMesh == type) {
-			geo = pNode->GetGeometry();
-			
-			int nSkinDeformers = geo->GetDeformerCount(FbxDeformer::eSkin);
-			for (int i = 0; i < nSkinDeformers; ++i) {
-				FbxSkin* skinDeformer = (FbxSkin*)(geo->GetDeformer(i, FbxDeformer::eSkin));
-				int nClusters = skinDeformer->GetClusterCount();
-
-				
-
-				for (int j = 0; j < nClusters; ++j) {
-					FbxCluster* cluster = skinDeformer->GetCluster(j);
-					int nIdx = cluster->GetControlPointIndicesCount();
-					int* pIdx = cluster->GetControlPointIndices();
-					double* pWeights = cluster->GetControlPointWeights();
-
-					std::cout /*<< pNode->GetName()*/ << cluster->GetLink()->GetName() << " has " << nIdx << " Infos.\n";
-					for (int k = 0; k < nIdx; ++k) {
-						std::cout << "\t#" << k << " - " << pIdx[k] << " weight is " << pWeights[k] << "\n";
-					}
-
-					/* ... */
-
-				}
-			}
-		}
-	}
-	for (meshCount = 0; meshCount < pNode->GetChildCount(); meshCount++)
-	{
-		GetClusterData(pNode->GetChild(meshCount));
-	}
-}
-
-
 int main(int argc, char** argv)
 {
     FbxManager* lSdkManager = NULL;
@@ -938,6 +830,7 @@ int main(int argc, char** argv)
 		//animData.Print();
 
 		dataManager.Init(lScene);
+		dataManager.ExportFile("TestAnimation.dat");
     }
     // Destroy all objects created by the FBX SDK.
     DestroySdkObjects(lSdkManager, lResult);
