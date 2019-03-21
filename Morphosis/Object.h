@@ -164,7 +164,7 @@ public:
 class Importer {
 	vector<CBone> bones;
 	vector<CKey> keys;
-	vector<TmpMesh> meshes;
+	vector<ImportMesh> meshes;
 
 public:
 	void ExportFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, CTexture* pTexture, const char* fileName, CAnimationPlayerObject& obj) {
@@ -248,10 +248,7 @@ public:
 				in.read((char*)&(p->Rot), sizeof(Float3));
 			}
 		}
-
 		obj.anim = new Anim(nKeys, nBones, bones, keys);
-
-
 
 		in.close();
 	}
