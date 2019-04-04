@@ -196,6 +196,12 @@ public:
 
 private:
 	XMMATRIX	GetInterpolatedLocalMatrix(int boneIdx, float time) {
+		if (boneIdx == 5) {
+			cout << "a";
+		}
+
+
+
 		if (m_boneReferenceInfo[boneIdx].idxOfKeySet.size() == 0) return XMMatrixIdentity();
 		if (isFurtherThanBack(time)) if (isLoop) time = GetClampTime(time);
 
