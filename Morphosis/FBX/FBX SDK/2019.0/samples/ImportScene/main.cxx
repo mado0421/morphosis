@@ -78,7 +78,23 @@ struct Int4 {
 	}
 };
 struct Float2 { float x, y; };
-struct Float3 {	float x, y, z; };
+struct Float3 {	
+	float x, y, z;
+
+	Float3() :x(0), y(0), z(0) {}
+	Float3(float i) :x(i), y(i), z(i) {}
+	Float3(float x, float y, float z) :x(x), y(y), z(z) {}
+
+	float& operator[](int x) {
+		switch (x)
+		{
+		case 0: return this->x;
+		case 1: return this->y;
+		case 2: return this->z;
+		}
+	}
+
+};
 struct Float4 { 
 	float x, y, z, w;
 
@@ -387,6 +403,8 @@ public:
 				int n = -1;
 				out.write((char*)&n, sizeof(int));
 			}
+			out.write((char*)&(bones[i].LclTranslation), sizeof(Float3));
+			out.write((char*)&(bones[i].LclRotation), sizeof(Float3));
 		}
 
 		/***************************************************************
@@ -485,9 +503,15 @@ private:
 private:
 	void GetBoneDataRec(FbxAnimLayer* pAnimLayer, FbxNode* pNode) {
 		int childCount;
-		FbxVector4 lTmpVector;
+		Float3 t, r;
 
-		bones.emplace_back(pNode->GetName(), bones.size(), pNode->GetParent());
+		FbxDouble3 lTranslation = pNode->LclTranslation.Get();
+		FbxDouble3 lRotation	= pNode->LclRotation.Get();
+
+		t = Float3(lTranslation[0], lTranslation[1], lTranslation[2]);
+		r = Float3(lRotation[0], lRotation[1], lRotation[2]);
+
+		bones.emplace_back(pNode->GetName(), bones.size(), t, r,  pNode->GetParent());
 
 		for (childCount = 0; childCount < pNode->GetChildCount(); ++childCount) {
 			GetBoneDataRec(pAnimLayer, pNode->GetChild(childCount));
@@ -942,7 +966,7 @@ int main(int argc, char** argv)
     // Load the scene.
 
     // The example can take a FBX file as an argument.
-	FbxString lFilePath("animation_character_0.FBX");
+	FbxString lFilePath("test_y-up.FBX");
 	for( int i = 1, c = argc; i < c; ++i )
 	{
 		if( FbxString(argv[i]) == "-test" ) gVerbose = false;
@@ -1012,7 +1036,7 @@ int main(int argc, char** argv)
 		//animData.Print();
 
 		dataManager.Init(lScene);
-		dataManager.ExportFile("TestAnimation.dat");
+		dataManager.ExportFile("TestAnimation4test_y-up.dat");
     }
     // Destroy all objects created by the FBX SDK.
     DestroySdkObjects(lSdkManager, lResult);

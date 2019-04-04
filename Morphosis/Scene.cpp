@@ -1576,7 +1576,6 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 	tempPso[0]->Initialize(pd3dDevice, m_pd3dGraphicsRootSignature);
 	pso[0] = tempPso[0]->GetPipelineState();
 
-	CAnimMesh *pAnimTest = new CAnimMesh(pd3dDevice, pd3dCommandList/*, "animation_character_0_mesh_(0)"*/);
 
 	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
 
@@ -1585,11 +1584,11 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 
 
 	nPlayers = 2;
-	ppPlayers = new CPlayerObject*[nPlayers];
+	ppPlayers = new CAnimationPlayerObject*[nPlayers];
 
 	// 서술자 힙 생성
 	D3D12_DESCRIPTOR_HEAP_DESC d3dDescriptorHeapDesc;
-	d3dDescriptorHeapDesc.NumDescriptors = nPlayers + animData.nBones + 1; //CBVs + SRVs 
+	d3dDescriptorHeapDesc.NumDescriptors = nPlayers + /*animData.nBones*/64 + 1; //CBVs + SRVs 
 	d3dDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	d3dDescriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	d3dDescriptorHeapDesc.NodeMask = 0;
@@ -1599,8 +1598,8 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 
 	m_d3dCbvCPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	m_d3dCbvGPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart();
-	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (nPlayers + animData.nBones));
-	m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (nPlayers + animData.nBones));
+	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (nPlayers + /*animData.nBones*/64));
+	m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (nPlayers + /*animData.nBones*/64));
 
 	CTexture **textures = new CTexture*[1];
 	textures[0] = new CTexture(RESOURCE_TEXTURE2D);
@@ -1629,7 +1628,7 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 
 		CAnimationPlayerObject *pObj = new CAnimationPlayerObject();
 		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
-		tmpImporter.ExportFile(pd3dDevice, pd3dCommandList, textures[0], "Assets/TestAnimation.dat", *pObj);
+		tmpImporter.ExportFile(pd3dDevice, pd3dCommandList, textures[0], "Assets/TestAnimation4test_y-up.dat", *pObj);
 		//CModel *model = new CModel();
 		//model->AddMesh(pAnimTest);
 		//model->SetTexture(textures[0]);
@@ -1645,8 +1644,8 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 
 	UINT nStride = sizeof(XMMATRIX);
 
-	XMMATRIX *pInterpolatedMatrix = new XMMATRIX[animData.nBones];
-	for (UINT i = 0; i < animData.nBones; i++) pInterpolatedMatrix[i] = XMMatrixIdentity();
+	XMMATRIX *pInterpolatedMatrix = new XMMATRIX[/*animData.nBones*/64];
+	for (UINT i = 0; i < /*animData.nBones*/64; i++) pInterpolatedMatrix[i] = XMMatrixIdentity();
 
 	interpolatedMatrixResource = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pInterpolatedMatrix, nStride * 64,
 		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
@@ -1657,26 +1656,13 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 	d3dGpuVirtualAddress = interpolatedMatrixResource->GetGPUVirtualAddress();
 	d3dCBVDesc;
 	d3dCBVDesc.SizeInBytes = ncbElementBytes;
-	for (int j = 0; j < animData.nBones; j++)
+	for (int j = 0; j < /*animData.nBones*/64; j++)
 	{
 		d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * j);
 		D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
 		d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (j + nPlayers));
 		pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
 	}
-
-	//D3D12Resource *m_pVertexResource = NULL;
-	//UINT nStride;
-	//UINT nNumber;
-	//FBX::Vertex *pVertex = nullptr;
-	//nStride = sizeof(FBX::Vertex);
-	//*Read From Data*/
-	//nNumber = m_model->m_nVertex;
-	//pVertex = m_model->m_pVertex;
-	////
-	//m_pVertexResource = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pVertex, nStride*nNumber,
-	//	D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-
 	// 처음 따라갈 캐릭터 정해주기
 	m_pCamera->SetTarget(ppPlayers[0]);
 }
@@ -1706,21 +1692,29 @@ void CTestGroundScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 void CTestGroundScene::Update(float fTimeElapsed)
 {
 	static float time = 0.0001;
-	if (isTimeflow)	time += fTimeElapsed * 0.05;
+	if (isTimeflow)	time += fTimeElapsed;
 
-	animData.GenerateToWorld(time);
+	for (int i = 0; i < nPlayers; i++)
+	{
+		ppPlayers[i]->Animate(time);
+	}
 
 	UINT ncbElementBytes = ((sizeof(XMMATRIX) + 255) & ~255);
 	XMMATRIX *pbMappedcbObject = new XMMATRIX[64];
-	for (int i = 0; i < animData.nBones; i++)
-	{
-		pbMappedcbObject[i] = XMMatrixTranspose(animData.GetFinalMatrix(i));
-		//XMMATRIX *pbMappedcbObject = (XMMATRIX *)((UINT8 *)pCBMappedMatrix + (i * ncbElementBytes));
-		//XMStoreFloat4x4(&pbMappedcbObject[i], XMMatrixTranspose(animData.GetToWorldMatrix(i)));
+	//for (int i = 0; i < 64; i++)
+	//{
+	//	pbMappedcbObject[i] = XMMatrixIdentity();
+	//}
+	for (int i = 0; i < 64; ++i) {
+		if(ppPlayers[0]->anim->m_bones.size() > i)
+			pbMappedcbObject[i] = XMMatrixTranspose(ppPlayers[0]->anim->GetFinalMatrix(i));
+		else pbMappedcbObject[i] = XMMatrixIdentity();
+		//pbMappedcbObject[i] = XMMatrixIdentity();
 	}
-	memcpy(pCBMappedMatrix, pbMappedcbObject, ncbElementBytes * animData.nBones);
+	memcpy(pCBMappedMatrix, pbMappedcbObject, ncbElementBytes * 64/*animData.nBones*/);
+	delete[] pbMappedcbObject;
 
-	for (int i = 0; i < nPlayers; i++) if (!ppPlayers[i]->IsDead()) ppPlayers[i]->Update(fTimeElapsed);
+	for (int j = 0; j < nPlayers; ++j) if (!ppPlayers[j]->IsDead()) ppPlayers[j]->Update(fTimeElapsed);
 }
 
 void CTestGroundScene::ProcessInput(UCHAR * pKeysBuffer)

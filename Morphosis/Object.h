@@ -155,16 +155,18 @@ public:
 class CAnimationPlayerObject : public CPlayerObject
 {
 public:
-	Anim* anim;
+	AnimationData* anim;
 public:
-	void Animate(float time);
+	void Animate(float time) {
+		anim->GenerateToWorldMatrix(time);
+	}
 };
 
 
 class Importer {
-	vector<CBone> bones;
-	vector<CKey> keys;
-	vector<ImportMesh> meshes;
+	vector<AnimationBone> bones;
+	vector<AnimationKey> keys;
+	vector<AnimationMesh> meshes;
 
 public:
 	void ExportFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, CTexture* pTexture, const char* fileName, CAnimationPlayerObject& obj) {
@@ -181,7 +183,9 @@ public:
 		in.read((char*)&nBones, sizeof(int));
 		bones.resize(nBones);
 		for (int i = 0; i < nBones; ++i) {
-			in.read((char*)&(bones[i].parentIdx), sizeof(int));
+			in.read((char*)&(bones[i].m_parentIdx), sizeof(int));
+			in.read((char*)&(bones[i].m_translation), sizeof(Float3));
+			in.read((char*)&(bones[i].m_rotation), sizeof(Float3));
 		}
 
 		/***************************************************************
@@ -219,6 +223,8 @@ public:
 		model->SetTexture(pTexture);
 		obj.SetModel(model);
 
+
+
 		/***************************************************************
 		키가 몇 개 있고, 각 키마다 Bone이 몇 개 있을 것인지 저장해야 함.
 		일단은 모든 Bone이 xyz 요소값을 가지는 것으로 간주하고 작성하자.
@@ -231,24 +237,32 @@ public:
 		for (int i = 0; i < nKeys; ++i) {
 			int nBones;/* = keys[i].data.size();*/
 			in.read((char*)&nBones, sizeof(int));
-			keys[i].bones.resize(nBones);
+			//keys[i].m_pBones.resize(nBones);
+			keys[i].m_pBones.resize(nBones); // 쓸 일은 없지만 후에 resize() 함수 호출 시에 직관성을 위해
+			keys[i].m_boneIdx.resize(nBones);
+			keys[i].m_translations.resize(nBones);
+			keys[i].m_rotations.resize(nBones);
 		}
 
 		for (int i = 0; i < nKeys; ++i) {
-			int nBones = keys[i].bones.size();
 			float keyTime;
+			int boneIdx;
+			Float3 tmpFloat3;
 			in.read((char*)&keyTime, sizeof(float));
 
-			keys[i].keyTime = keyTime;
+			keys[i].m_keytime = keyTime;
 
-			for (auto p = keys[i].bones.begin(); p != keys[i].bones.end(); ++p) {
-				int boneIdx;
-				in.read((char*)&(boneIdx), sizeof(int));
-				in.read((char*)&(p->Pos), sizeof(Float3));
-				in.read((char*)&(p->Rot), sizeof(Float3));
+			for (int j = 0; j < keys[i].m_boneIdx.size(); ++j) {
+				in.read((char*)&boneIdx, sizeof(int));
+				keys[i].m_boneIdx[j] = boneIdx;
+				in.read((char*)&tmpFloat3, sizeof(Float3));
+				keys[i].m_translations[j] = tmpFloat3;
+				in.read((char*)&tmpFloat3, sizeof(Float3));
+				keys[i].m_rotations[j] = tmpFloat3;
 			}
 		}
-		obj.anim = new Anim(nKeys, nBones, bones, keys);
+		obj.anim = new AnimationData();
+		obj.anim->Init(bones, keys);
 
 		in.close();
 	}

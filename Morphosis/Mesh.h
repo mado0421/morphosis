@@ -237,6 +237,7 @@ namespace MeshTest {
 	};
 }
 
+class AnimationMesh;
 
 class CAnimMesh : public CMesh {
 public:
@@ -436,55 +437,7 @@ public:
 		if (pIndexUploadBuffer)		pIndexUploadBuffer->Release();
 	}
 
-	CAnimMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, TmpMesh& m) : CMesh(pd3dDevice, pd3dCommandList)
-	{
-		int nCPs = m.controlPoints.size();
-		int nPVI = m.polygonVertexIndex.size();
-
-		UINT nStride = sizeof(CAnimVertex);
-		nVertices = nPVI;
-
-		XMFLOAT3* pos = new XMFLOAT3[nCPs];
-		for (int j = 0; j < nCPs; ++j) {
-			pos[j] = XMFLOAT3(m.controlPoints[j].pos.x, m.controlPoints[j].pos.y, m.controlPoints[j].pos.z);
-		}
-
-		XMFLOAT2 uv[1];
-		uv[0] = XMFLOAT2(1, 1);
-
-		XMFLOAT4* weight = new XMFLOAT4[nCPs];
-		for (int j = 0; j < nCPs; ++j) {
-			weight[j] = XMFLOAT4(m.controlPoints[j].weight.x, m.controlPoints[j].weight.y, m.controlPoints[j].weight.z, m.controlPoints[j].weight.z);
-		}
-		XMINT4* boneIdx = new XMINT4[nCPs];
-		for (int j = 0; j < nCPs; ++j) {
-			boneIdx[j] = XMINT4(m.controlPoints[j].boneIdx.x, m.controlPoints[j].boneIdx.y, m.controlPoints[j].boneIdx.z, m.controlPoints[j].boneIdx.z);
-		}
-
-		int* posIdx = new int[nPVI];
-		for (int j = 0; j < nPVI; ++j) {
-			posIdx[j] = m.polygonVertexIndex[j];
-		}
-		
-		int* uvIdx = new int[nPVI];
-		for (int j = 0; j < nPVI; ++j) {
-			uvIdx[j] = 0;
-		}
-
-		CAnimVertex* vertex = new CAnimVertex[nPVI];
-
-		for (int i = 0; i < nPVI; ++i) vertex[i].Init(pos[posIdx[i]], uv[uvIdx[i]], weight[posIdx[i]], boneIdx[posIdx[i]]);
-
-		pVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
-			vertex, nStride * nVertices,
-			D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
-			&pVertexUploadBuffer);
-
-		vertexBufferView.BufferLocation = pVertexBuffer->GetGPUVirtualAddress();
-		vertexBufferView.StrideInBytes = nStride;
-		vertexBufferView.SizeInBytes = nStride * nVertices;
-
-	}
+	CAnimMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, AnimationMesh& m);
 	virtual void Render(ID3D12GraphicsCommandList * pd3dCommandList)
 	{
 		pd3dCommandList->IASetPrimitiveTopology(primitiveTopology);

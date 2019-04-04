@@ -345,8 +345,8 @@ private:
 	ID3D12PipelineState ** pso							= NULL;
 	ID3D12Resource		* interpolatedMatrixResource	= NULL;
 	XMMATRIX			* pCBMappedMatrix				= NULL;
-	Anim				animData;
+	//Anim				animData;
 
-	CPlayerObject		**ppPlayers = NULL;
+	CAnimationPlayerObject		**ppPlayers = NULL;
 	int					nPlayers = 0;
 };

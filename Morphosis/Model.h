@@ -52,6 +52,6 @@ private:// º¯¼öµé
 	//std::vector<CTexture*> m_textureAddresses;
 
 	std::vector<TexMesh>	m_texMeshes;
-	Anim					*m_pAnimData;
+	//Anim					*m_pAnimData;
 
 };

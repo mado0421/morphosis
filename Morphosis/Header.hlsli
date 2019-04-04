@@ -37,6 +37,7 @@ struct VS_TEXTURED_ILLUMINATED_VERTEX_OUTPUT
 	float4 position		: SV_POSITION;
 	float3 positionW	: POSITION;
 	float2 uv			: TEXCOORD;
+	//matrix a;
 };
 
 struct ILLUM_TEX_INPUT

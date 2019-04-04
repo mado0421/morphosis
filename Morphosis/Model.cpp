@@ -56,9 +56,9 @@ void Model::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 	//==================================================================
 	// Upload Interpolated Bone Animation Matrix
 	//==================================================================
-	if (m_pAnimData) {
+	//if (m_pAnimData) {
 
-	}
+	//}
 
 	for (auto iter = m_texMeshes.begin(); iter != m_texMeshes.end(); ++iter)
 	{
@@ -74,5 +74,5 @@ void Model::AddTexMesh(CMesh * pMesh, CTexture * pTex)
 
 void Model::GenerateInterpolatedAnimMatrix(float fTime)
 {
-	if(m_pAnimData)	m_pAnimData->GenerateToWorld(fTime);
+	//if(m_pAnimData)	m_pAnimData->GenerateToWorld(fTime);
 }
