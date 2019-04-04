@@ -1701,7 +1701,7 @@ void CTestGroundScene::Update(float fTimeElapsed)
 	}
 
 	UINT ncbElementBytes = ((sizeof(XMMATRIX) + 255) & ~255);
-	XMMATRIX *pbMappedcbObject = new XMMATRIX[64];
+	XMMATRIX pbMappedcbObject[64];
 	//for (int i = 0; i < 64; i++)
 	//{
 	//	pbMappedcbObject[i] = XMMatrixIdentity();
@@ -1712,8 +1712,8 @@ void CTestGroundScene::Update(float fTimeElapsed)
 		else pbMappedcbObject[i] = XMMatrixIdentity();
 		//pbMappedcbObject[i] = XMMatrixIdentity();
 	}
-	memcpy(pCBMappedMatrix, pbMappedcbObject, ncbElementBytes * 64/*animData.nBones*/);
-	delete[] pbMappedcbObject;
+	memcpy(pCBMappedMatrix, pbMappedcbObject, sizeof(pbMappedcbObject));
+	// delete[] pbMappedcbObject;
 
 	for (int j = 0; j < nPlayers; ++j) if (!ppPlayers[j]->IsDead()) ppPlayers[j]->Update(fTimeElapsed);
 }
