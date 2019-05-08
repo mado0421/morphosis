@@ -174,12 +174,15 @@ void CMovingObject::Update(float fTimeElapsed)
 	m_xmf4x4World._11 = xmf3Right.x;	m_xmf4x4World._12 = xmf3Right.y;	m_xmf4x4World._13 = xmf3Right.z;
 	m_xmf4x4World._21 = xmf3Up.x;		m_xmf4x4World._22 = xmf3Up.y;		m_xmf4x4World._23 = xmf3Up.z;
 	m_xmf4x4World._31 = xmf3Look.x;		m_xmf4x4World._32 = xmf3Look.y;		m_xmf4x4World._33 = xmf3Look.z;
+	m_xmf4x4World._41 += m_xmf3Variation.x;
+	m_xmf4x4World._42 += m_xmf3Variation.y;
+	m_xmf4x4World._43 += m_xmf3Variation.z;
 
 	m_xmf3RotateAngle.x = m_xmf3RotateAngle.y = m_xmf3RotateAngle.z = 0;
 	m_xmf3Variation.x = m_xmf3Variation.y = m_xmf3Variation.z = 0;
 
-	//XMFLOAT3 center = XMFLOAT3(m_xmf4x4World._41, m_xmf4x4World._42, m_xmf4x4World._43);
-	//m_collisionBox.Center = center;
+	XMFLOAT3 center = XMFLOAT3(m_xmf4x4World._41, m_xmf4x4World._42, m_xmf4x4World._43);
+	m_collisionBox.Center = center;
 	XMStoreFloat4(&m_collisionBox.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_collisionBox.Orientation)));
 
 

@@ -349,4 +349,6 @@ private:
 
 	CAnimationPlayerObject		**ppPlayers = NULL;
 	int					nPlayers = 0;
+
+	float ttt = 0.0f;
 };

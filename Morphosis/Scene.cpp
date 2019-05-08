@@ -1583,7 +1583,7 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 
 
 
-	nPlayers = 2;
+	nPlayers = 1;
 	ppPlayers = new CAnimationPlayerObject*[nPlayers];
 
 	// 서술자 힙 생성
@@ -1628,7 +1628,9 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 
 		CAnimationPlayerObject *pObj = new CAnimationPlayerObject();
 		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
-		tmpImporter.ExportFile(pd3dDevice, pd3dCommandList, textures[0], "Assets/TestAnimation3.dat", *pObj);
+		tmpImporter.ExportFile(pd3dDevice, pd3dCommandList, textures[0], "Assets/test_0429_015_Character.dat", *pObj);
+		//tmpImporter.ExportFile(pd3dDevice, pd3dCommandList, textures[0], "Assets/TestAnimation3.dat", *pObj);
+
 		//tmpImporter.ExportFile(pd3dDevice, pd3dCommandList, textures[0], "Assets/TestAnimation4test_y-up.dat", *pObj);
 		//CModel *model = new CModel();
 		//model->AddMesh(pAnimTest);
@@ -1694,25 +1696,38 @@ void CTestGroundScene::Update(float fTimeElapsed)
 {
 	static float time = 0.0001;
 	if (isTimeflow)	time += fTimeElapsed;
-
-	for (int i = 0; i < nPlayers; i++)
-	{
-		ppPlayers[i]->Animate(time);
+	else {
+		time += ttt * fTimeElapsed;
+		ttt = 0;
 	}
 
-	UINT ncbElementBytes = ((sizeof(XMMATRIX) + 255) & ~255);
+	//time = 0;
+
+/*
+	Sleep(10);*/
+	//time += 0.01;
+	//if (time >= 1.0) time = 0.0;
+
+
+	//for (int i = 0; i < nPlayers; i++)
+	//{
+	//	ppPlayers[i]->Animate(time);
+	//}
+	ppPlayers[0]->Animate(time);
+
+	//UINT ncbElementBytes = ((sizeof(XMMATRIX) + 255) & ~255);
 	XMMATRIX *pbMappedcbObject = new XMMATRIX[64];
 	//for (int i = 0; i < 64; i++)
 	//{
 	//	pbMappedcbObject[i] = XMMatrixIdentity();
 	//}
 	for (int i = 0; i < 64; ++i) {
-		if(ppPlayers[0]->anim->m_bones.size() > i)
+		if(ppPlayers[0]->anim->m_bones.size() > i /*&& i < 13*/)
 			pbMappedcbObject[i] = XMMatrixTranspose(ppPlayers[0]->anim->GetFinalMatrix(i));
 		else pbMappedcbObject[i] = XMMatrixIdentity();
 		//pbMappedcbObject[i] = XMMatrixIdentity();
 	}
-	memcpy(pCBMappedMatrix, pbMappedcbObject, ncbElementBytes * 64/*animData.nBones*/);
+	memcpy(pCBMappedMatrix, pbMappedcbObject, sizeof(XMMATRIX) * 64/*animData.nBones*/);
 	delete[] pbMappedcbObject;
 
 	for (int j = 0; j < nPlayers; ++j) if (!ppPlayers[j]->IsDead()) ppPlayers[j]->Update(fTimeElapsed);
@@ -1725,10 +1740,14 @@ void CTestGroundScene::ProcessInput(UCHAR * pKeysBuffer)
 	if (pKeysBuffer[KEY::A] & 0xF0) { xmf3temp = ppPlayers[0]->GetRight(); ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -MOVE_SPEED)); }
 	if (pKeysBuffer[KEY::S] & 0xF0) { xmf3temp = ppPlayers[0]->GetLook(); ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -MOVE_SPEED)); }
 	if (pKeysBuffer[KEY::D] & 0xF0) { xmf3temp = ppPlayers[0]->GetRight(); ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, MOVE_SPEED)); }
+	if (pKeysBuffer[KEY::Z] & 0xF0) { xmf3temp = ppPlayers[0]->GetUp(); ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -MOVE_SPEED)); }
+	if (pKeysBuffer[KEY::X] & 0xF0) { xmf3temp = ppPlayers[0]->GetUp(); ppPlayers[0]->AddPosVariation(Vector3::ScalarProduct(xmf3temp, MOVE_SPEED)); }
 	if (pKeysBuffer[KEY::Q] & 0xF0) { ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, -ROTATE_SPEED, 0 }); }
 	if (pKeysBuffer[KEY::E] & 0xF0) { ppPlayers[0]->AddRotateAngle(XMFLOAT3{ 0, ROTATE_SPEED, 0 }); }
 
 	if (pKeysBuffer[VK_SPACE] & 0xF0) if (isTimeflow) isTimeflow = false; else isTimeflow = true;
+	if (pKeysBuffer[VK_LEFT] & 0xF0) if (!isTimeflow) ttt -= 1;
+	if (pKeysBuffer[VK_RIGHT] & 0xF0) if (!isTimeflow) ttt += 1;
 }
 
 void CTestGroundScene::OnProcessingMouseMessage()

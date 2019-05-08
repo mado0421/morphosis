@@ -39,73 +39,65 @@ public:
 class AnimationBone {
 public:
 	AnimationBone() = default;
-	AnimationBone(XMFLOAT3 translation, XMFLOAT3 rotation, AnimationBone* parent)
-		: m_parent(parent)
-	{
-		//toParent 구함
-		MakeToParentMatrix(translation, rotation);
 
-		//toDresspose 구함
-		MakeToDressposeMatrix();
-
-		//toDressposeInverse 구함
-		MakeToDressposeInverseMatrix();
-	}
-	XMMATRIX GetLocalMatrix() {
-		XMMATRIX rotM = XMMatrixRotationRollPitchYaw(XMConvertToRadians(m_rotation.x), XMConvertToRadians(m_rotation.y), XMConvertToRadians(m_rotation.z));
-		XMMATRIX trsM = XMMatrixTranslation(m_translation.x, m_translation.y, m_translation.z);
-		return XMMatrixMultiply(trsM, rotM);
-	}
-	XMFLOAT3 GetToWorldPosition() { return XMFLOAT3(m_toWorld._41, m_toWorld._42, m_toWorld._43); }
-	XMFLOAT3 GetToDressposePosition() { return XMFLOAT3(m_toDresspose._41, m_toDresspose._42, m_toDresspose._43); }
-	void SetThisBoneToRoot() { isRootBone = true; }
 	void MakeToWorldMatrix() {
 		XMMATRIX ToWorld;
-		if (!m_parent) ToWorld = XMMatrixMultiply(XMLoadFloat4x4(&m_Local), XMMatrixMultiply(XMLoadFloat4x4(&m_toParent), XMMatrixIdentity()));
-		else ToWorld = XMMatrixMultiply(XMLoadFloat4x4(&m_Local), XMMatrixMultiply(XMLoadFloat4x4(&m_toParent), XMLoadFloat4x4(&m_parent->m_toWorld)));
-		XMStoreFloat4x4(&m_toWorld, ToWorld);
-	}
-	void MakeToParentMatrix() {
-		if (!m_parent) { XMStoreFloat4x4(&m_toParent, XMMatrixIdentity()); return; }
-		XMFLOAT3 toParentTrans = XMFLOAT3(m_parent->m_translation.x - m_translation.x, m_parent->m_translation.y - m_translation.y, m_parent->m_translation.z - m_translation.z);
-		XMFLOAT3 toParentRotate = XMFLOAT3(m_parent->m_translation.x - m_translation.x, m_parent->m_translation.y - m_translation.y, m_parent->m_translation.z - m_translation.z);
+		if (m_parent) {
 
-		XMStoreFloat4x4(&m_toParent, XMMatrixRotationRollPitchYaw(XMConvertToRadians(toParentRotate.x), XMConvertToRadians(toParentRotate.y), XMConvertToRadians(toParentRotate.z)));
-		m_toParent._41 = toParentTrans.x;
-		m_toParent._42 = toParentTrans.y;
-		m_toParent._43 = toParentTrans.z;
+			XMMATRIX tmp = XMMatrixMultiply(XMLoadFloat4x4(&m_parent->m_toWorld), XMLoadFloat4x4(&m_toParent));
+			ToWorld = XMMatrixMultiply(tmp, XMLoadFloat4x4(&m_Local));
+
+
+			//ToWorld = XMMatrixMultiply(XMLoadFloat4x4(&m_Local), XMMatrixMultiply(XMLoadFloat4x4(&m_toParent), XMLoadFloat4x4(&m_parent->m_toWorld)));
+		}
+		else {
+			ToWorld = XMMatrixMultiply(XMLoadFloat4x4(&m_toParent), XMLoadFloat4x4(&m_Local));
+
+
+			//ToWorld = XMMatrixMultiply(XMLoadFloat4x4(&m_Local), XMLoadFloat4x4(&m_toParent));
+		}
+		XMStoreFloat4x4(&m_toWorld, ToWorld);
 	}
 
 	void Init() {
-		//toParent 구함
 		MakeToParentMatrix();
-
-		//toDresspose 구함
-		MakeToDressposeMatrix();
-
-		//toDressposeInverse 구함
-		MakeToDressposeInverseMatrix();
+		MakeDressposeInverseMatrix();
 	}
 
 private:
-	void MakeToParentMatrix(XMFLOAT3 LclTrans, XMFLOAT3 LclRotate) {
-		XMStoreFloat4x4(&m_toParent, XMMatrixRotationRollPitchYaw(
-			XMConvertToRadians(LclRotate.x),
-			XMConvertToRadians(LclRotate.y),
-			XMConvertToRadians(LclRotate.z)
-		));
-		m_toParent._41 = LclTrans.x;
-		m_toParent._42 = LclTrans.y;
-		m_toParent._43 = LclTrans.z;
+	void MakeToParentMatrix() {
+		///*무조건 m_translation, m_rotation이 있어야 함.*/
+		///Matrix4x4::ToTransform(&m_toParent, m_translation, Vector4::QuatFromAngle(m_rotation));
+
+		///위의 방식은 회전 먼저 하고 이동하기 때문에 처벌당했다. 유감을 표하도록 하지.
+		///XMMATRIX xmmtxTranslation = XMMatrixTranslation(m_translation.x, m_translation.y, m_translation.z);
+		///XMMATRIX xmmtxRotation = XMMatrixRotationRollPitchYaw(XMConvertToRadians(m_rotation.x), XMConvertToRadians(m_rotation.y), XMConvertToRadians(m_rotation.z));
+		///XMMATRIX xmmtxResult = XMMatrixMultiply(xmmtxTranslation, xmmtxRotation);
+		///XMMATRIX xmmtxResult = XMMatrixMultiply(xmmtxRotation, xmmtxTranslation);
+		///XMStoreFloat4x4(&m_toParent, xmmtxResult);
+		//XMMATRIX xmmtxTranslation = XMMatrixTranslation(m_translation.x, m_translation.y, m_translation.z);
+		//XMMATRIX xmmtxRotation = XMMatrixRotationRollPitchYaw(XMConvertToRadians(m_rotation.x), XMConvertToRadians(m_rotation.y), XMConvertToRadians(m_rotation.z));
+		////XMMATRIX xmmtxResult = XMMatrixMultiply(xmmtxTranslation, xmmtxRotation);
+		//XMMATRIX xmmtxResult = XMMatrixMultiply(xmmtxRotation, xmmtxTranslation); //<-이 순서로 해야 TR이 나옴
+		//XMStoreFloat4x4(&m_toParent, xmmtxResult);
+
+		XMMATRIX xmmtxTranslation = XMMatrixTranslation(m_translation.x, m_translation.y, m_translation.z);
+		XMMATRIX xmmtxRotation = Matrix4x4::MakeFromXYZAngle(m_rotation);
+		XMStoreFloat4x4(&m_toParent, XMMatrixMultiply(xmmtxTranslation, xmmtxRotation));
 	}
-	void MakeToDressposeMatrix() {
-		if (!m_parent) XMStoreFloat4x4(&m_toDresspose, XMMatrixMultiply(XMLoadFloat4x4(&m_toParent), XMMatrixIdentity()));
-		else XMStoreFloat4x4(&m_toDresspose, XMMatrixMultiply(XMLoadFloat4x4(&m_toParent), XMLoadFloat4x4(&m_parent->m_toDresspose)));
-	}
-	void MakeToDressposeInverseMatrix() {
+	void MakeDressposeInverseMatrix() {
+		XMMATRIX dressposeInv;
 		XMVECTOR det;
-		det = XMMatrixDeterminant(XMLoadFloat4x4(&m_toDresspose));
-		XMStoreFloat4x4(&m_toDressposeInverse, XMMatrixInverse(&det, XMLoadFloat4x4(&m_toDresspose)));
+		if (m_parent) {
+			det = XMMatrixDeterminant(XMLoadFloat4x4(&m_toParent));
+			//dressposeInv = XMMatrixMultiply(XMLoadFloat4x4(&m_parent->m_dressposeInv), XMMatrixInverse(&det, XMLoadFloat4x4(&m_toParent)));
+			dressposeInv = XMMatrixMultiply(XMMatrixInverse(&det, XMLoadFloat4x4(&m_toParent)), XMLoadFloat4x4(&m_parent->m_dressposeInv));
+		}
+		else {
+			det = XMMatrixDeterminant(XMLoadFloat4x4(&m_toParent));
+			dressposeInv = XMMatrixInverse(&det, XMLoadFloat4x4(&m_toParent));
+		}
+		XMStoreFloat4x4(&m_dressposeInv, dressposeInv);
 	}
 
 public:
@@ -113,11 +105,10 @@ public:
 	XMFLOAT4X4		m_Local;
 	XMFLOAT3		m_translation;
 	XMFLOAT3		m_rotation;
-	XMFLOAT4X4		m_toDressposeInverse;
+
+	XMFLOAT4X4		m_dressposeInv;
 	XMFLOAT4X4		m_toWorld;
 	XMFLOAT4X4		m_toParent;
-	XMFLOAT4X4		m_toDresspose;
-	bool			isRootBone = false;
 
 public:
 	int				m_parentIdx;
@@ -125,9 +116,15 @@ public:
 
 class AnimationKey {
 public:
+
+	static bool CompareByKeyTime(const AnimationKey& k1, const AnimationKey& k2) {
+		return (k1.m_keytime < k2.m_keytime);
+	}
+
+public:
 	std::vector<int>			m_boneIdx;
-	std::vector<Float3>			m_translations;
-	std::vector<Float3>			m_rotations;
+	std::vector<XMFLOAT3>		m_translations;
+	std::vector<XMFLOAT3>		m_rotations;
 
 	std::vector<AnimationBone*>	m_pBones;
 	float						m_keytime;
@@ -152,29 +149,25 @@ public:
 		}
 		for (int i = 0; i < m_bones.size(); ++i) {
 			m_bones[i].Init();
-			m_bones[i].MakeToParentMatrix(); 
 		}
 
 		m_boneReferenceInfo.resize(bones.size());
 
 		m_keys.resize(keys.size());
 		for (int i = 0; i < m_keys.size(); ++i) {
-			m_keys[i].m_keytime = keys[i].m_keytime;
-			m_keys[i].m_pBones.resize(keys[i].m_pBones.size());
-			m_keys[i].m_boneIdx.resize(keys[i].m_boneIdx.size());
-			m_keys[i].m_translations.resize(keys[i].m_translations.size());
-			m_keys[i].m_rotations.resize(keys[i].m_rotations.size());
-			for (int j = 0; j < m_keys[i].m_boneIdx.size(); ++j) {
-				m_keys[i].m_pBones[j] = &m_bones[keys[i].m_boneIdx[j]];
-				//m_keys[i].m_boneIdx[j] = keys[i].m_boneIdx[j];
-				//m_key
-				//m_keys[i].m_pBones[j]->m_translation = XMFLOAT3(keys[i].m_translations[j].x, keys[i].m_translations[j].y, keys[i].m_translations[j].z);
-				//m_keys[i].m_pBones[j]->m_rotation = XMFLOAT3(keys[i].m_rotations[j].x, keys[i].m_rotations[j].y, keys[i].m_rotations[j].z);
 
+			m_keys[i].m_keytime =				keys[i].m_keytime;
+			m_keys[i].m_pBones.resize(			keys[i].m_pBones.size()			);
+			m_keys[i].m_boneIdx.resize(			keys[i].m_boneIdx.size()		);
+			m_keys[i].m_translations.resize(	keys[i].m_translations.size()	);
+			m_keys[i].m_rotations.resize(		keys[i].m_rotations.size()		);
+
+			for (int j = 0; j < m_keys[i].m_boneIdx.size(); ++j) {
+
+				m_keys[i].m_pBones[j]		= &m_bones[keys[i].m_boneIdx[j]];
 				m_keys[i].m_boneIdx[j]		= keys[i].m_boneIdx[j];
 				m_keys[i].m_translations[j] = keys[i].m_translations[j];
 				m_keys[i].m_rotations[j]	= keys[i].m_rotations[j];
-
 
 				m_boneReferenceInfo[keys[i].m_boneIdx[j]].idxOfKeySet.insert(i);
 			}
@@ -189,89 +182,458 @@ public:
 		}
 	}
 	XMMATRIX	GetFinalMatrix(int boneIdx) {
-		XMMATRIX tmp = XMMatrixMultiply(XMLoadFloat4x4(&m_bones[boneIdx].m_toDressposeInverse), XMLoadFloat4x4(&m_bones[boneIdx].m_toWorld));
-		return XMMatrixMultiply(tmp, compensatingMatrix);
-		//return XMMatrixMultiply(XMLoadFloat4x4(&m_bones[boneIdx].m_toDressposeInverse), XMLoadFloat4x4(&m_bones[boneIdx].m_toWorld));
+		//XMMATRIX tmp = XMMatrixMultiply(XMLoadFloat4x4(&m_bones[boneIdx].m_dressposeInv), XMLoadFloat4x4(&m_bones[boneIdx].m_toWorld));
+		//return XMMatrixMultiply(tmp, compensatingMatrix);
+		return XMMatrixMultiply(XMLoadFloat4x4(&m_bones[boneIdx].m_toWorld), XMLoadFloat4x4(&m_bones[boneIdx].m_dressposeInv));
 	}
+
 
 private:
 	XMMATRIX	GetInterpolatedLocalMatrix(int boneIdx, float time) {
-		if (boneIdx == 5) {
-			cout << "a";
+		int curKeyIdx, nextKeyIdx;
+		int boneIdxInCurKey;
+		int boneIdxInNextKey;
+
+
+
+
+		if (m_boneReferenceInfo[boneIdx].idxOfKeySet.size() == 0) { 
+			return XMMatrixIdentity(); 
 		}
-
-
-
-		if (m_boneReferenceInfo[boneIdx].idxOfKeySet.size() == 0) return XMMatrixIdentity();
 		if (isFurtherThanBack(time)) if (isLoop) time = GetClampTime(time);
 
-		int curKeyIdx, nextKeyIdx;
 		GetKeyCurIdxNextIdxFromRefInfo(boneIdx, time, curKeyIdx, nextKeyIdx);
+		boneIdxInCurKey = GetBoneIdxInKey(boneIdx, curKeyIdx);
+		boneIdxInNextKey = GetBoneIdxInKey(boneIdx, nextKeyIdx);
 
-		int boneIdxInCurKey = GetBoneIdxInKey(boneIdx, curKeyIdx);
-		int boneIdxInNextKey = GetBoneIdxInKey(boneIdx, nextKeyIdx);
-
-		/* 4번 키의 4번 본은 2개를 갖고 있어서 1을 반환했는데
-		m_keys.front()는 1개만 갖고 있어서 터지는 중.*/
-
-
-
-
-
-		if (m_keys.size() == 1 || isFurtherThanFront(time))
-		{
-			AnimationBone temp;
-			temp.m_translation = XMFLOAT3(m_keys.front().m_translations[boneIdxInCurKey].x, m_keys.front().m_translations[boneIdxInCurKey].y, m_keys.front().m_translations[boneIdxInCurKey].z);
-			temp.m_rotation = XMFLOAT3(m_keys.front().m_rotations[boneIdxInCurKey].x, m_keys.front().m_rotations[boneIdxInCurKey].y, m_keys.front().m_rotations[boneIdxInCurKey].z);
-			return temp.GetLocalMatrix();
-
-			//m_keys.front().m_pBones[boneIdxInCurKey]->m_translation = XMFLOAT3(m_keys.front().m_translations[boneIdxInCurKey].x, m_keys.front().m_translations[boneIdxInCurKey].y, m_keys.front().m_translations[boneIdxInCurKey].z);
-			//m_keys.front().m_pBones[boneIdxInCurKey]->m_rotation = XMFLOAT3(m_keys.front().m_rotations[boneIdxInCurKey].x, m_keys.front().m_rotations[boneIdxInCurKey].y, m_keys.front().m_rotations[boneIdxInCurKey].z);
-			//return m_keys.front().m_pBones[boneIdxInCurKey]->GetLocalMatrix();
+		if (curKeyIdx == nextKeyIdx || m_keys.size() == 1 || isFurtherThanFront(time)) {
+			XMFLOAT4X4 tmp;
+			Matrix4x4::ToTransform(
+				&tmp, 
+				Vector3::Subtract(m_keys[curKeyIdx].m_translations[boneIdxInCurKey], m_bones[boneIdx].m_translation), 
+				Vector4::QuatFromAngle(Vector3::Subtract(m_keys[curKeyIdx].m_rotations[boneIdxInCurKey], m_bones[boneIdx].m_rotation)));
+			return XMLoadFloat4x4(&tmp);
 		}
+		///if (m_keys.size() == 1 || isFurtherThanFront(time)) {
+		///	XMFLOAT4X4 tmp;
+		///	Matrix4x4::ToTransform(&tmp, m_keys.front().m_translations[boneIdxInCurKey], Vector4::QuatFromAngle(m_keys.front().m_rotations[boneIdxInCurKey]));
+		///	return XMLoadFloat4x4(&tmp);
+		///}
 
-		time = GetNormalizedTimeByTwoKeys(time, curKeyIdx, nextKeyIdx);
+		//time = GetNormalizedTimeByTwoKeys(time, curKeyIdx, nextKeyIdx);
 
-		XMFLOAT3 tmpFloat3;
-		tmpFloat3 = XMFLOAT3(m_keys[curKeyIdx].m_translations[boneIdxInCurKey].x, m_keys[curKeyIdx].m_translations[boneIdxInCurKey].y, m_keys[curKeyIdx].m_translations[boneIdxInCurKey].z);
-		XMVECTOR t0 = XMLoadFloat3(&tmpFloat3);
-		tmpFloat3 = XMFLOAT3(m_keys[nextKeyIdx].m_translations[boneIdxInNextKey].x, m_keys[nextKeyIdx].m_translations[boneIdxInNextKey].y, m_keys[nextKeyIdx].m_translations[boneIdxInNextKey].z);
-		XMVECTOR t1 = XMLoadFloat3(&tmpFloat3);
+		/*
+		//XMFLOAT4	xmf4BaseQuat;
+		//XMStoreFloat4(&xmf4BaseQuat,
+		//	XMQuaternionRotationRollPitchYaw(
+		//		XMConvertToRadians(m_bones[boneIdx].m_rotation.x),
+		//		XMConvertToRadians(m_bones[boneIdx].m_rotation.y),
+		//		XMConvertToRadians(m_bones[boneIdx].m_rotation.z)
+		//	)
+		//);
 
-		//t0 *= 0;
-		//t1 *= 0;
+		//XMFLOAT4	xmf4PrevQuat;
+		//XMStoreFloat4(&xmf4PrevQuat,
+		//	XMQuaternionRotationRollPitchYaw(
+		//		XMConvertToRadians(m_keys[curKeyIdx].m_rotations[boneIdxInCurKey].x),
+		//		XMConvertToRadians(m_keys[curKeyIdx].m_rotations[boneIdxInCurKey].y),
+		//		XMConvertToRadians(m_keys[curKeyIdx].m_rotations[boneIdxInCurKey].z)
+		//	)
+		//);
+
+		//XMFLOAT4	xmf4NextQuat;
+		//XMStoreFloat4(&xmf4NextQuat,
+		//	XMQuaternionRotationRollPitchYaw(
+		//		XMConvertToRadians(m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey].x),
+		//		XMConvertToRadians(m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey].y),
+		//		XMConvertToRadians(m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey].z)
+		//	)
+		//);
+
+		//XMFLOAT4X4	xmf4x4BaseMtx;
+		//XMFLOAT4X4	xmf4x4PrevMtx;
+		//XMFLOAT4X4	xmf4x4NextMtx;
+
+		//Matrix4x4::ToTransform(&xmf4x4BaseMtx, m_bones[boneIdx].m_translation, xmf4BaseQuat);
+		//Matrix4x4::ToTransform(&xmf4x4PrevMtx, m_keys[curKeyIdx].m_translations[boneIdxInCurKey], xmf4PrevQuat);
+		//Matrix4x4::ToTransform(&xmf4x4NextMtx, m_keys[nextKeyIdx].m_translations[boneIdxInNextKey], xmf4NextQuat);
+
+		//XMMATRIX	xmmtxInterpolated;
+		//Matrix4x4::InterpolateMtx(&xmmtxInterpolated, XMLoadFloat4x4(&xmf4x4PrevMtx), XMLoadFloat4x4(&xmf4x4NextMtx), static_cast<float>(time));
+
+		//XMVECTOR	xmvDet = XMMatrixDeterminant(xmmtxInterpolated);
+		//XMMATRIX	xmmtxInterpolatedInv = XMMatrixInverse(&xmvDet, xmmtxInterpolated);
+		//XMMATRIX	xmmtxBase = XMLoadFloat4x4(&xmf4x4BaseMtx);
+		////XMFLOAT4X4	xmf4x4Result;
+		//return XMMatrixMultiply(xmmtxBase, xmmtxInterpolatedInv);
+
+		//=====================================================================================================
+		// 거의 다 했다!
+		//=====================================================================================================
+
+		//XMVECTOR xmvBoneRotationQuat 
+		//	= XMQuaternionRotationRollPitchYaw(
+		//		XMConvertToRadians(m_bones[boneIdx].m_rotation.x), 
+		//		XMConvertToRadians(m_bones[boneIdx].m_rotation.y), 
+		//		XMConvertToRadians(m_bones[boneIdx].m_rotation.z));
+		//XMFLOAT4 xmf4BoneRotationQuat;
+		//XMStoreFloat4(&xmf4BoneRotationQuat, xmvBoneRotationQuat);
+
+		//XMVECTOR xmvPrevRotationTransformed = XMVector3Rotate(XMLoadFloat3(&m_keys[curKeyIdx].m_rotations[boneIdxInCurKey]), xmvBoneRotationQuat);
+		//XMVECTOR xmvNextRotationTransformed = XMVector3Rotate(XMLoadFloat3(&m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey]), xmvBoneRotationQuat);
+		//XMFLOAT4 xmf4PrevQuat;
+		//XMFLOAT4 xmf4NextQuat;
+		//XMStoreFloat4(&xmf4PrevQuat, xmvPrevRotationTransformed);
+		//XMStoreFloat4(&xmf4NextQuat, xmvNextRotationTransformed);
+
+		//XMFLOAT4X4 xmf4x4BoneMtx;
+		//XMFLOAT4X4 xmf4x4PrevMtx;
+		//XMFLOAT4X4 xmf4x4NextMtx;
+
+		//Matrix4x4::ToTransform(&xmf4x4BoneMtx, m_bones[boneIdx].m_translation, xmf4BoneRotationQuat);
+		//Matrix4x4::ToTransform(&xmf4x4PrevMtx, m_keys[curKeyIdx].m_translations[boneIdxInCurKey], xmf4PrevQuat);
+		//Matrix4x4::ToTransform(&xmf4x4NextMtx, m_keys[nextKeyIdx].m_translations[boneIdxInNextKey], xmf4NextQuat);
+
+		//XMMATRIX xmmtxInterpolated;
+		//Matrix4x4::InterpolateMtx(&xmmtxInterpolated, XMLoadFloat4x4(&xmf4x4PrevMtx), XMLoadFloat4x4(&xmf4x4NextMtx), static_cast<float>(time));
+
+		//XMVECTOR xmvDet = XMMatrixDeterminant(XMLoadFloat4x4(&  xmf4x4BoneMtx));
+		//XMMATRIX xmmtxBoneInv = XMMatrixInverse(&xmvDet, XMLoadFloat4x4(&xmf4x4BoneMtx));
+		////XMMATRIX xmmtxBase = XMLoadFloat4x4(&xmf4x4BaseMtx);
+		//return XMMatrixMultiply(xmmtxBoneInv, xmmtxInterpolated);
+
+		//=====================================================================================================
+		// 최종본이 될 것.
+		//=====================================================================================================
+		//먼저 이전 키랑 다음 키 보간을 먼저 하자.
+		//XMFLOAT3 xmf3LclTranslation 
+		//	= Vector3::Lerp(
+		//		m_keys[curKeyIdx].m_translations[boneIdxInCurKey],
+		//		m_keys[nextKeyIdx].m_translations[boneIdxInNextKey],
+		//		time);
+
+		//XMFLOAT4 xmf4PrevRotationQuat;
+		//XMFLOAT4 xmf4NextRotationQuat;
+		//XMStoreFloat4(&xmf4PrevRotationQuat,
+		//	XMQuaternionRotationRollPitchYaw(
+		//		XMConvertToRadians(m_keys[curKeyIdx].m_rotations[boneIdxInCurKey].x),
+		//		XMConvertToRadians(m_keys[curKeyIdx].m_rotations[boneIdxInCurKey].y),
+		//		XMConvertToRadians(m_keys[curKeyIdx].m_rotations[boneIdxInCurKey].z)));
+		//XMStoreFloat4(&xmf4NextRotationQuat,
+		//	XMQuaternionRotationRollPitchYaw(
+		//		XMConvertToRadians(m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey].x),
+		//		XMConvertToRadians(m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey].y),
+		//		XMConvertToRadians(m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey].z)));
+
+		//XMFLOAT4 xmf4LclRotationQuat
+		//	= Vector4::QuatSlerp(
+		//		xmf4PrevRotationQuat,
+		//		xmf4NextRotationQuat,
+		//		time);
+
+		//XMFLOAT3 xmf3LclRotationAngle;
+		//quat_2_euler_d3d(xmf4LclRotationQuat, xmf3LclRotationAngle.x, xmf3LclRotationAngle.y, xmf3LclRotationAngle.z);
+		//xmf3LclRotationAngle.x = XMConvertToDegrees(xmf3LclRotationAngle.x);
+		//xmf3LclRotationAngle.y = XMConvertToDegrees(xmf3LclRotationAngle.y);
+		//xmf3LclRotationAngle.z = XMConvertToDegrees(xmf3LclRotationAngle.z);
+
+		////이젠 bone의 기본 값들을 가지고 계산할 차례
+		////먼저 회전각으로 쿼터니언을 만들고 회전시키자.
+		//XMVECTOR xmvBoneRotationQuat
+		//	= XMQuaternionRotationRollPitchYaw(
+		//		XMConvertToRadians(m_bones[boneIdx].m_rotation.x),
+		//		XMConvertToRadians(m_bones[boneIdx].m_rotation.y),
+		//		XMConvertToRadians(m_bones[boneIdx].m_rotation.z));
+
+		//XMVECTOR xmvLclRotationTransformed = XMVector3Rotate(XMLoadFloat3(&xmf3LclRotationAngle), xmvBoneRotationQuat);
+		////translation도 회전시켜줘야 할까? 일단 해주자.
+		//XMVECTOR xmvLclTranslationTransformed = XMVector3Rotate(XMLoadFloat3(&xmf3LclTranslation), xmvBoneRotationQuat);
+
+		////키 값으로 만든 행렬
+		//XMStoreFloat3(&xmf3LclTranslation, xmvLclTranslationTransformed);
+		//XMStoreFloat3(&xmf3LclRotationAngle, xmvLclRotationTransformed);
+		//XMStoreFloat4(&xmf4LclRotationQuat,
+		//	XMQuaternionRotationRollPitchYaw(
+		//		XMConvertToRadians(xmf3LclRotationAngle.x),
+		//		XMConvertToRadians(xmf3LclRotationAngle.y),
+		//		XMConvertToRadians(xmf3LclRotationAngle.z)));
+		//XMFLOAT4X4 xmf4x4LclTransformMtx;
+		//Matrix4x4::ToTransform(&xmf4x4LclTransformMtx, xmf3LclTranslation, xmf4LclRotationQuat);
+
+		////bone값으로 만든 행렬과 그것의 역행렬
+		//XMFLOAT4 xmf4BoneRotationQuat;
+		//XMStoreFloat4(&xmf4BoneRotationQuat, xmvBoneRotationQuat);
+		//XMFLOAT4X4 xmf4x4BoneMtx;
+		//Matrix4x4::ToTransform(&xmf4x4BoneMtx, m_bones[boneIdx].m_translation, xmf4BoneRotationQuat);
+
+		//XMVECTOR xmvBoneDet = XMMatrixDeterminant(XMLoadFloat4x4(&xmf4x4BoneMtx));
+		//XMMATRIX xmmtxBoneInvMtx = XMMatrixInverse(&xmvBoneDet, XMLoadFloat4x4(&xmf4x4BoneMtx));
+		//XMMATRIX xmmtxLclTransformMtx = XMLoadFloat4x4(&xmf4x4LclTransformMtx);
+		////XMMATRIX xmmtxResult = XMMatrixMultiply(xmmtxBoneInvMtx, xmmtxLclTransformMtx);
+
+		//return XMMatrixMultiply(xmmtxBoneInvMtx, xmmtxLclTransformMtx);
+		*/
+		//=====================================================================================================
+		// 응 아니야
+		//=====================================================================================================
+		//if (boneIdx != 11 && boneIdx != 12 && boneIdx != 13) {
+		//	return XMMatrixIdentity();
+		//}
+
+		//return XMMatrixIdentity();
 
 
-		XMVECTOR q0 = {
-			XMConvertToRadians(m_keys[curKeyIdx].m_rotations[boneIdxInCurKey].x),
-			XMConvertToRadians(m_keys[curKeyIdx].m_rotations[boneIdxInCurKey].y),
-			XMConvertToRadians(m_keys[curKeyIdx].m_rotations[boneIdxInCurKey].z) };
-		XMVECTOR q1 = { 
-			XMConvertToRadians(m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey].x),
-			XMConvertToRadians(m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey].y),
-			XMConvertToRadians(m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey].z) };
-		//XMVECTOR q0 = {
-		//	m_keys[curKeyIdx].m_rotations[boneIdxInCurKey].x,
-		//	m_keys[curKeyIdx].m_rotations[boneIdxInCurKey].y,
-		//	m_keys[curKeyIdx].m_rotations[boneIdxInCurKey].z };
-		//XMVECTOR q1 = {
-		//	m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey].x,
-		//	m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey].y,
-		//	m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey].z };
-		q0 = XMQuaternionRotationRollPitchYawFromVector(q0);
-		q1 = XMQuaternionRotationRollPitchYawFromVector(q1);
 
-		XMFLOAT3 rotateOriginTemp;
-		XMVECTOR rotateOrigin;
-		if (m_bones[boneIdx].m_parent)	rotateOriginTemp = m_bones[boneIdx].m_parent->GetToWorldPosition();
-		else							rotateOriginTemp = m_bones[boneIdx].GetToDressposePosition();
-		rotateOrigin = XMLoadFloat3(&rotateOriginTemp);
+		//XMFLOAT3 xmf3R1 = m_keys[curKeyIdx].m_rotations[boneIdxInCurKey];
+		//XMFLOAT3 xmf3R2 = m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey];
+		//XMFLOAT3 xmf3B = m_bones[boneIdx].m_rotation;
 
-		return XMMatrixAffineTransformation(
-			XMVectorSplatOne(),
-			rotateOrigin,
-			XMQuaternionSlerp(q0, q1, time),
-			XMVectorLerp(t0, t1, time));
+		//XMFLOAT3 r0 = xmf3R1;
+		//XMFLOAT3 r1 = xmf3R2;
+		//r0.x *= -1;
+		//r0.y *= -1;
+		//r0.z *= -1;
+		//r1.x *= -1;
+		//r1.y *= -1;
+		//r1.z *= -1;
+
+		////float time = 0.5;
+		//XMFLOAT3 r = Vector3::Lerp(r0, r1, time);
+		//XMFLOAT4X4 mtx;
+		//XMStoreFloat4x4(&mtx, Matrix4x4::MakeFromXYZAngle(r));
+
+		//r = Vector3::AngleFromMtx(mtx);
+
+		////cout << "(" << r.x << ", " << r.y << ", " << r.z << ")\n";
+
+		//return XMLoadFloat4x4(&mtx);
+
+
+
+
+
+
+
+
+
+		//XMFLOAT3 xmf3OriginalRotation = Vector3::Lerp(xmf3R1, xmf3R2, time);
+		//XMFLOAT3 xmf3BoneRotation = xmf3B;
+		//
+		//XMVECTOR xmvBoneRotationQuat
+		//= XMQuaternionRotationRollPitchYaw(
+		//	XMConvertToRadians(xmf3BoneRotation.x),
+		//	XMConvertToRadians(xmf3BoneRotation.y),
+		//	XMConvertToRadians(xmf3BoneRotation.z));
+		//
+		//XMVECTOR xmvOriginalRotationTransformed = XMVector3Rotate(XMLoadFloat3(&xmf3OriginalRotation), xmvBoneRotationQuat);
+		//XMFLOAT3 xmf3OriginalRotationResult;
+		//XMStoreFloat3(&xmf3OriginalRotationResult, xmvOriginalRotationTransformed);
+		//
+		////cout << fixed << setprecision(2)
+		////<< "Prev is		(" << setw(7) << xmf3OriginalRotation.x
+		////<< ", " << setw(7) << xmf3OriginalRotation.y
+		////<< ", " << setw(7) << xmf3OriginalRotation.z << ")\n";
+		////cout << fixed << setprecision(2)
+		////<< "Result is	(" << setw(7) << xmf3OriginalRotationResult.x
+		////<< ", " << setw(7) << xmf3OriginalRotationResult.y
+		////<< ", " << setw(7) << xmf3OriginalRotationResult.z << ")\n";
+		//
+		////return XMMatrixRotationRollPitchYawFromVector(xmvOriginalRotationTransformed);
+
+
+		//XMMATRIX xmmtxBoneRotationMtx
+		//= XMMatrixRotationRollPitchYaw(
+		//	XMConvertToRadians(xmf3BoneRotation.x),
+		//	XMConvertToRadians(xmf3BoneRotation.y),
+		//	XMConvertToRadians(xmf3BoneRotation.z));
+		//XMVECTOR xmvBoneRotationMtxDet = XMMatrixDeterminant(xmmtxBoneRotationMtx);
+		//XMMATRIX xmmtxBoneRotationInvMtx = XMMatrixInverse(&xmvBoneRotationMtxDet, xmmtxBoneRotationMtx);
+		////XMMATRIX xmmtxOriginalRotationMtx
+		////= XMMatrixRotationRollPitchYaw(
+		////	XMConvertToRadians(xmf3OriginalRotation.x),
+		////	XMConvertToRadians(xmf3OriginalRotation.y),
+		////	XMConvertToRadians(xmf3OriginalRotation.z));
+		//XMMATRIX xmmtxOriginalRotationMtx
+		//	= XMMatrixRotationRollPitchYaw(
+		//		XMConvertToRadians(xmf3OriginalRotationResult.x),
+		//		XMConvertToRadians(xmf3OriginalRotationResult.y),
+		//		XMConvertToRadians(xmf3OriginalRotationResult.z));
+		////XMMATRIX xmmtxResult = XMMatrixMultiply(xmmtxBoneRotationInvMtx, xmmtxOriginalRotationMtx);
+		//XMMATRIX xmmtxResult = XMMatrixMultiply(xmmtxBoneRotationInvMtx, xmmtxOriginalRotationMtx);
+		//XMFLOAT4X4 xmf4x4Result;
+		//XMStoreFloat4x4(&xmf4x4Result, xmmtxResult);
+		//XMFLOAT4 xmf4Result;
+		//xmf4Result = Vector4::QuatFromMtx(xmf4x4Result);
+		//XMFLOAT3 xmf3Result;
+		////quat_2_euler_d3d(xmf4Result, xmf3Result.x, xmf3Result.y, xmf3Result.z);
+		//xmf3Result = Vector3::AngleFromQuat(xmf4Result);
+		//
+		////xmf3Result.x =XMConvertToDegrees(xmf3Result.x);
+		////xmf3Result.y =XMConvertToDegrees(xmf3Result.y);
+		////xmf3Result.z =XMConvertToDegrees(xmf3Result.z);
+
+
+		////cout << fixed << setprecision(2)
+		////<< "Angle is	(" << setw(7) << XMConvertToDegrees(xmf3Result.x)
+		////<< ", " << setw(7) << XMConvertToDegrees(xmf3Result.y)
+		////<< ", " << setw(7) << XMConvertToDegrees(xmf3Result.z) << ")\n";
+
+		//return xmmtxResult;
+
+		//=====================================================================================================
+		// 제발
+		//=====================================================================================================
+		//XMFLOAT3 xmf3R1 = m_keys[curKeyIdx].m_rotations[boneIdxInCurKey];
+		//XMFLOAT3 xmf3R2 = m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey];
+		//XMFLOAT3 xmf3B = m_bones[boneIdx].m_rotation;
+
+		//XMFLOAT3 xmf3OriginalRotation = Vector3::Lerp(xmf3R1, xmf3R2, time);
+		//XMFLOAT3 xmf3BoneRotation = xmf3B;
+		//XMVECTOR xmvBoneRotationQuat = Vector4::QuatFromXYZAngle(xmf3BoneRotation);
+
+		//XMVECTOR xmvOriginalRotationTransformed = XMVector3Rotate(XMLoadFloat3(&xmf3OriginalRotation), xmvBoneRotationQuat);
+		//XMFLOAT3 xmf3OriginalRotationResult;
+		//XMStoreFloat3(&xmf3OriginalRotationResult, xmvOriginalRotationTransformed);
+
+		//XMMATRIX xmmtxBoneRotationMtx;
+
+		//xmmtxBoneRotationMtx = Matrix4x4::MakeFromXYZAngle(xmf3BoneRotation);
+
+		//XMVECTOR xmvBoneRotationMtxDet = XMMatrixDeterminant(xmmtxBoneRotationMtx);
+		//XMMATRIX xmmtxBoneRotationInvMtx = XMMatrixInverse(&xmvBoneRotationMtxDet, xmmtxBoneRotationMtx);
+		//XMMATRIX xmmtxOriginalRotationMtx;
+		//xmmtxOriginalRotationMtx = Matrix4x4::MakeFromXYZAngle(xmf3OriginalRotationResult);
+
+		//XMMATRIX xmmtxResult = XMMatrixMultiply(xmmtxOriginalRotationMtx, xmmtxBoneRotationInvMtx);
+
+		//XMFLOAT4X4 xmf4x4Result;
+		//XMStoreFloat4x4(&xmf4x4Result, xmmtxResult);
+		//XMFLOAT4 xmf4Result;
+		//xmf4Result = Vector4::QuatFromMtx(xmf4x4Result);
+		//XMFLOAT3 xmf3Result;
+		//xmf3Result = Vector3::AngleFromQuat(xmf4Result);
+
+		//return xmmtxResult;
+
+		/******************************************************************************************************
+		마지막이야~
+		******************************************************************************************************/
+
+//return XMMatrixIdentity();
+//XMFLOAT4X4 result;
+
+XMFLOAT3 p = { 0, 0, 5 * time };
+return Matrix4x4::MakeFromXYZAngle(p);
+
+//XMStoreFloat4x4(&result, Matrix4x4::MakeFromXYZAngle(p));
+
+//PrintM(result);
+
+		XMFLOAT3 xmf3R1 = m_keys[curKeyIdx].m_rotations[boneIdxInCurKey];
+		XMFLOAT3 xmf3R2 = m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey];
+		XMFLOAT3 xmf3B = m_bones[boneIdx].m_rotation;
+
+
+		XMFLOAT3 r0 = Vector3::ScalarProduct(xmf3R1, -1, false);
+		XMFLOAT3 r1 = Vector3::ScalarProduct(xmf3R2, -1, false);
+		XMFLOAT3 b0 = Vector3::ScalarProduct(xmf3B, -1, false);
+
+		//time = 0;
+		XMFLOAT3 r2 = Vector3::Lerp(r0, r1, time);
+
+		XMMATRIX r = Matrix4x4::MakeFromXYZAngle(r2);
+		XMMATRIX b = Matrix4x4::MakeFromXYZAngle(b0);
+		XMFLOAT4X4 result;
+
+		//XMStoreFloat4x4(&result, r);
+		//PrintM(result);
+
+		//XMStoreFloat4x4(&result, b);
+		//PrintM(result);
+
+		XMVECTOR d = XMMatrixDeterminant(b);
+		b = XMMatrixInverse(&d, b);
+
+		XMStoreFloat4x4(&result, XMMatrixMultiply(b, r));
+		//PrintM(result);
+
+		return XMMatrixMultiply(b, r);
+
+
+
+
+
+
+
+
+
+		///XMFLOAT3 xmf3tmp;
+		
+
+		///XMFLOAT4X4	xmf4x4m1;
+		//XMFLOAT3	xmf3t1 = Vector3::Subtract(m_keys[curKeyIdx].m_translations[boneIdxInCurKey], m_bones[boneIdx].m_translation);
+		//XMFLOAT3	xmf3r1 = Vector3::Subtract(m_keys[curKeyIdx].m_rotations[boneIdxInCurKey], m_bones[boneIdx].m_rotation);
+		///XMVECTOR	xmvR1 = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(xmf3r1.x), XMConvertToRadians(xmf3r1.y), XMConvertToRadians(xmf3r1.z));
+		///XMFLOAT4	xmf4r1;
+		///xmf3tmp = Vector3::Subtract(m_keys[curKeyIdx].m_rotations[boneIdxInCurKey], m_bones[boneIdx].m_rotation);
+		///XMStoreFloat4(&xmf4r1, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(xmf3tmp.x), XMConvertToRadians(xmf3tmp.y), XMConvertToRadians(xmf3tmp.z)));
+		///Matrix4x4::ToTransform(&xmf4x4m1, xmf3t1, xmf4r1);
+
+		///XMFLOAT4X4	xmf4x4m2;
+		//XMFLOAT3	xmf3t2 = Vector3::Subtract(m_keys[nextKeyIdx].m_translations[boneIdxInNextKey], m_bones[boneIdx].m_translation);
+		//XMFLOAT3	xmf3r2 = Vector3::Subtract(m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey], m_bones[boneIdx].m_rotation);
+		///XMVECTOR	xmvR2 = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(xmf3r2.x), XMConvertToRadians(xmf3r2.y), XMConvertToRadians(xmf3r2.z));
+		///XMFLOAT4	xmf4r2;
+		///xmf3tmp = Vector3::Subtract(m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey], m_bones[boneIdx].m_rotation);
+		///XMStoreFloat4(&xmf4r2, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(xmf3tmp.x), XMConvertToRadians(xmf3tmp.y), XMConvertToRadians(xmf3tmp.z)));
+		///Matrix4x4::ToTransform(&xmf4x4m2, xmf3t2, xmf4r2);
+
+		///XMMATRIX m1 = XMLoadFloat4x4(&xmf4x4m1);
+		///XMMATRIX m2 = XMLoadFloat4x4(&xmf4x4m2);
+
+		//XMFLOAT3 xmf3resultT;
+		//XMFLOAT3 xmf3resultR;
+
+		//XMFLOAT4	xmf4resultRQ;
+		//xmf3resultT = Vector3::Subtract(xmf3t2, Vector3::Lerp(xmf3t1, xmf3t2, time));
+		//xmf3resultT = Vector3::Add(m_keys[curKeyIdx].m_translations[boneIdxInCurKey], xmf3resultT);
+		//xmf3resultR = Vector3::Subtract(xmf3r2, Vector3::Lerp(xmf3r1, xmf3r2, time));
+		//xmf3resultR = Vector3::Add(m_keys[curKeyIdx].m_rotations[boneIdxInCurKey], xmf3resultR);
+		//XMStoreFloat4(&xmf4resultRQ, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(xmf3resultR.x), XMConvertToRadians(xmf3resultR.y), XMConvertToRadians(xmf3resultR.z)));
+		///XMQuaternionSlerp(xmvR1, )
+
+
+		///XMMATRIX result;
+		//XMFLOAT4X4	xmf4x4result;
+		//Matrix4x4::ToTransform(&xmf4x4result, xmf3resultT, xmf4resultRQ);
+		//return XMLoadFloat4x4(&xmf4x4result);
+
+		///xmf3tmp		= Vector3::Subtract(m_keys[curKeyIdx].m_translations[boneIdxInCurKey], m_bones[boneIdx].m_translation);
+		///XMVECTOR t0 = XMLoadFloat3(&xmf3tmp);
+		///xmf3tmp		= Vector3::Subtract(m_keys[nextKeyIdx].m_translations[boneIdxInNextKey], m_bones[boneIdx].m_translation);
+		///XMVECTOR t1 = XMLoadFloat3(&xmf3tmp);
+		///XMVECTOR t0 = XMLoadFloat3(&m_keys[curKeyIdx].m_translations[boneIdxInCurKey]);
+		///XMVECTOR t1 = XMLoadFloat3(&m_keys[nextKeyIdx].m_translations[boneIdxInNextKey]);
+		///xmf3tmp		= Vector3::Subtract(m_keys[curKeyIdx].m_rotations[boneIdxInCurKey], m_bones[boneIdx].m_rotation);
+		///XMVECTOR q0 = { XMConvertToRadians(xmf3tmp.x), XMConvertToRadians(xmf3tmp.y), XMConvertToRadians(xmf3tmp.z) };
+		///xmf3tmp		= Vector3::Subtract(m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey], m_bones[boneIdx].m_rotation);
+		///XMVECTOR q1 = { XMConvertToRadians(xmf3tmp.x), XMConvertToRadians(xmf3tmp.y), XMConvertToRadians(xmf3tmp.z) };
+		///q0 = XMQuaternionRotationRollPitchYawFromVector(q0);
+		///q1 = XMQuaternionRotationRollPitchYawFromVector(q1);
+		///XMMATRIX m0 = XMMatrixRotationQuaternion(q0);
+		///XMMATRIX m1 = XMMatrixRotationQuaternion(q1);
+
+
+
+
+
+
+		///Matrix4x4::InterpolateMtx(
+		///	&result
+		///	, m1
+		///	, m2
+		///	, time);
+		///return result;
 	}
 	bool		isFurtherThanBack(float time) { return (time >= m_keys.back().m_keytime); }
 	bool		isFurtherThanFront(float time) { return (time <= m_keys.front().m_keytime); }

@@ -580,6 +580,9 @@ private:
 		{
 			GetMeshDataRec(pNode->GetChild(meshCount));
 		}
+
+
+
 	}
 	void PrintMeshData() {
 		for (auto p = meshes.begin(); p != meshes.end(); ++p) {
@@ -966,7 +969,7 @@ int main(int argc, char** argv)
     // Load the scene.
 
     // The example can take a FBX file as an argument.
-	FbxString lFilePath("test_y-up.FBX");
+	FbxString lFilePath("test_0429_015_Character.FBX");
 	for( int i = 1, c = argc; i < c; ++i )
 	{
 		if( FbxString(argv[i]) == "-test" ) gVerbose = false;
@@ -991,52 +994,9 @@ int main(int argc, char** argv)
     else 
     {
 
-		/*****************************************************************
-		먼저 Geometry Data를 얻어야 함.
-
-		이거 또 재귀로 해줘야됨
-		*****************************************************************/
-		//FbxNodeAttribute::EType type;
-		//FbxNode* tmp = lScene->GetRootNode();
-		//FbxGeometry* geo = tmp->GetGeometry();
-		//type = tmp->GetNodeAttribute()->GetAttributeType();
-		//if (FbxNodeAttribute::eMesh == type) {
-		//	int nSkinDeformers = geo->GetDeformerCount(FbxDeformer::eSkin);
-		//	for (int i = 0; i < nSkinDeformers; ++i) {
-		//		FbxSkin* skinDeformer = (FbxSkin*)(geo->GetDeformer(i, FbxDeformer::eSkin));
-		//		int nClusters = skinDeformer->GetClusterCount();
-		//		for (int j = 0; j < nClusters; ++j) {
-		//			FbxCluster* cluster = skinDeformer->GetCluster(j);
-		//			int nIdx = cluster->GetControlPointIndicesCount();
-		//			int* pIdx = cluster->GetControlPointIndices();
-		//			double* pWeights = cluster->GetControlPointWeights();
-		//		}
-		//	}
-		//}
-		//for (int i = 0; i < tmp->GetChildCount(); ++i) {
-		//}
-
-		//GetMeshData(lScene->GetRootNode());
-		//GetClusterData(lScene->GetRootNode());
-
-		/*****************************************************************
-		Animation Data를 얻는 부분
-		*****************************************************************/
-		//for (int i = 0; i < lScene->GetSrcObjectCount<FbxAnimStack>(); i++)
-		//{
-		//	FbxAnimStack* lAnimStack = lScene->GetSrcObject<FbxAnimStack>(i);
-		//	int l;
-		//	int nbAnimLayers = lAnimStack->GetMemberCount<FbxAnimLayer>();
-		//	for (l = 0; l < nbAnimLayers; l++)
-		//	{
-		//		FbxAnimLayer* lAnimLayer = lAnimStack->GetMember<FbxAnimLayer>(l);
-		//		GetAnimationDataRec(lAnimLayer, lScene->GetRootNode());
-		//	}
-		//}
-		//animData.Print();
 
 		dataManager.Init(lScene);
-		dataManager.ExportFile("TestAnimation4test_y-up.dat");
+		dataManager.ExportFile("test_0429_015_Character.dat");
     }
     // Destroy all objects created by the FBX SDK.
     DestroySdkObjects(lSdkManager, lResult);
