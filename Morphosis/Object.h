@@ -117,7 +117,7 @@ public:
 	}
 	void FallingOOBB(float fTimeElapsed) {
 		prevHeight = m_collisionBox.Center.y;
-		m_fGravityAccel += fTimeElapsed * G * 1.5f;
+		m_fGravityAccel += fTimeElapsed * static_cast<float>(G) * 1.5f;
 		m_collisionBox.Center.y -= m_fGravityAccel;
 	}
 
@@ -201,8 +201,8 @@ public:
 		bones.resize(nBones);
 		for (int i = 0; i < nBones; ++i) {
 			in.read((char*)&(bones[i].m_parentIdx), sizeof(int));
-			in.read((char*)&(bones[i].m_translation), sizeof(Float3));
-			in.read((char*)&(bones[i].m_rotation), sizeof(Float3));
+			in.read((char*)&(bones[i].m_translation), sizeof(XMFLOAT3));
+			in.read((char*)&(bones[i].m_rotation), sizeof(XMFLOAT3));
 		}
 
 		/***************************************************************
@@ -218,9 +218,9 @@ public:
 			in.read((char*)&nCPs, sizeof(int));
 			meshes[i].controlPoints.resize(nCPs);
 			for (int j = 0; j < nCPs; ++j) {
-				in.read((char*)&(meshes[i].controlPoints[j].pos), sizeof(Float3));
-				in.read((char*)&(meshes[i].controlPoints[j].boneIdx), sizeof(Int4));
-				in.read((char*)&(meshes[i].controlPoints[j].weight), sizeof(Float4));
+				in.read((char*)&(meshes[i].controlPoints[j].pos), sizeof(XMFLOAT3));
+				in.read((char*)&(meshes[i].controlPoints[j].boneIdx), sizeof(XMINT4));
+				in.read((char*)&(meshes[i].controlPoints[j].weight), sizeof(XMFLOAT4));
 
 				//XMFLOAT3 xmf3TargetPos = { meshes[i].controlPoints[j].pos.x, meshes[i].controlPoints[j].pos.y, meshes[i].controlPoints[j].pos.z };
 				//XMStoreFloat3(&xmf3TargetPos, XMVector3Transform(XMLoadFloat3(&xmf3TargetPos), changeCoordinateMatrix));
@@ -280,7 +280,7 @@ public:
 		for (int i = 0; i < nKeys; ++i) {
 			float keyTime;
 			int boneIdx;
-			Float3 tmpFloat3;
+			XMFLOAT3 tmpFloat3;
 			in.read((char*)&keyTime, sizeof(float));
 
 			keys[i].m_keytime = keyTime;
@@ -288,11 +288,11 @@ public:
 			for (int j = 0; j < keys[i].m_boneIdx.size(); ++j) {
 				in.read((char*)&boneIdx, sizeof(int));
 				keys[i].m_boneIdx[j] = boneIdx;
-				in.read((char*)&tmpFloat3, sizeof(Float3));
+				in.read((char*)&tmpFloat3, sizeof(XMFLOAT3));
 				keys[i].m_translations[j].x = tmpFloat3.x;
 				keys[i].m_translations[j].y = tmpFloat3.y;
 				keys[i].m_translations[j].z = tmpFloat3.z;
-				in.read((char*)&tmpFloat3, sizeof(Float3));
+				in.read((char*)&tmpFloat3, sizeof(XMFLOAT3));
 				keys[i].m_rotations[j].x = tmpFloat3.x;
 				keys[i].m_rotations[j].y = tmpFloat3.y;
 				keys[i].m_rotations[j].z = tmpFloat3.z;

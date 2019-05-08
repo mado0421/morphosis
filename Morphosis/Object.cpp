@@ -223,7 +223,7 @@ void CPlayerObject::Update(float fTimeElapsed)
 	{
 		CMovingObject::Update(fTimeElapsed);
 		if (m_jump) {
-			m_fGravityAccel = -fTimeElapsed * G * 450;
+			m_fGravityAccel = -fTimeElapsed * static_cast<float>( G )* 450;
 			m_jump = false;
 		}
 		if (!IsFireable()) m_attTimer -= fTimeElapsed;
@@ -233,7 +233,7 @@ void CPlayerObject::Update(float fTimeElapsed)
 
 void CPlayerObject::Attack()
 {
-	m_attTimer = TIMER_ATT;
+	m_attTimer = static_cast<float>(TIMER_ATT);
 	//투사체 생성은 Scene 키입력 받을 때 해주자
 }
 
@@ -429,7 +429,7 @@ void ObjectManager::CreateConstantBufferView(ID3D12Device * pd3dDevice, D3D12_CP
 	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbResource->GetGPUVirtualAddress();
 	D3D12_CONSTANT_BUFFER_VIEW_DESC d3dCBVDesc;
 	d3dCBVDesc.SizeInBytes = ncbElementBytes;
-	for (int i = 0; i < GetNumTotalObjects(); ++i)
+	for (UINT i = 0; i < GetNumTotalObjects(); ++i)
 	{
 		d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * i);
 		D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;

@@ -1637,8 +1637,8 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 		//model->SetTexture(textures[0]);
 
 		//pObj->SetModel(model);
-		pObj->SetPosition(0, 0, i * 100);
-		pObj->SetOOBB(XMFLOAT3(0, 0, i * 100), XMFLOAT3(20, 20, 20), orientation);
+		pObj->SetPosition(0.0f, 0.0f, i * 100.0f);
+		pObj->SetOOBB(XMFLOAT3(0.0f, 0.0f, i * 100.0f), XMFLOAT3(20.0f, 20.0f, 20.0f), orientation);
 		pObj->SetOOBBMesh(pd3dDevice, pd3dCommandList);
 
 		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
@@ -1694,7 +1694,7 @@ void CTestGroundScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 
 void CTestGroundScene::Update(float fTimeElapsed)
 {
-	static float time = 0.0001;
+	static float time = 0.0001f;
 	if (isTimeflow)	time += fTimeElapsed;
 	else {
 		time += ttt * fTimeElapsed;

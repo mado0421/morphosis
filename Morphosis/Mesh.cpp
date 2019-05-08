@@ -789,8 +789,8 @@ CUITextured::~CUITextured()
 CAnimMesh::CAnimMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, AnimationMesh & m) : CMesh(pd3dDevice, pd3dCommandList)
 {
 	
-	int nCPs = m.controlPoints.size();
-	int nPVI = m.polygonVertexIndex.size();
+	int nCPs = static_cast<int>( m.controlPoints.size() );
+	int nPVI = static_cast<int>( m.polygonVertexIndex.size() );
 
 	UINT nStride = sizeof(CAnimVertex);
 	nVertices = nPVI;
