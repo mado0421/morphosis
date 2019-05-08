@@ -34,16 +34,11 @@ public:
 	AnimationBone() = default;
 
 	void MakeToWorldMatrix() {
-		XMMATRIX ToWorld;
-		if (m_parent) {
-
-			XMMATRIX tmp = XMMatrixMultiply(XMLoadFloat4x4(&m_parent->m_toWorld), XMLoadFloat4x4(&m_toParent));
-			ToWorld = XMMatrixMultiply(tmp, XMLoadFloat4x4(&m_Local));
-		}
-		else {
-			ToWorld = XMMatrixMultiply(XMLoadFloat4x4(&m_toParent), XMLoadFloat4x4(&m_Local));
-		}
-		XMStoreFloat4x4(&m_toWorld, ToWorld);
+		XMMATRIX tmp = XMMatrixMultiply(XMLoadFloat4x4(&m_Local), XMLoadFloat4x4(&m_toParent));
+		XMMATRIX toWorld;
+		if (m_parent)	toWorld = XMMatrixMultiply(tmp, XMLoadFloat4x4(&m_parent->m_toWorld));
+		else			toWorld = tmp;
+		XMStoreFloat4x4(&m_toWorld, toWorld);
 	}
 
 	void Init() {
@@ -53,21 +48,16 @@ public:
 
 private:
 	void MakeToParentMatrix() {
-		XMMATRIX xmmtxTranslation = XMMatrixTranslation(m_translation.x, m_translation.y, m_translation.z);
-		XMMATRIX xmmtxRotation = Matrix4x4::MakeFromXYZAngle(m_rotation);
-		XMStoreFloat4x4(&m_toParent, XMMatrixMultiply(xmmtxTranslation, xmmtxRotation));
+		XMMATRIX t = XMMatrixTranslation(m_translation.x, m_translation.y, m_translation.z);
+		XMMATRIX r = XMMatrixTranspose(XMMatrixRotationRollPitchYawDegree(m_rotation.x, m_rotation.y, m_rotation.z));
+		XMStoreFloat4x4(&m_toParent, XMMatrixMultiply(r, t));
 	}
 	void MakeDressposeInverseMatrix() {
+		XMVECTOR det = XMMatrixDeterminant(XMLoadFloat4x4(&m_toParent));
+		XMMATRIX toParentInv = XMMatrixInverse(&det, XMLoadFloat4x4(&m_toParent));
 		XMMATRIX dressposeInv;
-		XMVECTOR det;
-		if (m_parent) {
-			det = XMMatrixDeterminant(XMLoadFloat4x4(&m_toParent));
-			dressposeInv = XMMatrixMultiply(XMMatrixInverse(&det, XMLoadFloat4x4(&m_toParent)), XMLoadFloat4x4(&m_parent->m_dressposeInv));
-		}
-		else {
-			det = XMMatrixDeterminant(XMLoadFloat4x4(&m_toParent));
-			dressposeInv = XMMatrixInverse(&det, XMLoadFloat4x4(&m_toParent));
-		}
+		if (m_parent) 	dressposeInv = XMMatrixMultiply(XMLoadFloat4x4(&m_parent->m_dressposeInv), toParentInv);		
+		else 			dressposeInv = toParentInv;
 		XMStoreFloat4x4(&m_dressposeInv, dressposeInv);
 	}
 
@@ -152,7 +142,7 @@ public:
 		}
 	}
 	XMMATRIX	GetFinalMatrix(int boneIdx) {
-		return XMMatrixMultiply(XMLoadFloat4x4(&m_bones[boneIdx].m_toWorld), XMLoadFloat4x4(&m_bones[boneIdx].m_dressposeInv));
+		return XMMatrixMultiply(XMLoadFloat4x4(&m_bones[boneIdx].m_dressposeInv), XMLoadFloat4x4(&m_bones[boneIdx].m_toWorld));
 	}
 
 private:
@@ -160,6 +150,8 @@ private:
 		int curKeyIdx, nextKeyIdx;
 		__int64 boneIdxInCurKey;
 		__int64 boneIdxInNextKey;
+
+		return XMMatrixIdentity();
 
 		if (m_boneReferenceInfo[boneIdx].idxOfKeySet.size() == 0) { return XMMatrixIdentity(); }
 		if (isFurtherThanBack(time)) if (isLoop) time = GetClampTime(time);
@@ -177,29 +169,28 @@ private:
 			return XMLoadFloat4x4(&tmp);
 		}
 
-		XMFLOAT3 p = { 0, 0, 5 * time };
-		return Matrix4x4::MakeFromXYZAngle(p);
+		//XMFLOAT3 p = { 0, 5 * time, 0 };
+		//return Matrix4x4::MakeFromXYZAngle(p);
 
-		XMFLOAT3 xmf3R1 = m_keys[curKeyIdx].m_rotations[boneIdxInCurKey];
-		XMFLOAT3 xmf3R2 = m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey];
-		XMFLOAT3 xmf3B = m_bones[boneIdx].m_rotation;
+		//XMFLOAT3 xmf3R1 = m_keys[curKeyIdx].m_rotations[boneIdxInCurKey];
+		//XMFLOAT3 xmf3R2 = m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey];
+		//XMFLOAT3 xmf3B = m_bones[boneIdx].m_rotation;
 
+		//XMFLOAT3 r0 = Vector3::ScalarProduct(xmf3R1, -1, false);
+		//XMFLOAT3 r1 = Vector3::ScalarProduct(xmf3R2, -1, false);
+		//XMFLOAT3 b0 = Vector3::ScalarProduct(xmf3B, -1, false);
 
-		XMFLOAT3 r0 = Vector3::ScalarProduct(xmf3R1, -1, false);
-		XMFLOAT3 r1 = Vector3::ScalarProduct(xmf3R2, -1, false);
-		XMFLOAT3 b0 = Vector3::ScalarProduct(xmf3B, -1, false);
+		//XMFLOAT3 r2 = Vector3::Lerp(r0, r1, time);
 
-		XMFLOAT3 r2 = Vector3::Lerp(r0, r1, time);
+		//XMMATRIX r = Matrix4x4::MakeFromXYZAngle(r2);
+		//XMMATRIX b = Matrix4x4::MakeFromXYZAngle(b0);
+		//XMFLOAT4X4 result;
+		//XMVECTOR d = XMMatrixDeterminant(b);
+		//b = XMMatrixInverse(&d, b);
 
-		XMMATRIX r = Matrix4x4::MakeFromXYZAngle(r2);
-		XMMATRIX b = Matrix4x4::MakeFromXYZAngle(b0);
-		XMFLOAT4X4 result;
-		XMVECTOR d = XMMatrixDeterminant(b);
-		b = XMMatrixInverse(&d, b);
+		//XMStoreFloat4x4(&result, XMMatrixMultiply(b, r));
 
-		XMStoreFloat4x4(&result, XMMatrixMultiply(b, r));
-
-		return XMMatrixMultiply(b, r);
+		//return XMMatrixMultiply(b, r);
 	}
 	bool		isFurtherThanBack(float time) { return (time >= m_keys.back().m_keytime); }
 	bool		isFurtherThanFront(float time) { return (time <= m_keys.front().m_keytime); }
