@@ -511,6 +511,7 @@ private:
 		t = Float3(lTranslation[0], lTranslation[1], lTranslation[2]);
 		r = Float3(lRotation[0], lRotation[1], lRotation[2]);
 
+
 		bones.emplace_back(pNode->GetName(), bones.size(), t, r,  pNode->GetParent());
 
 		for (childCount = 0; childCount < pNode->GetChildCount(); ++childCount) {
@@ -709,6 +710,8 @@ private:
 
 			FbxVector4 lTmpVector;
 			int idx = GetBoneIdxByName(pNode->GetName());
+
+
 			Add(lKeyTime.GetSecondDouble(), bones[idx], com, axi, lKeyValue, idx);
 		}
 	}
@@ -731,11 +734,17 @@ private:
 
 		lAnimCurve = pNode->LclRotation.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_Z);
 		if (lAnimCurve) GetCurve(lAnimCurve, pNode, K::R, K::Z);
+
+
+		FbxVector4 vTranslation, vRotation, vScaling;
+		vRotation = pNode->GetGeometricRotation(FbxNode::eSourcePivot);
+
 	}
 	void Add(float time, Bone& bone, int Component, int Axis, float value, int idx) {
 		for (auto p = keys.begin(); p != keys.end(); ++p) {
 			if (p->time == time) {
 				p->Add(bone, Component, Axis, value, idx);
+				
 				return;
 			}
 		}

@@ -3,7 +3,7 @@
 #include "Scene.h"
 
 #define MOUSE_XSPEED 10
-#define MOVE_SPEED 0.015
+#define MOVE_SPEED 1.5
 #define ROTATE_SPEED 300
 #define PO_PER_PLAYER 16
 
@@ -1695,9 +1695,9 @@ void CTestGroundScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 void CTestGroundScene::Update(float fTimeElapsed)
 {
 	static float time = 0.0001f;
-	if (isTimeflow)	time += fTimeElapsed * 10;
+	if (isTimeflow)	time += fTimeElapsed;
 	else {
-		time += ttt * fTimeElapsed * 10;
+		time += ttt * fTimeElapsed;
 		ttt = 0;
 	}
 

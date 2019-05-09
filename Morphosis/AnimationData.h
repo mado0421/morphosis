@@ -150,18 +150,18 @@ private:
 		int curKeyIdx, nextKeyIdx;
 		__int64 boneIdxInCurKey;
 		__int64 boneIdxInNextKey;
-		
-		if(boneIdx != 43)
-		return XMMatrixIdentity();
-		else
-		return /*XMMatrixTranspose*/( XMMatrixRotationRollPitchYawDegree(0.0f, time, 0.0f));
+		__int64 boneIdxInFirstKey;
+
 
 		if (m_boneReferenceInfo[boneIdx].idxOfKeySet.size() == 0) { return XMMatrixIdentity(); }
 		if (isFurtherThanBack(time)) if (isLoop) time = GetClampTime(time);
 
 		GetKeyCurIdxNextIdxFromRefInfo(boneIdx, time, curKeyIdx, nextKeyIdx);
+		int firstKeyIdx = GetKeyFirstIdxFromRefInfo(boneIdx);
 		boneIdxInCurKey = GetBoneIdxInKey(boneIdx, curKeyIdx);
 		boneIdxInNextKey = GetBoneIdxInKey(boneIdx, nextKeyIdx);
+		boneIdxInFirstKey = GetBoneIdxInKey(boneIdx, firstKeyIdx);
+
 
 		if (curKeyIdx == nextKeyIdx || m_keys.size() == 1 || isFurtherThanFront(time)) {
 			XMFLOAT4X4 tmp;
@@ -172,40 +172,13 @@ private:
 			return XMLoadFloat4x4(&tmp);
 		}
 
+		//XMFLOAT3 xmf3B = m_bones[boneIdx].m_rotation;
 		XMFLOAT3 xmf3R1 = m_keys[curKeyIdx].m_rotations[boneIdxInCurKey];
 		XMFLOAT3 xmf3R2 = m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey];
-		//XMFLOAT3 xmf3B = m_bones[boneIdx].m_rotation;
-
-		//XMFLOAT3 v = Vector3::Lerp(xmf3R1, xmf3R2, time);
-		//XMFLOAT3 r = Vector3::Subtract(xmf3R1, v);
-		//return XMMatrixTranspose(XMMatrixRotationRollPitchYawDegree(r.x, r.y, r.z));
+		XMFLOAT3 xmf3B = m_keys[firstKeyIdx].m_rotations[boneIdxInFirstKey];
 
 
 
-
-
-		//XMFLOAT3 p = { 0, 5 * time, 0 };
-		//return Matrix4x4::MakeFromXYZAngle(p);
-
-		//XMFLOAT3 xmf3R1 = m_keys[curKeyIdx].m_rotations[boneIdxInCurKey];
-		//XMFLOAT3 xmf3R2 = m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey];
-		//XMFLOAT3 xmf3B = m_bones[boneIdx].m_rotation;
-
-		//XMFLOAT3 r0 = Vector3::ScalarProduct(xmf3R1, -1, false);
-		//XMFLOAT3 r1 = Vector3::ScalarProduct(xmf3R2, -1, false);
-		//XMFLOAT3 b0 = Vector3::ScalarProduct(xmf3B, -1, false);
-
-		//XMFLOAT3 r2 = Vector3::Lerp(r0, r1, time);
-
-		//XMMATRIX r = Matrix4x4::MakeFromXYZAngle(r2);
-		//XMMATRIX b = Matrix4x4::MakeFromXYZAngle(b0);
-		//XMFLOAT4X4 result;
-		//XMVECTOR d = XMMatrixDeterminant(b);
-		//b = XMMatrixInverse(&d, b);
-
-		//XMStoreFloat4x4(&result, XMMatrixMultiply(b, r));
-
-		//return XMMatrixMultiply(b, r);
 	}
 	bool		isFurtherThanBack(float time) { return (time >= m_keys.back().m_keytime); }
 	bool		isFurtherThanFront(float time) { return (time <= m_keys.front().m_keytime); }
@@ -246,6 +219,9 @@ private:
 		}
 		curIdx = *m_boneReferenceInfo[boneIdx].idxOfKeySet.crbegin();
 		nextIdx = curIdx;
+	}
+	int			GetKeyFirstIdxFromRefInfo(int boneIdx) {
+		return *m_boneReferenceInfo[boneIdx].idxOfKeySet.cbegin();
 	}
 	float		GetNormalizedTimeByTwoKeys(float time, int curKeyIdx, int nextKeyIdx) {
 		return (time - m_keys[curKeyIdx].m_keytime) / (m_keys[nextKeyIdx].m_keytime - m_keys[curKeyIdx].m_keytime);
