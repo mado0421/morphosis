@@ -171,22 +171,6 @@ class Importer {
 public:
 	void ExportFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, CTexture* pTexture, const char* fileName, CAnimationPlayerObject& obj) {
 
-		XMFLOAT3 xmf3eulers		= { -90, 180, 0 };
-		XMFLOAT3 xmf3originPos	= { 0.0f, 0.0f, 0.0f };
-		XMFLOAT3 xmf3normal		= { 1.0f, 0.0f, 0.0f };
-
-		XMVECTOR originPos		= XMLoadFloat3(&xmf3originPos);
-		XMVECTOR normal			= XMLoadFloat3(&xmf3normal);
-		XMVECTOR plane			= XMPlaneFromPointNormal(originPos, normal);
-
-		XMMATRIX reflectMatrix	= XMMatrixReflect(plane);
-		XMMATRIX rotationMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(xmf3eulers.x), XMConvertToRadians(xmf3eulers.y), XMConvertToRadians(xmf3eulers.z));
-
-		XMMATRIX changeCoordinateMatrix = XMMatrixTranspose(XMMatrixMultiply(reflectMatrix, rotationMatrix));
-
-
-
-
 		std::ifstream in;
 		in.open(fileName, std::ios::in | std::ios::binary);
 		/***************************************************************
@@ -203,6 +187,10 @@ public:
 			in.read((char*)&(bones[i].m_parentIdx), sizeof(int));
 			in.read((char*)&(bones[i].m_translation), sizeof(XMFLOAT3));
 			in.read((char*)&(bones[i].m_rotation), sizeof(XMFLOAT3));
+
+			swap(bones[i].m_translation.y, bones[i].m_translation.z);
+			swap(bones[i].m_rotation.y, bones[i].m_rotation.z);
+
 		}
 
 		/***************************************************************
@@ -222,18 +210,8 @@ public:
 				in.read((char*)&(meshes[i].controlPoints[j].boneIdx), sizeof(XMINT4));
 				in.read((char*)&(meshes[i].controlPoints[j].weight), sizeof(XMFLOAT4));
 
-				//XMFLOAT3 xmf3TargetPos = { meshes[i].controlPoints[j].pos.x, meshes[i].controlPoints[j].pos.y, meshes[i].controlPoints[j].pos.z };
-				//XMStoreFloat3(&xmf3TargetPos, XMVector3Transform(XMLoadFloat3(&xmf3TargetPos), changeCoordinateMatrix));
-				//swap(meshes[i].controlPoints[j].pos.y, meshes[i].controlPoints[j].pos.z);
-				//XMFLOAT3 tmp;
-				//meshes[i].controlPoints[j].pos.x = xmf3TargetPos.x;
-				//meshes[i].controlPoints[j].pos.y = xmf3TargetPos.y;
-				//meshes[i].controlPoints[j].pos.z = xmf3TargetPos.z;
+				swap(meshes[i].controlPoints[j].pos.y, meshes[i].controlPoints[j].pos.z);
 			}
-
-
-				//meshes[i].controlPoints[j].pos.x *= -1;
-			//}
 		}
 		for (int i = 0; i < nMeshes; ++i) {
 			int nPVI;
@@ -260,9 +238,6 @@ public:
 		***************************************************************/
 		int nKeys;
 		in.read((char*)&nKeys, sizeof(int));
-
-
-		//keys.resize(10);
 
 
 		keys.resize(nKeys);
@@ -296,12 +271,8 @@ public:
 				keys[i].m_rotations[j].x = tmpFloat3.x;
 				keys[i].m_rotations[j].y = tmpFloat3.y;
 				keys[i].m_rotations[j].z = tmpFloat3.z;
-				//swap(keys[i].m_translations[j].y, keys[i].m_translations[j].z);
-				//swap(keys[i].m_rotations[j].y, keys[i].m_rotations[j].z);
-
-				//XMStoreFloat3(&keys[i].m_translations[j], XMVector3Transform(XMLoadFloat3(&keys[i].m_translations[j]), changeCoordinateMatrix));
-				//XMStoreFloat3(&keys[i].m_rotations[j], XMVector3Transform(XMLoadFloat3(&keys[i].m_rotations[j]), changeCoordinateMatrix));
-
+				swap(keys[i].m_translations[j].y, keys[i].m_translations[j].z);
+				swap(keys[i].m_rotations[j].y, keys[i].m_rotations[j].z);
 			}
 		}
 

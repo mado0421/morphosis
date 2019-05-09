@@ -3,7 +3,7 @@
 #include "Scene.h"
 
 #define MOUSE_XSPEED 10
-#define MOVE_SPEED 1.5
+#define MOVE_SPEED 0.015
 #define ROTATE_SPEED 300
 #define PO_PER_PLAYER 16
 
@@ -1695,39 +1695,21 @@ void CTestGroundScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 void CTestGroundScene::Update(float fTimeElapsed)
 {
 	static float time = 0.0001f;
-	if (isTimeflow)	time += fTimeElapsed;
+	if (isTimeflow)	time += fTimeElapsed * 10;
 	else {
-		time += ttt * fTimeElapsed;
+		time += ttt * fTimeElapsed * 10;
 		ttt = 0;
 	}
 
-	//time = 0;
-
-/*
-	Sleep(10);*/
-	//time += 0.01;
-	//if (time >= 1.0) time = 0.0;
-
-
-	//for (int i = 0; i < nPlayers; i++)
-	//{
-	//	ppPlayers[i]->Animate(time);
-	//}
 	ppPlayers[0]->Animate(time);
 
-	//UINT ncbElementBytes = ((sizeof(XMMATRIX) + 255) & ~255);
 	XMMATRIX *pbMappedcbObject = new XMMATRIX[64];
-	//for (int i = 0; i < 64; i++)
-	//{
-	//	pbMappedcbObject[i] = XMMatrixIdentity();
-	//}
 	for (int i = 0; i < 64; ++i) {
-		if(ppPlayers[0]->anim->m_bones.size() > i /*&& i < 13*/)
+		if(ppPlayers[0]->anim->m_bones.size() > i)
 			pbMappedcbObject[i] = XMMatrixTranspose(ppPlayers[0]->anim->GetFinalMatrix(i));
 		else pbMappedcbObject[i] = XMMatrixIdentity();
-		//pbMappedcbObject[i] = XMMatrixIdentity();
 	}
-	memcpy(pCBMappedMatrix, pbMappedcbObject, sizeof(XMMATRIX) * 64/*animData.nBones*/);
+	memcpy(pCBMappedMatrix, pbMappedcbObject, sizeof(XMMATRIX) * 64);
 	delete[] pbMappedcbObject;
 
 	for (int j = 0; j < nPlayers; ++j) if (!ppPlayers[j]->IsDead()) ppPlayers[j]->Update(fTimeElapsed);

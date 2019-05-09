@@ -150,8 +150,11 @@ private:
 		int curKeyIdx, nextKeyIdx;
 		__int64 boneIdxInCurKey;
 		__int64 boneIdxInNextKey;
-
+		
+		if(boneIdx != 43)
 		return XMMatrixIdentity();
+		else
+		return /*XMMatrixTranspose*/( XMMatrixRotationRollPitchYawDegree(0.0f, time, 0.0f));
 
 		if (m_boneReferenceInfo[boneIdx].idxOfKeySet.size() == 0) { return XMMatrixIdentity(); }
 		if (isFurtherThanBack(time)) if (isLoop) time = GetClampTime(time);
@@ -168,6 +171,18 @@ private:
 				Vector4::QuatFromAngle(Vector3::Subtract(m_keys[curKeyIdx].m_rotations[boneIdxInCurKey], m_bones[boneIdx].m_rotation)));
 			return XMLoadFloat4x4(&tmp);
 		}
+
+		XMFLOAT3 xmf3R1 = m_keys[curKeyIdx].m_rotations[boneIdxInCurKey];
+		XMFLOAT3 xmf3R2 = m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey];
+		//XMFLOAT3 xmf3B = m_bones[boneIdx].m_rotation;
+
+		//XMFLOAT3 v = Vector3::Lerp(xmf3R1, xmf3R2, time);
+		//XMFLOAT3 r = Vector3::Subtract(xmf3R1, v);
+		//return XMMatrixTranspose(XMMatrixRotationRollPitchYawDegree(r.x, r.y, r.z));
+
+
+
+
 
 		//XMFLOAT3 p = { 0, 5 * time, 0 };
 		//return Matrix4x4::MakeFromXYZAngle(p);
