@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClCompile Include="AnimationData.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CTestScene.cpp" />
     <ClCompile Include="LevelData.cpp" />
     <ClCompile Include="DDSTextureLoader12.cpp" />
     <ClCompile Include="FBXData.cpp" />
@@ -180,6 +181,7 @@
   <ItemGroup>
     <ClInclude Include="AnimationData.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CTestScene.h" />
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="PSO.h" />
     <ClInclude Include="LevelData.h" />
@@ -203,7 +205,6 @@
     <ClInclude Include="Weapon.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
     <None Include="Header.hlsli" />
   </ItemGroup>
   <ItemGroup>
