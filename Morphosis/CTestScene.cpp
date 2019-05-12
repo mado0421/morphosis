@@ -124,8 +124,8 @@ ID3D12RootSignature * CTestScene::CreateRootSignature(ID3D12Device * pd3dDevice)
 	D3D12_ROOT_SIGNATURE_FLAGS d3dRootSignatureFlags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT | D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS | D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS | D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 	D3D12_ROOT_SIGNATURE_DESC d3dRootSignatureDesc;
 	::ZeroMemory(&d3dRootSignatureDesc, sizeof(D3D12_ROOT_SIGNATURE_DESC));
-	d3dRootSignatureDesc.NumParameters = _countof(pd3dRootParameters);
-	d3dRootSignatureDesc.pParameters = pd3dRootParameters;
+	d3dRootSignatureDesc.NumParameters = _countof(pRootParameter);
+	d3dRootSignatureDesc.pParameters = pRootParameter;
 	d3dRootSignatureDesc.NumStaticSamplers = 1;
 	d3dRootSignatureDesc.pStaticSamplers = &d3dSamplerDesc;
 	d3dRootSignatureDesc.Flags = d3dRootSignatureFlags;
@@ -133,11 +133,11 @@ ID3D12RootSignature * CTestScene::CreateRootSignature(ID3D12Device * pd3dDevice)
 	ID3DBlob *pd3dSignatureBlob = NULL;
 	ID3DBlob *pd3dErrorBlob = NULL;
 	HRESULT isSuccess = D3D12SerializeRootSignature(&d3dRootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1_0, &pd3dSignatureBlob, &pd3dErrorBlob);
-	isSuccess = pd3dDevice->CreateRootSignature(0, pd3dSignatureBlob->GetBufferPointer(), pd3dSignatureBlob->GetBufferSize(), __uuidof(ID3D12RootSignature), (void **)&pd3dGraphicsRootSignature);
+	isSuccess = pd3dDevice->CreateRootSignature(0, pd3dSignatureBlob->GetBufferPointer(), pd3dSignatureBlob->GetBufferSize(), __uuidof(ID3D12RootSignature), (void **)&pRootSignature);
 	if (pd3dSignatureBlob) pd3dSignatureBlob->Release();
 	if (pd3dErrorBlob) pd3dErrorBlob->Release();
 
-	return(pd3dGraphicsRootSignature);
+	return(pRootSignature);
 }
 
 void CTestScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext)
