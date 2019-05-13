@@ -56,6 +56,8 @@ namespace K {
 	enum {
 		T = 0,
 		R,
+		GT,
+		GR,
 
 		X = 0,
 		Y,
@@ -163,6 +165,9 @@ struct KeyframeData {
 	Bone	b;
 	Float3	t;
 	Float3	r;
+
+	FbxAMatrix m;
+
 	int		boneIdx;
 
 	KeyframeData(Bone& bone, int Component, int Axis, float value) {
@@ -173,6 +178,12 @@ struct KeyframeData {
 		b = bone;
 		boneIdx = idx;
 		AddValue(Component, Axis, value);
+	}
+	KeyframeData(Bone& bone, int Component, int Axis, float value, int idx, const FbxAMatrix& mtx) {
+		b = bone;
+		boneIdx = idx;
+		AddValue(Component, Axis, value);
+		m = mtx;
 	}
 
 	void AddValue(int Component, int Axis, float value) {
@@ -217,6 +228,10 @@ struct Key {
 		this->time = time;
 		Add(bone, Component, Axis, value, idx);
 	}
+	Key(float time, Bone& bone, int Component, int Axis, float value, int idx, const FbxAMatrix& m) {
+		this->time = time;
+		Add(bone, Component, Axis, value, idx, m);
+	}
 
 	void Add(Bone& bone, int Component, int Axis, float value) {
 		for (auto p = data.begin(); p != data.end(); ++p) {
@@ -237,6 +252,16 @@ struct Key {
 		}
 		/* 여기까지 왔다 -> 같은 bone이 없었다 -> 그러니 추가해주자. */
 		data.emplace_back(bone, Component, Axis, value, idx);
+	}
+	void Add(Bone& bone, int Component, int Axis, float value, int idx, const FbxAMatrix& m) {
+		for (auto p = data.begin(); p != data.end(); ++p) {
+			if (p->b == bone) {
+				p->AddValue(Component, Axis, value);
+				return;
+			}
+		}
+		/* 여기까지 왔다 -> 같은 bone이 없었다 -> 그러니 추가해주자. */
+		data.emplace_back(bone, Component, Axis, value, idx, m);
 	}
 };
 
@@ -297,6 +322,25 @@ struct AnimationData {
 			}
 		}
 		Keys.emplace_back(time, bone, Component, Axis, value, idx);
+	}
+	void Add(float time, Bone& bone, int Component, int Axis, float value, int idx, const FbxAMatrix& m) {
+		for (auto p = Keys.begin(); p != Keys.end(); ++p) {
+			if (p->time == time) {
+				/**********************************************************
+				여기 지금 stl 컨테이너에 직접 값을 수정하려고 해서 문제가 생기는거 같음
+				저걸 아 어캐 해 하여간 여기까지 했고 스터디 들으러 가자.
+				**********************************************************/
+				p->Add(bone, Component, Axis, value, idx);
+				//for (auto d = p->data.begin(); d != p->data.end(); ++d) {
+				//	if (d->b == bone) {
+				//		d->AddValue(Component, Axis, value);
+				//		return;
+				//	}
+				//}
+				return;
+			}
+		}
+		Keys.emplace_back(time, bone, Component, Axis, value, idx, m);
 	}
 	void Print() {
 		for (Key k : Keys) {
@@ -711,8 +755,10 @@ private:
 			FbxVector4 lTmpVector;
 			int idx = GetBoneIdxByName(pNode->GetName());
 
+			FbxAMatrix m = pNode->EvaluateGlobalTransform(lKeyTime);
 
-			Add(lKeyTime.GetSecondDouble(), bones[idx], com, axi, lKeyValue, idx);
+
+			Add(lKeyTime.GetSecondDouble(), bones[idx], com, axi, lKeyValue, idx, m);
 		}
 	}
 	void GetComponent(FbxAnimLayer* pAnimLayer, FbxNode* pNode) {
@@ -736,19 +782,21 @@ private:
 		if (lAnimCurve) GetCurve(lAnimCurve, pNode, K::R, K::Z);
 
 
+
+
 		FbxVector4 vTranslation, vRotation, vScaling;
 		vRotation = pNode->GetGeometricRotation(FbxNode::eSourcePivot);
 
 	}
-	void Add(float time, Bone& bone, int Component, int Axis, float value, int idx) {
+	void Add(float time, Bone& bone, int Component, int Axis, float value, int idx, const FbxAMatrix& m) {
 		for (auto p = keys.begin(); p != keys.end(); ++p) {
 			if (p->time == time) {
-				p->Add(bone, Component, Axis, value, idx);
+				p->Add(bone, Component, Axis, value, idx, m);
 				
 				return;
 			}
 		}
-		keys.emplace_back(time, bone, Component, Axis, value, idx);
+		keys.emplace_back(time, bone, Component, Axis, value, idx, m);
 	}
 	void PrintAnimationData() {
 		for (Key k : keys) {
@@ -977,6 +1025,7 @@ int main(int argc, char** argv)
     InitializeSdkObjects(lSdkManager, lScene);
     // Load the scene.
 
+
     // The example can take a FBX file as an argument.
 	FbxString lFilePath("test_0429_015_Character.FBX");
 	for( int i = 1, c = argc; i < c; ++i )
@@ -1003,6 +1052,62 @@ int main(int argc, char** argv)
     else 
     {
 
+		/*
+		// Get animation information
+		// Now only supports one take
+		FbxAnimStack* currAnimStack = mFBXScene->GetSrcObject<FbxAnimStack>(0);
+		FbxString animStackName = currAnimStack->GetName();
+		mAnimationName = animStackName.Buffer();
+		FbxTakeInfo* takeInfo = mFBXScene->GetTakeInfo(animStackName);
+		FbxTime start = takeInfo->mLocalTimeSpan.GetStart();
+		FbxTime end = takeInfo->mLocalTimeSpan.GetStop();
+		mAnimationLength = end.GetFrameCount(FbxTime::eFrames24) - start.GetFrameCount(FbxTime::eFrames24) + 1;
+		Keyframe** currAnim = &mSkeleton.mJoints[currJointIndex].mAnimation;
+
+		for (FbxLongLong i = start.GetFrameCount(FbxTime::eFrames24); i <= end.GetFrameCount(FbxTime::eFrames24); ++i)
+		{
+		 FbxTime currTime;
+		 currTime.SetFrame(i, FbxTime::eFrames24);
+		 *currAnim = new Keyframe();
+		 (*currAnim)->mFrameNum = i;
+		 FbxAMatrix currentTransformOffset = inNode->EvaluateGlobalTransform(currTime) * geometryTransform;
+		 (*currAnim)->mGlobalTransform = currentTransformOffset.Inverse() * currCluster->GetLink()->EvaluateGlobalTransform(currTime);
+		 currAnim = &((*currAnim)->mNext);
+		}
+		[출처] How to Work with FBX SDK 번역 (2)|작성자 jidon333
+
+		*/
+
+
+		//FbxAnimStack *currAnimStack = lScene->GetSrcObject<FbxAnimStack>(0);
+		//FbxString animStackName		= currAnimStack->GetName();
+		//FbxTakeInfo* takeInfo		= lScene->GetTakeInfo(animStackName);
+		//FbxTime start				= takeInfo->mLocalTimeSpan.GetStart();
+		//FbxTime end					= takeInfo->mLocalTimeSpan.GetStop();
+		//
+		//
+
+
+		//FbxNode* pNode = lScene->GetRootNode();
+		//pNode->EvaluateGlobalTransform();
+		//pNode->EvaluateLocalTransform();
+
+
+		//for (int i = 0; i < lScene->GetSrcObjectCount<FbxAnimStack>(); i++)
+		//{
+		//	FbxAnimStack* lAnimStack = lScene->GetSrcObject<FbxAnimStack>(i);
+		//	int l;
+		//	int nbAnimLayers = lAnimStack->GetMemberCount<FbxAnimLayer>();
+		//	for (l = 0; l < nbAnimLayers; l++)
+		//	{
+		//		FbxAnimLayer* lAnimLayer = lAnimStack->GetMember<FbxAnimLayer>(l);
+		//		//GetAnimationDataRec(lAnimLayer, lScene->GetRootNode());
+
+		//		FbxAnimCurve* curve = NULL;
+		//		curve = pNode->GeometricRotation.GetCurve(lAnimLayer, )
+
+		//	}
+		//}
 
 		dataManager.Init(lScene);
 		dataManager.ExportFile("test_0429_015_Character.dat");
