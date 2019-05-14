@@ -177,7 +177,7 @@ private:
 		XMFLOAT3 xmf3R2 = m_keys[nextKeyIdx].m_rotations[boneIdxInNextKey];
 		XMFLOAT3 xmf3B = m_keys[firstKeyIdx].m_rotations[boneIdxInFirstKey];
 
-
+		return XMMatrixIdentity();
 
 	}
 	bool		isFurtherThanBack(float time) { return (time >= m_keys.back().m_keytime); }
