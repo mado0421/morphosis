@@ -1628,7 +1628,7 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 
 		CAnimationPlayerObject *pObj = new CAnimationPlayerObject();
 		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
-		tmpImporter.ExportFile(pd3dDevice, pd3dCommandList, textures[0], "Assets/test_0429_015_Character.dat", *pObj);
+		tmpImporter.ExportFile(pd3dDevice, pd3dCommandList, textures[0], "Assets/test_0429_015_Character(m).dat", *pObj);
 		//tmpImporter.ExportFile(pd3dDevice, pd3dCommandList, textures[0], "Assets/TestAnimation3.dat", *pObj);
 
 		//tmpImporter.ExportFile(pd3dDevice, pd3dCommandList, textures[0], "Assets/TestAnimation4test_y-up.dat", *pObj);

@@ -67,6 +67,8 @@ public:
 	XMFLOAT3		m_translation;
 	XMFLOAT3		m_rotation;
 
+	XMFLOAT4X4		m_xmf4x4GlobalTransform;
+
 	XMFLOAT4X4		m_dressposeInv;
 	XMFLOAT4X4		m_toWorld;
 	XMFLOAT4X4		m_toParent;
@@ -86,6 +88,7 @@ public:
 	std::vector<int>			m_boneIdx;
 	std::vector<XMFLOAT3>		m_translations;
 	std::vector<XMFLOAT3>		m_rotations;
+	std::vector<XMFLOAT4X4>		m_xmf4x4GlobalTransform;
 
 	std::vector<AnimationBone*>	m_pBones;
 	float						m_keytime;
@@ -117,18 +120,20 @@ public:
 		m_keys.resize(keys.size());
 		for (int i = 0; i < m_keys.size(); ++i) {
 
-			m_keys[i].m_keytime =				keys[i].m_keytime;
-			m_keys[i].m_pBones.resize(			keys[i].m_pBones.size()			);
-			m_keys[i].m_boneIdx.resize(			keys[i].m_boneIdx.size()		);
-			m_keys[i].m_translations.resize(	keys[i].m_translations.size()	);
-			m_keys[i].m_rotations.resize(		keys[i].m_rotations.size()		);
+			m_keys[i].m_keytime =						keys[i].m_keytime;
+			m_keys[i].m_pBones.resize(					keys[i].m_pBones.size()					);
+			m_keys[i].m_boneIdx.resize(					keys[i].m_boneIdx.size()				);
+			m_keys[i].m_translations.resize(			keys[i].m_translations.size()			);
+			m_keys[i].m_xmf4x4GlobalTransform.resize(	keys[i].m_xmf4x4GlobalTransform.size()	);
+			m_keys[i].m_rotations.resize(				keys[i].m_rotations.size()				);
 
 			for (int j = 0; j < m_keys[i].m_boneIdx.size(); ++j) {
 
-				m_keys[i].m_pBones[j]		= &m_bones[keys[i].m_boneIdx[j]];
-				m_keys[i].m_boneIdx[j]		= keys[i].m_boneIdx[j];
-				m_keys[i].m_translations[j] = keys[i].m_translations[j];
-				m_keys[i].m_rotations[j]	= keys[i].m_rotations[j];
+				m_keys[i].m_pBones[j]					= &m_bones[keys[i].m_boneIdx[j]];
+				m_keys[i].m_boneIdx[j]					= keys[i].m_boneIdx[j];
+				m_keys[i].m_translations[j]				= keys[i].m_translations[j];
+				m_keys[i].m_rotations[j]				= keys[i].m_rotations[j];
+				m_keys[i].m_xmf4x4GlobalTransform[j]	= keys[i].m_xmf4x4GlobalTransform[j];
 
 				m_boneReferenceInfo[keys[i].m_boneIdx[j]].idxOfKeySet.insert(i);
 			}
@@ -139,13 +144,51 @@ public:
 		for (int i = 0; i < m_bones.size(); ++i) {
 			XMStoreFloat4x4(&m_bones[i].m_Local, GetInterpolatedLocalMatrix(i, time));
 			m_bones[i].MakeToWorldMatrix();
+			XMStoreFloat4x4(&m_bones[i].m_xmf4x4GlobalTransform, GetInterpolatedGlobalTransformMtx(i, time));
+
 		}
 	}
 	XMMATRIX	GetFinalMatrix(int boneIdx) {
-		return XMMatrixMultiply(XMLoadFloat4x4(&m_bones[boneIdx].m_dressposeInv), XMLoadFloat4x4(&m_bones[boneIdx].m_toWorld));
+		//return XMMatrixMultiply(XMLoadFloat4x4(&m_bones[boneIdx].m_dressposeInv), XMLoadFloat4x4(&m_bones[boneIdx].m_toWorld));		
+		return XMMatrixMultiply(XMLoadFloat4x4(&m_bones[boneIdx].m_dressposeInv), XMLoadFloat4x4(&m_bones[boneIdx].m_xmf4x4GlobalTransform));
+
 	}
 
 private:
+	XMMATRIX	GetInterpolatedGlobalTransformMtx(int boneIdx, float time) {
+		int curKeyIdx, nextKeyIdx;
+		__int64 boneIdxInCurKey;
+		__int64 boneIdxInNextKey;
+		__int64 boneIdxInFirstKey;
+
+
+		if (m_boneReferenceInfo[boneIdx].idxOfKeySet.size() == 0) { return XMMatrixIdentity(); }
+		if (isFurtherThanBack(time)) if (isLoop) time = GetClampTime(time);
+
+		GetKeyCurIdxNextIdxFromRefInfo(boneIdx, time, curKeyIdx, nextKeyIdx);
+		int firstKeyIdx = GetKeyFirstIdxFromRefInfo(boneIdx);
+		boneIdxInCurKey = GetBoneIdxInKey(boneIdx, curKeyIdx);
+		boneIdxInNextKey = GetBoneIdxInKey(boneIdx, nextKeyIdx);
+		boneIdxInFirstKey = GetBoneIdxInKey(boneIdx, firstKeyIdx);
+
+
+		if (curKeyIdx == nextKeyIdx || m_keys.size() == 1 || isFurtherThanFront(time)) {
+			XMFLOAT4X4 tmp;
+			Matrix4x4::ToTransform(
+				&tmp,
+				Vector3::Subtract(m_keys[curKeyIdx].m_translations[boneIdxInCurKey], m_bones[boneIdx].m_translation),
+				Vector4::QuatFromAngle(Vector3::Subtract(m_keys[curKeyIdx].m_rotations[boneIdxInCurKey], m_bones[boneIdx].m_rotation)));
+			return XMLoadFloat4x4(&tmp);
+		}
+		
+
+		XMFLOAT4X4 xmf4x4M1 = m_keys[curKeyIdx].m_xmf4x4GlobalTransform[boneIdxInCurKey];
+		XMFLOAT4X4 xmf4x4M2 = m_keys[nextKeyIdx].m_xmf4x4GlobalTransform[boneIdxInNextKey];
+
+		XMFLOAT4X4 result;
+		Matrix4x4::InterpolateMtx(&result, xmf4x4M1, xmf4x4M2, time);
+		return XMLoadFloat4x4(&result);
+	}
 	XMMATRIX	GetInterpolatedLocalMatrix(int boneIdx, float time) {
 		int curKeyIdx, nextKeyIdx;
 		__int64 boneIdxInCurKey;

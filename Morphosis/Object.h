@@ -188,8 +188,8 @@ public:
 			in.read((char*)&(bones[i].m_translation), sizeof(XMFLOAT3));
 			in.read((char*)&(bones[i].m_rotation), sizeof(XMFLOAT3));
 
-			swap(bones[i].m_translation.y, bones[i].m_translation.z);
-			swap(bones[i].m_rotation.y, bones[i].m_rotation.z);
+			//swap(bones[i].m_translation.y, bones[i].m_translation.z);
+			//swap(bones[i].m_rotation.y, bones[i].m_rotation.z);
 
 		}
 
@@ -210,7 +210,7 @@ public:
 				in.read((char*)&(meshes[i].controlPoints[j].boneIdx), sizeof(XMINT4));
 				in.read((char*)&(meshes[i].controlPoints[j].weight), sizeof(XMFLOAT4));
 
-				swap(meshes[i].controlPoints[j].pos.y, meshes[i].controlPoints[j].pos.z);
+				//swap(meshes[i].controlPoints[j].pos.y, meshes[i].controlPoints[j].pos.z);
 			}
 		}
 		for (int i = 0; i < nMeshes; ++i) {
@@ -250,12 +250,14 @@ public:
 			keys[i].m_boneIdx.resize(nBones);
 			keys[i].m_translations.resize(nBones);
 			keys[i].m_rotations.resize(nBones);
+			keys[i].m_xmf4x4GlobalTransform.resize(nBones);
 		}
 
 		for (int i = 0; i < nKeys; ++i) {
 			float keyTime;
 			int boneIdx;
 			XMFLOAT3 tmpFloat3;
+			XMFLOAT4X4 tmpFloat4x4;
 			in.read((char*)&keyTime, sizeof(float));
 
 			keys[i].m_keytime = keyTime;
@@ -263,16 +265,14 @@ public:
 			for (int j = 0; j < keys[i].m_boneIdx.size(); ++j) {
 				in.read((char*)&boneIdx, sizeof(int));
 				keys[i].m_boneIdx[j] = boneIdx;
-				in.read((char*)&tmpFloat3, sizeof(XMFLOAT3));
-				keys[i].m_translations[j].x = tmpFloat3.x;
-				keys[i].m_translations[j].y = tmpFloat3.y;
-				keys[i].m_translations[j].z = tmpFloat3.z;
-				in.read((char*)&tmpFloat3, sizeof(XMFLOAT3));
-				keys[i].m_rotations[j].x = tmpFloat3.x;
-				keys[i].m_rotations[j].y = tmpFloat3.y;
-				keys[i].m_rotations[j].z = tmpFloat3.z;
-				swap(keys[i].m_translations[j].y, keys[i].m_translations[j].z);
-				swap(keys[i].m_rotations[j].y, keys[i].m_rotations[j].z);
+				in.read((char*)&keys[i].m_translations[j], sizeof(XMFLOAT3));
+				in.read((char*)&keys[i].m_rotations[j], sizeof(XMFLOAT3));
+				in.read((char*)&keys[i].m_xmf4x4GlobalTransform[j], sizeof(XMFLOAT4X4));
+
+
+
+				//swap(keys[i].m_translations[j].y, keys[i].m_translations[j].z);
+				//swap(keys[i].m_rotations[j].y, keys[i].m_rotations[j].z);
 			}
 		}
 

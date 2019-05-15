@@ -43,6 +43,11 @@
 #include <vector>
 #include <algorithm>
 
+#include <DirectXMath.h>
+
+using namespace DirectX;
+
+
 // Local function prototypes.
 void DisplayContent(FbxScene* pScene);
 void DisplayContent(FbxNode* pNode);
@@ -423,6 +428,9 @@ public:
 	void Init(FbxScene* scene) { pScene = scene; MakeObjectData(); }
 	void ExportFile(const char* fileName) {
 		std::ofstream out;
+
+		XMFLOAT3 f3;
+
 		out.open(fileName, std::ios::out | std::ios::binary);
 		// 먼저 헤더 정보를 넣어준다.
 		//out.write((char*)&info.name, sizeof(char) * 32);
@@ -447,8 +455,14 @@ public:
 				int n = -1;
 				out.write((char*)&n, sizeof(int));
 			}
-			out.write((char*)&(bones[i].LclTranslation), sizeof(Float3));
-			out.write((char*)&(bones[i].LclRotation), sizeof(Float3));
+			f3.x = bones[i].LclTranslation.x;
+			f3.y = bones[i].LclTranslation.y;
+			f3.z = bones[i].LclTranslation.z;
+			out.write((char*)&(f3), sizeof(XMFLOAT3));
+			f3.x = bones[i].LclRotation.x;
+			f3.y = bones[i].LclRotation.y;
+			f3.z = bones[i].LclRotation.z;
+			out.write((char*)&(f3), sizeof(XMFLOAT3));
 		}
 
 		/***************************************************************
@@ -462,9 +476,22 @@ public:
 			int nCPs = meshes[i].controlPoints.size();
 			out.write((char*)&nCPs, sizeof(int));
 			for (int j = 0; j < nCPs; ++j) {
-				out.write((char*)&(meshes[i].controlPoints[j].pos),		sizeof(Float3));
-				out.write((char*)&(meshes[i].controlPoints[j].boneIdx), sizeof(Int4));
-				out.write((char*)&(meshes[i].controlPoints[j].weight),	sizeof(Float4));
+				f3.x = meshes[i].controlPoints[j].pos.x;
+				f3.y = meshes[i].controlPoints[j].pos.y;
+				f3.z = meshes[i].controlPoints[j].pos.z;
+				out.write((char*)&(f3),		sizeof(XMFLOAT3));
+				XMINT4 i4;
+				i4.x = meshes[i].controlPoints[j].boneIdx.x;
+				i4.y = meshes[i].controlPoints[j].boneIdx.y;
+				i4.z = meshes[i].controlPoints[j].boneIdx.z;
+				i4.w = meshes[i].controlPoints[j].boneIdx.w;
+				out.write((char*)&(i4), sizeof(XMINT4));
+				XMFLOAT4 f4;
+				f4.x = meshes[i].controlPoints[j].weight.x;
+				f4.y = meshes[i].controlPoints[j].weight.y;
+				f4.z = meshes[i].controlPoints[j].weight.z;
+				f4.w = meshes[i].controlPoints[j].weight.w;
+				out.write((char*)&(f4),	sizeof(XMFLOAT4));
 			}
 		}
 		for (int i = 0; i < nMeshes; ++i) {
@@ -489,12 +516,44 @@ public:
 		for (int i = 0; i < nKeys; ++i) {
 			int nBones = keys[i].data.size();
 			float keyTime = keys[i].time;
+			XMFLOAT3 tmp;
+			XMFLOAT4X4 tmpM;
 
 			out.write((char*)&keyTime, sizeof(float));
 			for (auto p = keys[i].data.cbegin(); p != keys[i].data.cend(); ++p) {
 				out.write((char*)&(p->boneIdx), sizeof(int));
-				out.write((char*)&(p->t), sizeof(Float3));
-				out.write((char*)&(p->r), sizeof(Float3));
+				
+
+				tmp.x = p->t.x;
+				tmp.y = p->t.y;
+				tmp.z = p->t.z;
+				out.write((char*)&(tmp), sizeof(XMFLOAT3));
+				tmp.x = p->r.x;
+				tmp.y = p->r.y;
+				tmp.z = p->r.z;
+				out.write((char*)&(tmp), sizeof(XMFLOAT3));
+
+				
+				tmpM._11 = p->m.Get(0, 0);
+				tmpM._12 = p->m.Get(1, 0);
+				tmpM._13 = p->m.Get(2, 0);
+				tmpM._14 = p->m.Get(3, 0);
+
+				tmpM._21 = p->m.Get(0, 1);
+				tmpM._22 = p->m.Get(1, 1);
+				tmpM._23 = p->m.Get(2, 1);
+				tmpM._24 = p->m.Get(3, 1);
+
+				tmpM._31 = p->m.Get(0, 2);
+				tmpM._32 = p->m.Get(1, 2);
+				tmpM._33 = p->m.Get(2, 2);
+				tmpM._34 = p->m.Get(3, 2);
+
+				tmpM._41 = p->m.Get(0, 3);
+				tmpM._42 = p->m.Get(1, 3);
+				tmpM._43 = p->m.Get(2, 3);
+				tmpM._44 = p->m.Get(3, 3);
+				out.write((char*)&(tmpM), sizeof(XMFLOAT4X4));
 			}
 		}
 
@@ -743,20 +802,10 @@ private:
 			lKeyTime = lAnimCurve->KeyGetTime(lCount);
 			lKeyTime.GetSecondDouble();
 
-			/*****************************************************************
-			여기서 잠시 pNode로 Bone을 만드는 작업이 있을 것.
-			근데 이건 이 함수에서 할 필요는 없으니까 이후에 옮겨주자.
-			*****************************************************************/
-			/*****************************************************************
-			옮겨줄 때가 됐다.
-			이름으로 boneIdx를 얻어낸 다음에 idx만 넣어서 줄 것.
-			*****************************************************************/
-
 			FbxVector4 lTmpVector;
 			int idx = GetBoneIdxByName(pNode->GetName());
 
 			FbxAMatrix m = pNode->EvaluateGlobalTransform(lKeyTime);
-
 
 			Add(lKeyTime.GetSecondDouble(), bones[idx], com, axi, lKeyValue, idx, m);
 		}
@@ -1027,22 +1076,28 @@ int main(int argc, char** argv)
 
 
     // The example can take a FBX file as an argument.
-	FbxString lFilePath("test_0429_015_Character.FBX");
+	FbxString lFilePath("test_0429_015_Character");
+
+
+
+
+	FbxString FileName = lFilePath + ".FBX";
+	FbxString ExportFileName = lFilePath + "(m).dat";
 	for( int i = 1, c = argc; i < c; ++i )
 	{
 		if( FbxString(argv[i]) == "-test" ) gVerbose = false;
-		else if( lFilePath.IsEmpty() ) lFilePath = argv[i];
+		else if(FileName.IsEmpty() ) FileName = argv[i];
 	}
 
-	if( lFilePath.IsEmpty() )
+	if(FileName.IsEmpty() )
 	{
         lResult = false;
         FBXSDK_printf("\n\nUsage: ImportScene <FBX file name>\n\n");
 	}
 	else
 	{
-		FBXSDK_printf("\n\nFile: %s\n\n", lFilePath.Buffer());
-		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
+		FBXSDK_printf("\n\nFile: %s\n\n", FileName.Buffer());
+		lResult = LoadScene(lSdkManager, lScene, FileName.Buffer());
 	}
 
     if(lResult == false)
@@ -1051,66 +1106,8 @@ int main(int argc, char** argv)
     }
     else 
     {
-
-		/*
-		// Get animation information
-		// Now only supports one take
-		FbxAnimStack* currAnimStack = mFBXScene->GetSrcObject<FbxAnimStack>(0);
-		FbxString animStackName = currAnimStack->GetName();
-		mAnimationName = animStackName.Buffer();
-		FbxTakeInfo* takeInfo = mFBXScene->GetTakeInfo(animStackName);
-		FbxTime start = takeInfo->mLocalTimeSpan.GetStart();
-		FbxTime end = takeInfo->mLocalTimeSpan.GetStop();
-		mAnimationLength = end.GetFrameCount(FbxTime::eFrames24) - start.GetFrameCount(FbxTime::eFrames24) + 1;
-		Keyframe** currAnim = &mSkeleton.mJoints[currJointIndex].mAnimation;
-
-		for (FbxLongLong i = start.GetFrameCount(FbxTime::eFrames24); i <= end.GetFrameCount(FbxTime::eFrames24); ++i)
-		{
-		 FbxTime currTime;
-		 currTime.SetFrame(i, FbxTime::eFrames24);
-		 *currAnim = new Keyframe();
-		 (*currAnim)->mFrameNum = i;
-		 FbxAMatrix currentTransformOffset = inNode->EvaluateGlobalTransform(currTime) * geometryTransform;
-		 (*currAnim)->mGlobalTransform = currentTransformOffset.Inverse() * currCluster->GetLink()->EvaluateGlobalTransform(currTime);
-		 currAnim = &((*currAnim)->mNext);
-		}
-		[출처] How to Work with FBX SDK 번역 (2)|작성자 jidon333
-
-		*/
-
-
-		//FbxAnimStack *currAnimStack = lScene->GetSrcObject<FbxAnimStack>(0);
-		//FbxString animStackName		= currAnimStack->GetName();
-		//FbxTakeInfo* takeInfo		= lScene->GetTakeInfo(animStackName);
-		//FbxTime start				= takeInfo->mLocalTimeSpan.GetStart();
-		//FbxTime end					= takeInfo->mLocalTimeSpan.GetStop();
-		//
-		//
-
-
-		//FbxNode* pNode = lScene->GetRootNode();
-		//pNode->EvaluateGlobalTransform();
-		//pNode->EvaluateLocalTransform();
-
-
-		//for (int i = 0; i < lScene->GetSrcObjectCount<FbxAnimStack>(); i++)
-		//{
-		//	FbxAnimStack* lAnimStack = lScene->GetSrcObject<FbxAnimStack>(i);
-		//	int l;
-		//	int nbAnimLayers = lAnimStack->GetMemberCount<FbxAnimLayer>();
-		//	for (l = 0; l < nbAnimLayers; l++)
-		//	{
-		//		FbxAnimLayer* lAnimLayer = lAnimStack->GetMember<FbxAnimLayer>(l);
-		//		//GetAnimationDataRec(lAnimLayer, lScene->GetRootNode());
-
-		//		FbxAnimCurve* curve = NULL;
-		//		curve = pNode->GeometricRotation.GetCurve(lAnimLayer, )
-
-		//	}
-		//}
-
 		dataManager.Init(lScene);
-		dataManager.ExportFile("test_0429_015_Character.dat");
+		dataManager.ExportFile(ExportFileName);
     }
     // Destroy all objects created by the FBX SDK.
     DestroySdkObjects(lSdkManager, lResult);
