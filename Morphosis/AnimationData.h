@@ -142,8 +142,8 @@ public:
 
 	void		GenerateToWorldMatrix(float time) {
 		for (int i = 0; i < m_bones.size(); ++i) {
-			XMStoreFloat4x4(&m_bones[i].m_Local, GetInterpolatedLocalMatrix(i, time));
-			m_bones[i].MakeToWorldMatrix();
+			//XMStoreFloat4x4(&m_bones[i].m_Local, GetInterpolatedLocalMatrix(i, time));
+			//m_bones[i].MakeToWorldMatrix();
 			XMStoreFloat4x4(&m_bones[i].m_xmf4x4GlobalTransform, GetInterpolatedGlobalTransformMtx(i, time));
 
 		}
@@ -173,15 +173,16 @@ private:
 
 
 		if (curKeyIdx == nextKeyIdx || m_keys.size() == 1 || isFurtherThanFront(time)) {
-			XMFLOAT4X4 tmp;
-			Matrix4x4::ToTransform(
-				&tmp,
-				Vector3::Subtract(m_keys[curKeyIdx].m_translations[boneIdxInCurKey], m_bones[boneIdx].m_translation),
-				Vector4::QuatFromAngle(Vector3::Subtract(m_keys[curKeyIdx].m_rotations[boneIdxInCurKey], m_bones[boneIdx].m_rotation)));
-			return XMLoadFloat4x4(&tmp);
+			//XMFLOAT4X4 tmp;
+			//Matrix4x4::ToTransform(
+			//	&tmp,
+			//	Vector3::Subtract(m_keys[curKeyIdx].m_translations[boneIdxInCurKey], m_bones[boneIdx].m_translation),
+			//	Vector4::QuatFromAngle(Vector3::Subtract(m_keys[curKeyIdx].m_rotations[boneIdxInCurKey], m_bones[boneIdx].m_rotation)));
+			//return XMLoadFloat4x4(&tmp);
+			return XMLoadFloat4x4(&m_keys[curKeyIdx].m_xmf4x4GlobalTransform[boneIdxInCurKey]);
+
 		}
 		
-
 		XMFLOAT4X4 xmf4x4M1 = m_keys[curKeyIdx].m_xmf4x4GlobalTransform[boneIdxInCurKey];
 		XMFLOAT4X4 xmf4x4M2 = m_keys[nextKeyIdx].m_xmf4x4GlobalTransform[boneIdxInNextKey];
 
