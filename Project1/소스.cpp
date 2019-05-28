@@ -1,20 +1,22 @@
-#include <DirectXMath.h>
-#include <d3d12.h>
-#include <iomanip>
 #include <iostream>
-#include <fstream>
-#include <string>
-
 #include <fbxsdk.h>
-#include <Common.h>
 
-#include <vector>
+#include "Common.h"
 
-const char * SAMPLE_FILENAME = "JointHierarchy.fbx";
+const char * SAMPLE_FILENAME = "test_0429_015_Character.fbx";
 
 
 void Foo(FbxNode* node) {
-	std::cout << node->GetName() << "\n";
+
+	int nodeAttributeCount = node->GetNodeAttributeCount();
+	for (int i = 0; i < nodeAttributeCount; ++i) {
+		FbxNodeAttribute* nodeAttribute = node->GetNodeAttributeByIndex(i);
+		if (FbxNodeAttribute::eSkeleton == nodeAttribute->GetAttributeType()) {
+			std::cout << node->GetName() << "\n";
+			FbxAMatrix mtx = node->EvaluateLocalTransform();
+			
+		}
+	}
 }
 
 void RecFollowChildNode(FbxNode* node, void(*Goo)(FbxNode*)) {
@@ -34,8 +36,8 @@ int main(int argc, char** argv)
 	bool lResult;
 
 	InitializeSdkObjects(lSdkManager, lScene);
-	FbxString lFilePath("");
-	if (lFilePath.IsEmpty()) lFilePath = SAMPLE_FILENAME;
+	FbxString lFilePath("Assets/");
+	lFilePath += SAMPLE_FILENAME;
 	FBXSDK_printf("\n\nFile: %s\n\n", lFilePath.Buffer());
 	lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 
