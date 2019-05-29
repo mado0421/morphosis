@@ -211,56 +211,23 @@ struct Keyframe {
 };
 
 
+void DisplayBoneLcl(FbxString name) {
+	for (auto p = g_BoneList.begin(); p != g_BoneList.end(); ++p) {
+		if (name == p->m_Name) {
+			cout << p->m_Name << "\n";
+			FbxAMatrix baseMtx = p->m_Node->EvaluateLocalTransform();
 
-void GetAnimationDataRec(FbxAnimLayer* layer, FbxNode* node) {
-	int lModelCount;
-
-	std::cout << node->GetName() << "\n";
-
-	FbxAnimCurve *curve = NULL;
-
-	curve = node->LclRotation.GetCurve(layer);
-
-	for (int i = 0; i < curve->KeyGetCount(); ++i) {
-
-		FbxTime time = curve->KeyGetTime(i);
-		std::cout << time.GetSecondDouble() << "\n";
-		
-
-	}
-
-
-
-
-
-	for (lModelCount = 0; lModelCount < node->GetChildCount(); lModelCount++)
-	{
-		GetAnimationDataRec(layer, node->GetChild(lModelCount));
-	}
-}
-
-void MakeAnimationData(FbxScene* scene) {
-	for (int i = 0; i < scene->GetSrcObjectCount<FbxAnimStack>(); i++)
-	{
-		FbxAnimStack* lAnimStack = scene->GetSrcObject<FbxAnimStack>(i);
-		int l;
-		int nbAnimLayers = lAnimStack->GetMemberCount<FbxAnimLayer>();
-		for (l = 0; l < nbAnimLayers; l++)
-		{
-			FbxAnimLayer* lAnimLayer = lAnimStack->GetMember<FbxAnimLayer>(l);
-			GetAnimationDataRec(lAnimLayer, scene->GetRootNode());
+			for (int i = 0; i < 20; ++i) {
+				FbxString time(i*0.1f);
+				time += ": ";
+				FbxTime t;
+				t.SetSecondDouble(i*0.1f);
+				cout << t.GetSecondDouble() << "\n";
+				DisplayMatrix(baseMtx * p->m_Node->EvaluateLocalTransform(t).Inverse(), time);
+			}
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
 
 
 int main(int argc, char** argv)
@@ -279,13 +246,16 @@ int main(int argc, char** argv)
 
 	//RecFollowChildNode(lScene->GetRootNode(), DisplayNode);
 
-	//RecFollowChildNode(lScene->GetRootNode(), MakeBoneDataTest);
-	//RecFollowChildNode(lScene->GetRootNode(), MakeParent);
-	//MakeToRootTransform();
+	RecFollowChildNode(lScene->GetRootNode(), MakeBoneDataTest);
+	RecFollowChildNode(lScene->GetRootNode(), MakeParent);
+	MakeToRootTransform();
 	//AllBones(DisplayBone);
 	//AllBones(MultiplyGlobalAndToRoot);
 
-	MakeAnimationData(lScene);
+	//MakeAnimationData(lScene);
+
+	DisplayBoneLcl("Bip001 R Thigh");
+	DisplayBoneLcl("Bip001 L Thigh");
 
 
 	DestroySdkObjects(lSdkManager, lResult);
