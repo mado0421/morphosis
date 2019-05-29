@@ -120,7 +120,7 @@ vector<Bone> g_BoneList;
 
 void MakeBoneDataTest(FbxNode* node) {
 	if (IsSkeletonNode(node)) {
-		std::cout << node->GetName() << "\n";
+		//std::cout << node->GetName() << "\n";
 
 		Bone tmp;
 		tmp.m_Name = node->GetName();
@@ -131,13 +131,13 @@ void MakeBoneDataTest(FbxNode* node) {
 		tmp.m_GlobalTransform = mtx;
 		mtx.SetIdentity();
 
-		FbxVector4 vec;
-		vec = node->LclRotation;
-		mtx.SetR(vec);
-		vec = node->LclTranslation;
-		mtx.SetT(vec);
-
-		mtx = mtx.Inverse();
+		//FbxVector4 vec;
+		//vec = node->LclTranslation;
+		//mtx.SetT(vec);
+		//vec = node->LclRotation;
+		//mtx.MultR(vec);
+		mtx = node->EvaluateLocalTransform();
+		//mtx = mtx.Inverse();
 		tmp.m_ToParentTransform = mtx;
 
 		g_BoneList.push_back(tmp);
@@ -146,7 +146,7 @@ void MakeBoneDataTest(FbxNode* node) {
 
 void MakeParent(FbxNode* node) {
 	if (IsSkeletonNode(node)) {
-		std::cout << node->GetName() << "\n";
+		//std::cout << node->GetName() << "\n";
 		for (auto p = g_BoneList.begin(); p != g_BoneList.end(); ++p) {
 			if (p->m_Name == node->GetName()) {
 				FbxString parentName = node->GetParent()->GetName();
@@ -164,15 +164,15 @@ void MakeToRootTransform() {
 	for (auto p = g_BoneList.begin(); p != g_BoneList.end(); ++p) {
 		p->m_ToRootTransform.SetIdentity();
 		if (p->m_Parent) {
-			p->m_ToRootTransform = p->m_Parent->m_ToRootTransform * p->m_ToParentTransform;
+			p->m_ToRootTransform = p->m_ToParentTransform.Inverse() * p->m_Parent->m_ToRootTransform;
 		}
 		else {
-			p->m_ToRootTransform = p->m_ToParentTransform;
+			p->m_ToRootTransform = p->m_ToParentTransform.Inverse();
 		}
 	}
 }
 
-void DisplayBone(const Bone& b) {
+void DisplayBone(Bone& b) {
 	std::cout << b.m_Name << "\n";
 
 	DisplayMatrix(b.m_GlobalTransform, "GlobalTransform");
@@ -182,9 +182,18 @@ void DisplayBone(const Bone& b) {
 	std::cout << "\n";
 }
 
-void DisplayBones() {
+void MultiplyGlobalAndToRoot(Bone& b) {
+	FbxAMatrix a;
+	a = b.m_GlobalTransform;
+	a *= b.m_ToRootTransform;
+
+	std::cout << b.m_Name << "\n";
+	DisplayMatrix(a, "Result");
+}
+
+void AllBones(void(*Foo)(Bone&)) {
 	for (auto p = g_BoneList.begin(); p != g_BoneList.end(); ++p) {
-		DisplayBone(*p);
+		Foo(*p);
 	}
 }
 
@@ -213,10 +222,13 @@ int main(int argc, char** argv)
 
 
 	//RecFollowChildNode(lScene->GetRootNode(), DisplayNode);
+
 	RecFollowChildNode(lScene->GetRootNode(), MakeBoneDataTest);
 	RecFollowChildNode(lScene->GetRootNode(), MakeParent);
 	MakeToRootTransform();
-	DisplayBones();
+	AllBones(DisplayBone);
+	AllBones(MultiplyGlobalAndToRoot);
+
 
 
 
