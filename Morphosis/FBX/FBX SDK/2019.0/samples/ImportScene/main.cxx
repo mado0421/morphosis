@@ -790,26 +790,6 @@ private:
 			GetAnimationDataRec(pAnimLayer, pNode->GetChild(lModelCount));
 		}
 	}
-	void GetCurve(FbxAnimCurve* lAnimCurve, FbxNode* pNode, int com, int axi) {
-		int			lKeyCount = lAnimCurve->KeyGetCount();
-		FbxTime		lKeyTime;
-		float		lKeyValue;
-		int			lCount;
-
-		for (lCount = 0; lCount < lKeyCount; lCount++)
-		{
-			lKeyValue = static_cast<float>(lAnimCurve->KeyGetValue(lCount));
-			lKeyTime = lAnimCurve->KeyGetTime(lCount);
-			lKeyTime.GetSecondDouble();
-
-			FbxVector4 lTmpVector;
-			int idx = GetBoneIdxByName(pNode->GetName());
-
-			FbxAMatrix m = pNode->EvaluateGlobalTransform(lKeyTime);
-
-			Add(lKeyTime.GetSecondDouble(), bones[idx], com, axi, lKeyValue, idx, m);
-		}
-	}
 	void GetComponent(FbxAnimLayer* pAnimLayer, FbxNode* pNode) {
 		FbxAnimCurve* lAnimCurve = NULL;
 		lAnimCurve = pNode->LclTranslation.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_X);
@@ -836,6 +816,25 @@ private:
 		FbxVector4 vTranslation, vRotation, vScaling;
 		vRotation = pNode->GetGeometricRotation(FbxNode::eSourcePivot);
 
+	}
+	void GetCurve(FbxAnimCurve* lAnimCurve, FbxNode* pNode, int com, int axi) {
+		int			lKeyCount = lAnimCurve->KeyGetCount();
+		FbxTime		lKeyTime;
+		float		lKeyValue;
+		int			lCount;
+
+		for (lCount = 0; lCount < lKeyCount; lCount++)
+		{
+			lKeyValue = static_cast<float>(lAnimCurve->KeyGetValue(lCount));
+			lKeyTime = lAnimCurve->KeyGetTime(lCount);
+
+			FbxVector4 lTmpVector;
+			int idx = GetBoneIdxByName(pNode->GetName());
+
+			FbxAMatrix m = pNode->EvaluateGlobalTransform(lKeyTime);
+
+			Add(lKeyTime.GetSecondDouble(), bones[idx], com, axi, lKeyValue, idx, m);
+		}
 	}
 	void Add(float time, Bone& bone, int Component, int Axis, float value, int idx, const FbxAMatrix& m) {
 		for (auto p = keys.begin(); p != keys.end(); ++p) {
@@ -893,6 +892,39 @@ private:
 DataManager dataManager;
 
 
+void GetAnimationDataRec(FbxAnimLayer* layer, FbxNode* node) {
+	int lModelCount;
+
+	std::cout << node->GetName() << "\n";
+
+	FbxAnimCurve *curve = NULL;
+
+	curve = node->LclRotation.GetCurve(layer);
+
+	for (int i = 0; i < curve->KeyGetCount(); ++i) {
+
+		FbxTime time = curve->KeyGetTime(i);
+		std::cout << time.GetSecondDouble() << "\n";
+	}
+	for (lModelCount = 0; lModelCount < node->GetChildCount(); lModelCount++)
+	{
+		GetAnimationDataRec(layer, node->GetChild(lModelCount));
+	}
+}
+
+void MakeAnimationData(FbxScene* scene) {
+	for (int i = 0; i < scene->GetSrcObjectCount<FbxAnimStack>(); i++)
+	{
+		FbxAnimStack* lAnimStack = scene->GetSrcObject<FbxAnimStack>(i);
+		int l;
+		int nbAnimLayers = lAnimStack->GetMemberCount<FbxAnimLayer>();
+		for (l = 0; l < nbAnimLayers; l++)
+		{
+			FbxAnimLayer* lAnimLayer = lAnimStack->GetMember<FbxAnimLayer>(l);
+			GetAnimationDataRec(lAnimLayer, scene->GetRootNode());
+		}
+	}
+}
 
 
 
@@ -1106,9 +1138,12 @@ int main(int argc, char** argv)
     }
     else 
     {
-		dataManager.Init(lScene);
-		dataManager.ExportFile(ExportFileName);
+		//dataManager.Init(lScene);
+		//dataManager.ExportFile(ExportFileName);
     }
+
+	MakeAnimationData(lScene);
+
     // Destroy all objects created by the FBX SDK.
     DestroySdkObjects(lSdkManager, lResult);
 

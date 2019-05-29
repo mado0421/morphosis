@@ -1,7 +1,8 @@
 #include <iostream>
-#include <fbxsdk.h>
 #include <vector>
 #include <algorithm>
+
+#include <fbxsdk.h>
 
 #include "Common.h"
 
@@ -111,6 +112,7 @@ void DisplayNode(FbxNode* node) {
 struct Bone {
 	FbxString	m_Name;
 	Bone*		m_Parent = NULL;
+	FbxNode*	m_Node = NULL;
 	FbxAMatrix	m_GlobalTransform;
 	FbxAMatrix	m_ToRootTransform;
 	FbxAMatrix	m_ToParentTransform;
@@ -124,20 +126,15 @@ void MakeBoneDataTest(FbxNode* node) {
 
 		Bone tmp;
 		tmp.m_Name = node->GetName();
-
+		tmp.m_Node = node;
 
 		FbxAMatrix mtx;
 		mtx = node->EvaluateGlobalTransform();
 		tmp.m_GlobalTransform = mtx;
 		mtx.SetIdentity();
 
-		//FbxVector4 vec;
-		//vec = node->LclTranslation;
-		//mtx.SetT(vec);
-		//vec = node->LclRotation;
-		//mtx.MultR(vec);
 		mtx = node->EvaluateLocalTransform();
-		//mtx = mtx.Inverse();
+		mtx = mtx.Inverse();
 		tmp.m_ToParentTransform = mtx;
 
 		g_BoneList.push_back(tmp);
@@ -164,10 +161,10 @@ void MakeToRootTransform() {
 	for (auto p = g_BoneList.begin(); p != g_BoneList.end(); ++p) {
 		p->m_ToRootTransform.SetIdentity();
 		if (p->m_Parent) {
-			p->m_ToRootTransform = p->m_ToParentTransform.Inverse() * p->m_Parent->m_ToRootTransform;
+			p->m_ToRootTransform = p->m_ToParentTransform * p->m_Parent->m_ToRootTransform;
 		}
 		else {
-			p->m_ToRootTransform = p->m_ToParentTransform.Inverse();
+			p->m_ToRootTransform = p->m_ToParentTransform;
 		}
 	}
 }
@@ -207,6 +204,65 @@ void RecFollowChildNode(FbxNode* node, void(*Foo)(FbxNode*)) {
 	}
 }
 
+struct Keyframe {
+	FbxTime			m_keyTime;
+	vector<Bone>	m_BoneList;
+	vector<FbxAMatrix> m_LocalTransformMatrixByTime;
+};
+
+
+
+void GetAnimationDataRec(FbxAnimLayer* layer, FbxNode* node) {
+	int lModelCount;
+
+	std::cout << node->GetName() << "\n";
+
+	FbxAnimCurve *curve = NULL;
+
+	curve = node->LclRotation.GetCurve(layer);
+
+	for (int i = 0; i < curve->KeyGetCount(); ++i) {
+
+		FbxTime time = curve->KeyGetTime(i);
+		std::cout << time.GetSecondDouble() << "\n";
+		
+
+	}
+
+
+
+
+
+	for (lModelCount = 0; lModelCount < node->GetChildCount(); lModelCount++)
+	{
+		GetAnimationDataRec(layer, node->GetChild(lModelCount));
+	}
+}
+
+void MakeAnimationData(FbxScene* scene) {
+	for (int i = 0; i < scene->GetSrcObjectCount<FbxAnimStack>(); i++)
+	{
+		FbxAnimStack* lAnimStack = scene->GetSrcObject<FbxAnimStack>(i);
+		int l;
+		int nbAnimLayers = lAnimStack->GetMemberCount<FbxAnimLayer>();
+		for (l = 0; l < nbAnimLayers; l++)
+		{
+			FbxAnimLayer* lAnimLayer = lAnimStack->GetMember<FbxAnimLayer>(l);
+			GetAnimationDataRec(lAnimLayer, scene->GetRootNode());
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
 int main(int argc, char** argv)
 {
 	FbxManager* lSdkManager = NULL;
@@ -223,13 +279,13 @@ int main(int argc, char** argv)
 
 	//RecFollowChildNode(lScene->GetRootNode(), DisplayNode);
 
-	RecFollowChildNode(lScene->GetRootNode(), MakeBoneDataTest);
-	RecFollowChildNode(lScene->GetRootNode(), MakeParent);
-	MakeToRootTransform();
-	AllBones(DisplayBone);
-	AllBones(MultiplyGlobalAndToRoot);
+	//RecFollowChildNode(lScene->GetRootNode(), MakeBoneDataTest);
+	//RecFollowChildNode(lScene->GetRootNode(), MakeParent);
+	//MakeToRootTransform();
+	//AllBones(DisplayBone);
+	//AllBones(MultiplyGlobalAndToRoot);
 
-
+	MakeAnimationData(lScene);
 
 
 	DestroySdkObjects(lSdkManager, lResult);
