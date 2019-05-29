@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <set>
 
 #include <fbxsdk.h>
 
@@ -133,7 +134,10 @@ void MakeBoneDataTest(FbxNode* node) {
 		tmp.m_GlobalTransform = mtx;
 		mtx.SetIdentity();
 
-		mtx = node->EvaluateLocalTransform();
+
+		FbxTime t;
+		t.SetSecondDouble(0.6666);
+		mtx = node->EvaluateLocalTransform(t);
 		mtx = mtx.Inverse();
 		tmp.m_ToParentTransform = mtx;
 
@@ -210,14 +214,13 @@ struct Keyframe {
 	vector<FbxAMatrix> m_LocalTransformMatrixByTime;
 };
 
-
 void DisplayBoneLcl(FbxString name) {
 	for (auto p = g_BoneList.begin(); p != g_BoneList.end(); ++p) {
 		if (name == p->m_Name) {
 			cout << p->m_Name << "\n";
 			FbxAMatrix baseMtx = p->m_Node->EvaluateLocalTransform();
 
-			for (int i = 0; i < 20; ++i) {
+			for (int i = 0; i < 40; ++i) {
 				FbxString time(i*0.1f);
 				time += ": ";
 				FbxTime t;
@@ -225,9 +228,54 @@ void DisplayBoneLcl(FbxString name) {
 				cout << t.GetSecondDouble() << "\n";
 				DisplayMatrix(baseMtx * p->m_Node->EvaluateLocalTransform(t).Inverse(), time);
 			}
+			FbxTime t;
+			t.SetSecondDouble(1.3333);
+			DisplayMatrix(baseMtx * p->m_Node->EvaluateLocalTransform(t).Inverse(), "1.333333: ");
+
 		}
 	}
 }
+
+std::set<double> g_KeyTime;
+
+
+
+// g_KeyTime이 이미 만들어져 있어야 함.
+void MakeToRootTransform1() {
+	if (g_KeyTime.empty()) { std::cout << "야! MakeToRootTransform() 하려는데 KeyTime이 비어있다!!\n"; return; }
+
+	int timeCount = 0;
+
+	// 모든 시간에 대하여
+	for (auto t = g_KeyTime.begin(); t != g_KeyTime.end(); ++t) {
+		// 모든 Bone에 대하여 LocalTransform을 구해줌.
+		for (auto b = g_BoneList.begin(); b != g_BoneList.end(); ++b) {
+			FbxTime		time;
+			FbxAMatrix	mtx;
+			time.SetSecondDouble(0.0f);
+			mtx = b->m_Node->EvaluateLocalTransform(time);
+			//mtx = mtx.Inverse();
+			//b->m_ToParentTransforms.push_back(mtx);
+		}
+
+		//// 모든 Bone에 대하여 ToRoot를 구해줌.
+		//for (auto b = g_BoneList.begin(); b != g_BoneList.end(); ++b) {
+		//	FbxAMatrix mtx;
+		//	if (b->m_Parent) mtx = b->m_ToParentTransforms[timeCount] * b->m_Parent->m_ToRootTransforms[timeCount];
+		//	else mtx = b->m_ToParentTransforms[timeCount];
+		//}
+
+		// 다음 시간으로 가자!
+		timeCount++;
+	}
+}
+
+
+
+
+
+
+
 
 
 int main(int argc, char** argv)
@@ -242,21 +290,22 @@ int main(int argc, char** argv)
 	FBXSDK_printf("\n\nFile: %s\n\n", lFilePath.Buffer());
 	lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 
-
+	g_KeyTime.insert(1);
+	g_KeyTime.insert(2);
 
 	//RecFollowChildNode(lScene->GetRootNode(), DisplayNode);
 
 	RecFollowChildNode(lScene->GetRootNode(), MakeBoneDataTest);
 	RecFollowChildNode(lScene->GetRootNode(), MakeParent);
 	MakeToRootTransform();
-	//AllBones(DisplayBone);
-	//AllBones(MultiplyGlobalAndToRoot);
+	AllBones(DisplayBone);
+	AllBones(MultiplyGlobalAndToRoot);
 
 	//MakeAnimationData(lScene);
 
-	DisplayBoneLcl("Bip001 R Thigh");
-	DisplayBoneLcl("Bip001 L Thigh");
-
+	//DisplayBoneLcl("Bip001 R Thigh");
+	//DisplayBoneLcl("Bip001 L Thigh");
+	MakeToRootTransform1();
 
 	DestroySdkObjects(lSdkManager, lResult);
 	return 0;

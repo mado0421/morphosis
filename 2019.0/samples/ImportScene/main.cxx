@@ -52,15 +52,25 @@ static bool gVerbose = true;
 
 struct Bone {
 	FbxString	m_Name;
-	FbxNode*	m_Node;
-	std::set<double> m_KeyTime;
+	FbxNode*	m_Node		= NULL;
+	Bone*		m_Parent	= NULL;
+
+	FbxAMatrix	m_GlobalTransform;
+
+	std::vector<FbxAMatrix> m_ToParentTransforms;
+	std::vector<FbxAMatrix> m_ToRootTransforms;
 };
 
 std::vector<Bone> g_BoneList;
+std::set<double> g_KeyTime;
+
+/***************************************************************************************
+MakeAnimation
+***************************************************************************************/
 
 void AnimationData(FbxScene*);
 void AnimationNode(FbxNode*, FbxAnimLayer*);
-void AnimationCurve(Bone&, FbxAnimCurve*);
+void AnimationCurve(FbxAnimCurve*);
 
 bool IsSkeletonNode(FbxNode* node) {
 	int nodeAttributeCount = node->GetNodeAttributeCount();
@@ -80,8 +90,6 @@ void AnimationData(FbxScene* scene) {
 			FbxAnimLayer* layer = stack->GetMember<FbxAnimLayer>(j);
 
 			AnimationNode(scene->GetRootNode(), layer);
-
-
 		}
 	}
 }
@@ -90,44 +98,153 @@ void AnimationNode(FbxNode* node, FbxAnimLayer* layer) {
 	FbxAnimCurve* curve;
 
 	if (IsSkeletonNode(node)) {
-		Bone tmp;
 		std::cout << node->GetName() << "\n";
-		tmp.m_Name = node->GetName();
 
 		curve = node->LclRotation.GetCurve(layer, FBXSDK_CURVENODE_COMPONENT_X);
-		if (curve) AnimationCurve(tmp, curve);
+		if (curve) AnimationCurve(curve);
 
 		curve = node->LclRotation.GetCurve(layer, FBXSDK_CURVENODE_COMPONENT_Y);
-		if (curve) AnimationCurve(tmp, curve);
+		if (curve) AnimationCurve(curve);
 
 		curve = node->LclRotation.GetCurve(layer, FBXSDK_CURVENODE_COMPONENT_Z);
-		if (curve) AnimationCurve(tmp, curve);
+		if (curve) AnimationCurve(curve);
 
 		curve = node->LclTranslation.GetCurve(layer, FBXSDK_CURVENODE_COMPONENT_X);
-		if (curve) AnimationCurve(tmp, curve);
+		if (curve) AnimationCurve(curve);
 
 		curve = node->LclTranslation.GetCurve(layer, FBXSDK_CURVENODE_COMPONENT_Y);
-		if (curve) AnimationCurve(tmp, curve);
+		if (curve) AnimationCurve(curve);
 
 		curve = node->LclTranslation.GetCurve(layer, FBXSDK_CURVENODE_COMPONENT_Z);
-		if (curve) AnimationCurve(tmp, curve);
-
-		g_BoneList.push_back(tmp);
+		if (curve) AnimationCurve(curve);
 	}
 
 	for (int i = 0; i < node->GetChildCount(); ++i)
 		AnimationNode(node->GetChild(i), layer);
 }
 
-void AnimationCurve(Bone& bone, FbxAnimCurve* curve) {
+void AnimationCurve(FbxAnimCurve* curve) {
 	for (int i = 0; i < curve->KeyGetCount(); ++i) {
 		FbxTime keyTime = curve->KeyGetTime(i);
-		bone.m_KeyTime.insert(keyTime.GetSecondDouble());
+		g_KeyTime.insert(keyTime.GetSecondDouble());
 	}
 }
 
+/***************************************************************************************
+MakeBone
+***************************************************************************************/
+
+void MakeBoneDataTest(FbxNode* node) {
+	if (IsSkeletonNode(node)) {
+		Bone tmp;
+		tmp.m_Name = node->GetName();
+		tmp.m_Node = node;
+
+		FbxAMatrix mtx;
+		mtx = node->EvaluateGlobalTransform();
+		tmp.m_GlobalTransform = mtx;
+		mtx.SetIdentity();
+
+		//mtx = node->EvaluateLocalTransform();
+		//mtx = mtx.Inverse();
+		//tmp.m_ToParentTransform = mtx;
+
+		g_BoneList.push_back(tmp);
+	}
+}
+
+void MakeParent(FbxNode* node) {
+	if (IsSkeletonNode(node)) {
+		for (auto p = g_BoneList.begin(); p != g_BoneList.end(); ++p) {
+			if (p->m_Name == node->GetName()) {
+				FbxString parentName = node->GetParent()->GetName();
+				for (auto pp = g_BoneList.begin(); pp != g_BoneList.end(); ++pp) {
+					if (pp->m_Name == parentName) {
+						p->m_Parent = &(*pp);
+					}
+				}
+			}
+		}
+	}
+}
+
+void RecFollowChildNode(FbxNode* node, void(*Foo)(FbxNode*)) {
+	int childCount = node->GetChildCount();
+
+	Foo(node);
+
+	for (int i = 0; i < childCount; ++i) {
+		RecFollowChildNode(node->GetChild(i), Foo);
+	}
+}
+
+/***************************************************************************************
+g_BoneList
+***************************************************************************************/
+
+// g_KeyTime이 이미 만들어져 있어야 함.
+void MakeToRootTransform() {
+	if (g_KeyTime.empty()) { std::cout << "야! MakeToRootTransform() 하려는데 KeyTime이 비어있다!!\n"; return; }
+
+	int timeCount = 0;
+
+	// 모든 시간에 대하여
+	for (auto t = g_KeyTime.begin(); t != g_KeyTime.end(); ++t) {
+		// 모든 Bone에 대하여 LocalTransform을 구해줌.
+		for (auto b = g_BoneList.begin(); b != g_BoneList.end(); ++b) {
+			FbxTime		time;
+			FbxAMatrix	mtx;
+			time.SetSecondDouble((*t));
+			mtx = b->m_Node->EvaluateLocalTransform(time);
+			mtx = mtx.Inverse();
+			b->m_ToParentTransforms.push_back(mtx);
+		}
+
+		// 모든 Bone에 대하여 ToRoot를 구해줌.
+		for (auto b = g_BoneList.begin(); b != g_BoneList.end(); ++b) {
+			FbxAMatrix mtx;
+			if (b->m_Parent) mtx = b->m_ToParentTransforms[timeCount] * b->m_Parent->m_ToRootTransforms[timeCount];
+			else mtx = b->m_ToParentTransforms[timeCount];
+			b->m_ToRootTransforms.push_back(mtx);
+		}
+
+		// 다음 시간으로 가자!
+		timeCount++;
+	}
+}
+
+void DisplayMatrix(const FbxAMatrix& mat, const char* pSuffix = "") {
+	for (int i = 0; i < 4; ++i)
+	{
+		FbxString lHeader(pSuffix);
+		FbxString lIndex(i);
+		lHeader += "_Row";
+		lHeader += lIndex;
+		lHeader += ": ";
+
+		Display4DVector(lHeader, mat.GetRow(i));
+	}
+	FBXSDK_printf("\n");
+}
+
+void DisplayAllBones() {
+	std::cout << g_BoneList.size() << "\n";
 
 
+	for (auto b = g_BoneList.begin(); b != g_BoneList.end(); ++b) {
+		std::cout << b->m_Name << "\n";
+
+		DisplayMatrix(b->m_GlobalTransform, "Offset");
+
+		std::cout << "\n";
+
+		for (unsigned int i = 0; i < g_KeyTime.size(); ++i) {
+			std::cout << "#" << i << "\n";
+			DisplayMatrix(b->m_ToParentTransforms[i], "ToParent");
+			DisplayMatrix(b->m_ToRootTransforms[i], "ToRoot");
+		}
+	}
+}
 
 
 
@@ -150,14 +267,20 @@ int main(int argc, char** argv)
 
 	AnimationData(lScene);
 
+	RecFollowChildNode(lScene->GetRootNode(), MakeBoneDataTest);
+	RecFollowChildNode(lScene->GetRootNode(), MakeParent);
+
+	MakeToRootTransform();
+
+	DisplayAllBones();
+
+
+
     DestroySdkObjects(lSdkManager, lResult);
 
-	for (auto p = g_BoneList.begin(); p != g_BoneList.end(); ++p) {
-		std::cout << p->m_Name << "\n";
-		for (auto t = p->m_KeyTime.begin(); t != p->m_KeyTime.end(); ++t) {
-			std::cout << *t << "\n";
-		}
-	}
+	//for (auto t = g_KeyTime.begin(); t != g_KeyTime.end(); ++t) {
+	//	std::cout << *t << "\n";
+	//}
 
     return 0;
 }
