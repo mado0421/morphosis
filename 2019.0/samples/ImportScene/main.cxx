@@ -39,6 +39,11 @@
 #include <iostream>
 #include <set>
 #include <vector>
+#include <fstream>
+#include <DirectXMath.h>
+
+using namespace DirectX;
+
 
 // Local function prototypes.
 void DisplayContent(FbxScene* pScene);
@@ -246,11 +251,67 @@ void DisplayAllBones() {
 	}
 }
 
+/***************************************************************************************
+Export
+***************************************************************************************/
+
+XMFLOAT4X4 MakeXMFloat4x4FromFbxAMatrix(const FbxAMatrix& fbxMtx) {
+	XMFLOAT4X4 xmf4x4Mtx;
+
+	for (int i = 0; i < 4; ++i)
+	{
+		FbxVector4 vec = fbxMtx.GetRow(i);
+
+		xmf4x4Mtx.m[i][0] = (float)vec[0];
+		xmf4x4Mtx.m[i][1] = (float)vec[1];
+		xmf4x4Mtx.m[i][2] = (float)vec[2];
+		xmf4x4Mtx.m[i][3] = (float)vec[3];
+	}
+	
+	return xmf4x4Mtx;
+}
+
+void ExportFile(const char* fileName, const char* animName) {
+	std::ofstream out;
+
+	out.open(fileName, std::ios::out | std::ios::binary);
+	char AnimName[32];
+	strcpy_s(AnimName, sizeof(AnimName), animName);
+	out.write((char*)&AnimName, sizeof(AnimName));
+
+	int NumKeyTime = g_KeyTime.size();
+	out.write((char*)&NumKeyTime, sizeof(int));
+
+	for (auto p = g_KeyTime.begin(); p != g_KeyTime.end(); ++p) {
+		out.write((char*)&(*p), sizeof(double));
+	}
+
+	int NumBone = g_BoneList.size();
+	out.write((char*)&NumBone, sizeof(int));
+
+	for (int i = 0; i < g_BoneList.size(); ++i) {
+		char name[32];
+		strcpy_s(name, sizeof(name), g_BoneList[i].m_Name.Buffer());
+		out.write((char*)&name, sizeof(name));
+
+		XMFLOAT4X4 xmf4x4Temp = MakeXMFloat4x4FromFbxAMatrix(g_BoneList[i].m_GlobalTransform);
+		out.write((char*)&xmf4x4Temp, sizeof(XMFLOAT4X4));
+	}
+
+	for (int i = 0; i < g_BoneList.size(); ++i) {
+		for (int j = 0; j < NumKeyTime; ++j) {
+			XMFLOAT4X4 xmf4x4Temp = MakeXMFloat4x4FromFbxAMatrix(g_BoneList[i].m_ToRootTransforms[j]);
+			out.write((char*)&xmf4x4Temp, sizeof(XMFLOAT4X4));
+		}
+	}
+
+	out.close();
+
+}
 
 
 
-
-const char * SAMPLE_FILENAME = "test_0429_015_Character.fbx";
+const char * SAMPLE_FILENAME = "test_0429_015_Character";
 
 
 int main(int argc, char** argv)
@@ -262,8 +323,14 @@ int main(int argc, char** argv)
 	InitializeSdkObjects(lSdkManager, lScene);
 	FbxString lFilePath("Assets/");
 	lFilePath += SAMPLE_FILENAME;
-	FBXSDK_printf("\n\nFile: %s\n\n", lFilePath.Buffer());
-	lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
+
+	FbxString lFileInput;
+
+	lFileInput += lFilePath;
+	lFileInput += ".fbx";
+
+	FBXSDK_printf("\n\nFile: %s\n\n", lFileInput.Buffer());
+	lResult = LoadScene(lSdkManager, lScene, lFileInput.Buffer());
 
 	AnimationData(lScene);
 
@@ -272,9 +339,16 @@ int main(int argc, char** argv)
 
 	MakeToRootTransform();
 
-	DisplayAllBones();
+	//DisplayAllBones();
 
+	FbxString lFileOutput;
 
+	lFileOutput += lFilePath;
+	lFileOutput += "_anim.dat";
+
+	ExportFile(lFileOutput, "PlayerIdle");
+
+	std::cout << g_KeyTime.size() << "\n";
 
     DestroySdkObjects(lSdkManager, lResult);
 

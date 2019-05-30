@@ -169,7 +169,7 @@ class Importer {
 	vector<AnimationMesh> meshes;
 
 public:
-	void ExportFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, CTexture* pTexture, const char* fileName, CAnimationPlayerObject& obj) {
+	void ImportFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, CTexture* pTexture, const char* fileName, CAnimationPlayerObject& obj) {
 
 		std::ifstream in;
 		in.open(fileName, std::ios::in | std::ios::binary);
@@ -231,7 +231,7 @@ public:
 			keys[i].m_boneIdx.resize(nBones);
 			keys[i].m_translations.resize(nBones);
 			keys[i].m_rotations.resize(nBones);
-			keys[i].m_xmf4x4GlobalTransform.resize(nBones);
+			//keys[i].m_xmf4x4GlobalTransform.resize(nBones);
 		}
 
 		for (int i = 0; i < nKeys; ++i) {
@@ -248,7 +248,7 @@ public:
 				keys[i].m_boneIdx[j] = boneIdx;
 				in.read((char*)&keys[i].m_translations[j], sizeof(XMFLOAT3));
 				in.read((char*)&keys[i].m_rotations[j], sizeof(XMFLOAT3));
-				in.read((char*)&keys[i].m_xmf4x4GlobalTransform[j], sizeof(XMFLOAT4X4));
+				//in.read((char*)&keys[i].m_xmf4x4GlobalTransform[j], sizeof(XMFLOAT4X4));
 
 
 
