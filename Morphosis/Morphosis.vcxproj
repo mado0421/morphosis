@@ -29,13 +29,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -48,7 +48,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -151,7 +151,6 @@
   <ItemGroup>
     <ClCompile Include="AnimationData.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="CTestScene.cpp" />
     <ClCompile Include="LevelData.cpp" />
     <ClCompile Include="DDSTextureLoader12.cpp" />
     <ClCompile Include="FBXData.cpp" />
@@ -181,7 +180,6 @@
   <ItemGroup>
     <ClInclude Include="AnimationData.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="CTestScene.h" />
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="PSO.h" />
     <ClInclude Include="LevelData.h" />
@@ -205,6 +203,7 @@
     <ClInclude Include="Weapon.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="Header.hlsli" />
   </ItemGroup>
   <ItemGroup>

@@ -812,6 +812,15 @@ CAnimMesh::CAnimMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3d
 		boneIdx[j] = XMINT4(m.controlPoints[j].boneIdx.x, m.controlPoints[j].boneIdx.y, m.controlPoints[j].boneIdx.z, m.controlPoints[j].boneIdx.z);
 	}
 
+	for (int i = 0; i < nCPs; ++i) {
+		if (boneIdx[i].x > 43 || boneIdx[i].y > 44 || boneIdx[i].z > 44 || boneIdx[i].w > 44) {
+			while (true) {
+				cout << "aaaaaaaaaaa";
+			}
+		}
+	}
+
+
 	for (int j = 0; j < nCPs; ++j) {
 		if (-1 == boneIdx[j].x) boneIdx[j].x = 0;
 		if (-1 == boneIdx[j].y) boneIdx[j].y = 0;

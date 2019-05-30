@@ -5,6 +5,10 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
     <Filter Include="리소스 파일">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -72,15 +76,6 @@
     <Filter Include="소스 파일\Scene\LoadingScene">
       <UniqueIdentifier>{36d8da1a-4c52-4df7-9bbf-3badde0f3eb0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\PreCompile">
-      <UniqueIdentifier>{0635cf9e-d1b8-4d1f-934c-7193fbd2c9af}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader">
-      <UniqueIdentifier>{1632998f-3b26-4fb0-9b1d-f43f31d7b404}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Scene\TestScene">
-      <UniqueIdentifier>{a9bf99f7-6d73-4ce4-8f4f-77ccf124f61a}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Morphosis.cpp">
@@ -91,6 +86,9 @@
     </ClCompile>
     <ClCompile Include="Framework.cpp">
       <Filter>소스 파일\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Object.cpp">
       <Filter>소스 파일\Object</Filter>
@@ -140,12 +138,6 @@
     <ClCompile Include="Scene.cpp">
       <Filter>소스 파일\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>소스 파일\PreCompile</Filter>
-    </ClCompile>
-    <ClCompile Include="CTestScene.cpp">
-      <Filter>소스 파일\Scene\TestScene</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Morphosis.rc">
@@ -161,11 +153,26 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Morphosis.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
     <ClInclude Include="DDSTextureLoader12.h">
       <Filter>소스 파일\DDSTextureLoader12</Filter>
     </ClInclude>
     <ClInclude Include="Framework.h">
       <Filter>소스 파일\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="d3dx12.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>소스 파일\Scene</Filter>
@@ -215,36 +222,13 @@
     <ClInclude Include="AnimationData.h">
       <Filter>소스 파일\Animation</Filter>
     </ClInclude>
-    <ClInclude Include="Morphosis.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>소스 파일\PreCompile</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>소스 파일\PreCompile</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>소스 파일\PreCompile</Filter>
-    </ClInclude>
-    <ClInclude Include="d3dx12.h">
-      <Filter>소스 파일\PreCompile</Filter>
-    </ClInclude>
-    <ClInclude Include="CTestScene.h">
-      <Filter>소스 파일\Scene\TestScene</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="VertexShader.hlsl">
-      <Filter>Shader</Filter>
-    </None>
-    <None Include="Header.hlsli">
-      <Filter>Shader</Filter>
-    </None>
+    <None Include="Header.hlsli" />
+    <None Include="ClassDiagram.cd" />
+    <None Include="VertexShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PixelShader.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
+    <FxCompile Include="PixelShader.hlsl" />
   </ItemGroup>
 </Project>

@@ -1628,7 +1628,7 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 
 		CAnimationPlayerObject *pObj = new CAnimationPlayerObject();
 		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
-		tmpImporter.ImportFile(pd3dDevice, pd3dCommandList, textures[0], "Assets/test_0429_015_Character.dat", *pObj);
+		tmpImporter.ImportFile(pd3dDevice, pd3dCommandList, textures[0], "Assets/test_0429_015_Character", *pObj);
 		//tmpImporter.ImportFile(pd3dDevice, pd3dCommandList, textures[0], "Assets/TestAnimation3.dat", *pObj);
 
 		//tmpImporter.ImportFile(pd3dDevice, pd3dCommandList, textures[0], "Assets/TestAnimation4test_y-up.dat", *pObj);
@@ -1701,12 +1701,12 @@ void CTestGroundScene::Update(float fTimeElapsed)
 		ttt = 0;
 	}
 
-	ppPlayers[0]->Animate(time);
+	//ppPlayers[0]->Animate(time);
 
 	XMMATRIX *pbMappedcbObject = new XMMATRIX[64];
 	for (int i = 0; i < 64; ++i) {
-		if(ppPlayers[0]->anim->m_bones.size() > i)
-			pbMappedcbObject[i] = XMMatrixTranspose(ppPlayers[0]->anim->GetFinalMatrix(i));
+		if(ppPlayers[0]->anim->m_AnimData.m_nBoneList > i)
+			pbMappedcbObject[i] = XMMatrixTranspose(ppPlayers[0]->anim->GetFinalMatrix(i, time));
 		else pbMappedcbObject[i] = XMMatrixIdentity();
 	}
 	memcpy(pCBMappedMatrix, pbMappedcbObject, sizeof(XMMATRIX) * 64);
