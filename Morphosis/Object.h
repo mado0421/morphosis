@@ -210,7 +210,7 @@ public:
 				in.read((char*)&(meshes[i].controlPoints[j].boneIdx), sizeof(XMINT4));
 				in.read((char*)&(meshes[i].controlPoints[j].weight), sizeof(XMFLOAT4));
 
-				//swap(meshes[i].controlPoints[j].pos.y, meshes[i].controlPoints[j].pos.z);
+				swap(meshes[i].controlPoints[j].pos.y, meshes[i].controlPoints[j].pos.z);
 			}
 		}
 		for (int i = 0; i < nMeshes; ++i) {
@@ -271,8 +271,13 @@ public:
 				keys[i].m_rotations[j].x = tmpFloat3.x;
 				keys[i].m_rotations[j].y = tmpFloat3.y;
 				keys[i].m_rotations[j].z = tmpFloat3.z;
+<<<<<<< HEAD
 				//swap(keys[i].m_translations[j].y, keys[i].m_translations[j].z);
 				//swap(keys[i].m_rotations[j].y, keys[i].m_rotations[j].z);
+=======
+				swap(keys[i].m_translations[j].y, keys[i].m_translations[j].z);
+				swap(keys[i].m_rotations[j].y, keys[i].m_rotations[j].z);
+>>>>>>> parent of e36c215... Merge branch '새마을운동'
 			}
 		}
 

@@ -31,55 +31,11 @@
 #include <fbxsdk.h>
 #include "../Common/Common.h"
 #include "DisplayCommon.h"
-#include <iostream>
 
 const char * SAMPLE_FILENAME = "JointHierarchy.fbx";
 
 FbxAMatrix CalculateGlobalTransform(FbxNode* pNode);
 void CompareTransformations( FbxNode* pNode, FbxScene* pScene );
-
-void GetAnimationDataRec(FbxAnimLayer* layer, FbxNode* node) {
-	int lModelCount;
-
-	std::cout << node->GetName() << "\n";
-
-	FbxAnimCurve *curve = NULL;
-
-	curve = node->LclRotation.GetCurve(layer);
-
-	for (int i = 0; i < curve->KeyGetCount(); ++i) {
-
-		FbxTime time = curve->KeyGetTime(i);
-		std::cout << time.GetSecondDouble() << "\n";
-
-
-	}
-
-
-
-
-
-	for (lModelCount = 0; lModelCount < node->GetChildCount(); lModelCount++)
-	{
-		GetAnimationDataRec(layer, node->GetChild(lModelCount));
-	}
-}
-
-void MakeAnimationData(FbxScene* scene) {
-	for (int i = 0; i < scene->GetSrcObjectCount<FbxAnimStack>(); i++)
-	{
-		FbxAnimStack* lAnimStack = scene->GetSrcObject<FbxAnimStack>(i);
-		int l;
-		int nbAnimLayers = lAnimStack->GetMemberCount<FbxAnimLayer>();
-		for (l = 0; l < nbAnimLayers; l++)
-		{
-			FbxAnimLayer* lAnimLayer = lAnimStack->GetMember<FbxAnimLayer>(l);
-			GetAnimationDataRec(lAnimLayer, scene->GetRootNode());
-		}
-	}
-}
-
-
 
 int main(int argc, char** argv)
 {
@@ -109,10 +65,8 @@ int main(int argc, char** argv)
     }
     else
     {
-        //CompareTransformations( lScene->GetRootNode(), lScene );
+        CompareTransformations( lScene->GetRootNode(), lScene );
     }
-
-	//MakeAnimationData(lScene);
 
     // Destroy all objects created by the FBX SDK.
     DestroySdkObjects(lSdkManager, lResult);
