@@ -44,15 +44,6 @@
 
 using namespace DirectX;
 
-
-// Local function prototypes.
-void DisplayContent(FbxScene* pScene);
-void DisplayContent(FbxNode* pNode);
-void DisplayTarget(FbxNode* pNode);
-void DisplayTransformPropagation(FbxNode* pNode);
-void DisplayGeometricTransform(FbxNode* pNode);
-void DisplayMetaData(FbxScene* pScene);
-
 static bool gVerbose = true;
 
 struct Bone {
@@ -82,6 +73,15 @@ bool IsSkeletonNode(FbxNode* node) {
 	for (int i = 0; i < nodeAttributeCount; ++i) {
 		FbxNodeAttribute* nodeAttribute = node->GetNodeAttributeByIndex(i);
 		if (FbxNodeAttribute::eSkeleton == nodeAttribute->GetAttributeType())
+			return true;
+	}
+	return false;
+}
+bool IsMeshNode(FbxNode* node) {
+	int nodeAttributeCount = node->GetNodeAttributeCount();
+	for (int i = 0; i < nodeAttributeCount; ++i) {
+		FbxNodeAttribute* nodeAttribute = node->GetNodeAttributeByIndex(i);
+		if (FbxNodeAttribute::eMesh == nodeAttribute->GetAttributeType())
 			return true;
 	}
 	return false;
@@ -309,6 +309,328 @@ void ExportFile(const char* fileName, const char* animName) {
 
 }
 
+/***************************************************************************************
+Mesh
+***************************************************************************************/
+
+struct Mesh {
+	std::vector<CtrlPoint>	m_CtrlPointList;
+	std::vector<Vertex>		m_VertexList;
+};
+
+std::vector<Mesh> g_MeshList;
+
+struct CtrlPoint {
+	XMFLOAT3	xmf3Position;
+	XMINT4		xmi4BoneIdx;
+	XMFLOAT4	xmf4BoneWeight;
+};
+
+struct Vertex {
+	int			ctrlPointIdx;
+	XMFLOAT3	xmf3Normal;
+	XMFLOAT3	xmf3BiNormal;
+	XMFLOAT3	xmf3Tangent;
+};
+
+//mesh->GetControlPoints();
+//mesh->GetControlPointsCount();
+//mesh->GetPolygonVertex();
+//mesh->GetPolygonCount();
+//mesh->GetPolygonSize();
+//mesh->GetPolygonVertexCount();
+//mesh->GetPolygonVertexIndex();
+
+
+void ReadNormal(FbxMesh* mesh, int CtrlPointIdx, int VertexCounter, XMFLOAT3& out) {
+	FbxGeometryElementNormal* vertexNormal = mesh->GetElementNormal(0);
+	switch (vertexNormal->GetMappingMode())
+	{
+	case FbxGeometryElement::eByControlPoint:
+		switch (vertexNormal->GetReferenceMode())
+		{
+		case FbxGeometryElement::eDirect:
+		{
+
+			out.x = static_cast<float>(vertexNormal->GetDirectArray().GetAt(CtrlPointIdx).mData[0]);
+			out.y = static_cast<float>(vertexNormal->GetDirectArray().GetAt(CtrlPointIdx).mData[1]);
+			out.z = static_cast<float>(vertexNormal->GetDirectArray().GetAt(CtrlPointIdx).mData[2]);
+		}
+		break;
+		case FbxGeometryElement::eIndexToDirect:
+		{
+
+			int index = vertexNormal->GetIndexArray().GetAt(CtrlPointIdx);
+			out.x = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[0]);
+			out.y = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[1]);
+			out.z = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[2]);
+		}
+		break;
+		default:
+			break;
+		}
+		break;
+	case FbxGeometryElement::eByPolygonVertex:
+		switch (vertexNormal->GetReferenceMode())
+		{
+		case FbxGeometryElement::eDirect:
+		{
+
+			out.x = static_cast<float>(vertexNormal->GetDirectArray().GetAt(VertexCounter).mData[0]);
+			out.y = static_cast<float>(vertexNormal->GetDirectArray().GetAt(VertexCounter).mData[1]);
+			out.z = static_cast<float>(vertexNormal->GetDirectArray().GetAt(VertexCounter).mData[2]);
+		}
+		break;
+		case FbxGeometryElement::eIndexToDirect:
+		{
+
+			int index = vertexNormal->GetIndexArray().GetAt(VertexCounter);
+			out.x = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[0]);
+			out.y = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[1]);
+			out.z = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[2]);
+		}
+		break;
+		default:
+			break;
+		}
+		break;
+
+
+	default: break;
+	}
+}
+void ReadBinormal(FbxMesh* mesh, int CtrlPointIdx, int VertexCounter, XMFLOAT3& out) {
+	FbxGeometryElementBinormal* vertexBinormal = mesh->GetElementBinormal(0);
+	switch (vertexBinormal->GetMappingMode())
+	{
+	case FbxGeometryElement::eByControlPoint:
+		switch (vertexBinormal->GetReferenceMode())
+		{
+		case FbxGeometryElement::eDirect:
+		{
+
+			out.x = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(CtrlPointIdx).mData[0]);
+			out.y = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(CtrlPointIdx).mData[1]);
+			out.z = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(CtrlPointIdx).mData[2]);
+		}
+		break;
+		case FbxGeometryElement::eIndexToDirect:
+		{
+
+			int index = vertexBinormal->GetIndexArray().GetAt(CtrlPointIdx);
+			out.x = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[0]);
+			out.y = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[1]);
+			out.z = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[2]);
+		}
+		break;
+		default:
+			break;
+		}
+		break;
+	case FbxGeometryElement::eByPolygonVertex:
+		switch (vertexBinormal->GetReferenceMode())
+		{
+		case FbxGeometryElement::eDirect:
+		{
+
+			out.x = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(VertexCounter).mData[0]);
+			out.y = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(VertexCounter).mData[1]);
+			out.z = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(VertexCounter).mData[2]);
+		}
+		break;
+		case FbxGeometryElement::eIndexToDirect:
+		{
+
+			int index = vertexBinormal->GetIndexArray().GetAt(VertexCounter);
+			out.x = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[0]);
+			out.y = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[1]);
+			out.z = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[2]);
+		}
+		break;
+		default:
+			break;
+		}
+		break;
+
+
+	default: break;
+	}
+}
+void ReadTangent(FbxMesh* mesh, int CtrlPointIdx, int VertexCounter, XMFLOAT3& out) {
+	FbxGeometryElementTangent* vertexTangent = mesh->GetElementTangent(0);
+	switch (vertexTangent->GetMappingMode())
+	{
+	case FbxGeometryElement::eByControlPoint:
+		switch (vertexTangent->GetReferenceMode())
+		{
+		case FbxGeometryElement::eDirect:
+		{
+
+			out.x = static_cast<float>(vertexTangent->GetDirectArray().GetAt(CtrlPointIdx).mData[0]);
+			out.y = static_cast<float>(vertexTangent->GetDirectArray().GetAt(CtrlPointIdx).mData[1]);
+			out.z = static_cast<float>(vertexTangent->GetDirectArray().GetAt(CtrlPointIdx).mData[2]);
+		}
+		break;
+		case FbxGeometryElement::eIndexToDirect:
+		{
+
+			int index = vertexTangent->GetIndexArray().GetAt(CtrlPointIdx);
+			out.x = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[0]);
+			out.y = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[1]);
+			out.z = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[2]);
+		}
+		break;
+		default:
+			break;
+		}
+		break;
+	case FbxGeometryElement::eByPolygonVertex:
+		switch (vertexTangent->GetReferenceMode())
+		{
+		case FbxGeometryElement::eDirect:
+		{
+
+			out.x = static_cast<float>(vertexTangent->GetDirectArray().GetAt(VertexCounter).mData[0]);
+			out.y = static_cast<float>(vertexTangent->GetDirectArray().GetAt(VertexCounter).mData[1]);
+			out.z = static_cast<float>(vertexTangent->GetDirectArray().GetAt(VertexCounter).mData[2]);
+		}
+		break;
+		case FbxGeometryElement::eIndexToDirect:
+		{
+
+			int index = vertexTangent->GetIndexArray().GetAt(VertexCounter);
+			out.x = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[0]);
+			out.y = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[1]);
+			out.z = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[2]);
+		}
+		break;
+		default:
+			break;
+		}
+		break;
+
+
+	default: break;
+	}
+}
+
+void MakeMesh(FbxNode* node) {
+	if (IsMeshNode(node)) {
+		FbxMesh* mesh = node->GetMesh();
+		Mesh tmpMesh;
+		unsigned int numVertex = mesh->GetPolygonCount();
+
+		// CtrlPoints
+		int			nCtrlPoints = mesh->GetControlPointsCount();
+		FbxVector4* pCtrlPoints = mesh->GetControlPoints();
+		tmpMesh.m_CtrlPointList.resize(nCtrlPoints);
+		for (int i = 0; i < nCtrlPoints; ++i) {
+			tmpMesh.m_CtrlPointList[i].xmf3Position.x = pCtrlPoints[i].mData[0];
+			tmpMesh.m_CtrlPointList[i].xmf3Position.y = pCtrlPoints[i].mData[1];
+			tmpMesh.m_CtrlPointList[i].xmf3Position.z = pCtrlPoints[i].mData[2];
+		}
+
+		// PolygonVertex
+		int			vertexCounter = 0;
+		int			nPolygon = mesh->GetPolygonCount();
+		for (int i = 0; i < nPolygon; ++i) {
+			int		nPolygonSize = mesh->GetPolygonSize(i);
+			for (int j = 0; j < nPolygonSize; ++j) {
+				int CtrlPointIdx = mesh->GetPolygonVertex(i, j);
+				Vertex tmpVertex;
+				XMFLOAT3 xmf3Tmp;
+				tmpVertex.ctrlPointIdx = CtrlPointIdx;
+				// 이걸로 Vertex는 CtrlPointIdx를 갖게 됨.
+				// 아직 Normal, BiNormal, Tangent 남음
+
+				ReadNormal(mesh, CtrlPointIdx, vertexCounter, xmf3Tmp);
+				tmpVertex.xmf3Normal = xmf3Tmp;
+
+				ReadBinormal(mesh, CtrlPointIdx, vertexCounter, xmf3Tmp);
+				tmpVertex.xmf3BiNormal = xmf3Tmp;
+
+				ReadTangent(mesh, CtrlPointIdx, vertexCounter, xmf3Tmp);
+				tmpVertex.xmf3Tangent = xmf3Tmp;
+
+				tmpMesh.m_VertexList.push_back(tmpVertex);
+				vertexCounter++;
+			}
+		}
+
+
+
+	}
+}
+
+
+
+
+
+void GetMeshDataRec(FbxNode* pNode) {
+	int meshCount;
+	FbxMesh* mesh = pNode->GetMesh();
+	if (NULL != mesh) {
+
+		int nControlPoints	= mesh->GetControlPointsCount();
+		int nElementNormals = mesh->GetElementNormalCount();
+
+		FbxVector4* pControlPoints = mesh->GetControlPoints();
+		FbxVector4 fbxVector4;
+
+
+		int nPolygons = mesh->GetPolygonCount();
+		int meshIdx = meshes.size();
+		XMFLOAT3 p;
+
+		meshes.emplace_back(pNode->GetName());
+
+		for (int i = 0; i < nControlPoints; ++i) {
+			fbxVector4 = pControlPoints[i];
+			p.x = fbxVector4.mData[0];
+			p.y = fbxVector4.mData[1];
+			p.z = fbxVector4.mData[2];
+			meshes[meshIdx].controlPoints.emplace_back(p);
+		}
+
+		int nPolygon = pMesh->GetPolygonCount();
+		for (int i = 0, nIdx = 0; i < nPolygons; ++i) {
+			FbxVector4 fbxVector4;
+			int nPolygonSize = pMesh->GetPolygonSize(i);
+			for (int j = 0; j < nPolygonSize; ++j) {
+				int nControlPointIdx = pMesh->GetPolygonVertex(i, j);
+				meshes[meshIdx].polygonVertexIndex.push_back(nControlPointIdx);
+			}
+		}
+	}
+	for (meshCount = 0; meshCount < pNode->GetChildCount(); meshCount++)
+	{
+		GetMeshDataRec(pNode->GetChild(meshCount));
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 const char * SAMPLE_FILENAME = "test_0429_015_Character";
@@ -338,7 +660,7 @@ int main(int argc, char** argv)
 	RecFollowChildNode(lScene->GetRootNode(), MakeParent);
 
 	MakeToRootTransform();
-
+ 
 	//DisplayAllBones();
 
 	FbxString lFileOutput;
@@ -358,228 +680,3 @@ int main(int argc, char** argv)
 
     return 0;
 }
-
-void DisplayContent(FbxScene* pScene)
-{
-    int i;
-    FbxNode* lNode = pScene->GetRootNode();
-
-    if(lNode)
-    {
-        for(i = 0; i < lNode->GetChildCount(); i++)
-        {
-            DisplayContent(lNode->GetChild(i));
-        }
-    }
-}
-
-void DisplayContent(FbxNode* pNode)
-{
-    FbxNodeAttribute::EType lAttributeType;
-    int i;
-
-    if(pNode->GetNodeAttribute() == NULL)
-    {
-        FBXSDK_printf("NULL Node Attribute\n\n");
-    }
-    else
-    {
-        lAttributeType = (pNode->GetNodeAttribute()->GetAttributeType());
-
-        switch (lAttributeType)
-        {
-	    default:
-	        break;
-        case FbxNodeAttribute::eMarker:  
-            DisplayMarker(pNode);
-            break;
-
-        case FbxNodeAttribute::eSkeleton:  
-            DisplaySkeleton(pNode);
-            break;
-
-        case FbxNodeAttribute::eMesh:      
-            DisplayMesh(pNode);
-            break;
-
-        case FbxNodeAttribute::eNurbs:      
-            DisplayNurb(pNode);
-            break;
-
-        case FbxNodeAttribute::ePatch:     
-            DisplayPatch(pNode);
-            break;
-
-        case FbxNodeAttribute::eCamera:    
-            DisplayCamera(pNode);
-            break;
-
-        case FbxNodeAttribute::eLight:     
-            DisplayLight(pNode);
-            break;
-
-        case FbxNodeAttribute::eLODGroup:
-            DisplayLodGroup(pNode);
-            break;
-        }   
-    }
-
-    DisplayUserProperties(pNode);
-    DisplayTarget(pNode);
-    DisplayPivotsAndLimits(pNode);
-    DisplayTransformPropagation(pNode);
-    DisplayGeometricTransform(pNode);
-
-    for(i = 0; i < pNode->GetChildCount(); i++)
-    {
-        DisplayContent(pNode->GetChild(i));
-    }
-}
-
-
-void DisplayTarget(FbxNode* pNode)
-{
-    if(pNode->GetTarget() != NULL)
-    {
-        DisplayString("    Target Name: ", (char *) pNode->GetTarget()->GetName());
-    }
-}
-
-void DisplayTransformPropagation(FbxNode* pNode)
-{
-    FBXSDK_printf("    Transformation Propagation\n");
-
-    // 
-    // Rotation Space
-    //
-    EFbxRotationOrder lRotationOrder;
-    pNode->GetRotationOrder(FbxNode::eSourcePivot, lRotationOrder);
-
-    FBXSDK_printf("        Rotation Space: ");
-
-    switch (lRotationOrder)
-    {
-    case eEulerXYZ: 
-        FBXSDK_printf("Euler XYZ\n");
-        break;
-    case eEulerXZY:
-        FBXSDK_printf("Euler XZY\n");
-        break;
-    case eEulerYZX:
-        FBXSDK_printf("Euler YZX\n");
-        break;
-    case eEulerYXZ:
-        FBXSDK_printf("Euler YXZ\n");
-        break;
-    case eEulerZXY:
-        FBXSDK_printf("Euler ZXY\n");
-        break;
-    case eEulerZYX:
-        FBXSDK_printf("Euler ZYX\n");
-        break;
-    case eSphericXYZ:
-        FBXSDK_printf("Spheric XYZ\n");
-        break;
-    }
-
-    //
-    // Use the Rotation space only for the limits
-    // (keep using eEulerXYZ for the rest)
-    //
-    FBXSDK_printf("        Use the Rotation Space for Limit specification only: %s\n",
-        pNode->GetUseRotationSpaceForLimitOnly(FbxNode::eSourcePivot) ? "Yes" : "No");
-
-
-    //
-    // Inherit Type
-    //
-    FbxTransform::EInheritType lInheritType;
-    pNode->GetTransformationInheritType(lInheritType);
-
-    FBXSDK_printf("        Transformation Inheritance: ");
-
-    switch (lInheritType)
-    {
-    case FbxTransform::eInheritRrSs:
-        FBXSDK_printf("RrSs\n");
-        break;
-    case FbxTransform::eInheritRSrs:
-        FBXSDK_printf("RSrs\n");
-        break;
-    case FbxTransform::eInheritRrs:
-        FBXSDK_printf("Rrs\n");
-        break;
-    }
-}
-
-void DisplayGeometricTransform(FbxNode* pNode)
-{
-    FbxVector4 lTmpVector;
-
-    FBXSDK_printf("    Geometric Transformations\n");
-
-    //
-    // Translation
-    //
-    lTmpVector = pNode->GetGeometricTranslation(FbxNode::eSourcePivot);
-    FBXSDK_printf("        Translation: %f %f %f\n", lTmpVector[0], lTmpVector[1], lTmpVector[2]);
-
-    //
-    // Rotation
-    //
-    lTmpVector = pNode->GetGeometricRotation(FbxNode::eSourcePivot);
-    FBXSDK_printf("        Rotation:    %f %f %f\n", lTmpVector[0], lTmpVector[1], lTmpVector[2]);
-
-    //
-    // Scaling
-    //
-    lTmpVector = pNode->GetGeometricScaling(FbxNode::eSourcePivot);
-    FBXSDK_printf("        Scaling:     %f %f %f\n", lTmpVector[0], lTmpVector[1], lTmpVector[2]);
-}
-
-
-void DisplayMetaData(FbxScene* pScene)
-{
-    FbxDocumentInfo* sceneInfo = pScene->GetSceneInfo();
-    if (sceneInfo)
-    {
-        FBXSDK_printf("\n\n--------------------\nMeta-Data\n--------------------\n\n");
-        FBXSDK_printf("    Title: %s\n", sceneInfo->mTitle.Buffer());
-        FBXSDK_printf("    Subject: %s\n", sceneInfo->mSubject.Buffer());
-        FBXSDK_printf("    Author: %s\n", sceneInfo->mAuthor.Buffer());
-        FBXSDK_printf("    Keywords: %s\n", sceneInfo->mKeywords.Buffer());
-        FBXSDK_printf("    Revision: %s\n", sceneInfo->mRevision.Buffer());
-        FBXSDK_printf("    Comment: %s\n", sceneInfo->mComment.Buffer());
-
-        FbxThumbnail* thumbnail = sceneInfo->GetSceneThumbnail();
-        if (thumbnail)
-        {
-            FBXSDK_printf("    Thumbnail:\n");
-
-            switch (thumbnail->GetDataFormat())
-            {
-            case FbxThumbnail::eRGB_24:
-                FBXSDK_printf("        Format: RGB\n");
-                break;
-            case FbxThumbnail::eRGBA_32:
-                FBXSDK_printf("        Format: RGBA\n");
-                break;
-            }
-
-            switch (thumbnail->GetSize())
-            {
-	        default:
-	            break;
-            case FbxThumbnail::eNotSet:
-                FBXSDK_printf("        Size: no dimensions specified (%ld bytes)\n", thumbnail->GetSizeInBytes());
-                break;
-            case FbxThumbnail::e64x64:
-                FBXSDK_printf("        Size: 64 x 64 pixels (%ld bytes)\n", thumbnail->GetSizeInBytes());
-                break;
-            case FbxThumbnail::e128x128:
-                FBXSDK_printf("        Size: 128 x 128 pixels (%ld bytes)\n", thumbnail->GetSizeInBytes());
-            }
-        }
-    }
-}
-
