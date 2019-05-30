@@ -169,17 +169,11 @@ class Importer {
 	vector<AnimationMesh> meshes;
 
 public:
-	void ExportFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, CTexture* pTexture, const char* fileName, CAnimationPlayerObject& obj) {
+	void ImportFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, CTexture* pTexture, const char* fileName, CAnimationPlayerObject& obj) {
 
 		std::ifstream in;
 		in.open(fileName, std::ios::in | std::ios::binary);
-		/***************************************************************
-		bone 정보 쓰고 mesh 정보 쓰고 key 정보 쓰고
-		***************************************************************/
-		/***************************************************************
-		걍 몇 개 있는지랑 name이랑 부모boneIdx만 저장하자.
-		부모 없으면 부모 boneIdx 값 -1임
-		***************************************************************/
+
 		int nBones;
 		in.read((char*)&nBones, sizeof(int));
 		bones.resize(nBones);
@@ -188,16 +182,11 @@ public:
 			in.read((char*)&(bones[i].m_translation), sizeof(XMFLOAT3));
 			in.read((char*)&(bones[i].m_rotation), sizeof(XMFLOAT3));
 
-			swap(bones[i].m_translation.y, bones[i].m_translation.z);
-			swap(bones[i].m_rotation.y, bones[i].m_rotation.z);
+			//swap(bones[i].m_translation.y, bones[i].m_translation.z);
+			//swap(bones[i].m_rotation.y, bones[i].m_rotation.z);
 
 		}
 
-		/***************************************************************
-		mesh별로 ControlPoint 다 써야됨.
-		float3, int4, float4
-		그거하고 polygonVertexIndex도 쓰기
-		***************************************************************/
 		int nMeshes;
 		in.read((char*)&nMeshes, sizeof(int));
 		meshes.resize(nMeshes);
@@ -210,7 +199,7 @@ public:
 				in.read((char*)&(meshes[i].controlPoints[j].boneIdx), sizeof(XMINT4));
 				in.read((char*)&(meshes[i].controlPoints[j].weight), sizeof(XMFLOAT4));
 
-				swap(meshes[i].controlPoints[j].pos.y, meshes[i].controlPoints[j].pos.z);
+				//swap(meshes[i].controlPoints[j].pos.y, meshes[i].controlPoints[j].pos.z);
 			}
 		}
 		for (int i = 0; i < nMeshes; ++i) {
@@ -231,31 +220,25 @@ public:
 		obj.SetModel(model);
 
 
-
-		/***************************************************************
-		키가 몇 개 있고, 각 키마다 Bone이 몇 개 있을 것인지 저장해야 함.
-		일단은 모든 Bone이 xyz 요소값을 가지는 것으로 간주하고 작성하자.
-		***************************************************************/
 		int nKeys;
 		in.read((char*)&nKeys, sizeof(int));
-
-
 		keys.resize(nKeys);
 
 		for (int i = 0; i < nKeys; ++i) {
 			int nBones;/* = keys[i].data.size();*/
 			in.read((char*)&nBones, sizeof(int));
-			//keys[i].m_pBones.resize(nBones);
 			keys[i].m_pBones.resize(nBones); // 쓸 일은 없지만 후에 resize() 함수 호출 시에 직관성을 위해
 			keys[i].m_boneIdx.resize(nBones);
 			keys[i].m_translations.resize(nBones);
 			keys[i].m_rotations.resize(nBones);
+			//keys[i].m_xmf4x4GlobalTransform.resize(nBones);
 		}
 
 		for (int i = 0; i < nKeys; ++i) {
 			float keyTime;
 			int boneIdx;
 			XMFLOAT3 tmpFloat3;
+			XMFLOAT4X4 tmpFloat4x4;
 			in.read((char*)&keyTime, sizeof(float));
 
 			keys[i].m_keytime = keyTime;
@@ -263,16 +246,14 @@ public:
 			for (int j = 0; j < keys[i].m_boneIdx.size(); ++j) {
 				in.read((char*)&boneIdx, sizeof(int));
 				keys[i].m_boneIdx[j] = boneIdx;
-				in.read((char*)&tmpFloat3, sizeof(XMFLOAT3));
-				keys[i].m_translations[j].x = tmpFloat3.x;
-				keys[i].m_translations[j].y = tmpFloat3.y;
-				keys[i].m_translations[j].z = tmpFloat3.z;
-				in.read((char*)&tmpFloat3, sizeof(XMFLOAT3));
-				keys[i].m_rotations[j].x = tmpFloat3.x;
-				keys[i].m_rotations[j].y = tmpFloat3.y;
-				keys[i].m_rotations[j].z = tmpFloat3.z;
-				swap(keys[i].m_translations[j].y, keys[i].m_translations[j].z);
-				swap(keys[i].m_rotations[j].y, keys[i].m_rotations[j].z);
+				in.read((char*)&keys[i].m_translations[j], sizeof(XMFLOAT3));
+				in.read((char*)&keys[i].m_rotations[j], sizeof(XMFLOAT3));
+				//in.read((char*)&keys[i].m_xmf4x4GlobalTransform[j], sizeof(XMFLOAT4X4));
+
+
+
+				//swap(keys[i].m_translations[j].y, keys[i].m_translations[j].z);
+				//swap(keys[i].m_rotations[j].y, keys[i].m_rotations[j].z);
 			}
 		}
 
