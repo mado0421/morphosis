@@ -242,25 +242,26 @@ private:
 		if(time < m_AnimData.m_KeyTime[0]) return XMLoadFloat4x4(&m_AnimData.m_BoneList[boneIdx].m_pToRootTransforms[0]);
 		// 시간이 맨 뒤보다 늦으면 맨 뒤를 반환.
 		else if (time > m_AnimData.m_KeyTime[m_AnimData.m_nKeyTime - 1]) {
-			if (isLoop) time = GetClampTime(time);
-			else return XMLoadFloat4x4(&m_AnimData.m_BoneList[boneIdx].m_pToRootTransforms[m_AnimData.m_nKeyTime - 1]);
+			if (false == isLoop) return XMLoadFloat4x4(&m_AnimData.m_BoneList[boneIdx].m_pToRootTransforms[m_AnimData.m_nKeyTime - 1]);
 		}
-		// 그 가운데면 내 바로 전과 후를 반환.
-		else {
+
+		// 보간 값 계산
+			time = GetClampTime(time);
 			PrevIdx = GetPrevIdx(time);
 			normalizedTime = GetNormalizedTime(time, PrevIdx);
-		}
+		
 		XMFLOAT4X4 result;
 
 		Matrix4x4::InterpolateMtx(&result, m_AnimData.m_BoneList[boneIdx].m_pToRootTransforms[PrevIdx], m_AnimData.m_BoneList[boneIdx].m_pToRootTransforms[PrevIdx + 1], normalizedTime);
 
-		return XMLoadFloat4x4(&result);
+		// return XMLoadFloat4x4(&result);
+		return XMLoadFloat4x4(&m_AnimData.m_BoneList[boneIdx].m_pToRootTransforms[PrevIdx]);
 	}
 
 
 	int GetPrevIdx(float time) {
 		for (int i = 0; i < m_AnimData.m_nKeyTime; ++i) 
-			if (m_AnimData.m_KeyTime[i] < time) return i;
+			if (m_AnimData.m_KeyTime[i] > time) return i;
 	}
 	float GetNormalizedTime(float time, int boneIdx) {
 		return (time - m_AnimData.m_KeyTime[boneIdx]) / (m_AnimData.m_KeyTime[boneIdx+1] - m_AnimData.m_KeyTime[boneIdx]);
