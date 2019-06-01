@@ -382,12 +382,12 @@ D3D12_RASTERIZER_DESC CAnimatedPSO::CreateRasterizerState()
 
 D3D12_SHADER_BYTECODE CAnimatedPSO::CreateVertexShader(ID3DBlob ** ppd3dShaderBlob)
 {
-	return(CompileShaderFromFile(L"VertexShader.hlsl", "VSAnimated", "vs_5_1", ppd3dShaderBlob));
+	return(CompileShaderFromFile(L"Hlsl/VertexShader.hlsl", "VSAnimated", "vs_5_1", ppd3dShaderBlob));
 }
 
 D3D12_SHADER_BYTECODE CAnimatedPSO::CreatePixelShader(ID3DBlob ** ppd3dShaderBlob)
 {
-	return(CompileShaderFromFile(L"PixelShader.hlsl", "PSAnimated", "ps_5_1", ppd3dShaderBlob));
+	return(CompileShaderFromFile(L"Hlsl/PixelShader.hlsl", "PSAnimated", "ps_5_1", ppd3dShaderBlob));
 
 }
 

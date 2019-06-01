@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "Mesh.h"
-#include "AnimationData.h"
+#include "Animation/AnimationData.h"
+#include "Importer/Importer.h"
 
 
 CMesh::CMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList)
@@ -812,15 +813,6 @@ CAnimMesh::CAnimMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3d
 		boneIdx[j] = XMINT4(m.controlPoints[j].boneIdx.x, m.controlPoints[j].boneIdx.y, m.controlPoints[j].boneIdx.z, m.controlPoints[j].boneIdx.z);
 	}
 
-	for (int i = 0; i < nCPs; ++i) {
-		if (boneIdx[i].x > 43 || boneIdx[i].y > 44 || boneIdx[i].z > 44 || boneIdx[i].w > 44) {
-			//while (true) {
-			//	cout << "aaaaaaaaaaa";
-			//}
-		}
-	}
-
-
 	for (int j = 0; j < nCPs; ++j) {
 		if (-1 == boneIdx[j].x) boneIdx[j].x = 0;
 		if (-1 == boneIdx[j].y) boneIdx[j].y = 0;
@@ -853,3 +845,48 @@ CAnimMesh::CAnimMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3d
 
 }
 
+//struct MeshData {
+//	std::string m_MeshName;
+//	CtrlPoint*	m_CtrlPointList;
+//	Vertex*		m_VertexList;
+//
+//	int			m_nCtrlPointList;
+//	int			m_nVertexList;
+//};
+
+CAnimMesh::CAnimMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ImportMeshData & m) : CMesh(pd3dDevice, pd3dCommandList)
+{
+	int nCtrlPoint		= static_cast<int>(m.m_nCtrlPointList);
+	int nPolyongVertex	= static_cast<int>(m.m_nVertexList);
+
+	UINT nStride = sizeof(CAnimVertex);
+	nVertices = nPolyongVertex;
+
+	XMFLOAT3* pos = new XMFLOAT3[nCtrlPoint];
+	for (int i = 0; i < nCtrlPoint; ++i) pos[i] = m.m_CtrlPointList[i].xmf3Position;
+
+	XMFLOAT2* uv = new XMFLOAT2[nPolyongVertex];
+	for (int i = 0; i < nPolyongVertex; ++i) uv[i] = m.m_VertexList[i].xmf2UV;
+
+	XMFLOAT4* weight = new XMFLOAT4[nCtrlPoint];
+	for (int i = 0; i < nCtrlPoint; ++i) weight[i] = m.m_CtrlPointList[i].xmf4BoneWeight;
+
+	XMINT4* boneIdx = new XMINT4[nCtrlPoint];
+	for (int i = 0; i < nCtrlPoint; ++i) boneIdx[i] = m.m_CtrlPointList[i].xmi4BoneIdx;
+
+	int* posIdx = new int[nPolyongVertex];
+	for (int i = 0; i < nPolyongVertex; ++i) posIdx[i] = m.m_VertexList[i].ctrlPointIdx;
+
+	CAnimVertex* animVertex = new CAnimVertex[nPolyongVertex];
+
+	for (int i = 0; i < nPolyongVertex; ++i) animVertex[i].Init(pos[posIdx[i]], uv[i], weight[posIdx[i]], boneIdx[posIdx[i]]);
+
+	pVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
+		animVertex, nStride * nVertices,
+		D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+		&pVertexUploadBuffer);
+
+	vertexBufferView.BufferLocation = pVertexBuffer->GetGPUVirtualAddress();
+	vertexBufferView.StrideInBytes = nStride;
+	vertexBufferView.SizeInBytes = nStride * nVertices;
+}

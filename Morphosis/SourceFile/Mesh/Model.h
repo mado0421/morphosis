@@ -1,8 +1,9 @@
 #pragma once
-#include "Mesh.h"
-#include "Texture.h"
-#include "Material.h"
-#include "AnimationData.h"
+#include "stdafx.h"
+#include "Mesh/Mesh.h"
+#include "Material/Texture.h"
+#include "Material/Material.h"
+#include "Animation/AnimationData.h"
 
 class CModel
 {

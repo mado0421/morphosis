@@ -40,6 +40,7 @@
 #include <set>
 #include <vector>
 #include <fstream>
+#include <algorithm>
 #include <DirectXMath.h>
 
 using namespace DirectX;
@@ -252,6 +253,327 @@ void DisplayAllBones() {
 }
 
 /***************************************************************************************
+Mesh
+***************************************************************************************/
+
+struct CtrlPoint {
+	XMFLOAT3	xmf3Position;
+	XMINT4		xmi4BoneIdx;
+	XMFLOAT4	xmf4BoneWeight;
+
+	CtrlPoint() 
+		:xmi4BoneIdx(-1, -1, -1, -1)
+		,xmf4BoneWeight(0, 0, 0, 0)
+	{}
+};
+struct Vertex {
+	int			ctrlPointIdx;
+	XMFLOAT3	xmf3Normal;
+	XMFLOAT3	xmf3BiNormal;
+	XMFLOAT3	xmf3Tangent;
+	XMFLOAT2	xmf2UV;
+};
+struct Mesh {
+	FbxString				m_Name;
+	std::vector<CtrlPoint>	m_CtrlPointList;
+	std::vector<Vertex>		m_VertexList;
+
+	void AddClusterData(int cpIdx, int boneIdx, double weight) {
+		if (-1 == m_CtrlPointList[cpIdx].xmi4BoneIdx.x) {
+			m_CtrlPointList[cpIdx].xmi4BoneIdx.x = boneIdx;
+			m_CtrlPointList[cpIdx].xmf4BoneWeight.x = weight;
+			return;
+		}
+		if (-1 == m_CtrlPointList[cpIdx].xmi4BoneIdx.y) {
+			m_CtrlPointList[cpIdx].xmi4BoneIdx.y = boneIdx;
+			m_CtrlPointList[cpIdx].xmf4BoneWeight.y = weight;
+			return;
+		}
+		if (-1 == m_CtrlPointList[cpIdx].xmi4BoneIdx.z) {
+			m_CtrlPointList[cpIdx].xmi4BoneIdx.z = boneIdx;
+			m_CtrlPointList[cpIdx].xmf4BoneWeight.z = weight;
+			return;
+		}
+		if (-1 == m_CtrlPointList[cpIdx].xmi4BoneIdx.w) {
+			m_CtrlPointList[cpIdx].xmi4BoneIdx.w = boneIdx;
+			m_CtrlPointList[cpIdx].xmf4BoneWeight.w = weight;
+			return;
+		}
+	}
+};
+
+std::vector<Mesh> g_MeshList;
+
+void DisplayCtrlPoint(const Mesh& mesh) {
+	//for (auto p = mesh.m_CtrlPointList.begin(); p != mesh.m_CtrlPointList.end(); ++p) {
+	//	std::cout <<
+	//		"Pos: (" << p->xmf3Position.x << ", " << p->xmf3Position.y << ", " << p->xmf3Position.z << ")\n" <<
+	//		"Idx: (" << p->xmi4BoneIdx.x << ", " << p->xmi4BoneIdx.y << ", " << p->xmi4BoneIdx.z << ", " << p->xmi4BoneIdx.w << ")\n" <<
+	//		"Wei: (" << p->xmf4BoneWeight.x << ", " << p->xmf4BoneWeight.y << ", " << p->xmf4BoneWeight.z << ", " << p->xmf4BoneWeight.w << ")\n";
+	//}
+	for (int i = 0; i < /*mesh.m_VertexList.size()*/ 20; ++i) {
+		std::cout <<
+			"Pos: (" << mesh.m_CtrlPointList[i].xmf3Position.x << ", " <<	mesh.m_CtrlPointList[i].xmf3Position.y << ", " << mesh.m_CtrlPointList[i].xmf3Position.z << ")\n" <<
+			"Idx: (" << mesh.m_CtrlPointList[i].xmi4BoneIdx.x << ", " << mesh.m_CtrlPointList[i].xmi4BoneIdx.y << ", " << mesh.m_CtrlPointList[i].xmi4BoneIdx.z << ", " <<			mesh.m_CtrlPointList[i].xmi4BoneIdx.w << ")\n" <<
+			"Wei: (" << mesh.m_CtrlPointList[i].xmf4BoneWeight.x << ", " << mesh.m_CtrlPointList[i].xmf4BoneWeight.y << ", " << mesh.m_CtrlPointList[i].xmf4BoneWeight.z << ", " << mesh.m_CtrlPointList[i].xmf4BoneWeight.w << ")\n";
+	}																																												
+}
+
+void DisplayVertex(const Mesh& mesh) {
+	//for (auto p = mesh.m_VertexList.begin(); p != mesh.m_VertexList.end(); ++p) {
+	//	std::cout <<
+	//		"Idx: - " << p->ctrlPointIdx << "\n"
+	//		"Nor: (" << p->xmf3Normal.x << ", " << p->xmf3Normal.y << ", " << p->xmf3Normal.z << ")\n" <<
+	//		"Bin: (" << p->xmf3BiNormal.x << ", " << p->xmf3BiNormal.y << ", " << p->xmf3BiNormal.z << ")\n" <<
+	//		"Tan: (" << p->xmf3Tangent.x << ", " << p->xmf3Tangent.y << ", " << p->xmf3Tangent.z << ")\n" <<
+	//		"UV : (" << p->xmf2UV.x << ", " << p->xmf2UV.y << ")\n";
+	//}
+	for (int i = 0; i < /*mesh.m_VertexList.size()*/ 20; ++i) {
+		std::cout <<
+			"Idx: - " <<mesh.m_VertexList[i].ctrlPointIdx << "\n"
+			"Nor: (" << mesh.m_VertexList[i].xmf3Normal.x << ", "	<< mesh.m_VertexList[i].xmf3Normal.y << ", "	<< mesh.m_VertexList[i].xmf3Normal.z << ")\n" <<
+			"Bin: (" << mesh.m_VertexList[i].xmf3BiNormal.x << ", " << mesh.m_VertexList[i].xmf3BiNormal.y << ", "	<< mesh.m_VertexList[i].xmf3BiNormal.z << ")\n" <<
+			"Tan: (" << mesh.m_VertexList[i].xmf3Tangent.x << ", "	<< mesh.m_VertexList[i].xmf3Tangent.y << ", "	<< mesh.m_VertexList[i].xmf3Tangent.z << ")\n" <<
+			"UV : (" << mesh.m_VertexList[i].xmf2UV.x << ", "		<< mesh.m_VertexList[i].xmf2UV.y << ")\n";
+	}
+}
+
+void DisplayMesh() {
+	for (auto p = g_MeshList.begin(); p != g_MeshList.end(); ++p) {
+		std::cout << "\n" << p->m_Name << "\n\n";
+		DisplayCtrlPoint(*p);
+		//DisplayVertex(*p);
+	}
+}
+
+
+int GetBoneIdxByName(FbxString name) {
+	for (auto p = g_BoneList.begin(); p != g_BoneList.end(); ++p) {
+		if (name == p->m_Name) 
+			return std::distance(g_BoneList.begin(), p);
+	}
+	return 0;
+}
+
+void BoneIdxDefaultToZero() {
+	for (auto p = g_MeshList.begin(); p != g_MeshList.end(); ++p) {
+		for (auto c = p->m_CtrlPointList.begin(); c != p->m_CtrlPointList.end(); ++c) {
+			if (-1 == c->xmi4BoneIdx.x) c->xmi4BoneIdx.x = 0;
+			if (-1 == c->xmi4BoneIdx.y) c->xmi4BoneIdx.y = 0;
+			if (-1 == c->xmi4BoneIdx.z) c->xmi4BoneIdx.z = 0;
+			if (-1 == c->xmi4BoneIdx.w) c->xmi4BoneIdx.w = 0;
+		}
+	}
+}
+void MeshSwapYZ() {
+	for (auto p = g_MeshList.begin(); p != g_MeshList.end(); ++p) {
+		for (auto c = p->m_CtrlPointList.begin(); c != p->m_CtrlPointList.end(); ++c) {
+			std::swap(c->xmf3Position.y, c->xmf3Position.z);
+		}
+	}
+}
+
+void ReadNormal(FbxMesh* mesh, int CtrlPointIdx, int VertexCounter, XMFLOAT3& out) {
+	for (int i = 0; i < mesh->GetElementNormalCount(); ++i) {
+		FbxGeometryElementNormal* vertexNormal = mesh->GetElementNormal(i);
+		if (vertexNormal->GetMappingMode() == FbxGeometryElement::eByPolygonVertex) {
+			switch (vertexNormal->GetReferenceMode()) {
+			case FbxGeometryElement::eDirect:
+				out.x = static_cast<float>(vertexNormal->GetDirectArray().GetAt(VertexCounter).mData[0]);
+				out.y = static_cast<float>(vertexNormal->GetDirectArray().GetAt(VertexCounter).mData[1]);
+				out.z = static_cast<float>(vertexNormal->GetDirectArray().GetAt(VertexCounter).mData[2]);
+				break;
+			case FbxGeometryElement::eIndexToDirect: {
+				int index = vertexNormal->GetIndexArray().GetAt(VertexCounter);
+				out.x = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[0]);
+				out.y = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[1]);
+				out.z = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[2]);
+				}
+				break;
+			default:
+				break;
+			}
+		}
+	}
+}
+void ReadBinormal(FbxMesh* mesh, int CtrlPointIdx, int VertexCounter, XMFLOAT3& out) {
+	for (int i = 0; i < mesh->GetElementBinormalCount(); ++i) {
+		FbxGeometryElementBinormal* vertexBinormal = mesh->GetElementBinormal(i);
+		if (vertexBinormal->GetMappingMode() == FbxGeometryElement::eByPolygonVertex) {
+			switch (vertexBinormal->GetReferenceMode()) {
+			case FbxGeometryElement::eDirect:
+				out.x = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(VertexCounter).mData[0]);
+				out.y = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(VertexCounter).mData[1]);
+				out.z = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(VertexCounter).mData[2]);
+				break;
+			case FbxGeometryElement::eIndexToDirect: {
+				int index = vertexBinormal->GetIndexArray().GetAt(VertexCounter);
+				out.x = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[0]);
+				out.y = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[1]);
+				out.z = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[2]);
+			}
+				break;
+			default:
+				break;
+			}
+		}
+	}
+}
+void ReadTangent(FbxMesh* mesh, int CtrlPointIdx, int VertexCounter, XMFLOAT3& out) {
+	for (int i = 0; i < mesh->GetElementTangentCount(); ++i) {
+		FbxGeometryElementTangent* vertexTangent = mesh->GetElementTangent(i);
+		if (vertexTangent->GetMappingMode() == FbxGeometryElement::eByPolygonVertex) {
+			switch (vertexTangent->GetReferenceMode()) {
+			case FbxGeometryElement::eDirect:
+				out.x = static_cast<float>(vertexTangent->GetDirectArray().GetAt(VertexCounter).mData[0]);
+				out.y = static_cast<float>(vertexTangent->GetDirectArray().GetAt(VertexCounter).mData[1]);
+				out.z = static_cast<float>(vertexTangent->GetDirectArray().GetAt(VertexCounter).mData[2]);
+				break;
+			case FbxGeometryElement::eIndexToDirect: {
+				int index = vertexTangent->GetIndexArray().GetAt(VertexCounter);
+				out.x = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[0]);
+				out.y = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[1]);
+				out.z = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[2]);
+			}
+				break;
+			default:
+				break;
+			}
+		}
+	}
+}
+void ReadUV(FbxMesh* mesh, int CtrlPointIdx, int VertexCounter, XMFLOAT2& out) {
+	FbxGeometryElementUV* vertexUV = mesh->GetElementUV(0);
+	switch (vertexUV->GetMappingMode())
+	{
+	case FbxGeometryElement::eByControlPoint:
+		switch (vertexUV->GetReferenceMode())
+		{
+		case FbxGeometryElement::eDirect:
+		{
+
+			out.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(CtrlPointIdx).mData[0]);
+			out.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(CtrlPointIdx).mData[1]);
+		}
+		break;
+		case FbxGeometryElement::eIndexToDirect:
+		{
+
+			int index = vertexUV->GetIndexArray().GetAt(CtrlPointIdx);
+			out.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[0]);
+			out.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[1]);
+		}
+		break;
+		default:
+			break;
+		}
+		break;
+	case FbxGeometryElement::eByPolygonVertex:
+		switch (vertexUV->GetReferenceMode())
+		{
+		case FbxGeometryElement::eDirect:
+		{
+
+			out.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(VertexCounter).mData[0]);
+			out.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(VertexCounter).mData[1]);
+		}
+		break;
+		case FbxGeometryElement::eIndexToDirect:
+		{
+
+			int index = vertexUV->GetIndexArray().GetAt(VertexCounter);
+			out.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[0]);
+			out.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[1]);
+		}
+		break;
+		default:
+			break;
+		}
+		break;
+
+
+	default: break;
+	}
+}
+
+void MakeMesh(FbxNode* node) {
+	if (IsMeshNode(node)) {
+		FbxMesh* mesh = node->GetMesh();
+		Mesh tmpMesh;
+		tmpMesh.m_Name = node->GetName();
+		unsigned int numVertex = mesh->GetPolygonCount();
+
+		// CtrlPoints
+		int			nCtrlPoints = mesh->GetControlPointsCount();
+		FbxVector4* pCtrlPoints = mesh->GetControlPoints();
+		tmpMesh.m_CtrlPointList.resize(nCtrlPoints);
+		for (int i = 0; i < nCtrlPoints; ++i) {
+			tmpMesh.m_CtrlPointList[i].xmf3Position.x = pCtrlPoints[i].mData[0];
+			tmpMesh.m_CtrlPointList[i].xmf3Position.y = pCtrlPoints[i].mData[1];
+			tmpMesh.m_CtrlPointList[i].xmf3Position.z = pCtrlPoints[i].mData[2];
+		}
+
+		// PolygonVertex
+		int			vertexCounter = 0;
+		int			nPolygon = mesh->GetPolygonCount();
+		for (int i = 0; i < nPolygon; ++i) {
+			int		nPolygonSize = mesh->GetPolygonSize(i);
+			for (int j = 0; j < nPolygonSize; ++j) {
+				int CtrlPointIdx = mesh->GetPolygonVertex(i, j);
+				Vertex tmpVertex;
+				tmpVertex.ctrlPointIdx = CtrlPointIdx;
+				// 이걸로 Vertex는 CtrlPointIdx를 갖게 됨.
+				// 아직 Normal, BiNormal, Tangent 남음
+				ReadNormal(mesh, CtrlPointIdx, vertexCounter, tmpVertex.xmf3Normal);
+				ReadBinormal(mesh, CtrlPointIdx, vertexCounter, tmpVertex.xmf3BiNormal);
+				ReadTangent(mesh, CtrlPointIdx, vertexCounter, tmpVertex.xmf3Tangent);
+				//// 이제 UV 해줘야 함.
+				ReadUV(mesh, CtrlPointIdx, vertexCounter, tmpVertex.xmf2UV);
+				tmpMesh.m_VertexList.push_back(tmpVertex);
+				vertexCounter++;
+			}
+		}
+
+		FbxGeometry* geo = node->GetGeometry();
+
+		int nDeformer = geo->GetDeformerCount(FbxDeformer::eSkin);
+		for (int i = 0; i < nDeformer; ++i) {
+			FbxSkin* skinDeformer = static_cast<FbxSkin*>(geo->GetDeformer(i, FbxDeformer::eSkin));
+			int nCluster = skinDeformer->GetClusterCount();
+
+			for (int j = 0; j < nCluster; ++j) {
+				FbxCluster* cluster = skinDeformer->GetCluster(j);
+				int			nIdx = cluster->GetControlPointIndicesCount();
+				int*		pIdx = cluster->GetControlPointIndices();
+				double*		pWeight = cluster->GetControlPointWeights();
+
+				int			boneIdx = GetBoneIdxByName(cluster->GetLink()->GetName());
+
+				for (int k = 0; k < nIdx; ++k) {
+					tmpMesh.AddClusterData(pIdx[k], boneIdx, pWeight[k]);
+				}
+			}
+		}
+
+		g_MeshList.push_back(tmpMesh);
+
+	}
+}
+
+void RecMakeMesh(FbxNode* node) {
+	MakeMesh(node);
+	for (int i = 0; i < node->GetChildCount(); ++i) {
+		MakeMesh(node->GetChild(i));
+	}
+	//MakeClusterData(node);
+	//for (int i = 0; i < node->GetChildCount(); ++i) {
+	//	MakeClusterData(node->GetChild(i));
+	//}
+	BoneIdxDefaultToZero();
+	MeshSwapYZ();
+}
+
+/***************************************************************************************
 Export
 ***************************************************************************************/
 
@@ -271,7 +593,7 @@ XMFLOAT4X4 MakeXMFloat4x4FromFbxAMatrix(const FbxAMatrix& fbxMtx) {
 	return xmf4x4Mtx;
 }
 
-void ExportFile(const char* fileName, const char* animName) {
+void ExportAnimFile(const char* fileName, const char* animName) {
 	std::ofstream out;
 
 	out.open(fileName, std::ios::out | std::ios::binary);
@@ -308,332 +630,42 @@ void ExportFile(const char* fileName, const char* animName) {
 	out.close();
 
 }
+void ExportMeshFile(const char* fileName, const char* modelName) {
+	std::ofstream out;
 
-/***************************************************************************************
-Mesh
-***************************************************************************************/
+	out.open(fileName, std::ios::out | std::ios::binary);
+	char ModelName[32];
+	strcpy_s(ModelName, sizeof(ModelName), modelName);
+	out.write((char*)&ModelName, sizeof(ModelName));
 
-struct Mesh {
-	std::vector<CtrlPoint>	m_CtrlPointList;
-	std::vector<Vertex>		m_VertexList;
-};
+	int NumMesh = g_MeshList.size();
+	out.write((char*)&NumMesh, sizeof(int));
 
-std::vector<Mesh> g_MeshList;
+	for (auto m = g_MeshList.begin(); m != g_MeshList.end(); ++m) {
+		char name[32];
+		strcpy_s(name, sizeof(name),m->m_Name.Buffer());
+		out.write((char*)&name, sizeof(name));
 
-struct CtrlPoint {
-	XMFLOAT3	xmf3Position;
-	XMINT4		xmi4BoneIdx;
-	XMFLOAT4	xmf4BoneWeight;
-};
-
-struct Vertex {
-	int			ctrlPointIdx;
-	XMFLOAT3	xmf3Normal;
-	XMFLOAT3	xmf3BiNormal;
-	XMFLOAT3	xmf3Tangent;
-};
-
-//mesh->GetControlPoints();
-//mesh->GetControlPointsCount();
-//mesh->GetPolygonVertex();
-//mesh->GetPolygonCount();
-//mesh->GetPolygonSize();
-//mesh->GetPolygonVertexCount();
-//mesh->GetPolygonVertexIndex();
-
-
-void ReadNormal(FbxMesh* mesh, int CtrlPointIdx, int VertexCounter, XMFLOAT3& out) {
-	FbxGeometryElementNormal* vertexNormal = mesh->GetElementNormal(0);
-	switch (vertexNormal->GetMappingMode())
-	{
-	case FbxGeometryElement::eByControlPoint:
-		switch (vertexNormal->GetReferenceMode())
-		{
-		case FbxGeometryElement::eDirect:
-		{
-
-			out.x = static_cast<float>(vertexNormal->GetDirectArray().GetAt(CtrlPointIdx).mData[0]);
-			out.y = static_cast<float>(vertexNormal->GetDirectArray().GetAt(CtrlPointIdx).mData[1]);
-			out.z = static_cast<float>(vertexNormal->GetDirectArray().GetAt(CtrlPointIdx).mData[2]);
+		int NumCP = m->m_CtrlPointList.size();
+		out.write((char*)&NumCP, sizeof(int));
+		CtrlPoint* tmpCp = new CtrlPoint[NumCP];
+		for (int i = 0; i < NumCP; ++i) {
+			tmpCp[i] = m->m_CtrlPointList[i];
 		}
-		break;
-		case FbxGeometryElement::eIndexToDirect:
-		{
+		out.write((char*)tmpCp, sizeof(CtrlPoint) * NumCP);
 
-			int index = vertexNormal->GetIndexArray().GetAt(CtrlPointIdx);
-			out.x = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[0]);
-			out.y = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[1]);
-			out.z = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[2]);
+		int NumV = m->m_VertexList.size();
+		out.write((char*)&NumV, sizeof(int));
+		Vertex* tmpV = new Vertex[NumV];
+		for (int i = 0; i < NumV; ++i) {
+			tmpV[i] = m->m_VertexList[i];
 		}
-		break;
-		default:
-			break;
-		}
-		break;
-	case FbxGeometryElement::eByPolygonVertex:
-		switch (vertexNormal->GetReferenceMode())
-		{
-		case FbxGeometryElement::eDirect:
-		{
-
-			out.x = static_cast<float>(vertexNormal->GetDirectArray().GetAt(VertexCounter).mData[0]);
-			out.y = static_cast<float>(vertexNormal->GetDirectArray().GetAt(VertexCounter).mData[1]);
-			out.z = static_cast<float>(vertexNormal->GetDirectArray().GetAt(VertexCounter).mData[2]);
-		}
-		break;
-		case FbxGeometryElement::eIndexToDirect:
-		{
-
-			int index = vertexNormal->GetIndexArray().GetAt(VertexCounter);
-			out.x = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[0]);
-			out.y = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[1]);
-			out.z = static_cast<float>(vertexNormal->GetDirectArray().GetAt(index).mData[2]);
-		}
-		break;
-		default:
-			break;
-		}
-		break;
-
-
-	default: break;
+		out.write((char*)tmpV, sizeof(Vertex) * NumV);
 	}
-}
-void ReadBinormal(FbxMesh* mesh, int CtrlPointIdx, int VertexCounter, XMFLOAT3& out) {
-	FbxGeometryElementBinormal* vertexBinormal = mesh->GetElementBinormal(0);
-	switch (vertexBinormal->GetMappingMode())
-	{
-	case FbxGeometryElement::eByControlPoint:
-		switch (vertexBinormal->GetReferenceMode())
-		{
-		case FbxGeometryElement::eDirect:
-		{
-
-			out.x = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(CtrlPointIdx).mData[0]);
-			out.y = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(CtrlPointIdx).mData[1]);
-			out.z = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(CtrlPointIdx).mData[2]);
-		}
-		break;
-		case FbxGeometryElement::eIndexToDirect:
-		{
-
-			int index = vertexBinormal->GetIndexArray().GetAt(CtrlPointIdx);
-			out.x = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[0]);
-			out.y = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[1]);
-			out.z = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[2]);
-		}
-		break;
-		default:
-			break;
-		}
-		break;
-	case FbxGeometryElement::eByPolygonVertex:
-		switch (vertexBinormal->GetReferenceMode())
-		{
-		case FbxGeometryElement::eDirect:
-		{
-
-			out.x = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(VertexCounter).mData[0]);
-			out.y = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(VertexCounter).mData[1]);
-			out.z = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(VertexCounter).mData[2]);
-		}
-		break;
-		case FbxGeometryElement::eIndexToDirect:
-		{
-
-			int index = vertexBinormal->GetIndexArray().GetAt(VertexCounter);
-			out.x = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[0]);
-			out.y = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[1]);
-			out.z = static_cast<float>(vertexBinormal->GetDirectArray().GetAt(index).mData[2]);
-		}
-		break;
-		default:
-			break;
-		}
-		break;
-
-
-	default: break;
-	}
-}
-void ReadTangent(FbxMesh* mesh, int CtrlPointIdx, int VertexCounter, XMFLOAT3& out) {
-	FbxGeometryElementTangent* vertexTangent = mesh->GetElementTangent(0);
-	switch (vertexTangent->GetMappingMode())
-	{
-	case FbxGeometryElement::eByControlPoint:
-		switch (vertexTangent->GetReferenceMode())
-		{
-		case FbxGeometryElement::eDirect:
-		{
-
-			out.x = static_cast<float>(vertexTangent->GetDirectArray().GetAt(CtrlPointIdx).mData[0]);
-			out.y = static_cast<float>(vertexTangent->GetDirectArray().GetAt(CtrlPointIdx).mData[1]);
-			out.z = static_cast<float>(vertexTangent->GetDirectArray().GetAt(CtrlPointIdx).mData[2]);
-		}
-		break;
-		case FbxGeometryElement::eIndexToDirect:
-		{
-
-			int index = vertexTangent->GetIndexArray().GetAt(CtrlPointIdx);
-			out.x = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[0]);
-			out.y = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[1]);
-			out.z = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[2]);
-		}
-		break;
-		default:
-			break;
-		}
-		break;
-	case FbxGeometryElement::eByPolygonVertex:
-		switch (vertexTangent->GetReferenceMode())
-		{
-		case FbxGeometryElement::eDirect:
-		{
-
-			out.x = static_cast<float>(vertexTangent->GetDirectArray().GetAt(VertexCounter).mData[0]);
-			out.y = static_cast<float>(vertexTangent->GetDirectArray().GetAt(VertexCounter).mData[1]);
-			out.z = static_cast<float>(vertexTangent->GetDirectArray().GetAt(VertexCounter).mData[2]);
-		}
-		break;
-		case FbxGeometryElement::eIndexToDirect:
-		{
-
-			int index = vertexTangent->GetIndexArray().GetAt(VertexCounter);
-			out.x = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[0]);
-			out.y = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[1]);
-			out.z = static_cast<float>(vertexTangent->GetDirectArray().GetAt(index).mData[2]);
-		}
-		break;
-		default:
-			break;
-		}
-		break;
-
-
-	default: break;
-	}
+	out.close();
 }
 
-void MakeMesh(FbxNode* node) {
-	if (IsMeshNode(node)) {
-		FbxMesh* mesh = node->GetMesh();
-		Mesh tmpMesh;
-		unsigned int numVertex = mesh->GetPolygonCount();
-
-		// CtrlPoints
-		int			nCtrlPoints = mesh->GetControlPointsCount();
-		FbxVector4* pCtrlPoints = mesh->GetControlPoints();
-		tmpMesh.m_CtrlPointList.resize(nCtrlPoints);
-		for (int i = 0; i < nCtrlPoints; ++i) {
-			tmpMesh.m_CtrlPointList[i].xmf3Position.x = pCtrlPoints[i].mData[0];
-			tmpMesh.m_CtrlPointList[i].xmf3Position.y = pCtrlPoints[i].mData[1];
-			tmpMesh.m_CtrlPointList[i].xmf3Position.z = pCtrlPoints[i].mData[2];
-		}
-
-		// PolygonVertex
-		int			vertexCounter = 0;
-		int			nPolygon = mesh->GetPolygonCount();
-		for (int i = 0; i < nPolygon; ++i) {
-			int		nPolygonSize = mesh->GetPolygonSize(i);
-			for (int j = 0; j < nPolygonSize; ++j) {
-				int CtrlPointIdx = mesh->GetPolygonVertex(i, j);
-				Vertex tmpVertex;
-				XMFLOAT3 xmf3Tmp;
-				tmpVertex.ctrlPointIdx = CtrlPointIdx;
-				// 이걸로 Vertex는 CtrlPointIdx를 갖게 됨.
-				// 아직 Normal, BiNormal, Tangent 남음
-
-				ReadNormal(mesh, CtrlPointIdx, vertexCounter, xmf3Tmp);
-				tmpVertex.xmf3Normal = xmf3Tmp;
-
-				ReadBinormal(mesh, CtrlPointIdx, vertexCounter, xmf3Tmp);
-				tmpVertex.xmf3BiNormal = xmf3Tmp;
-
-				ReadTangent(mesh, CtrlPointIdx, vertexCounter, xmf3Tmp);
-				tmpVertex.xmf3Tangent = xmf3Tmp;
-
-				tmpMesh.m_VertexList.push_back(tmpVertex);
-				vertexCounter++;
-			}
-		}
-
-
-
-	}
-}
-
-
-
-
-
-void GetMeshDataRec(FbxNode* pNode) {
-	int meshCount;
-	FbxMesh* mesh = pNode->GetMesh();
-	if (NULL != mesh) {
-
-		int nControlPoints	= mesh->GetControlPointsCount();
-		int nElementNormals = mesh->GetElementNormalCount();
-
-		FbxVector4* pControlPoints = mesh->GetControlPoints();
-		FbxVector4 fbxVector4;
-
-
-		int nPolygons = mesh->GetPolygonCount();
-		int meshIdx = meshes.size();
-		XMFLOAT3 p;
-
-		meshes.emplace_back(pNode->GetName());
-
-		for (int i = 0; i < nControlPoints; ++i) {
-			fbxVector4 = pControlPoints[i];
-			p.x = fbxVector4.mData[0];
-			p.y = fbxVector4.mData[1];
-			p.z = fbxVector4.mData[2];
-			meshes[meshIdx].controlPoints.emplace_back(p);
-		}
-
-		int nPolygon = pMesh->GetPolygonCount();
-		for (int i = 0, nIdx = 0; i < nPolygons; ++i) {
-			FbxVector4 fbxVector4;
-			int nPolygonSize = pMesh->GetPolygonSize(i);
-			for (int j = 0; j < nPolygonSize; ++j) {
-				int nControlPointIdx = pMesh->GetPolygonVertex(i, j);
-				meshes[meshIdx].polygonVertexIndex.push_back(nControlPointIdx);
-			}
-		}
-	}
-	for (meshCount = 0; meshCount < pNode->GetChildCount(); meshCount++)
-	{
-		GetMeshDataRec(pNode->GetChild(meshCount));
-	}
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const char * SAMPLE_FILENAME = "test_0429_015_Character";
+const char * SAMPLE_FILENAME = "test_0530_016_Character";
 
 
 int main(int argc, char** argv)
@@ -654,23 +686,23 @@ int main(int argc, char** argv)
 	FBXSDK_printf("\n\nFile: %s\n\n", lFileInput.Buffer());
 	lResult = LoadScene(lSdkManager, lScene, lFileInput.Buffer());
 
-	AnimationData(lScene);
 
+	//DisplayMesh();
+
+	AnimationData(lScene);
 	RecFollowChildNode(lScene->GetRootNode(), MakeBoneDataTest);
 	RecFollowChildNode(lScene->GetRootNode(), MakeParent);
-
 	MakeToRootTransform();
- 
-	//DisplayAllBones();
-
 	FbxString lFileOutput;
-
 	lFileOutput += lFilePath;
 	lFileOutput += "_anim.dat";
+	ExportAnimFile(lFileOutput, "PlayerIdle");
 
-	ExportFile(lFileOutput, "PlayerIdle");
-
-	std::cout << g_KeyTime.size() << "\n";
+	RecMakeMesh(lScene->GetRootNode());
+	FbxString meshFileName;
+	meshFileName += lFilePath;
+	meshFileName += "_mesh.dat";
+	ExportMeshFile(meshFileName, "PlayerCharacter");
 
     DestroySdkObjects(lSdkManager, lResult);
 

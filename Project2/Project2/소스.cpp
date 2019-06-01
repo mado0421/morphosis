@@ -74,13 +74,92 @@ private:
 	double*		m_KeyTime;
 };
 
+struct CtrlPoint {
+	XMFLOAT3	xmf3Position;
+	XMINT4		xmi4BoneIdx;
+	XMFLOAT4	xmf4BoneWeight;
+
+	CtrlPoint()
+		: xmi4BoneIdx(0, 0, 0, 0)
+		, xmf4BoneWeight(0, 0, 0, 0)
+	{}
+};
+struct Vertex {
+	int			ctrlPointIdx;
+	XMFLOAT3	xmf3Normal;
+	XMFLOAT3	xmf3BiNormal;
+	XMFLOAT3	xmf3Tangent;
+	XMFLOAT2	xmf2UV;
+};
+
+struct MeshData {
+	std::string m_MeshName;
+	CtrlPoint*	m_CtrlPointList;
+	Vertex*		m_VertexList;
+
+	int			m_nCtrlPointList;
+	int			m_nVertexList;
+};
+
+struct ModelData {
+public:
+	void ImportFile(const char* fileName) {
+		std::ifstream in;
+
+		in.open(fileName, std::ios::in | std::ios::binary);
+		char ModelName[32];
+		in.read((char*)&ModelName, sizeof(ModelName));
+		m_ModelName = ModelName;
+
+		in.read((char*)&m_nMeshList, sizeof(int));
+		m_MeshList = new MeshData[m_nMeshList];
+
+		for (int i = 0; i < m_nMeshList; ++i) {
+			char name[32];
+			in.read((char*)name, sizeof(name));
+			m_MeshList[i].m_MeshName = name;
+
+			
+			in.read((char*)&m_MeshList[i].m_nCtrlPointList, sizeof(int));
+			m_MeshList[i].m_CtrlPointList = new CtrlPoint[m_MeshList[i].m_nCtrlPointList];
+
+			in.read((char*)m_MeshList[i].m_CtrlPointList, sizeof(CtrlPoint) * m_MeshList[i].m_nCtrlPointList);
+
+			in.read((char*)&m_MeshList[i].m_nVertexList, sizeof(int));
+			m_MeshList[i].m_VertexList = new Vertex[m_MeshList[i].m_nVertexList];
+
+			in.read((char*)m_MeshList[i].m_VertexList, sizeof(Vertex) * m_MeshList[i].m_nVertexList);
+		}
+	}
+	void Display() {
+		std::cout << m_ModelName << "\n";
+
+		for (int i = 0; i < m_nMeshList; ++i) {
+			std::cout << m_MeshList[i].m_MeshName << "\n";
+		}
+	}
+
+
+private:
+	std::string m_ModelName;
+
+	MeshData*	m_MeshList;
+	int			m_nMeshList;
+};
+
+//test_0530_016_Character_mesh.dat
 
 int main()
 {
 	AnimData a;
 
-	a.ImportFile("test_0429_015_Character_anim.dat");
+	a.ImportFile("test_0530_016_Character_anim.dat");
 	a.Display();
+
+	ModelData aa;
+
+	aa.ImportFile("test_0530_016_Character_mesh.dat");
+	aa.Display();
 
 	return 0;
 }

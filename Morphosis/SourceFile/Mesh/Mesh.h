@@ -1,5 +1,6 @@
 #pragma once
-#include "Material.h"
+#include "stdafx.h"
+#include "Material/Material.h"
 #include "FBXData.h"
 
 
@@ -238,6 +239,7 @@ namespace MeshTest {
 }
 
 class AnimationMesh;
+struct ImportMeshData;
 
 class CAnimMesh : public CMesh {
 public:
@@ -280,6 +282,7 @@ public:
 	}
 
 	CAnimMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, AnimationMesh& m);
+	CAnimMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ImportMeshData& m);
 	virtual void Render(ID3D12GraphicsCommandList * pd3dCommandList)
 	{
 		pd3dCommandList->IASetPrimitiveTopology(primitiveTopology);
@@ -310,3 +313,61 @@ private:
 	UINT nVertices = 0;
 };
 
+class CBoneTestMesh : public CMesh {
+public:
+	CBoneTestMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList) : CMesh(pd3dDevice, pd3dCommandList) {
+		UINT nStride = sizeof(CVertex);
+		nVertices = 6;
+
+		XMFLOAT3 pos[6];
+		pos[0] = XMFLOAT3(0, 1, 0);
+		pos[1] = XMFLOAT3(0, -1, 0);
+		pos[2] = XMFLOAT3(1, 0, 0);
+		pos[3] = XMFLOAT3(0, 0, 1);
+		pos[4] = XMFLOAT3(0, 0, -1);
+		pos[5] = XMFLOAT3(1, 0, 0);
+
+		CVertex* vertex = new CVertex[6];
+
+		for (int i = 0; i < 6; ++i) 
+			vertex[i].m_xmf3Position = pos[i];
+		
+		pVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
+			vertex, nStride * nVertices,
+			D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+			&pVertexUploadBuffer);
+
+		vertexBufferView.BufferLocation = pVertexBuffer->GetGPUVirtualAddress();
+		vertexBufferView.StrideInBytes = nStride;
+		vertexBufferView.SizeInBytes = nStride * nVertices;
+	}
+	virtual void Render(ID3D12GraphicsCommandList * pd3dCommandList)
+	{
+		pd3dCommandList->IASetPrimitiveTopology(primitiveTopology);
+		pd3dCommandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+		if (pIndexBuffer)
+		{
+			pd3dCommandList->IASetIndexBuffer(&indexBufferView);
+			pd3dCommandList->DrawIndexedInstanced(nIndices, 1, 0, 0, 0);
+		}
+		else
+		{
+			pd3dCommandList->DrawInstanced(nVertices, 1, 0, 0);
+		}
+	}
+
+private:
+	ID3D12Resource					*pVertexBuffer = NULL;
+	ID3D12Resource					*pVertexUploadBuffer = NULL;
+
+	ID3D12Resource					*pIndexBuffer = NULL;
+	ID3D12Resource					*pIndexUploadBuffer = NULL;
+
+	D3D12_VERTEX_BUFFER_VIEW		vertexBufferView;
+	D3D12_INDEX_BUFFER_VIEW			indexBufferView;
+
+	D3D12_PRIMITIVE_TOPOLOGY		primitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+
+	UINT nIndices = 0;
+	UINT nVertices = 0;
+};

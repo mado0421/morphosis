@@ -1,6 +1,8 @@
 #include "stdafx.h"
-#include "Framework.h"
+#include "Framework/Framework.h"
 #include "Scene.h"
+#include "Importer/Importer.h"
+
 
 #define MOUSE_XSPEED 10
 #define MOVE_SPEED 1.5
@@ -195,18 +197,19 @@ void CGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLi
 	// Create ObjectMng 
 	//===================================================================================
 
-	m_pObjectMng = new ObjectManager();
+	//m_pObjectMng = new ObjectManager();
 
 	//===================================================================================
 	// Descriptor Heap
 	//===================================================================================
 
-	int nObjects = m_pObjectMng->GetNumTotalObjects();
+	//int nObjects = m_pObjectMng->GetNumTotalObjects();
 		//= m_nObjCollTerrain
 		//+ m_nObjProp
 		//+ m_nObjRenderTerrain
 		//+ m_nObjProjectile
-		//+ m_nObjPlayer;
+		//+ m_nObjPlayer;]
+	int nObjects = 0;
 	int nMaxBone = 64;
 	int nMaxMat = 64;
 	int nMaxLight = 64;
@@ -225,7 +228,7 @@ void CGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLi
 	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (nDescriptors - nSRVForTextrue));
 	m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (nDescriptors - nSRVForTextrue));
 
-	m_pObjectMng->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr);
+	//m_pObjectMng->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr);
 
 	//===================================================================================
 	// Textures
@@ -245,7 +248,7 @@ void CGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLi
 		textures[i] = new CTexture(RESOURCE_TEXTURE2D);
 		textures[i]->LoadTextureFromFile(pd3dDevice, pd3dCommandList, text[i]);
 		CreateShaderResourceViews(pd3dDevice, pd3dCommandList, textures[i], GS::RootParameter::TEXTURE, false);
-		m_pObjectMng->AddTexture(textures[i]);
+		//m_pObjectMng->AddTexture(textures[i]);
 	}
 
 	//===================================================================================
@@ -255,7 +258,7 @@ void CGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLi
 	int nMeshes = 1;
 
 	CTestMesh *pMesh = new CTestMesh(pd3dDevice, pd3dCommandList, 100.0f);
-	m_pObjectMng->AddMesh(pMesh);
+	//m_pObjectMng->AddMesh(pMesh);
 
 	//===================================================================================
 	// Create CB Objects
@@ -282,9 +285,9 @@ void CGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLi
 	//	pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
 	//}
 
-	m_pObjectMng->Initialize(pd3dDevice, pd3dCommandList, m_d3dCbvCPUDescriptorStartHandle);
+	//m_pObjectMng->Initialize(pd3dDevice, pd3dCommandList, m_d3dCbvCPUDescriptorStartHandle);
 
-	m_pCamera->SetTarget(m_pObjectMng->GetTarget(0));
+	//m_pCamera->SetTarget(m_pObjectMng->GetTarget(0));
 }
 
 void CGroundScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
@@ -298,18 +301,18 @@ void CGroundScene::Render(ID3D12GraphicsCommandList *pd3dCommandList)
 
 	if (m_ppPSO) pd3dCommandList->SetPipelineState(m_ppPSO[0]);
 
-	m_pObjectMng->RenderTerrainMeshes(pd3dCommandList);
-	m_pObjectMng->RenderCollideObjects(pd3dCommandList);
-	m_pObjectMng->RenderMovingObjects(pd3dCommandList);
-	m_pObjectMng->RenderParticles(pd3dCommandList);
-	m_pObjectMng->RenderEffects(pd3dCommandList);
+	//m_pObjectMng->RenderTerrainMeshes(pd3dCommandList);
+	//m_pObjectMng->RenderCollideObjects(pd3dCommandList);
+	//m_pObjectMng->RenderMovingObjects(pd3dCommandList);
+	//m_pObjectMng->RenderParticles(pd3dCommandList);
+	//m_pObjectMng->RenderEffects(pd3dCommandList);
 }
 
 void CGroundScene::Update(float fTimeElapsed)
 {
 	// 여기서 GPU에서 사용할 변수들 갱신을 해줘야 한다!
 	// 카메라, 오브젝트 등등
-	m_pObjectMng->Update(fTimeElapsed);
+	//m_pObjectMng->Update(fTimeElapsed);
 }
 
 ID3D12RootSignature * CGroundScene::CreateRootSignature(ID3D12Device * pd3dDevice)
@@ -1547,18 +1550,6 @@ ID3D12RootSignature * CTestGroundScene::CreateRootSignature(ID3D12Device * pd3dD
 
 void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext)
 {
-	//CGroundScene::Initialize(pd3dDevice, pd3dCommandList, pContext);
-
-/****************************************************************************************
-
-
-
-****************************************************************************************/
-
-
-
-
-
 	m_pFramework = (CFramework*)pContext;
 	m_pd3dDevice = pd3dDevice;
 	m_pd3dCommandList = pd3dCommandList;
@@ -1569,17 +1560,12 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 
 	m_pd3dGraphicsRootSignature = CreateRootSignature(pd3dDevice);
 
-	pso = new ID3D12PipelineState*[1];
-
-	CPSO ** tempPso = new CPSO*[1];
-	tempPso[0] = new CAnimatedPSO();
-	tempPso[0]->Initialize(pd3dDevice, m_pd3dGraphicsRootSignature);
-	pso[0] = tempPso[0]->GetPipelineState();
+	MakePSO();
 
 
 	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
 
-	Importer tmpImporter;
+	//Importer tmpImporter;
 
 
 
@@ -1626,9 +1612,14 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 	// 오브젝트 내용 채우기
 	for (int i = 0; i < nPlayers; i++) {
 
+		CImporter importer;
 		CAnimationPlayerObject *pObj = new CAnimationPlayerObject();
+
+		importer.ImportFile("test_0530_016_Character", textures[0], pd3dDevice, pd3dCommandList, *pObj);
+
+
 		XMFLOAT4 orientation = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);	//w가 1.0f 아니면 터짐
-		tmpImporter.ImportFile(pd3dDevice, pd3dCommandList, textures[0], "Assets/test_0429_015_Character", *pObj);
+		//tmpImporter.ImportFile(pd3dDevice, pd3dCommandList, textures[0], "Assets/test_0429_015_Character", *pObj);
 		//tmpImporter.ImportFile(pd3dDevice, pd3dCommandList, textures[0], "Assets/TestAnimation3.dat", *pObj);
 
 		//tmpImporter.ImportFile(pd3dDevice, pd3dCommandList, textures[0], "Assets/TestAnimation4test_y-up.dat", *pObj);
@@ -1705,7 +1696,7 @@ void CTestGroundScene::Update(float fTimeElapsed)
 
 	XMMATRIX *pbMappedcbObject = new XMMATRIX[64];
 	for (int i = 0; i < 64; ++i) {
-		if(ppPlayers[0]->anim->m_AnimData.m_nBoneList > i)
+		if(ppPlayers[0]->anim->m_AnimData->m_nBoneList > i)
 			pbMappedcbObject[i] = XMMatrixTranspose(ppPlayers[0]->anim->GetFinalMatrix(i, time));
 		else pbMappedcbObject[i] = XMMatrixIdentity();
 	}
@@ -1738,4 +1729,14 @@ void CTestGroundScene::OnProcessingMouseMessage()
 
 void CTestGroundScene::OnProcessingKeyboardMessage()
 {
+}
+
+void CTestGroundScene::MakePSO()
+{
+	pso = new ID3D12PipelineState*[1];
+
+	CPSO ** tempPso = new CPSO*[1];
+	tempPso[0] = new CAnimatedPSO();
+	tempPso[0]->Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
+	pso[0] = tempPso[0]->GetPipelineState();
 }

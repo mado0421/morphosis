@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Camera.h"
-#include "Object.h"
+#include "../Object/Object.h"
 
 
 CCamera::CCamera()

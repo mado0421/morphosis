@@ -95,7 +95,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\FBX\FBX SDK\2019.0\lib\vs2015\x64\debug;C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\FBX\FBX SDK\2019.0\lib\vs2015;C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\FBX\FBX SDK\2019.0\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libfbxsdk.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>

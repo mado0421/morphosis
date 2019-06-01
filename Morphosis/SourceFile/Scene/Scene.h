@@ -1,6 +1,6 @@
 #pragma once
-#include "Object.h"
-#include "Camera.h"
+#include "../Object/Object.h"
+#include "../Camera/Camera.h"
 #include "LevelData.h"
 #include "PSO.h"
 
@@ -122,7 +122,7 @@ protected:
 
 	CLevelData				*m_pLevelData				= nullptr;
 	ID3D12PipelineState		**m_ppPSO					= nullptr;
-	ObjectManager			*m_pObjectMng				= nullptr;
+	//ObjectManager			*m_pObjectMng				= nullptr;
 
 	//CCollideObejct			**m_ppObjCollTerrain		= nullptr;
 	//CCollideObejct			**m_ppObjProp				= nullptr;
