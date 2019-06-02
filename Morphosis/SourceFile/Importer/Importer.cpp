@@ -30,3 +30,17 @@ void CImporter::ImportFile(const char * fileName, CTexture * pTexture, ID3D12Dev
 	obj.anim->Init(animData);
 
 }
+
+void CImporter::ImportFile(const char * fileName, AnimationData* AnimData)
+{
+	string filePath("Assets/");
+	filePath += fileName;
+
+	string animDataName = filePath;
+	animDataName += "_anim.dat";
+	ImportAnimData animData;
+	animData.ImportFile(animDataName.c_str());
+
+	//AnimData = new AnimationData();
+	AnimData->Init(animData);
+}

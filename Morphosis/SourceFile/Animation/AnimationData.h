@@ -139,10 +139,12 @@ public:
 	//}
 	XMMATRIX	GetFinalMatrix(int boneIdx, float time);
 
+	
+	XMMATRIX	GetInterpolatedToRootMtx(int boneIdx, float time);
+
 private:
 	XMMATRIX	GetInterpolatedLocalMatrix(int boneIdx, float time);
 
-	XMMATRIX GetInterpolatedToRootMtx(int boneIdx, float time);
 
 
 	int GetPrevIdx(float time);

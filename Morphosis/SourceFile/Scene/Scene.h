@@ -327,6 +327,8 @@ public:
 	virtual void ReleaseObjectBuffers();
 };
 
+constexpr int g_NumAnimationBone = 64;
+
 class CTestGroundScene : public CGroundScene {
 public:
 	virtual ID3D12RootSignature *CreateRootSignature(ID3D12Device *pd3dDevice);
@@ -340,6 +342,13 @@ public:
 	virtual void OnProcessingKeyboardMessage();
 
 private:
+	virtual void MakePSO();
+	virtual void CreateDescriptorHeap();
+	virtual void CreateConstantView();
+
+
+
+private:
 	bool isTimeflow = true;
 
 	ID3D12PipelineState ** pso							= NULL;
@@ -347,8 +356,19 @@ private:
 	XMMATRIX			* pCBMappedMatrix				= NULL;
 	//Anim				animData;
 
-	CAnimationPlayerObject		**ppPlayers = NULL;
-	int					nPlayers = 0;
+	//CAnimationPlayerObject		**ppPlayers = NULL;
+	//int					nPlayers = 0;
+	float				ttt = 0.0f;
 
-	float ttt = 0.0f;
+
+
+private:
+	CObject**	m_ppObjects = NULL;
+	int			m_nObjects = 0;
+
+	int			m_nPlayers = 0;
+
+	int			m_nSRV = 1;
+	
+
 };

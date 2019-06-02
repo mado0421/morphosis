@@ -171,7 +171,9 @@ private:
 };
 
 class CAnimationPlayerObject;
+class AnimationData;
 class CTexture;
+//class CMesh;
 
 class CImporter {
 
@@ -188,4 +190,10 @@ public:
 		ID3D12Device *pd3dDevice,
 		ID3D12GraphicsCommandList *pd3dCommandList,
 		CAnimationPlayerObject& obj);
+	void ImportFile(
+		const char* fileName,
+		AnimationData* animData);
+	//void ImportFile(
+	//	const char* fileName,
+	//	CMesh* mesh);
 };

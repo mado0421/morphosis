@@ -1,11 +1,10 @@
 #pragma once
-#pragma once
 
 #define ASPECT_RATIO				(float(FRAME_BUFFER_WIDTH) / float(FRAME_BUFFER_HEIGHT))
 #define CAM_MOVE_SPEED		3
 #define CAM_ROTATE_SPEED	3
 
-class Object;
+class CObject;
 
 struct VS_CB_CAMERA_INFO
 {
@@ -80,7 +79,7 @@ public:
 	virtual void SetLookAt(XMFLOAT3& xmf3LookAt) { }
 
 	virtual void SetTarget(void *target) {}
-	virtual Object* GetTarget() { return nullptr; }
+	virtual CObject* GetTarget() { return nullptr; }
 };
 
 class CBoardCamera : public CCamera
@@ -98,7 +97,7 @@ public:
 class CFollowCamera : public CCamera
 {
 private:
-	Object * m_pTarget = NULL;
+	CObject * m_pTarget = NULL;
 
 public:
 	CFollowCamera();
@@ -106,7 +105,7 @@ public:
 
 public:
 	virtual void SetTarget(void *target);
-	virtual Object* GetTarget();
+	virtual CObject* GetTarget();
 	virtual void Update(float fTimeElapsed);
 	virtual void SetLookAt(XMFLOAT3& xmf3LookAt);
 };

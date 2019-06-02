@@ -197,12 +197,12 @@ D3D12_INPUT_LAYOUT_DESC CTexturedIlluminatedPSO::CreateInputLayout()
 
 D3D12_SHADER_BYTECODE CTexturedIlluminatedPSO::CreateVertexShader(ID3DBlob ** ppd3dShaderBlob)
 {
-	return(CompileShaderFromFile(L"VertexShader.hlsl", "VSTexturedIlluminated", "vs_5_1", ppd3dShaderBlob));
+	return(CompileShaderFromFile(L"Hlsl/VertexShader.hlsl", "VSDefaultShader", "vs_5_1", ppd3dShaderBlob));
 }
 
 D3D12_SHADER_BYTECODE CTexturedIlluminatedPSO::CreatePixelShader(ID3DBlob ** ppd3dShaderBlob)
 {
-	return(CompileShaderFromFile(L"PixelShader.hlsl", "PSTexturedIlluminated", "ps_5_1", ppd3dShaderBlob));
+	return(CompileShaderFromFile(L"Hlsl/PixelShader.hlsl", "PSDefaultShader", "ps_5_1", ppd3dShaderBlob));
 
 }
 
