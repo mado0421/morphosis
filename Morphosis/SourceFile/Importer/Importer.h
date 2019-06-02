@@ -149,12 +149,20 @@ public:
 
 			in.read((char*)m_MeshList[i].m_VertexList, sizeof(ImportVertex) * m_MeshList[i].m_nVertexList);
 		}
+
+		ChangeZSign();
 	}
 	void Display() {
 		std::cout << m_ModelName.c_str() << "\n";
 
 		for (int i = 0; i < m_nMeshList; ++i) {
 			std::cout << m_MeshList[i].m_MeshName.c_str() << "\n";
+		}
+	}
+	void ChangeZSign() {
+		for (int i = 0; i < m_nMeshList; ++i) {
+			for (int j = 0; j < m_MeshList[i].m_nCtrlPointList; ++j)
+				m_MeshList[i].m_CtrlPointList[j].xmf3Position.z *= -1;
 		}
 	}
 

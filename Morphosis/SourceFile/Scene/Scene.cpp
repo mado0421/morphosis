@@ -5,7 +5,7 @@
 
 
 #define MOUSE_XSPEED 10
-#define MOVE_SPEED 1.5
+#define MOVE_SPEED 0.15
 #define ROTATE_SPEED 300
 #define PO_PER_PLAYER 16
 
@@ -1605,10 +1605,13 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 		CObject* o = new CObject;
 
 		XMFLOAT4X4 mat;
-		XMVECTOR det = XMMatrixDeterminant(XMLoadFloat4x4(animData->m_AnimData->m_BoneList[i - m_nPlayers].m_pToRootTransforms));
-		XMStoreFloat4x4(&mat, XMMatrixInverse(&det, XMLoadFloat4x4(animData->m_AnimData->m_BoneList[i - m_nPlayers].m_pToRootTransforms)));
+		//XMVECTOR det = XMMatrixDeterminant(XMLoadFloat4x4(animData->m_AnimData->m_BoneList[i - m_nPlayers].m_pToRootTransforms));
+		//XMStoreFloat4x4(&mat, XMMatrixInverse(&det, XMLoadFloat4x4(animData->m_AnimData->m_BoneList[i - m_nPlayers].m_pToRootTransforms)));
+		mat = animData->m_AnimData->m_BoneList[i - m_nPlayers].m_GlobalTransform;
+	/*	XMVECTOR det = XMMatrixDeterminant(XMLoadFloat4x4(&animData->m_AnimData->m_BoneList[i - m_nPlayers].m_GlobalTransform));
+		XMStoreFloat4x4(&mat, XMMatrixInverse(&det, XMLoadFloat4x4(&animData->m_AnimData->m_BoneList[i - m_nPlayers].m_GlobalTransform)));*/
 
-		CMesh* mesh = new CTestMesh(m_pd3dDevice, m_pd3dCommandList, 0.3f);
+		CMesh* mesh = new CTestMesh(m_pd3dDevice, m_pd3dCommandList, 0.6f);
 		CModel *model = new CModel();
 		model->SetTexture(textures[0]);
 		model->AddMesh(mesh);
@@ -1644,10 +1647,15 @@ void CTestGroundScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppObjects[i]->m_xmf4x4World)));
 	}
 
-	//pd3dCommandList->SetPipelineState(pso[0]);
-	//m_ppObjects[0]->Render(pd3dCommandList, m_pCamera);
-	pd3dCommandList->SetPipelineState(pso[1]);
-	for (int i = m_nPlayers; i < m_nObjects; ++i) m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
+	pd3dCommandList->SetPipelineState(pso[0]);
+	if (!m_bShowBones) {
+		pd3dCommandList->SetPipelineState(pso[0]);
+		m_ppObjects[0]->Render(pd3dCommandList, m_pCamera);
+	}
+	if (m_bShowBones) {
+		pd3dCommandList->SetPipelineState(pso[1]);
+		for (int i = m_nPlayers; i < m_nObjects; ++i) m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
+	}
 }
 
 void CTestGroundScene::Update(float fTimeElapsed)
@@ -1663,10 +1671,14 @@ void CTestGroundScene::Update(float fTimeElapsed)
 	XMMATRIX *pbMappedcbObject = new XMMATRIX[64];
 	for (int i = 0; i < m_nPlayers; ++i) {
 		CAnimationPlayerObject* player = dynamic_cast<CAnimationPlayerObject*>(m_ppObjects[i]);
+		XMVECTOR det;
 		if (player) {
 			for (int j = 0; j < g_NumAnimationBone; ++j) {
-				if (player->anim->m_AnimData->m_nBoneList > j)
-					pbMappedcbObject[j] = XMMatrixTranspose(player->anim->GetFinalMatrix(j, time));
+				if (player->anim->m_AnimData->m_nBoneList > j) {
+					//det = XMMatrixDeterminant(player->anim->GetInterpolatedToRootMtx(j, time));
+					//pbMappedcbObject[j] = XMMatrixInverse(&det, player->anim->GetInterpolatedToRootMtx(j, time));
+					pbMappedcbObject[j] = XMMatrixTranspose( player->anim->GetFinalMatrix(j, time));
+				}
 				else
 					pbMappedcbObject[j] = XMMatrixIdentity();
 			}
@@ -1675,11 +1687,23 @@ void CTestGroundScene::Update(float fTimeElapsed)
 
 	// 다른 본들은 추가로 위치를 바꿔줘야 함.
 	CAnimationPlayerObject* player = dynamic_cast<CAnimationPlayerObject*>(m_ppObjects[0]);
+	XMFLOAT4X4 mat;
+	XMVECTOR det;
 	for (int i = m_nPlayers; i < m_nObjects; ++i) {
-		XMFLOAT4X4 mat;
-		XMVECTOR det = XMMatrixDeterminant(player->anim->GetInterpolatedToRootMtx(i - 1, time));
-		XMStoreFloat4x4(&mat, XMMatrixInverse(&det, player->anim->GetInterpolatedToRootMtx(i - 1, time)));
-
+		if (OFFSET == m_ShowBonesMode) {
+			XMStoreFloat4x4(&mat, player->anim->GetOffset(i - 1));
+		}
+		else if (OFFSETINV == m_ShowBonesMode) {
+			det = XMMatrixDeterminant(player->anim->GetOffset(i - 1));
+			XMStoreFloat4x4(&mat, XMMatrixInverse(&det, player->anim->GetOffset(i-1)));
+		}
+		else if (TOROOT == m_ShowBonesMode) {
+			XMStoreFloat4x4(&mat, player->anim->GetInterpolatedToRootMtx(i - 1, time));
+		}
+		else if (TOROOTINV == m_ShowBonesMode) {
+			det = XMMatrixDeterminant(player->anim->GetInterpolatedToRootMtx(i - 1, time));
+			XMStoreFloat4x4(&mat, XMMatrixInverse(&det, player->anim->GetInterpolatedToRootMtx(i - 1, time)));
+		}
 		m_ppObjects[i]->m_xmf4x4World = mat;
 	}
 
@@ -1697,16 +1721,33 @@ void CTestGroundScene::ProcessInput(UCHAR * pKeysBuffer)
 	XMFLOAT3 xmf3temp;
 	CAnimationPlayerObject* player = dynamic_cast<CAnimationPlayerObject*>(m_ppObjects[0]);
 
-	if (pKeysBuffer[KEY::W] & 0xF0) { xmf3temp = player->GetLook();		player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, MOVE_SPEED)); }
-	if (pKeysBuffer[KEY::A] & 0xF0) { xmf3temp = player->GetRight();	player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -MOVE_SPEED)); }
-	if (pKeysBuffer[KEY::S] & 0xF0) { xmf3temp = player->GetLook();		player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -MOVE_SPEED)); }
-	if (pKeysBuffer[KEY::D] & 0xF0) { xmf3temp = player->GetRight();	player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, MOVE_SPEED)); }
-	if (pKeysBuffer[KEY::Z] & 0xF0) { xmf3temp = player->GetUp();		player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -MOVE_SPEED)); }
-	if (pKeysBuffer[KEY::X] & 0xF0) { xmf3temp = player->GetUp();		player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, MOVE_SPEED)); }
-	if (pKeysBuffer[KEY::Q] & 0xF0) {player->AddRotateAngle(XMFLOAT3{ 0, -ROTATE_SPEED, 0 }); }
-	if (pKeysBuffer[KEY::E] & 0xF0) {player->AddRotateAngle(XMFLOAT3{ 0, ROTATE_SPEED, 0 }); }
+	//if (pKeysBuffer[KEY::W] & 0xF0) { xmf3temp = player->GetLook();		player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, MOVE_SPEED)); }
+	//if (pKeysBuffer[KEY::A] & 0xF0) { xmf3temp = player->GetRight();	player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -MOVE_SPEED)); }
+	//if (pKeysBuffer[KEY::S] & 0xF0) { xmf3temp = player->GetLook();		player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -MOVE_SPEED)); }
+	//if (pKeysBuffer[KEY::D] & 0xF0) { xmf3temp = player->GetRight();	player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, MOVE_SPEED)); }
+	//if (pKeysBuffer[KEY::Z] & 0xF0) { xmf3temp = player->GetUp();		player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -MOVE_SPEED)); }
+	//if (pKeysBuffer[KEY::X] & 0xF0) { xmf3temp = player->GetUp();		player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, MOVE_SPEED)); }
+	//if (pKeysBuffer[KEY::Q] & 0xF0) {player->AddRotateAngle(XMFLOAT3{ 0, -ROTATE_SPEED, 0 }); }
+	//if (pKeysBuffer[KEY::E] & 0xF0) {player->AddRotateAngle(XMFLOAT3{ 0, ROTATE_SPEED, 0 }); }
+	
+	if (pKeysBuffer[KEY::W] & 0xF0) { m_pCamera->Move(Vector3::ScalarProduct(m_pCamera->GetLook(), MOVE_SPEED, false)); }
+	if (pKeysBuffer[KEY::A] & 0xF0) { m_pCamera->Move(Vector3::ScalarProduct(m_pCamera->GetRight(), -MOVE_SPEED, false)); }
+	if (pKeysBuffer[KEY::S] & 0xF0) { m_pCamera->Move(Vector3::ScalarProduct(m_pCamera->GetLook(), -MOVE_SPEED, false)); }
+	if (pKeysBuffer[KEY::D] & 0xF0) { m_pCamera->Move(Vector3::ScalarProduct(m_pCamera->GetRight(), MOVE_SPEED, false)); }
+	if (pKeysBuffer[KEY::Z] & 0xF0) { m_pCamera->Move(Vector3::ScalarProduct(m_pCamera->GetUp(), -MOVE_SPEED, false)); }
+	if (pKeysBuffer[KEY::X] & 0xF0) { m_pCamera->Move(Vector3::ScalarProduct(m_pCamera->GetUp(), MOVE_SPEED, false)); }
+	if (pKeysBuffer[KEY::Q] & 0xF0) { m_pCamera->Rotate(0, -MOVE_SPEED, 0); }
+	if (pKeysBuffer[KEY::E] & 0xF0) { m_pCamera->Rotate(0, MOVE_SPEED, 0); }
 
 	if (pKeysBuffer[VK_SPACE] & 0xF0) if (isTimeflow) isTimeflow = false; else isTimeflow = true;
+	if (pKeysBuffer[KEY::_5] & 0xF0) m_bShowBones = true;
+	if (pKeysBuffer[KEY::_6] & 0xF0) m_bShowBones = false;
+
+	if (pKeysBuffer[KEY::_1] & 0xF0) m_ShowBonesMode = OFFSET;
+	if (pKeysBuffer[KEY::_2] & 0xF0) m_ShowBonesMode = OFFSETINV;
+	if (pKeysBuffer[KEY::_3] & 0xF0) m_ShowBonesMode = TOROOT;
+	if (pKeysBuffer[KEY::_4] & 0xF0) m_ShowBonesMode = TOROOTINV;
+
 	if (pKeysBuffer[VK_LEFT] & 0xF0) if (!isTimeflow) ttt -= 1;
 	if (pKeysBuffer[VK_RIGHT] & 0xF0) if (!isTimeflow) ttt += 1;
 }

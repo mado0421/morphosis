@@ -370,5 +370,14 @@ private:
 
 	int			m_nSRV = 1;
 	
+	bool		m_bShowBones = false;
 
+	enum {
+		OFFSET,
+		OFFSETINV,
+		TOROOT,
+		TOROOTINV
+	};
+
+	int			m_ShowBonesMode = OFFSET;
 };

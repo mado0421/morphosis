@@ -9,8 +9,30 @@ void AnimationData::Init(ImportAnimData & animData)
 
 XMMATRIX AnimationData::GetFinalMatrix(int boneIdx, float time)
 {
-	//return XMMatrixMultiply(XMLoadFloat4x4(&m_bones[boneIdx].m_dressposeInv), XMLoadFloat4x4(&m_bones[boneIdx].m_toWorld));
-	return XMMatrixMultiply(XMLoadFloat4x4(&m_AnimData->m_BoneList[boneIdx].m_GlobalTransform), GetInterpolatedToRootMtx(boneIdx, time));
+	///return XMMatrixMultiply(XMLoadFloat4x4(&m_bones[boneIdx].m_dressposeInv), XMLoadFloat4x4(&m_bones[boneIdx].m_toWorld));
+	XMFLOAT4X4 mat;
+	XMVECTOR det;
+	XMMATRIX OffsetInv, ToRootInv;
+	det = XMMatrixDeterminant(XMLoadFloat4x4(&m_AnimData->m_BoneList[boneIdx].m_GlobalTransform));
+	OffsetInv = XMMatrixInverse(&det, XMLoadFloat4x4(&m_AnimData->m_BoneList[boneIdx].m_GlobalTransform));
+
+	///XMFLOAT3 pos = Vector3::PosFromMtx(m_AnimData->m_BoneList[boneIdx].m_GlobalTransform);
+	///OffsetInv = XMMatrixTranslation(-pos.x, -pos.y, -pos.z);
+	///OffsetInv = XMMatrixTranslation(0, 1000, 0);
+	///OffsetInv = XMMatrixRotationRollPitchYaw(10, 10, 10);
+
+
+	ToRootInv = GetInterpolatedToRootMtx(boneIdx, time);
+
+	det = XMMatrixDeterminant(ToRootInv);
+	ToRootInv = XMMatrixInverse(&det, ToRootInv);
+
+	///return OffsetInv;
+	///return XMMatrixIdentity();
+	return XMMatrixMultiply(OffsetInv, ToRootInv);
+	///return XMMatrixMultiply(ToRootInv, OffsetInv);
+
+	///return XMMatrixMultiply(XMLoadFloat4x4(&m_AnimData->m_BoneList[boneIdx].m_GlobalTransform), GetInterpolatedToRootMtx(boneIdx, time));
 
 }
 
@@ -75,6 +97,11 @@ XMMATRIX AnimationData::GetInterpolatedToRootMtx(int boneIdx, float time)
 
 	// return XMLoadFloat4x4(&result);
 	return XMLoadFloat4x4(&m_AnimData->m_BoneList[boneIdx].m_pToRootTransforms[PrevIdx]);
+}
+
+XMMATRIX AnimationData::GetOffset(int boneIdx)
+{
+	return XMLoadFloat4x4(&m_AnimData->m_BoneList[boneIdx].m_GlobalTransform);
 }
 
 int AnimationData::GetPrevIdx(float time)

@@ -141,6 +141,8 @@ public:
 
 	
 	XMMATRIX	GetInterpolatedToRootMtx(int boneIdx, float time);
+	XMMATRIX	GetOffset(int boneIdx);
+
 
 private:
 	XMMATRIX	GetInterpolatedLocalMatrix(int boneIdx, float time);
