@@ -371,6 +371,7 @@ private:
 	int			m_nSRV = 1;
 	
 	bool		m_bShowBones = false;
+	bool		m_bUploadAnimMtx = true;
 
 	enum {
 		OFFSET,
@@ -380,4 +381,5 @@ private:
 	};
 
 	int			m_ShowBonesMode = OFFSET;
+	
 };

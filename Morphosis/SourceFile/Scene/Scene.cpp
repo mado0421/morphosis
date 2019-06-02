@@ -1570,7 +1570,7 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 
 	CImporter importer;
 	AnimationData* animData = new AnimationData();
-	importer.ImportFile("test_0530_016_Character", animData);
+	importer.ImportFile("test_0602_018_SingleMesh_RunningAnimation_Character", animData);
 
 	m_nPlayers = 1;
 	m_nObjects += m_nPlayers;
@@ -1592,7 +1592,7 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 
 		CAnimationPlayerObject *pObj = new CAnimationPlayerObject();
 
-		importer.ImportFile("test_0530_016_Character", textures[0], pd3dDevice, pd3dCommandList, *pObj);
+		importer.ImportFile("test_0602_018_SingleMesh_RunningAnimation_Character", textures[0], pd3dDevice, pd3dCommandList, *pObj);
 
 		pObj->SetPosition(0.0f, 0.0f, i * 100.0f);
 		pObj->SetOOBB(XMFLOAT3(0.0f, 0.0f, i * 100.0f), XMFLOAT3(20.0f, 20.0f, 20.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -1674,7 +1674,7 @@ void CTestGroundScene::Update(float fTimeElapsed)
 		XMVECTOR det;
 		if (player) {
 			for (int j = 0; j < g_NumAnimationBone; ++j) {
-				if (player->anim->m_AnimData->m_nBoneList > j) {
+				if (player->anim->m_AnimData->m_nBoneList > j && m_bUploadAnimMtx) {
 					//det = XMMatrixDeterminant(player->anim->GetInterpolatedToRootMtx(j, time));
 					//pbMappedcbObject[j] = XMMatrixInverse(&det, player->anim->GetInterpolatedToRootMtx(j, time));
 					pbMappedcbObject[j] = XMMatrixTranspose( player->anim->GetFinalMatrix(j, time));
@@ -1742,6 +1742,8 @@ void CTestGroundScene::ProcessInput(UCHAR * pKeysBuffer)
 	if (pKeysBuffer[VK_SPACE] & 0xF0) if (isTimeflow) isTimeflow = false; else isTimeflow = true;
 	if (pKeysBuffer[KEY::_5] & 0xF0) m_bShowBones = true;
 	if (pKeysBuffer[KEY::_6] & 0xF0) m_bShowBones = false;
+	if (pKeysBuffer[KEY::_7] & 0xF0) m_bUploadAnimMtx = false;
+	if (pKeysBuffer[KEY::_8] & 0xF0) m_bUploadAnimMtx = true;
 
 	if (pKeysBuffer[KEY::_1] & 0xF0) m_ShowBonesMode = OFFSET;
 	if (pKeysBuffer[KEY::_2] & 0xF0) m_ShowBonesMode = OFFSETINV;

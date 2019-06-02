@@ -51,8 +51,9 @@ struct Bone {
 	FbxString	m_Name;
 	FbxNode*	m_Node		= NULL;
 	Bone*		m_Parent	= NULL;
+	bool		m_bIsBindPose = false;
 
-	FbxAMatrix	m_GlobalTransform;
+	FbxMatrix	m_GlobalTransform;
 
 	std::vector<FbxAMatrix> m_ToParentTransforms;
 	std::vector<FbxAMatrix> m_ToRootTransforms;
@@ -140,16 +141,48 @@ void AnimationCurve(FbxAnimCurve* curve) {
 MakeBone
 ***************************************************************************************/
 
+void MakeBinePoseMatrix(FbxScene* scene) {
+	int      i, j, k, lPoseCount;
+	FbxString  lName;
+
+	lPoseCount = scene->GetPoseCount();
+
+	for (i = 0; i < lPoseCount; i++)
+	{
+		FbxPose* lPose = scene->GetPose(i);
+		if (!lPose->IsBindPose()) continue;
+		for (j = 0; j < lPose->GetCount(); j++)
+		{
+			lName = lPose->GetNodeName(j).GetCurrentName();
+			for (auto p = g_BoneList.begin(); p != g_BoneList.end(); ++p) {
+				if (p->m_Name == lName) {
+					p->m_GlobalTransform = lPose->GetMatrix(j);
+					p->m_bIsBindPose = true;
+				}
+			}
+		}
+	}
+}
+void DeleteNotBindBone() {
+	for (auto p = g_BoneList.begin(); p != g_BoneList.end();) {
+		if (!p->m_bIsBindPose) {
+			p = g_BoneList.erase(p);
+		}
+		else ++p;
+	}
+}
+
+
 void MakeBoneDataTest(FbxNode* node) {
 	if (IsSkeletonNode(node)) {
 		Bone tmp;
 		tmp.m_Name = node->GetName();
 		tmp.m_Node = node;
 
-		FbxAMatrix mtx;
-		mtx = node->EvaluateGlobalTransform();
-		tmp.m_GlobalTransform = mtx;
-		mtx.SetIdentity();
+		//FbxAMatrix mtx;
+		//mtx = node->EvaluateGlobalTransform();
+		//tmp.m_GlobalTransform = mtx;
+		//mtx.SetIdentity();
 
 		//mtx = node->EvaluateLocalTransform();
 		//mtx = mtx.Inverse();
@@ -240,7 +273,7 @@ void DisplayAllBones() {
 	for (auto b = g_BoneList.begin(); b != g_BoneList.end(); ++b) {
 		std::cout << b->m_Name << "\n";
 
-		DisplayMatrix(b->m_GlobalTransform, "Offset");
+		//DisplayMatrix(b->m_GlobalTransform, "Offset");
 
 		std::cout << "\n";
 
@@ -577,6 +610,22 @@ void RecMakeMesh(FbxNode* node) {
 Export
 ***************************************************************************************/
 
+XMFLOAT4X4 MakeXMFloat4x4FromFbxMatrix(const FbxMatrix& fbxMtx) {
+	XMFLOAT4X4 xmf4x4Mtx;
+
+	for (int i = 0; i < 4; ++i)
+	{
+		FbxVector4 vec = fbxMtx.GetRow(i);
+
+		xmf4x4Mtx.m[i][0] = (float)vec[0];
+		xmf4x4Mtx.m[i][1] = (float)vec[1];
+		xmf4x4Mtx.m[i][2] = (float)vec[2];
+		xmf4x4Mtx.m[i][3] = (float)vec[3];
+	}
+
+	return xmf4x4Mtx;
+}
+
 XMFLOAT4X4 MakeXMFloat4x4FromFbxAMatrix(const FbxAMatrix& fbxMtx) {
 	XMFLOAT4X4 xmf4x4Mtx;
 
@@ -616,7 +665,7 @@ void ExportAnimFile(const char* fileName, const char* animName) {
 		strcpy_s(name, sizeof(name), g_BoneList[i].m_Name.Buffer());
 		out.write((char*)&name, sizeof(name));
 
-		XMFLOAT4X4 xmf4x4Temp = MakeXMFloat4x4FromFbxAMatrix(g_BoneList[i].m_GlobalTransform);
+		XMFLOAT4X4 xmf4x4Temp = MakeXMFloat4x4FromFbxMatrix(g_BoneList[i].m_GlobalTransform);
 		out.write((char*)&xmf4x4Temp, sizeof(XMFLOAT4X4));
 	}
 
@@ -665,7 +714,7 @@ void ExportMeshFile(const char* fileName, const char* modelName) {
 	out.close();
 }
 
-const char * SAMPLE_FILENAME = "test_0530_016_Character";
+const char * SAMPLE_FILENAME = "test_0602_018_SingleMesh_RunningAnimation_Character";
 
 
 int main(int argc, char** argv)
@@ -686,17 +735,20 @@ int main(int argc, char** argv)
 	FBXSDK_printf("\n\nFile: %s\n\n", lFileInput.Buffer());
 	lResult = LoadScene(lSdkManager, lScene, lFileInput.Buffer());
 
+	//DisplayPose(lScene);
 
-	//DisplayMesh();
+	////DisplayMesh();
 
 	AnimationData(lScene);
 	RecFollowChildNode(lScene->GetRootNode(), MakeBoneDataTest);
+	MakeBinePoseMatrix(lScene);
+	DeleteNotBindBone();
 	RecFollowChildNode(lScene->GetRootNode(), MakeParent);
 	MakeToRootTransform();
 	FbxString lFileOutput;
 	lFileOutput += lFilePath;
 	lFileOutput += "_anim.dat";
-	ExportAnimFile(lFileOutput, "PlayerIdle");
+	ExportAnimFile(lFileOutput, "PlayerRunning");
 
 	RecMakeMesh(lScene->GetRootNode());
 	FbxString meshFileName;
