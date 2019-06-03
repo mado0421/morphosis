@@ -5,7 +5,7 @@
 
 
 #define MOUSE_XSPEED 10
-#define MOVE_SPEED 0.15
+#define MOVE_SPEED 0.15f
 #define ROTATE_SPEED 300
 #define PO_PER_PLAYER 16
 
@@ -469,9 +469,6 @@ void CGroundScene::CreateShaderResourceViews(ID3D12Device * pd3dDevice, ID3D12Gr
 		D3D12_RESOURCE_DESC d3dResourceDesc = pShaderResource->GetDesc();
 		D3D12_SHADER_RESOURCE_VIEW_DESC d3dShaderResourceViewDesc = GetShaderResourceViewDesc(d3dResourceDesc, nTextureType);
 		pd3dDevice->CreateShaderResourceView(pShaderResource, &d3dShaderResourceViewDesc, d3dSrvCPUDescriptorHandle);
-
-
-
 
 		m_d3dSrvCPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
 
@@ -1569,20 +1566,24 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 
 
 	CImporter importer;
-	AnimationData* animData = new AnimationData();
-	importer.ImportFile("test_0602_018_SingleMesh_RunningAnimation_Character", animData);
+	//AnimationData* animData = new AnimationData();
+	//importer.ImportFile("test_0602_018_SingleMesh_RunningAnimation_Character", animData);
 
-	m_nPlayers = 1;
+	m_nPlayers = 2;
 	m_nObjects += m_nPlayers;
-	m_nObjects += animData->m_AnimData->m_nBoneList;
+	//m_nObjects += m_nPlayers * m_nBulletPerPlayer;
+	//m_nObjects += animData->m_AnimData->m_nBoneList;
 	m_ppObjects = new CObject*[m_nObjects];
 
 	CreateDescriptorHeap();
 
-	CTexture **textures = new CTexture*[1];
+	CTexture **textures = new CTexture*[2];
 	textures[0] = new CTexture(RESOURCE_TEXTURE2D);
-	textures[0]->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Assets/Textures/TEST/box_diff.dds");
+	textures[0]->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Assets/Textures/TEST/test_0602_018_SingleMesh_RunningAnimation_Character_tex.dds");
 	CreateShaderResourceViews(pd3dDevice, pd3dCommandList, textures[0], 2, false);
+	textures[1] = new CTexture(RESOURCE_TEXTURE2D);
+	textures[1]->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Assets/Textures/TEST/box_diff.dds");
+	CreateShaderResourceViews(pd3dDevice, pd3dCommandList, textures[1], 2, false);
 
 	CreateConstantView();
 
@@ -1592,38 +1593,55 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 
 		CAnimationPlayerObject *pObj = new CAnimationPlayerObject();
 
-		importer.ImportFile("test_0602_018_SingleMesh_RunningAnimation_Character", textures[0], pd3dDevice, pd3dCommandList, *pObj);
+		//CTexture *textures = new CTexture();
+		//textures = new CTexture(RESOURCE_TEXTURE2D);
+		//textures->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Assets/Textures/TEST/test_0602_018_SingleMesh_RunningAnimation_Character_tex.dds");
+		//CreateShaderResourceViews(pd3dDevice, pd3dCommandList, textures, 2, false);
+		ImportAnimData** animData = new ImportAnimData*[5];
+		
+		importer.ImportFile("0603_CharacterIdle", textures[0], pd3dDevice, pd3dCommandList, *pObj);
+		
+		animData[0] = new ImportAnimData(); memset(animData[0], NULL, sizeof(ImportAnimData)); importer.ImportFile("0603_CharacterRun",		animData[0]);	pObj->anim->AddAnimData(animData[0]);
+		animData[1] = new ImportAnimData(); memset(animData[1], NULL, sizeof(ImportAnimData));importer.ImportFile("0603_CharacterFire",		animData[1]);	pObj->anim->AddAnimData(animData[1]);
+		animData[2] = new ImportAnimData(); memset(animData[2], NULL, sizeof(ImportAnimData));importer.ImportFile("0603_CharacterStartJump",	animData[2]);	pObj->anim->AddAnimData(animData[2]);
+		animData[3] = new ImportAnimData(); memset(animData[3], NULL, sizeof(ImportAnimData));importer.ImportFile("0603_CharacterEndJump",	animData[3]);	pObj->anim->AddAnimData(animData[3]);
+		animData[4] = new ImportAnimData(); memset(animData[4], NULL, sizeof(ImportAnimData));importer.ImportFile("0603_CharacterDied",		animData[4]);	pObj->anim->AddAnimData(animData[4]);
 
 		pObj->SetPosition(0.0f, 0.0f, i * 100.0f);
-		pObj->SetOOBB(XMFLOAT3(0.0f, 0.0f, i * 100.0f), XMFLOAT3(20.0f, 20.0f, 20.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+		pObj->m_xmf3CollisionOffset.y = 15;
+		pObj->SetOOBB(pObj->m_xmf3CollisionOffset, XMFLOAT3(5.0f, 15.0f, 5.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 		pObj->SetOOBBMesh(pd3dDevice, pd3dCommandList);
 
 		pObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
 		m_ppObjects[i] = pObj;
-	}
-	for (int i = m_nPlayers; i < m_nObjects; i++) {
-		CObject* o = new CObject;
 
-		XMFLOAT4X4 mat;
-		//XMVECTOR det = XMMatrixDeterminant(XMLoadFloat4x4(animData->m_AnimData->m_BoneList[i - m_nPlayers].m_pToRootTransforms));
-		//XMStoreFloat4x4(&mat, XMMatrixInverse(&det, XMLoadFloat4x4(animData->m_AnimData->m_BoneList[i - m_nPlayers].m_pToRootTransforms)));
-		mat = animData->m_AnimData->m_BoneList[i - m_nPlayers].m_GlobalTransform;
-	/*	XMVECTOR det = XMMatrixDeterminant(XMLoadFloat4x4(&animData->m_AnimData->m_BoneList[i - m_nPlayers].m_GlobalTransform));
-		XMStoreFloat4x4(&mat, XMMatrixInverse(&det, XMLoadFloat4x4(&animData->m_AnimData->m_BoneList[i - m_nPlayers].m_GlobalTransform)));*/
-
-		CMesh* mesh = new CTestMesh(m_pd3dDevice, m_pd3dCommandList, 0.6f);
-		CModel *model = new CModel();
-		model->SetTexture(textures[0]);
-		model->AddMesh(mesh);
-		o->SetModel(model);
-
-		o->m_xmf4x4World = mat;
-		o->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
-
-		m_ppObjects[i] = o;
+		delete[] animData;
 	}
 
-	delete animData;
+
+
+
+	/****************************************************************************************************
+	본 애니메이션 테스트를 위한 부분.
+	****************************************************************************************************/
+	//for (int i = m_nPlayers; i < m_nObjects; i++) {
+	//	CObject* o = new CObject;
+	//	XMFLOAT4X4 mat;
+	//	//XMVECTOR det = XMMatrixDeterminant(XMLoadFloat4x4(animData->m_AnimData->m_BoneList[i - m_nPlayers].m_pToRootTransforms));
+	//	//XMStoreFloat4x4(&mat, XMMatrixInverse(&det, XMLoadFloat4x4(animData->m_AnimData->m_BoneList[i - m_nPlayers].m_pToRootTransforms)));
+	//	mat = animData->m_AnimData->m_BoneList[i - m_nPlayers].m_GlobalTransform;
+	///*	XMVECTOR det = XMMatrixDeterminant(XMLoadFloat4x4(&animData->m_AnimData->m_BoneList[i - m_nPlayers].m_GlobalTransform));
+	//	XMStoreFloat4x4(&mat, XMMatrixInverse(&det, XMLoadFloat4x4(&animData->m_AnimData->m_BoneList[i - m_nPlayers].m_GlobalTransform)));*/
+	//	CMesh* mesh = new CTestMesh(m_pd3dDevice, m_pd3dCommandList, 0.6f);
+	//	CModel *model = new CModel();
+	//	model->SetTexture(textures[0]);
+	//	model->AddMesh(mesh);
+	//	o->SetModel(model);
+	//	o->m_xmf4x4World = mat;
+	//	o->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
+	//	m_ppObjects[i] = o;
+	//}
+	//delete animData;
 
 	// 처음 따라갈 캐릭터 정해주기
 	m_pCamera->SetTarget(m_ppObjects[0]);
@@ -1648,14 +1666,24 @@ void CTestGroundScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 	}
 
 	pd3dCommandList->SetPipelineState(pso[0]);
-	if (!m_bShowBones) {
-		pd3dCommandList->SetPipelineState(pso[0]);
-		m_ppObjects[0]->Render(pd3dCommandList, m_pCamera);
+	for (int i = 0; i < m_nPlayers; ++i) m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
+
+	if (m_bDebug) {
+
+		pd3dCommandList->SetPipelineState(pso[2]);
+		for (int i = 0; i < m_nPlayers; ++i) {
+			CAnimationPlayerObject* player = dynamic_cast<CAnimationPlayerObject*>(m_ppObjects[i]);
+			player->TestRender(pd3dCommandList, m_pCamera);
+		}
 	}
-	if (m_bShowBones) {
-		pd3dCommandList->SetPipelineState(pso[1]);
-		for (int i = m_nPlayers; i < m_nObjects; ++i) m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
-	}
+	/****************************************************************************************************
+	본 애니메이션 테스트를 위한 부분.
+	****************************************************************************************************/
+	//if (m_bShowBones) {
+	//	pd3dCommandList->SetPipelineState(pso[1]);
+	//	for (int i = m_nPlayers; i < m_nObjects; ++i) m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
+	//}
+
 }
 
 void CTestGroundScene::Update(float fTimeElapsed)
@@ -1668,52 +1696,49 @@ void CTestGroundScene::Update(float fTimeElapsed)
 	}
 
 	// 한 오브젝트의 애니메이션 정보만 올라감. 이건 플레이어의 모델만 애니메이트시킴.
+	// 어떻게 여러 오브젝트를 하지?
 	XMMATRIX *pbMappedcbObject = new XMMATRIX[64];
-	for (int i = 0; i < m_nPlayers; ++i) {
+	for (int i = 0; i < 1; ++i) {
 		CAnimationPlayerObject* player = dynamic_cast<CAnimationPlayerObject*>(m_ppObjects[i]);
-		XMVECTOR det;
 		if (player) {
 			for (int j = 0; j < g_NumAnimationBone; ++j) {
-				if (player->anim->m_AnimData->m_nBoneList > j && m_bUploadAnimMtx) {
-					//det = XMMatrixDeterminant(player->anim->GetInterpolatedToRootMtx(j, time));
-					//pbMappedcbObject[j] = XMMatrixInverse(&det, player->anim->GetInterpolatedToRootMtx(j, time));
-					pbMappedcbObject[j] = XMMatrixTranspose( player->anim->GetFinalMatrix(j, time));
-				}
+				if (player->anim->m_AnimData[0]->m_nBoneList > j && m_bUploadAnimMtx) 
+					pbMappedcbObject[j] = XMMatrixTranspose( player->GetAnimMtx(j));
 				else
 					pbMappedcbObject[j] = XMMatrixIdentity();
 			}
 		}
 	}
 
+	/****************************************************************************************************
+	본 애니메이션 테스트를 위한 부분.
+	****************************************************************************************************/
 	// 다른 본들은 추가로 위치를 바꿔줘야 함.
-	CAnimationPlayerObject* player = dynamic_cast<CAnimationPlayerObject*>(m_ppObjects[0]);
-	XMFLOAT4X4 mat;
-	XMVECTOR det;
-	for (int i = m_nPlayers; i < m_nObjects; ++i) {
-		if (OFFSET == m_ShowBonesMode) {
-			XMStoreFloat4x4(&mat, player->anim->GetOffset(i - 1));
-		}
-		else if (OFFSETINV == m_ShowBonesMode) {
-			det = XMMatrixDeterminant(player->anim->GetOffset(i - 1));
-			XMStoreFloat4x4(&mat, XMMatrixInverse(&det, player->anim->GetOffset(i-1)));
-		}
-		else if (TOROOT == m_ShowBonesMode) {
-			XMStoreFloat4x4(&mat, player->anim->GetInterpolatedToRootMtx(i - 1, time));
-		}
-		else if (TOROOTINV == m_ShowBonesMode) {
-			det = XMMatrixDeterminant(player->anim->GetInterpolatedToRootMtx(i - 1, time));
-			XMStoreFloat4x4(&mat, XMMatrixInverse(&det, player->anim->GetInterpolatedToRootMtx(i - 1, time)));
-		}
-		m_ppObjects[i]->m_xmf4x4World = mat;
-	}
-
-
-
+	//CAnimationPlayerObject* player = dynamic_cast<CAnimationPlayerObject*>(m_ppObjects[0]);
+	//XMFLOAT4X4 mat;
+	//XMVECTOR det;
+	//for (int i = m_nPlayers; i < m_nObjects; ++i) {
+	//	if (OFFSET == m_ShowBonesMode) {
+	//		XMStoreFloat4x4(&mat, player->anim->GetOffset(i - 1));
+	//	}
+	//	else if (OFFSETINV == m_ShowBonesMode) {
+	//		det = XMMatrixDeterminant(player->anim->GetOffset(i - 1));
+	//		XMStoreFloat4x4(&mat, XMMatrixInverse(&det, player->anim->GetOffset(i-1)));
+	//	}
+	//	else if (TOROOT == m_ShowBonesMode) {
+	//		XMStoreFloat4x4(&mat, player->anim->GetInterpolatedToRootMtx(i - 1, time));
+	//	}
+	//	else if (TOROOTINV == m_ShowBonesMode) {
+	//		det = XMMatrixDeterminant(player->anim->GetInterpolatedToRootMtx(i - 1, time));
+	//		XMStoreFloat4x4(&mat, XMMatrixInverse(&det, player->anim->GetInterpolatedToRootMtx(i - 1, time)));
+	//	}
+	//	m_ppObjects[i]->m_xmf4x4World = mat;
+	//}
 
 	memcpy(pCBMappedMatrix, pbMappedcbObject, sizeof(XMMATRIX) * g_NumAnimationBone);
 	delete[] pbMappedcbObject;
-
 	for (int j = 0; j < m_nObjects; ++j) m_ppObjects[j]->Update(fTimeElapsed);
+	m_pCamera->Update(fTimeElapsed);
 }
 
 void CTestGroundScene::ProcessInput(UCHAR * pKeysBuffer)
@@ -1721,27 +1746,27 @@ void CTestGroundScene::ProcessInput(UCHAR * pKeysBuffer)
 	XMFLOAT3 xmf3temp;
 	CAnimationPlayerObject* player = dynamic_cast<CAnimationPlayerObject*>(m_ppObjects[0]);
 
-	//if (pKeysBuffer[KEY::W] & 0xF0) { xmf3temp = player->GetLook();		player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, MOVE_SPEED)); }
-	//if (pKeysBuffer[KEY::A] & 0xF0) { xmf3temp = player->GetRight();	player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -MOVE_SPEED)); }
-	//if (pKeysBuffer[KEY::S] & 0xF0) { xmf3temp = player->GetLook();		player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -MOVE_SPEED)); }
-	//if (pKeysBuffer[KEY::D] & 0xF0) { xmf3temp = player->GetRight();	player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, MOVE_SPEED)); }
-	//if (pKeysBuffer[KEY::Z] & 0xF0) { xmf3temp = player->GetUp();		player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -MOVE_SPEED)); }
-	//if (pKeysBuffer[KEY::X] & 0xF0) { xmf3temp = player->GetUp();		player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, MOVE_SPEED)); }
-	//if (pKeysBuffer[KEY::Q] & 0xF0) {player->AddRotateAngle(XMFLOAT3{ 0, -ROTATE_SPEED, 0 }); }
-	//if (pKeysBuffer[KEY::E] & 0xF0) {player->AddRotateAngle(XMFLOAT3{ 0, ROTATE_SPEED, 0 }); }
+	if (pKeysBuffer[KEY::W] & 0xF0) { xmf3temp = player->GetLook();		player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, MOVE_SPEED));  player->AnimRun();}
+	if (pKeysBuffer[KEY::A] & 0xF0) { xmf3temp = player->GetRight();	player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -MOVE_SPEED)); player->AnimRun();}
+	if (pKeysBuffer[KEY::S] & 0xF0) { xmf3temp = player->GetLook();		player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -MOVE_SPEED)); player->AnimRun();}
+	if (pKeysBuffer[KEY::D] & 0xF0) { xmf3temp = player->GetRight();	player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, MOVE_SPEED));  player->AnimRun();}
+	if (pKeysBuffer[KEY::Z] & 0xF0) { xmf3temp = player->GetUp();		player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, -MOVE_SPEED)); player->AnimRun();}
+	if (pKeysBuffer[KEY::X] & 0xF0) { xmf3temp = player->GetUp();		player->AddPosVariation(Vector3::ScalarProduct(xmf3temp, MOVE_SPEED));  player->AnimRun();}
+	if (pKeysBuffer[KEY::Q] & 0xF0) {player->AddRotateAngle(XMFLOAT3{ 0, -ROTATE_SPEED, 0 }); }
+	if (pKeysBuffer[KEY::E] & 0xF0) {player->AddRotateAngle(XMFLOAT3{ 0, ROTATE_SPEED, 0 }); }
 	
-	if (pKeysBuffer[KEY::W] & 0xF0) { m_pCamera->Move(Vector3::ScalarProduct(m_pCamera->GetLook(), MOVE_SPEED, false)); }
-	if (pKeysBuffer[KEY::A] & 0xF0) { m_pCamera->Move(Vector3::ScalarProduct(m_pCamera->GetRight(), -MOVE_SPEED, false)); }
-	if (pKeysBuffer[KEY::S] & 0xF0) { m_pCamera->Move(Vector3::ScalarProduct(m_pCamera->GetLook(), -MOVE_SPEED, false)); }
-	if (pKeysBuffer[KEY::D] & 0xF0) { m_pCamera->Move(Vector3::ScalarProduct(m_pCamera->GetRight(), MOVE_SPEED, false)); }
-	if (pKeysBuffer[KEY::Z] & 0xF0) { m_pCamera->Move(Vector3::ScalarProduct(m_pCamera->GetUp(), -MOVE_SPEED, false)); }
-	if (pKeysBuffer[KEY::X] & 0xF0) { m_pCamera->Move(Vector3::ScalarProduct(m_pCamera->GetUp(), MOVE_SPEED, false)); }
-	if (pKeysBuffer[KEY::Q] & 0xF0) { m_pCamera->Rotate(0, -MOVE_SPEED, 0); }
-	if (pKeysBuffer[KEY::E] & 0xF0) { m_pCamera->Rotate(0, MOVE_SPEED, 0); }
+	//if (pKeysBuffer[KEY::W] & 0xF0) { m_pCamera->Move(Vector3::ScalarProduct(m_pCamera->GetLook(), MOVE_SPEED, false)); }
+	//if (pKeysBuffer[KEY::A] & 0xF0) { m_pCamera->Move(Vector3::ScalarProduct(m_pCamera->GetRight(), -MOVE_SPEED, false)); }
+	//if (pKeysBuffer[KEY::S] & 0xF0) { m_pCamera->Move(Vector3::ScalarProduct(m_pCamera->GetLook(), -MOVE_SPEED, false)); }
+	//if (pKeysBuffer[KEY::D] & 0xF0) { m_pCamera->Move(Vector3::ScalarProduct(m_pCamera->GetRight(), MOVE_SPEED, false)); }
+	//if (pKeysBuffer[KEY::Z] & 0xF0) { m_pCamera->Move(Vector3::ScalarProduct(m_pCamera->GetUp(), -MOVE_SPEED, false)); }
+	//if (pKeysBuffer[KEY::X] & 0xF0) { m_pCamera->Move(Vector3::ScalarProduct(m_pCamera->GetUp(), MOVE_SPEED, false)); }
+	//if (pKeysBuffer[KEY::Q] & 0xF0) { m_pCamera->Rotate(0, -MOVE_SPEED, 0); }
+	//if (pKeysBuffer[KEY::E] & 0xF0) { m_pCamera->Rotate(0, MOVE_SPEED, 0); }
 
 	if (pKeysBuffer[VK_SPACE] & 0xF0) if (isTimeflow) isTimeflow = false; else isTimeflow = true;
-	if (pKeysBuffer[KEY::_5] & 0xF0) m_bShowBones = true;
-	if (pKeysBuffer[KEY::_6] & 0xF0) m_bShowBones = false;
+	if (pKeysBuffer[KEY::_5] & 0xF0) m_bDebug = true;
+	if (pKeysBuffer[KEY::_6] & 0xF0) m_bDebug = false;
 	if (pKeysBuffer[KEY::_7] & 0xF0) m_bUploadAnimMtx = false;
 	if (pKeysBuffer[KEY::_8] & 0xF0) m_bUploadAnimMtx = true;
 
@@ -1764,16 +1789,19 @@ void CTestGroundScene::OnProcessingKeyboardMessage()
 
 void CTestGroundScene::MakePSO()
 {
-	pso = new ID3D12PipelineState*[2];
+	pso = new ID3D12PipelineState*[3];
 
-	CPSO ** tempPso = new CPSO*[2];
+	CPSO ** tempPso = new CPSO*[3];
 	tempPso[0] = new CAnimatedPSO();
 	tempPso[0]->Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
 	tempPso[1] = new CTexturedIlluminatedPSO();
 	tempPso[1]->Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
+	tempPso[2] = new CDebugPSO();
+	tempPso[2]->Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
 
 	pso[0] = tempPso[0]->GetPipelineState();
 	pso[1] = tempPso[1]->GetPipelineState();
+	pso[2] = tempPso[2]->GetPipelineState();
 }
 
 void CTestGroundScene::CreateDescriptorHeap()

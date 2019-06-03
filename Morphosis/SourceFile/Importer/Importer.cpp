@@ -44,3 +44,13 @@ void CImporter::ImportFile(const char * fileName, AnimationData* AnimData)
 	//AnimData = new AnimationData();
 	AnimData->Init(animData);
 }
+
+void CImporter::ImportFile(const char * fileName, ImportAnimData* AnimData)
+{
+	string filePath("Assets/");
+	filePath += fileName;
+
+	string animDataName = filePath;
+	animDataName += "_anim.dat";
+	AnimData->ImportFile(animDataName.c_str());
+}

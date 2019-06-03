@@ -49,7 +49,7 @@ int main()
 	///pp1[0] = p4;
 	///pp1[0]->Display();
 
-	Print(XMMatrixRotationRollPitchYaw(XMConvertToRadians(-90), XMConvertToRadians(0), XMConvertToRadians(0)));
+	Print(XMMatrixRotationRollPitchYaw(XMConvertToRadians(0), XMConvertToRadians(180), XMConvertToRadians(0)));
 
 
 	return 0;

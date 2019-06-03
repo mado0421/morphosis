@@ -486,7 +486,7 @@ void ReadUV(FbxMesh* mesh, int CtrlPointIdx, int VertexCounter, XMFLOAT2& out) {
 		{
 
 			out.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(CtrlPointIdx).mData[0]);
-			out.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(CtrlPointIdx).mData[1]);
+			out.y = 1 - static_cast<float>(vertexUV->GetDirectArray().GetAt(CtrlPointIdx).mData[1]);
 		}
 		break;
 		case FbxGeometryElement::eIndexToDirect:
@@ -494,7 +494,7 @@ void ReadUV(FbxMesh* mesh, int CtrlPointIdx, int VertexCounter, XMFLOAT2& out) {
 
 			int index = vertexUV->GetIndexArray().GetAt(CtrlPointIdx);
 			out.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[0]);
-			out.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[1]);
+			out.y = 1 - static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[1]);
 		}
 		break;
 		default:
@@ -508,7 +508,7 @@ void ReadUV(FbxMesh* mesh, int CtrlPointIdx, int VertexCounter, XMFLOAT2& out) {
 		{
 
 			out.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(VertexCounter).mData[0]);
-			out.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(VertexCounter).mData[1]);
+			out.y = 1 - static_cast<float>(vertexUV->GetDirectArray().GetAt(VertexCounter).mData[1]);
 		}
 		break;
 		case FbxGeometryElement::eIndexToDirect:
@@ -516,7 +516,7 @@ void ReadUV(FbxMesh* mesh, int CtrlPointIdx, int VertexCounter, XMFLOAT2& out) {
 
 			int index = vertexUV->GetIndexArray().GetAt(VertexCounter);
 			out.x = static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[0]);
-			out.y = static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[1]);
+			out.y = 1 - static_cast<float>(vertexUV->GetDirectArray().GetAt(index).mData[1]);
 		}
 		break;
 		default:
@@ -714,7 +714,7 @@ void ExportMeshFile(const char* fileName, const char* modelName) {
 	out.close();
 }
 
-const char * SAMPLE_FILENAME = "test_0602_018_SingleMesh_RunningAnimation_Character";
+const char * SAMPLE_FILENAME = "0603_CharacterRun";
 
 
 int main(int argc, char** argv)
@@ -748,13 +748,13 @@ int main(int argc, char** argv)
 	FbxString lFileOutput;
 	lFileOutput += lFilePath;
 	lFileOutput += "_anim.dat";
-	ExportAnimFile(lFileOutput, "PlayerRunning");
+	ExportAnimFile(lFileOutput, "PlayerRun");
 
-	RecMakeMesh(lScene->GetRootNode());
-	FbxString meshFileName;
-	meshFileName += lFilePath;
-	meshFileName += "_mesh.dat";
-	ExportMeshFile(meshFileName, "PlayerCharacter");
+	//RecMakeMesh(lScene->GetRootNode());
+	//FbxString meshFileName;
+	//meshFileName += lFilePath;
+	//meshFileName += "_mesh.dat";
+	//ExportMeshFile(meshFileName, "WeaponSMG");
 
     DestroySdkObjects(lSdkManager, lResult);
 

@@ -148,12 +148,19 @@ void CObject::SetRight(XMFLOAT3 right)
 }
 
 
+CMovingObject::CMovingObject()
+{
+	m_xmf3Variation = XMFLOAT3(0, 0, 0);
+	m_xmf3RotateAngle = XMFLOAT3(0, 0, 0);
+	m_xmf3CollisionOffset = XMFLOAT3(0, 0, 0);
+}
+
 void CMovingObject::Update(float fTimeElapsed)
 {
 	if (!isAlive) return;
-	m_xmf4x4World._41 = m_collisionBox.Center.x;
-	m_xmf4x4World._42 = m_collisionBox.Center.y;
-	m_xmf4x4World._43 = m_collisionBox.Center.z;
+	//m_xmf4x4World._41 = m_collisionBox.Center.x - m_xmf3CollisionOffset.x;
+	//m_xmf4x4World._42 = m_collisionBox.Center.y - m_xmf3CollisionOffset.y;
+	//m_xmf4x4World._43 = m_collisionBox.Center.z - m_xmf3CollisionOffset.z;
 	
 	/*
 	m_xmf4x4World._41 += m_xmf3Variation.x * fTimeElapsed * m_fSpeed;
@@ -182,7 +189,10 @@ void CMovingObject::Update(float fTimeElapsed)
 	m_xmf3RotateAngle.x = m_xmf3RotateAngle.y = m_xmf3RotateAngle.z = 0;
 	m_xmf3Variation.x = m_xmf3Variation.y = m_xmf3Variation.z = 0;
 
-	XMFLOAT3 center = XMFLOAT3(m_xmf4x4World._41, m_xmf4x4World._42, m_xmf4x4World._43);
+	XMFLOAT3 center = XMFLOAT3(
+		m_xmf4x4World._41 + m_xmf3CollisionOffset.x,
+		m_xmf4x4World._42 + m_xmf3CollisionOffset.y,
+		m_xmf4x4World._43 + m_xmf3CollisionOffset.z);
 	m_collisionBox.Center = center;
 	XMStoreFloat4(&m_collisionBox.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_collisionBox.Orientation)));
 
@@ -351,6 +361,32 @@ void CDefaultUI::Update(float fTimeElapsed)
 
 void CAnimationPlayerObject::Update(float fTimeElapsed)
 {
+	if (IsDead()) {
+		anim->m_AnimState = DIED;
+		anim->isLoop = false;
+		m_fAnimTime = 0.0f;
+		return;
+	}
+	if (m_bIsMoving) {
+		if (m_fAnimTime > anim->GetEndTime()) {
+			m_bIsMoving = false;
+			anim->m_AnimState = IDLE;
+			m_fAnimTime = 0.0f;
+		}
+	}
+	if (!IsMoving() && m_bIsMoving) {
+		m_bIsMoving = false;
+		anim->m_AnimState = IDLE;
+		m_fAnimTime = 0.0f;
+	}
 	CPlayerObject::Update(fTimeElapsed);
-	Animate(fTimeElapsed);
+
+
+
+	m_fAnimTime += fTimeElapsed;
+}
+
+XMMATRIX CAnimationPlayerObject::GetAnimMtx(int boneIdx)
+{
+	return anim->GetFinalMatrix(boneIdx, m_fAnimTime);
 }

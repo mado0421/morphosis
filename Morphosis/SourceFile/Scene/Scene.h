@@ -365,13 +365,10 @@ private:
 private:
 	CObject**	m_ppObjects = NULL;
 	int			m_nObjects = 0;
-
+	int			m_nBulletPerPlayer = 32;
 	int			m_nPlayers = 0;
-
 	int			m_nSRV = 1;
 	
-	bool		m_bShowBones = false;
-	bool		m_bUploadAnimMtx = true;
 
 	enum {
 		OFFSET,
@@ -380,6 +377,9 @@ private:
 		TOROOTINV
 	};
 
+	
+	bool		m_bDebug = false;
+	bool		m_bUploadAnimMtx = true;
 	int			m_ShowBonesMode = OFFSET;
 	
 };

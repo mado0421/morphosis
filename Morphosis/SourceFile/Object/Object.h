@@ -77,7 +77,7 @@ public:
 	void SetOOBB(XMFLOAT3& xmCenter, XMFLOAT3& xmExtents, XMFLOAT4& xmOrientation) {m_collisionBox = BoundingOrientedBox(xmCenter, xmExtents, xmOrientation);}
 	bool IsCollide(const BoundingOrientedBox& other) {return m_collisionBox.Intersects(other);}
 	void SetOOBBMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList) {
-		CTestMesh *pTestMesh = new CTestMesh(pd3dDevice, pd3dCommandList, m_collisionBox.Extents);
+		CTestMesh *pTestMesh = new CTestMesh(pd3dDevice, pd3dCommandList, m_collisionBox.Center, m_collisionBox.Extents);
 
 		if (m_ppTestMeshes)
 		{
@@ -100,14 +100,16 @@ public:
 class CMovingObject : public CCollideObejct
 {
 public:
-	XMFLOAT3						m_xmf3Variation;
-	XMFLOAT3						m_xmf3RotateAngle;
+	XMFLOAT3						m_xmf3Variation = XMFLOAT3(0,0,0);
+	XMFLOAT3						m_xmf3RotateAngle = XMFLOAT3(0, 0, 0);
 	float							m_fSpeed = 100.0f;
 
 	float							m_fGravityAccel = 0;
 	bool							isFalling = true;
 	float							prevHeight = 0;
+	XMFLOAT3						m_xmf3CollisionOffset = XMFLOAT3(0, 0, 0);
 public:
+	CMovingObject();
 
 	void MoveOOBB(float fTimeElapsed) {
 		m_collisionBox.Center.x += m_xmf3Variation.x * fTimeElapsed * m_fSpeed;
@@ -141,31 +143,53 @@ public:
 	virtual void Initialize();
 	virtual void Update(float fTimeElapsed);
 
-	void Attack();
-	void Damaged(int val);
-	void Jump();
+	virtual void Attack();
+	virtual void Damaged(int val);
+	virtual void Jump();
 
-	void SetTeam(bool team) { m_team = team; }
-
-	bool IsDead() { return m_hp <= 0; }
-	bool IsFireable() { return (m_attTimer <= 0) && !IsDead(); }
+	virtual void SetTeam(bool team) { m_team = team; }
+	virtual bool IsDead() { return m_hp <= 0; }
+	virtual bool IsFireable() { return (m_attTimer <= 0) && !IsDead(); }
 };
 
 class AnimationData;
 
 class CAnimationPlayerObject : public CPlayerObject
 {
-public: 
-	AnimationData* anim;
-	float m_animTime;
+private:
+	enum {
+		IDLE,
+		RUN,
+		FIRE,
+		STARTJUMP,
+		ENDJUMP,
+		DIED
+	};
 
 public:
 	virtual void Update(float fTimeElapsed);
+	XMMATRIX GetAnimMtx(int boneIdx);
 
-	void Animate(float time) {
-		m_animTime += time;
-		//anim->GenerateToWorldMatrix(time);
+	void AnimRun() {
+		if (!m_bIsMoving)
+		{
+			m_bIsMoving = true;
+			anim->m_AnimState = RUN;
+			m_fAnimTime = 0.0f;
+
+		}
+
 	}
+
+	bool IsMoving() {
+		return !Vector3::IsZero(m_xmf3Variation);
+	}
+
+
+public: 
+	AnimationData*	anim = NULL;
+	float			m_fAnimTime = 0.0f;
+	bool			m_bIsMoving = false;
 };
 
 class CProjectileObject : public CMovingObject

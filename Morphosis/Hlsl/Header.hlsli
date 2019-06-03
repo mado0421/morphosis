@@ -57,3 +57,12 @@ struct ILLUM_TEX_OUTPUT
 	float3 normalW		: NORMAL;
 	float2 uv			: TEXCOORD;
 };
+
+struct VS_DEBUG_INPUT
+{
+	float3 position : POSITION;
+};
+struct VS_DEBUG_OUTPUT
+{
+	float4 position : SV_POSITION;
+};

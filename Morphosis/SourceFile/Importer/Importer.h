@@ -3,9 +3,9 @@
 
 struct ImportBone {
 	std::string	m_Name;
-	XMFLOAT4X4	m_GlobalTransform;
-	XMFLOAT4X4* m_pToRootTransforms;
-	int			m_nKeyframe;
+	XMFLOAT4X4	m_GlobalTransform = Matrix4x4::Identity();
+	XMFLOAT4X4* m_pToRootTransforms = NULL;
+	int			m_nKeyframe = 0;
 
 	ImportBone& operator=(const ImportBone& b) {
 		m_Name = b.m_Name;
@@ -86,15 +86,15 @@ public:
 
 public:
 	std::string m_AnimName;
-	int			m_nBoneList;
-	int			m_nKeyTime;
+	int			m_nBoneList = 0;
+	int			m_nKeyTime = 0;
 
-	ImportBone*	m_BoneList;
-	double*		m_KeyTime;
+	ImportBone*	m_BoneList = NULL;
+	double*		m_KeyTime = 0;
 };
 
 struct ImportCtrlPoint {
-	XMFLOAT3	xmf3Position;
+	XMFLOAT3	xmf3Position = XMFLOAT3(0,0,0);
 	XMINT4		xmi4BoneIdx;
 	XMFLOAT4	xmf4BoneWeight;
 
@@ -201,6 +201,9 @@ public:
 	void ImportFile(
 		const char* fileName,
 		AnimationData* animData);
+	void ImportFile(
+		const char * fileName,
+		ImportAnimData* AnimData);
 	//void ImportFile(
 	//	const char* fileName,
 	//	CMesh* mesh);

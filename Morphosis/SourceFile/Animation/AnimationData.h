@@ -130,6 +130,7 @@ public:
 	//}
 
 	void Init(ImportAnimData& animData);
+	void AddAnimData(ImportAnimData* animData);
 
 	//void		GenerateToWorldMatrix(float time) {
 	//	for (int i = 0; i < m_bones.size(); ++i) {
@@ -138,11 +139,10 @@ public:
 	//	}
 	//}
 	XMMATRIX	GetFinalMatrix(int boneIdx, float time);
-
-	
 	XMMATRIX	GetInterpolatedToRootMtx(int boneIdx, float time);
 	XMMATRIX	GetOffset(int boneIdx);
 
+	float GetEndTime();
 
 private:
 	XMMATRIX	GetInterpolatedLocalMatrix(int boneIdx, float time);
@@ -207,7 +207,8 @@ public:
 	std::vector<AnimationBone>		m_bones;
 	std::vector<BoneReferenceInfo>	m_boneReferenceInfo;
 
-	ImportAnimData*					m_AnimData;
+	std::vector<ImportAnimData*>	m_AnimData;
+	int								m_AnimState = 0;
 
 	bool							isLoop = true;
 };

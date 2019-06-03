@@ -16,3 +16,8 @@ float4 PSDefaultShader(ILLUM_TEX_OUTPUT input) : SV_TARGET
 	//return float4(1.0f, 0.0f, 0.0f, 0.0f);
 	return (cColor);
 }
+
+float4 PSDebug(VS_DEBUG_OUTPUT input) : SV_TARGET
+{
+	return float4(1.0f, 0.0f, 0.0f, 1.0f);
+}
