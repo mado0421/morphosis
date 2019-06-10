@@ -204,7 +204,4 @@ public:
 	void ImportFile(
 		const char * fileName,
 		ImportAnimData* AnimData);
-	//void ImportFile(
-	//	const char* fileName,
-	//	CMesh* mesh);
 };

@@ -282,7 +282,6 @@ public:
 		if (pIndexUploadBuffer)		pIndexUploadBuffer->Release();
 	}
 
-	CAnimMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, AnimationMesh& m);
 	CAnimMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ImportMeshData& m);
 	virtual void Render(ID3D12GraphicsCommandList * pd3dCommandList)
 	{

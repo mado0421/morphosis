@@ -1569,7 +1569,7 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 	//AnimationData* animData = new AnimationData();
 	//importer.ImportFile("test_0602_018_SingleMesh_RunningAnimation_Character", animData);
 
-	m_nPlayers = 2;
+	m_nPlayers = 1;
 	m_nObjects += m_nPlayers;
 	//m_nObjects += m_nPlayers * m_nBulletPerPlayer;
 	//m_nObjects += animData->m_AnimData->m_nBoneList;
