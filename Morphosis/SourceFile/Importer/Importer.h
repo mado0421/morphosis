@@ -21,11 +21,10 @@ struct ImportBone {
 		return *this;
 	}
 };
-
-struct ImportAnimData {
+struct AnimationClip {
 public:
-	ImportAnimData() = default;
-	ImportAnimData(const ImportAnimData& a) {
+	AnimationClip() = default;
+	AnimationClip(const AnimationClip& a) {
 		m_AnimName = a.m_AnimName;
 		m_nBoneList = a.m_nBoneList;
 		m_nKeyTime = a.m_nKeyTime;
@@ -92,7 +91,6 @@ public:
 	ImportBone*	m_BoneList = NULL;
 	double*		m_KeyTime = 0;
 };
-
 struct ImportCtrlPoint {
 	XMFLOAT3	xmf3Position = XMFLOAT3(0,0,0);
 	XMINT4		xmi4BoneIdx;
@@ -110,7 +108,6 @@ struct ImportVertex {
 	XMFLOAT3	xmf3Tangent;
 	XMFLOAT2	xmf2UV;
 };
-
 struct ImportMeshData {
 	std::string			m_MeshName;
 	ImportCtrlPoint*	m_CtrlPointList;
@@ -119,7 +116,6 @@ struct ImportMeshData {
 	int			m_nCtrlPointList;
 	int			m_nVertexList;
 };
-
 struct ImportModelData {
 public:
 	void ImportFile(const char* fileName) {
@@ -178,30 +174,36 @@ private:
 	int			m_nMeshList;
 };
 
-class CAnimationPlayerObject;
-class AnimationData;
+class CObject;
 class CTexture;
-//class CMesh;
 
 class CImporter {
 
-	/*****************************************************
+	/*********************************************************************
 	파일 이름만 넘겨주면 안에서 "_anim.dat"이랑 "_mesh.dat" 붙여서 함.
 
 	ex) test_0530_016_Character_anim.dat
 	ex) test_0530_016_Character_mesh.dat
-	*****************************************************/
+	*********************************************************************/
 public:
-	void ImportFile(
-		const char* fileName,
-		CTexture* pTexture,
-		ID3D12Device *pd3dDevice,
-		ID3D12GraphicsCommandList *pd3dCommandList,
-		CAnimationPlayerObject& obj);
-	void ImportFile(
-		const char* fileName,
-		AnimationData* animData);
-	void ImportFile(
-		const char * fileName,
-		ImportAnimData* AnimData);
+	/*********************************************************************
+	2019-06-12
+	파일 하나에 여러 모델이 있을 수 있다. 따라서 모델을 반환하지 말고 파라미터로
+	오브젝트의 포인터를 받아와서 그 자리에서 직접 추가하도록 한다.
+	*********************************************************************/
+	CImporter() = delete;
+	CImporter(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
+		: m_pd3dDevice(pd3dDevice)
+		, m_pd3dCommandList(pd3dCommandList)
+	{
+
+	}
+
+	//void ImportAnimClip(const char* fileName, CObject* obj);
+	//void ImportModel(const char* fileName, CObject* obj);
+	void ImportModel(const char* fileName, CTexture* texture ,CObject* obj);
+	
+private:
+	ID3D12Device* m_pd3dDevice = NULL;
+	ID3D12GraphicsCommandList* m_pd3dCommandList = NULL;
 };

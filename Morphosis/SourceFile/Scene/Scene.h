@@ -1,11 +1,6 @@
 #pragma once
-#include "../Object/Object.h"
-#include "../Camera/Camera.h"
-#include "LevelData.h"
-#include "PSO.h"
-
 class CFramework;
-
+class CCamera;
 
 // Scene 자체는 안 쓸 예정이니까 추상클래스로?
 // 인터페이스?
@@ -31,7 +26,7 @@ protected:
 
 	CCamera							*m_pCamera = NULL;
 
-	CMaterial						**m_ppMaterial = NULL;
+	//CMaterial						**m_ppMaterial = NULL;
 	int								m_nMaterial = 0;
 
 	POINT							m_ptOldCursorPos;
@@ -327,7 +322,6 @@ public:
 	virtual void ReleaseObjectBuffers();
 };
 
-constexpr int g_NumAnimationBone = 64;
 
 class CTestGroundScene : public CGroundScene {
 public:

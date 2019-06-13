@@ -2,7 +2,10 @@
 #include "Framework/Framework.h"
 #include "Scene.h"
 #include "Importer/Importer.h"
-
+#include "Object/Object.h"
+#include "Camera/Camera.h"
+#include "LevelData.h"
+#include "PSO.h"
 
 #define MOUSE_XSPEED 10
 #define MOVE_SPEED 0.15f
@@ -1566,7 +1569,7 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 
 
 	CImporter importer;
-	//AnimationData* animData = new AnimationData();
+	//CAnimationController* animData = new CAnimationController();
 	//importer.ImportFile("test_0602_018_SingleMesh_RunningAnimation_Character", animData);
 
 	m_nPlayers = 1;
@@ -1597,15 +1600,15 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 		//textures = new CTexture(RESOURCE_TEXTURE2D);
 		//textures->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Assets/Textures/TEST/test_0602_018_SingleMesh_RunningAnimation_Character_tex.dds");
 		//CreateShaderResourceViews(pd3dDevice, pd3dCommandList, textures, 2, false);
-		ImportAnimData** animData = new ImportAnimData*[5];
+		AnimationClip** animData = new AnimationClip*[5];
 		
 		importer.ImportFile("0603_CharacterIdle", textures[0], pd3dDevice, pd3dCommandList, *pObj);
 		
-		animData[0] = new ImportAnimData(); memset(animData[0], NULL, sizeof(ImportAnimData)); importer.ImportFile("0603_CharacterRun",		animData[0]);	pObj->anim->AddAnimData(animData[0]);
-		animData[1] = new ImportAnimData(); memset(animData[1], NULL, sizeof(ImportAnimData));importer.ImportFile("0603_CharacterFire",		animData[1]);	pObj->anim->AddAnimData(animData[1]);
-		animData[2] = new ImportAnimData(); memset(animData[2], NULL, sizeof(ImportAnimData));importer.ImportFile("0603_CharacterStartJump",	animData[2]);	pObj->anim->AddAnimData(animData[2]);
-		animData[3] = new ImportAnimData(); memset(animData[3], NULL, sizeof(ImportAnimData));importer.ImportFile("0603_CharacterEndJump",	animData[3]);	pObj->anim->AddAnimData(animData[3]);
-		animData[4] = new ImportAnimData(); memset(animData[4], NULL, sizeof(ImportAnimData));importer.ImportFile("0603_CharacterDied",		animData[4]);	pObj->anim->AddAnimData(animData[4]);
+		animData[0] = new AnimationClip(); memset(animData[0], NULL, sizeof(AnimationClip)); importer.ImportFile("0603_CharacterRun",		animData[0]);	pObj->anim->AddAnimData(animData[0]);
+		animData[1] = new AnimationClip(); memset(animData[1], NULL, sizeof(AnimationClip));importer.ImportFile("0603_CharacterFire",		animData[1]);	pObj->anim->AddAnimData(animData[1]);
+		animData[2] = new AnimationClip(); memset(animData[2], NULL, sizeof(AnimationClip));importer.ImportFile("0603_CharacterStartJump",	animData[2]);	pObj->anim->AddAnimData(animData[2]);
+		animData[3] = new AnimationClip(); memset(animData[3], NULL, sizeof(AnimationClip));importer.ImportFile("0603_CharacterEndJump",	animData[3]);	pObj->anim->AddAnimData(animData[3]);
+		animData[4] = new AnimationClip(); memset(animData[4], NULL, sizeof(AnimationClip));importer.ImportFile("0603_CharacterDied",		animData[4]);	pObj->anim->AddAnimData(animData[4]);
 
 		pObj->SetPosition(0.0f, 0.0f, i * 100.0f);
 		pObj->m_xmf3CollisionOffset.y = 15;

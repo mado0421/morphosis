@@ -1,78 +1,18 @@
 #include "stdafx.h"
 #include "Model.h"
+#include "Mesh/Mesh.h"
+#include "Material/Texture.h"
+#include "Material/Material.h"
+#include "Animation/AnimationController.h"
+#include "Importer/Importer.h"
 
-
-void CModel::AddMesh(CMesh* mesh)
+void CModel::Render(ID3D12GraphicsCommandList *pd3dCommandList, bool isDebug)
 {
-	if (meshes) {
-		/*
-		기존에 있던 애를 다른 곳에 옮기고 거기에 추가하는 식으로 해야할 것
-
-		CMesh를 다른 곳에 생성하고 그 주소를 가져와서 관리하는 이중 포인터 방식.
-		그럼 그 포인터 주소만 가져가도 되는 것이 아닌가?
-		*/
-		CMesh **temp = new CMesh*[++numOfMeshes];
-		for (int i = 0; i < numOfMeshes - 1; ++i) temp[i] = meshes[i];
-		temp[numOfMeshes - 1] = mesh;
-		meshes = temp;
+	if (m_Texture) m_Texture->UpdateShaderVariables(pd3dCommandList);
+	if (isDebug) {
+		if (m_CollisionBox) m_CollisionBox->Render(pd3dCommandList);
 	}
 	else {
-		numOfMeshes = 1;
-		meshes = new CMesh*[numOfMeshes];
-		meshes[0] = mesh;
+		if (m_Mesh) m_Mesh->Render(pd3dCommandList);
 	}
-//	meshArr.push_back((*mesh));
-}
-
-void CModel::SetTexture(CTexture* pTexture)
-{
-	texture = pTexture;
-}
-
-void CModel::Render(ID3D12GraphicsCommandList *pd3dCommandList)
-{
-	if (texture) texture->UpdateShaderVariables(pd3dCommandList);
-	for (int i = 0; i < numOfMeshes; ++i) meshes[i]->Render(pd3dCommandList);
-//	for (auto iter = meshArr.begin(); iter != meshArr.end(); ++iter) iter->Render(pd3dCommandList);
-}
-
-void CModel::UpdateShaderVar(ID3D12GraphicsCommandList * pd3dCommandList)
-{
-	texture->UpdateShaderVariables(pd3dCommandList);
-}
-
-CModel::CModel()
-{
-}
-
-
-CModel::~CModel()
-{
-}
-
-void Model::Render(ID3D12GraphicsCommandList *pd3dCommandList)
-{
-
-	//==================================================================
-	// Upload Interpolated Bone Animation Matrix
-	//==================================================================
-	//if (m_pAnimData) {
-
-	//}
-
-	for (auto iter = m_texMeshes.begin(); iter != m_texMeshes.end(); ++iter)
-	{
-		iter->tex->UpdateShaderVariables(pd3dCommandList);
-		iter->mesh->Render(pd3dCommandList);
-	}
-}
-
-void Model::AddTexMesh(CMesh * pMesh, CTexture * pTex)
-{
-	m_texMeshes.emplace_back(pMesh, pTex);
-}
-
-void Model::GenerateInterpolatedAnimMatrix(float fTime)
-{
-	//if(m_pAnimData)	m_pAnimData->GenerateToWorld(fTime);
 }

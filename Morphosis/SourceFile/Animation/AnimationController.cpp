@@ -1,18 +1,18 @@
 #include "stdafx.h"
-#include "AnimationData.h"
+#include "AnimationController.h"
 #include "Importer/Importer.h"
 
-void AnimationData::Init(ImportAnimData & animData)
+void CAnimationController::Init(AnimationClip & animData)
 {
-	ImportAnimData* tmp = new ImportAnimData(animData);
+	AnimationClip* tmp = new AnimationClip(animData);
 
 	m_AnimData.push_back(tmp);
 }
-void AnimationData::AddAnimData(ImportAnimData * animData)
+void CAnimationController::AddAnimData(AnimationClip * animData)
 {
 	m_AnimData.push_back(animData);
 }
-XMMATRIX AnimationData::GetFinalMatrix(int boneIdx, float time)
+XMMATRIX CAnimationController::GetFinalMatrix(int boneIdx, float time)
 {
 	XMVECTOR det;
 	XMMATRIX OffsetInv, ToRootInv;
@@ -24,7 +24,7 @@ XMMATRIX AnimationData::GetFinalMatrix(int boneIdx, float time)
 	ToRootInv = XMMatrixInverse(&det, ToRootInv);
 	return XMMatrixMultiply(OffsetInv, ToRootInv);
 }
-XMMATRIX AnimationData::GetInterpolatedToRootMtx(int boneIdx, float time)
+XMMATRIX CAnimationController::GetInterpolatedToRootMtx(int boneIdx, float time)
 {
 	int PrevIdx = 0;
 	float normalizedTime = 0;
@@ -52,25 +52,25 @@ XMMATRIX AnimationData::GetInterpolatedToRootMtx(int boneIdx, float time)
 	// return XMLoadFloat4x4(&result);
 	return XMLoadFloat4x4(&m_AnimData[m_AnimState]->m_BoneList[boneIdx].m_pToRootTransforms[PrevIdx]);
 }
-XMMATRIX AnimationData::GetOffset(int boneIdx)
+XMMATRIX CAnimationController::GetOffset(int boneIdx)
 {
 	return XMLoadFloat4x4(&m_AnimData[m_AnimState]->m_BoneList[boneIdx].m_GlobalTransform);
 }
-float AnimationData::GetEndTime()
+float CAnimationController::GetEndTime()
 {
 	return m_AnimData[m_AnimState]->m_KeyTime[m_AnimData[m_AnimState]->m_nKeyTime - 1];
 }
-int AnimationData::GetPrevIdx(float time)
+int CAnimationController::GetPrevIdx(float time)
 {
 	for (int i = 0; i < m_AnimData[m_AnimState]->m_nKeyTime; ++i)
 		if (m_AnimData[m_AnimState]->m_KeyTime[i] > time) return i;
 	return 0;
 }
-float AnimationData::GetNormalizedTime(float time, int boneIdx)
+float CAnimationController::GetNormalizedTime(float time, int boneIdx)
 {
 	return (time - static_cast<float>(m_AnimData[m_AnimState]->m_KeyTime[boneIdx])) / static_cast<float>(m_AnimData[m_AnimState]->m_KeyTime[boneIdx + 1] - m_AnimData[m_AnimState]->m_KeyTime[boneIdx]);
 }
-float AnimationData::GetClampTime(float time)
+float CAnimationController::GetClampTime(float time)
 {
 	return (time - ((int)(time / static_cast<float>(m_AnimData[m_AnimState]->m_KeyTime[m_AnimData[m_AnimState]->m_nKeyTime - 1])) * static_cast<float>(m_AnimData[m_AnimState]->m_KeyTime[m_AnimData[m_AnimState]->m_nKeyTime - 1])));
 }

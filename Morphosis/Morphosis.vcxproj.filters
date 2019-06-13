@@ -30,12 +30,6 @@
     <Filter Include="소스 파일\Timer">
       <UniqueIdentifier>{724f1c7d-729a-42e9-8269-d6f869058188}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Mesh\FBXData">
-      <UniqueIdentifier>{81d14ca6-f80a-4d13-8288-9858939cb81f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Mesh\LevelData">
-      <UniqueIdentifier>{32551056-bae1-41bc-a613-41d4f9e98ad8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\Info">
       <UniqueIdentifier>{426803dd-8189-42ba-90f7-fad11145a45e}</UniqueIdentifier>
     </Filter>
@@ -71,9 +65,6 @@
     <ClCompile Include="SourceFile\Camera\Camera.cpp">
       <Filter>소스 파일\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="SourceFile\Animation\AnimationData.cpp">
-      <Filter>소스 파일\Animation</Filter>
-    </ClCompile>
     <ClCompile Include="SourceFile\Importer\Importer.cpp">
       <Filter>소스 파일\Importer</Filter>
     </ClCompile>
@@ -95,11 +86,8 @@
     <ClCompile Include="SourceFile\Material\Texture.cpp">
       <Filter>소스 파일\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="SourceFile\FBXData.cpp">
-      <Filter>소스 파일\Mesh\FBXData</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceFile\LevelData.cpp">
-      <Filter>소스 파일\Mesh\LevelData</Filter>
+    <ClCompile Include="SourceFile\Animation\AnimationController.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -137,9 +125,6 @@
     <ClInclude Include="SourceFile\Camera\Camera.h">
       <Filter>소스 파일\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="SourceFile\Animation\AnimationData.h">
-      <Filter>소스 파일\Animation</Filter>
-    </ClInclude>
     <ClInclude Include="SourceFile\Importer\Importer.h">
       <Filter>소스 파일\Importer</Filter>
     </ClInclude>
@@ -170,11 +155,12 @@
     <ClInclude Include="SourceFile\Material\Texture.h">
       <Filter>소스 파일\Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="SourceFile\FBXData.h">
-      <Filter>소스 파일\Mesh\FBXData</Filter>
+    <ClInclude Include="SourceFile\Animation\AnimationController.h" />
+    <ClInclude Include="MathHelper.h">
+      <Filter>소스 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SourceFile\LevelData.h">
-      <Filter>소스 파일\Mesh\LevelData</Filter>
+    <ClInclude Include="Defines.h">
+      <Filter>소스 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

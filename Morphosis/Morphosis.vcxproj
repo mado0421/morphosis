@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -155,13 +155,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="SourceFile\Animation\AnimationData.cpp" />
+    <ClCompile Include="SourceFile\Animation\AnimationController.cpp" />
     <ClCompile Include="SourceFile\Camera\Camera.cpp" />
     <ClCompile Include="SourceFile\DDSTextureLoader12.cpp" />
-    <ClCompile Include="SourceFile\FBXData.cpp" />
     <ClCompile Include="SourceFile\Framework\Framework.cpp" />
     <ClCompile Include="SourceFile\Importer\Importer.cpp" />
-    <ClCompile Include="SourceFile\LevelData.cpp" />
     <ClCompile Include="SourceFile\Material\Material.cpp" />
     <ClCompile Include="SourceFile\Material\Texture.cpp" />
     <ClCompile Include="SourceFile\Mesh\Mesh.cpp" />
@@ -181,14 +179,14 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SourceFile\Animation\AnimationData.h" />
+    <ClInclude Include="Defines.h" />
+    <ClInclude Include="MathHelper.h" />
+    <ClInclude Include="SourceFile\Animation\AnimationController.h" />
     <ClInclude Include="SourceFile\Camera\Camera.h" />
     <ClInclude Include="SourceFile\d3dx12.h" />
     <ClInclude Include="SourceFile\DDSTextureLoader12.h" />
-    <ClInclude Include="SourceFile\FBXData.h" />
     <ClInclude Include="SourceFile\Framework\Framework.h" />
     <ClInclude Include="SourceFile\Importer\Importer.h" />
-    <ClInclude Include="SourceFile\LevelData.h" />
     <ClInclude Include="SourceFile\Material\Material.h" />
     <ClInclude Include="SourceFile\Material\Texture.h" />
     <ClInclude Include="SourceFile\Mesh\Mesh.h" />

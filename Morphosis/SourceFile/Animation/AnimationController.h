@@ -5,12 +5,12 @@ struct CB_ANIMDATA_INFO {
 	XMFLOAT4X4 interpolatedMatrix;
 };
 
-struct ImportAnimData;
+struct AnimationClip;
 
-class AnimationData {
+class CAnimationController {
 public:
-	void Init(ImportAnimData& animData);
-	void AddAnimData(ImportAnimData* animData);
+	void Init(AnimationClip& animData);
+	void AddAnimData(AnimationClip* animData);
 	XMMATRIX	GetFinalMatrix(int boneIdx, float time);
 	float		GetEndTime();
 
@@ -22,10 +22,10 @@ private:
 	float GetClampTime(float time);
 
 public:
-	AnimationData() = default;
+	CAnimationController() = default;
 
 public:
-	std::vector<ImportAnimData*>	m_AnimData;
+	std::vector<AnimationClip*>	m_AnimData;
 	int								m_AnimState = 0;
 
 	bool							isLoop = true;
