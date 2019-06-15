@@ -94,7 +94,11 @@
 
 void CImporter::ImportModel(const char * fileName, CTexture * texture, CObject * obj)
 {
-	string modelDataName = fileName;
+	TCHAR programpath[_MAX_PATH];
+	GetCurrentDirectory(_MAX_PATH, programpath);
+
+	string modelDataName/* = ASSETPATH*/;
+	modelDataName += fileName;
 	modelDataName += "_mesh.dat";
 	ImportModelData modelData;
 	modelData.ImportFile(modelDataName.c_str());

@@ -11,7 +11,14 @@
 #define FRAME_BUFFER_HEIGHT			1080
 #endif
 
-#define ASSETPATH "Assets//"
+#define RESOURCE_TEXTURE2D			0x01
+#define RESOURCE_TEXTURE2D_ARRAY	0x02	//[]
+#define RESOURCE_TEXTURE2DARRAY		0x03
+#define RESOURCE_TEXTURE_CUBE		0x04
+#define RESOURCE_BUFFER				0x05
+
+#define ASSETPATH "Assets/"
+#define LASSETPATH L"Assets/"
 
 extern unsigned int	gnCbvSrvDescriptorIncrementSize;
 constexpr int		g_NumAnimationBone	= 64;

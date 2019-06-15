@@ -62,9 +62,12 @@ private:
 		count
 	};
 
+public:
+	XMFLOAT4X4						m_xmf4x4World;
+
+
 private:
 	bool							isAlive					= true;
-	XMFLOAT4X4						m_xmf4x4World;
 	std::vector<CModel>				m_ModelList;
 
 	D3D12_GPU_DESCRIPTOR_HANDLE		m_d3dCbvGPUDescriptorHandle;
@@ -229,12 +232,31 @@ private:
 
 class CObjectManager {
 public:
-	void BuildObjectManager();
+	CObjectManager() = delete;
+	CObjectManager(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+		: m_pd3dDevice(pd3dDevice)
+		, m_pd3dCommandList(pd3dCommandList) 
+	{
+		CreateObjectData();
+	}
+	~CObjectManager();
+
+public:
+	void Render();
+	void Update(float fTime);
+
+	CObject* GetPlayer(int i) {
+		return m_Objects[m_nProps + i];
+	}
+	ID3D12DescriptorHeap* GetDescriptorHeap() {
+		return m_pd3dCbvSrvDescriptorHeap;
+	}
 
 private:
 	void CreateDescriptorHeap();
 	void CreateConstantBufferResorce();
 	void CreateConstantBufferView();
+	void CreateTextureResourceView();
 	void CreateObjectData();
 
 private:
@@ -257,20 +279,27 @@ private:
 	m_nObjects는 프롭과 플레이어, 투사체의 개수를 합한 값.
 	m_nAnimationMatrix는 m_nObject * g_NumAnimationBone를 한 값.
 	*********************************************************************/
-	unsigned int	m_nObjects						= 0;
-	unsigned int	m_nProps						= 0;
-	unsigned int	m_nPlayers						= 0;
-	unsigned int	m_nProjectiles					= 0;
-	unsigned int	m_nAnimationMatrix				= 0;
+	unsigned int		m_nObjects						= 0;
+	unsigned int		m_nProps						= 0;
+	unsigned int		m_nPlayers						= 0;
+	unsigned int		m_nProjectiles					= 0;
+	unsigned int		m_nAnimationMatrix				= 0;
 	
-	ID3D12Resource* m_pd3dCBPropResource			= NULL;
-	ID3D12Resource* m_pd3dCBPlayersResource			= NULL;
-	ID3D12Resource* m_pd3dCBProjectilesResource		= NULL;
-	ID3D12Resource* m_pd3dCBAnimationMatrixResource = NULL;
+	ID3D12Resource*		m_pd3dCBPropResource			= NULL;
+	ID3D12Resource*		m_pd3dCBPlayersResource			= NULL;
+	ID3D12Resource*		m_pd3dCBProjectilesResource		= NULL;
+	ID3D12Resource*		m_pd3dCBAnimationMatrixResource = NULL;
 
-	CB_OBJECT_INFO*	m_pCBMappedPropObjects			= NULL;
-	CB_OBJECT_INFO* m_pCBMappedPlayers				= NULL;
-	CB_OBJECT_INFO* m_pCBMappedProjectiles			= NULL;
-	XMMATRIX*		m_pCBMappedAnimationMatrix		= NULL;
+	CB_OBJECT_INFO*		m_pCBMappedPropObjects			= NULL;
+	CB_OBJECT_INFO*		m_pCBMappedPlayers				= NULL;
+	CB_OBJECT_INFO*		m_pCBMappedProjectiles			= NULL;
+	XMMATRIX*			m_pCBMappedAnimationMatrix		= NULL;
+
+	/*********************************************************************
+	2019-06-15
+	생성한 객체들을 관리할 벡터.
+	*********************************************************************/
+	vector<CObject*>	m_Objects;
+	vector<CTexture*>	m_TextureList;
 };
 

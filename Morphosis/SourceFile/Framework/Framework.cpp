@@ -333,11 +333,11 @@ void CFramework::BuildScenes()
 	//m_ppScene = new Scene*[Scenes::NumOfScenes];
 	m_ppScenes = new CScene*[Scenes::count];
 
-	m_ppScenes[Scenes::TITLE] = new CTitleScene();
-	m_ppScenes[Scenes::PLAY] = new CPlayScene();
-	m_ppScenes[Scenes::ENTERROOM] = new CEnterRoomScene();
-	m_ppScenes[Scenes::MATCHING] = new CMatchingScene();
-	m_ppScenes[Scenes::RESULT] = new CResultScene();
+	//m_ppScenes[Scenes::TITLE] = new CTitleScene();
+	//m_ppScenes[Scenes::PLAY] = new CPlayScene();
+	//m_ppScenes[Scenes::ENTERROOM] = new CEnterRoomScene();
+	//m_ppScenes[Scenes::MATCHING] = new CMatchingScene();
+	//m_ppScenes[Scenes::RESULT] = new CResultScene();
 	m_ppScenes[Scenes::TEST] = new CTestGroundScene();
 
 	m_pCurrentScene = m_ppScenes[Scenes::TEST];
@@ -358,11 +358,11 @@ void CFramework::ChangeScene(int targetSceneIdx, void * subData)
 
 	switch (targetSceneIdx)
 	{
-	case Scenes::TITLE:		m_pCurrentScene = m_ppScenes[Scenes::TITLE];	break;
-	case Scenes::ENTERROOM: m_pCurrentScene = m_ppScenes[Scenes::ENTERROOM];break;
-	case Scenes::MATCHING:	m_pCurrentScene = m_ppScenes[Scenes::MATCHING];	break;
-	case Scenes::PLAY:		m_pCurrentScene = m_ppScenes[Scenes::PLAY];		break;
-	case Scenes::RESULT:	m_pCurrentScene = m_ppScenes[Scenes::RESULT];	break;
+	//case Scenes::TITLE:		m_pCurrentScene = m_ppScenes[Scenes::TITLE];	break;
+	//case Scenes::ENTERROOM: m_pCurrentScene = m_ppScenes[Scenes::ENTERROOM];break;
+	//case Scenes::MATCHING:	m_pCurrentScene = m_ppScenes[Scenes::MATCHING];	break;
+	//case Scenes::PLAY:		m_pCurrentScene = m_ppScenes[Scenes::PLAY];		break;
+	//case Scenes::RESULT:	m_pCurrentScene = m_ppScenes[Scenes::RESULT];	break;
 	case Scenes::TEST:		m_pCurrentScene = m_ppScenes[Scenes::TEST];		break;
 	default: assert(!"으악 너 지금 Scene Change에 뭐 넣은거야!!"); break;
 	}

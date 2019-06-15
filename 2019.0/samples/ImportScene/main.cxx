@@ -714,7 +714,7 @@ void ExportMeshFile(const char* fileName, const char* modelName) {
 	out.close();
 }
 
-const char * SAMPLE_FILENAME = "0603_CharacterRun";
+const char * SAMPLE_FILENAME = "0615_Box";
 
 
 int main(int argc, char** argv)
@@ -735,32 +735,33 @@ int main(int argc, char** argv)
 	FBXSDK_printf("\n\nFile: %s\n\n", lFileInput.Buffer());
 	lResult = LoadScene(lSdkManager, lScene, lFileInput.Buffer());
 
-	//DisplayPose(lScene);
+	/*********************************************************************
+	2019-06-15
+	애니메이션 추출하려면 이 부분 주석 해제
+	*********************************************************************/
+	//AnimationData(lScene);
+	//RecFollowChildNode(lScene->GetRootNode(), MakeBoneDataTest);
+	//MakeBinePoseMatrix(lScene);
+	//DeleteNotBindBone();
+	//RecFollowChildNode(lScene->GetRootNode(), MakeParent);
+	//MakeToRootTransform();
+	//FbxString lFileOutput;
+	//lFileOutput += lFilePath;
+	//lFileOutput += "_anim.dat";
+	//ExportAnimFile(lFileOutput, "PlayerRun");
 
-	////DisplayMesh();
 
-	AnimationData(lScene);
-	RecFollowChildNode(lScene->GetRootNode(), MakeBoneDataTest);
-	MakeBinePoseMatrix(lScene);
-	DeleteNotBindBone();
-	RecFollowChildNode(lScene->GetRootNode(), MakeParent);
-	MakeToRootTransform();
-	FbxString lFileOutput;
-	lFileOutput += lFilePath;
-	lFileOutput += "_anim.dat";
-	ExportAnimFile(lFileOutput, "PlayerRun");
-
-	//RecMakeMesh(lScene->GetRootNode());
-	//FbxString meshFileName;
-	//meshFileName += lFilePath;
-	//meshFileName += "_mesh.dat";
-	//ExportMeshFile(meshFileName, "WeaponSMG");
+	/*********************************************************************
+	2019-06-15
+	메쉬 추출하려면 이 부분 주석 해제
+	*********************************************************************/
+	RecMakeMesh(lScene->GetRootNode());
+	FbxString meshFileName;
+	meshFileName += lFilePath;
+	meshFileName += "_mesh.dat";
+	ExportMeshFile(meshFileName, "Prop_Box");
 
     DestroySdkObjects(lSdkManager, lResult);
-
-	//for (auto t = g_KeyTime.begin(); t != g_KeyTime.end(); ++t) {
-	//	std::cout << *t << "\n";
-	//}
-
+	
     return 0;
 }

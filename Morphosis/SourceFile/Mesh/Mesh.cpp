@@ -40,7 +40,6 @@ CMesh::~CMesh()
 	if (m_pd3dIndexBuffer) m_pd3dIndexBuffer->Release();
 	if (m_pd3dVertexUploadBuffer) m_pd3dVertexUploadBuffer->Release();
 	if (m_pd3dIndexUploadBuffer) m_pd3dIndexUploadBuffer->Release();
-
 }
 
 void CMesh::Render(ID3D12GraphicsCommandList * pd3dCommandList)
@@ -56,7 +55,6 @@ void CMesh::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 	{
 		pd3dCommandList->DrawInstanced(m_nVertices, 1, m_nOffset, 0);
 	}
-
 }
 
 void CMesh::CreateVertexBuffer(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pData)

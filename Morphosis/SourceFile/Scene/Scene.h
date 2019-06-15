@@ -1,6 +1,9 @@
 #pragma once
 class CFramework;
 class CCamera;
+class CObjectManager;
+
+struct CB_OBJECT_INFO;
 
 // Scene 자체는 안 쓸 예정이니까 추상클래스로?
 // 인터페이스?
@@ -62,7 +65,7 @@ public:
 	virtual void CreateCbvAndSrvDescriptorHeaps(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int nConstantBufferViews, int nShaderResourceViews);
 	virtual void CreateShaderVariables(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, int nConstantBufferViews);
 	virtual void CreateConstantBufferViews(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int nConstantBufferViews, ID3D12Resource *pd3dConstantBuffers, UINT nStride);
-	virtual void CreateShaderResourceViews(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, CTexture *pTexture, UINT nRootParameterStartIndex, bool bAutoIncrement);
+	//virtual void CreateShaderResourceViews(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, CTexture *pTexture, UINT nRootParameterStartIndex, bool bAutoIncrement);
 
 	virtual void ReleaseShaderVariables();
 
@@ -115,7 +118,7 @@ protected:
 	//int					m_nUIObjects = 0;
 	/////////////////////////////////////////////////////////////
 
-	CLevelData				*m_pLevelData				= nullptr;
+	//CLevelData				*m_pLevelData				= nullptr;
 	ID3D12PipelineState		**m_ppPSO					= nullptr;
 	//ObjectManager			*m_pObjectMng				= nullptr;
 
@@ -166,7 +169,7 @@ public:
 	virtual void CreateCbvAndSrvDescriptorHeaps(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int nConstantBufferViews, int nShaderResourceViews);
 	virtual void CreateShaderVariables(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, int nConstantBufferViews);
 	virtual void CreateConstantBufferViews(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int nConstantBufferViews, ID3D12Resource *pd3dConstantBuffers, UINT nStride);
-	virtual void CreateShaderResourceViews(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, CTexture *pTexture, UINT nRootParameterStartIndex, bool bAutoIncrement);
+	//virtual void CreateShaderResourceViews(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, CTexture *pTexture, UINT nRootParameterStartIndex, bool bAutoIncrement);
 
 	virtual void ReleaseShaderVariables();
 
@@ -197,131 +200,130 @@ public:
 	virtual void ReleaseObjectBuffers();
 };
 
-class CEnterRoomScene : public CGroundScene
-{
-protected:
-
-public:
-	CEnterRoomScene();
-	~CEnterRoomScene();
-
-public:
-	// Scene의 기본적인 함수들
-	virtual void Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext);
-	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
-	virtual void Update(float fTimeElapsed);
-
-	//// Scene 별로 키 Input을 달리 처리하기 위한 함수들
-	virtual void ProcessInput(UCHAR * pKeysBuffer);
-	virtual void OnProcessingMouseMessage();
-	virtual void OnProcessingKeyboardMessage();
-
-	// 상수 버퍼를 만들고 관리하는 함수들
-	virtual void CreateObjectBuffers();
-	virtual void UpdateObjectBuffers();
-	virtual void ReleaseObjectBuffers();
-};
-
-class CPlayScene : public CGroundScene
-{
-protected:
-
-public:
-	CPlayScene();
-	~CPlayScene();
-
-public:
-	// Scene의 기본적인 함수들
-	virtual void Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext);
-	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
-	virtual void Update(float fTimeElapsed);
-
-	//// Scene 별로 키 Input을 달리 처리하기 위한 함수들
-	virtual void ProcessInput(UCHAR * pKeysBuffer);
-	virtual void OnProcessingMouseMessage();
-	virtual void OnProcessingKeyboardMessage();
-
-	// 상수 버퍼를 만들고 관리하는 함수들
-	virtual void CreateObjectBuffers();
-	virtual void UpdateObjectBuffers();
-	virtual void ReleaseObjectBuffers();
-};
-
-class CTitleScene : public CLoadingScene
-{
-protected:
-
-public:
-	CTitleScene();
-	~CTitleScene();
-
-public:
-	// Scene의 기본적인 함수들
-	virtual void Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext);
-	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
-	virtual void Update(float fTimeElapsed);
-
-	//// Scene 별로 키 Input을 달리 처리하기 위한 함수들
-	virtual void ProcessInput(UCHAR * pKeysBuffer);
-	virtual void OnProcessingMouseMessage();
-	virtual void OnProcessingKeyboardMessage();
-
-	// 상수 버퍼를 만들고 관리하는 함수들
-	virtual void CreateObjectBuffers();
-	virtual void UpdateObjectBuffers();
-	virtual void ReleaseObjectBuffers();
-};
-
-class CMatchingScene : public CLoadingScene
-{
-protected:
-
-public:
-	CMatchingScene();
-	~CMatchingScene();
-
-public:
-	// Scene의 기본적인 함수들
-	virtual void Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext);
-	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
-	virtual void Update(float fTimeElapsed);
-
-	//// Scene 별로 키 Input을 달리 처리하기 위한 함수들
-	virtual void ProcessInput(UCHAR * pKeysBuffer);
-	virtual void OnProcessingMouseMessage();
-	virtual void OnProcessingKeyboardMessage();
-
-	// 상수 버퍼를 만들고 관리하는 함수들
-	virtual void CreateObjectBuffers();
-	virtual void UpdateObjectBuffers();
-	virtual void ReleaseObjectBuffers();
-};
-
-class CResultScene : public CLoadingScene
-{
-protected:
-
-public:
-	CResultScene();
-	~CResultScene();
-
-public:
-	// Scene의 기본적인 함수들
-	virtual void Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext);
-	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
-	virtual void Update(float fTimeElapsed);
-
-	//// Scene 별로 키 Input을 달리 처리하기 위한 함수들
-	virtual void ProcessInput(UCHAR * pKeysBuffer);
-	virtual void OnProcessingMouseMessage();
-	virtual void OnProcessingKeyboardMessage();
-
-	// 상수 버퍼를 만들고 관리하는 함수들
-	virtual void CreateObjectBuffers();
-	virtual void UpdateObjectBuffers();
-	virtual void ReleaseObjectBuffers();
-};
-
+//class CEnterRoomScene : public CGroundScene
+//{
+//protected:
+//
+//public:
+//	CEnterRoomScene();
+//	~CEnterRoomScene();
+//
+//public:
+//	// Scene의 기본적인 함수들
+//	virtual void Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext);
+//	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
+//	virtual void Update(float fTimeElapsed);
+//
+//	//// Scene 별로 키 Input을 달리 처리하기 위한 함수들
+//	virtual void ProcessInput(UCHAR * pKeysBuffer);
+//	virtual void OnProcessingMouseMessage();
+//	virtual void OnProcessingKeyboardMessage();
+//
+//	// 상수 버퍼를 만들고 관리하는 함수들
+//	virtual void CreateObjectBuffers();
+//	virtual void UpdateObjectBuffers();
+//	virtual void ReleaseObjectBuffers();
+//};
+//
+//class CPlayScene : public CGroundScene
+//{
+//protected:
+//
+//public:
+//	CPlayScene();
+//	~CPlayScene();
+//
+//public:
+//	// Scene의 기본적인 함수들
+//	virtual void Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext);
+//	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
+//	virtual void Update(float fTimeElapsed);
+//
+//	//// Scene 별로 키 Input을 달리 처리하기 위한 함수들
+//	virtual void ProcessInput(UCHAR * pKeysBuffer);
+//	virtual void OnProcessingMouseMessage();
+//	virtual void OnProcessingKeyboardMessage();
+//
+//	// 상수 버퍼를 만들고 관리하는 함수들
+//	virtual void CreateObjectBuffers();
+//	virtual void UpdateObjectBuffers();
+//	virtual void ReleaseObjectBuffers();
+//};
+//
+//class CTitleScene : public CLoadingScene
+//{
+//protected:
+//
+//public:
+//	CTitleScene();
+//	~CTitleScene();
+//
+//public:
+//	// Scene의 기본적인 함수들
+//	virtual void Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext);
+//	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
+//	virtual void Update(float fTimeElapsed);
+//
+//	//// Scene 별로 키 Input을 달리 처리하기 위한 함수들
+//	virtual void ProcessInput(UCHAR * pKeysBuffer);
+//	virtual void OnProcessingMouseMessage();
+//	virtual void OnProcessingKeyboardMessage();
+//
+//	// 상수 버퍼를 만들고 관리하는 함수들
+//	virtual void CreateObjectBuffers();
+//	virtual void UpdateObjectBuffers();
+//	virtual void ReleaseObjectBuffers();
+//};
+//
+//class CMatchingScene : public CLoadingScene
+//{
+//protected:
+//
+//public:
+//	CMatchingScene();
+//	~CMatchingScene();
+//
+//public:
+//	// Scene의 기본적인 함수들
+//	virtual void Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext);
+//	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
+//	virtual void Update(float fTimeElapsed);
+//
+//	//// Scene 별로 키 Input을 달리 처리하기 위한 함수들
+//	virtual void ProcessInput(UCHAR * pKeysBuffer);
+//	virtual void OnProcessingMouseMessage();
+//	virtual void OnProcessingKeyboardMessage();
+//
+//	// 상수 버퍼를 만들고 관리하는 함수들
+//	virtual void CreateObjectBuffers();
+//	virtual void UpdateObjectBuffers();
+//	virtual void ReleaseObjectBuffers();
+//};
+//
+//class CResultScene : public CLoadingScene
+//{
+//protected:
+//
+//public:
+//	CResultScene();
+//	~CResultScene();
+//
+//public:
+//	// Scene의 기본적인 함수들
+//	virtual void Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext);
+//	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
+//	virtual void Update(float fTimeElapsed);
+//
+//	//// Scene 별로 키 Input을 달리 처리하기 위한 함수들
+//	virtual void ProcessInput(UCHAR * pKeysBuffer);
+//	virtual void OnProcessingMouseMessage();
+//	virtual void OnProcessingKeyboardMessage();
+//
+//	// 상수 버퍼를 만들고 관리하는 함수들
+//	virtual void CreateObjectBuffers();
+//	virtual void UpdateObjectBuffers();
+//	virtual void ReleaseObjectBuffers();
+//};
 
 class CTestGroundScene : public CGroundScene {
 public:
@@ -357,12 +359,13 @@ private:
 
 
 private:
-	CObject**	m_ppObjects = NULL;
-	int			m_nObjects = 0;
-	int			m_nBulletPerPlayer = 32;
-	int			m_nPlayers = 0;
-	int			m_nSRV = 1;
+	//CObject**	m_ppObjects = NULL;
+	//int			m_nObjects = 0;
+	//int			m_nBulletPerPlayer = 32;
+	//int			m_nPlayers = 0;
+	//int			m_nSRV = 1;
 	
+	CObjectManager* m_ObjMng = NULL;
 
 	enum {
 		OFFSET,

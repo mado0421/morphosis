@@ -170,7 +170,7 @@ public:
 private:
 	std::string m_ModelName;
 
-	ImportMeshData*	m_MeshList;
+	ImportMeshData*	m_MeshList = NULL;
 	int			m_nMeshList;
 };
 

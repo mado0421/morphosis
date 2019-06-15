@@ -58,7 +58,7 @@ XMMATRIX CAnimationController::GetOffset(int boneIdx)
 }
 float CAnimationController::GetEndTime()
 {
-	return m_AnimData[m_AnimState]->m_KeyTime[m_AnimData[m_AnimState]->m_nKeyTime - 1];
+	return static_cast<float>(m_AnimData[m_AnimState]->m_KeyTime[m_AnimData[m_AnimState]->m_nKeyTime - 1]);
 }
 int CAnimationController::GetPrevIdx(float time)
 {
