@@ -57,3 +57,8 @@ constexpr float		g_Gravity				= 9.8f;
 constexpr float		TIMER_ATT				= 0.05f;
 constexpr float		TIMER_RESPANW			= 5.0f;
 
+/*********************************************************************
+2019-06-16
+카메라 관련 상수
+*********************************************************************/
+#define CAM_Y_DISTANCE 0

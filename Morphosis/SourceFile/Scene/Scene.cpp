@@ -234,7 +234,7 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 
 	m_pCamera = new CFollowCamera();
 	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
+	m_pCamera->SetOffset(XMFLOAT3(0, 10.0f, 10.0f));
 
 	MakePSO();
 
@@ -358,6 +358,7 @@ void CTestGroundScene::Update(float fTimeElapsed)
 		ttt = 0;
 	}
 
+	m_pCamera->Update(fTimeElapsed);
 	m_ObjMng->Update(fTimeElapsed);
 
 

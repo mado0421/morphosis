@@ -124,7 +124,6 @@ CFollowCamera::CFollowCamera() : CCamera()
 CFollowCamera::~CFollowCamera()
 {
 }
-#define CAM_Y_DISTANCE 15
 void CFollowCamera::SetTarget(void * target)
 {
 	m_pTarget = (CObject*)target;

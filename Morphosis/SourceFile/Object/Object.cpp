@@ -351,6 +351,7 @@ void CObjectManager::CreateObjectData()
 		texture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, fileName.c_str());
 		m_TextureList.push_back(texture);
 	}
+	CreateTextureResourceView();
 
 	/*********************************************************************
 	2019-06-15
