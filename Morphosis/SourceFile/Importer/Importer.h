@@ -202,6 +202,7 @@ public:
 	//void ImportAnimClip(const char* fileName, CObject* obj);
 	//void ImportModel(const char* fileName, CObject* obj);
 	void ImportModel(const char* fileName, CTexture* texture ,CObject* obj);
+	void ImportAnimClip(const char* fileName, CObject* obj);
 	
 private:
 	ID3D12Device*				m_pd3dDevice		= NULL;

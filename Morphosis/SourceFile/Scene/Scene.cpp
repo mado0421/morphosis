@@ -134,10 +134,6 @@ void CScene::ReleaseShaderVariables()
 
 ID3D12RootSignature * CTestGroundScene::CreateRootSignature(ID3D12Device * pd3dDevice)
 {
-	ID3D12RootSignature *pd3dGraphicsRootSignature = NULL;
-	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[2];	// Object and Texture
-
-
 	/*********************************************************************
 	2019-06-16
 	루트파라미터 인덱스를 전역에서 관리하기 위해 이렇게 사용.
@@ -146,6 +142,9 @@ ID3D12RootSignature * CTestGroundScene::CreateRootSignature(ID3D12Device * pd3dD
 	g_RootParameterObject		= 1;
 	g_RootParameterTexture		= 2;
 	g_RootParameterAnimation	= 3;
+
+	ID3D12RootSignature *pd3dGraphicsRootSignature = NULL;
+	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[2];	// Object, Texture and Animation
 
 	pd3dDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
 	pd3dDescriptorRanges[0].NumDescriptors = 1;
@@ -179,12 +178,11 @@ ID3D12RootSignature * CTestGroundScene::CreateRootSignature(ID3D12Device * pd3dD
 	pd3dRootParameters[2].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[1];
 	pd3dRootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
-	//Anim
+	//anim
 	pd3dRootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	pd3dRootParameters[3].Descriptor.ShaderRegister = g_RootParameterAnimation;
 	pd3dRootParameters[3].Descriptor.RegisterSpace = 0;
 	pd3dRootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-
 	///*
 	//Root Signiature 추가 필요
 	//*/
@@ -234,14 +232,14 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 
 	m_pCamera = new CFollowCamera();
 	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	m_pCamera->SetOffset(XMFLOAT3(0, 10.0f, 10.0f));
+	m_pCamera->SetOffset(XMFLOAT3(0, 10.0f, 50.0f));
 
-	MakePSO();
 
 	m_ObjMng = new CObjectManager(m_pd3dDevice, m_pd3dCommandList);
-	m_pCamera->SetTarget(m_ObjMng->GetPlayer(0));
+	m_pCamera->SetTarget(m_ObjMng->GetTarget(0));
 	m_pd3dCbvSrvDescriptorHeap = m_ObjMng->GetDescriptorHeap();
 
+	MakePSO();
 	//nPlayers = 1;
 	//ppPlayers = new CAnimationPlayerObject*[nPlayers];
 	//CImporter importer(m_pd3dDevice, m_pd3dCommandList);
@@ -273,10 +271,10 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 	//	importer.ImportFile("0603_CharacterIdle", textures[0], pd3dDevice, pd3dCommandList, *pObj);
 	//	
 	//	animData[0] = new AnimationClip(); memset(animData[0], NULL, sizeof(AnimationClip)); importer.ImportFile("0603_CharacterRun",		animData[0]);	pObj->anim->AddAnimData(animData[0]);
-	//	animData[1] = new AnimationClip(); memset(animData[1], NULL, sizeof(AnimationClip));importer.ImportFile("0603_CharacterFire",		animData[1]);	pObj->anim->AddAnimData(animData[1]);
-	//	animData[2] = new AnimationClip(); memset(animData[2], NULL, sizeof(AnimationClip));importer.ImportFile("0603_CharacterStartJump",	animData[2]);	pObj->anim->AddAnimData(animData[2]);
-	//	animData[3] = new AnimationClip(); memset(animData[3], NULL, sizeof(AnimationClip));importer.ImportFile("0603_CharacterEndJump",	animData[3]);	pObj->anim->AddAnimData(animData[3]);
-	//	animData[4] = new AnimationClip(); memset(animData[4], NULL, sizeof(AnimationClip));importer.ImportFile("0603_CharacterDied",		animData[4]);	pObj->anim->AddAnimData(animData[4]);
+	//	animData[1] = new AnimationClip(); memset(animData[1], NULL, sizeof(AnimationClip));importer.ImportFile( "0603_CharacterFire",		animData[1]);	pObj->anim->AddAnimData(animData[1]);
+	//	animData[2] = new AnimationClip(); memset(animData[2], NULL, sizeof(AnimationClip));importer.ImportFile( "0603_CharacterStartJump",	animData[2]);	pObj->anim->AddAnimData(animData[2]);
+	//	animData[3] = new AnimationClip(); memset(animData[3], NULL, sizeof(AnimationClip));importer.ImportFile( "0603_CharacterEndJump",	animData[3]);	pObj->anim->AddAnimData(animData[3]);
+	//	animData[4] = new AnimationClip(); memset(animData[4], NULL, sizeof(AnimationClip));importer.ImportFile( "0603_CharacterDied",		animData[4]);	pObj->anim->AddAnimData(animData[4]);
 	//	pObj->SetPosition(0.0f, 0.0f, i * 100.0f);
 	//	pObj->m_xmf3CollisionOffset.y = 15;
 	//	pObj->SetOOBB(pObj->m_xmf3CollisionOffset, XMFLOAT3(5.0f, 15.0f, 5.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -328,7 +326,7 @@ void CTestGroundScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 	//	XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppObjects[i]->m_xmf4x4World)));
 	//}
 
-	pd3dCommandList->SetPipelineState(pso[1]);
+	//pd3dCommandList->SetPipelineState(pso[1]);
 	m_ObjMng->Render();
 
 	//for (int i = 0; i < m_nPlayers; ++i) m_ppObjects[i]->Render(pd3dCommandList, m_pCamera);
@@ -437,8 +435,11 @@ void CTestGroundScene::ProcessInput(UCHAR * pKeysBuffer)
 	//if (pKeysBuffer[KEY::_7] & 0xF0) m_bUploadAnimMtx = false;
 	//if (pKeysBuffer[KEY::_8] & 0xF0) m_bUploadAnimMtx = true;
 
-	//if (pKeysBuffer[KEY::_1] & 0xF0) m_ShowBonesMode = OFFSET;
-	//if (pKeysBuffer[KEY::_2] & 0xF0) m_ShowBonesMode = OFFSETINV;
+	
+	if (pKeysBuffer[KEY::_1] & 0xF0) { if (m_pCamera->GetTarget() != m_ObjMng->GetTarget(0)) { m_pCamera->SetOffset(XMFLOAT3(0, 10.0f, 50.0f)); m_pCamera->SetTarget(m_ObjMng->GetTarget(0)); } }
+	if (pKeysBuffer[KEY::_2] & 0xF0) { if (m_pCamera->GetTarget() != m_ObjMng->GetTarget(1)) { m_pCamera->SetOffset(XMFLOAT3(0, 10.0f, 50.0f)); m_pCamera->SetTarget(m_ObjMng->GetTarget(1)); } }
+	//if (pKeysBuffer[KEY::_3] & 0xF0) { if (m_pCamera->GetTarget() != m_ObjMng->GetTarget(2)) { m_pCamera->SetOffset(XMFLOAT3(0, 50.0f, 10.0f)); m_pCamera->SetTarget(m_ObjMng->GetTarget(2)); } }
+	//if (pKeysBuffer[KEY::_4] & 0xF0) { if (m_pCamera->GetTarget() != m_ObjMng->GetTarget(3)) { m_pCamera->SetOffset(XMFLOAT3(0, 50.0f, 10.0f)); m_pCamera->SetTarget(m_ObjMng->GetTarget(3)); } }
 	//if (pKeysBuffer[KEY::_3] & 0xF0) m_ShowBonesMode = TOROOT;
 	//if (pKeysBuffer[KEY::_4] & 0xF0) m_ShowBonesMode = TOROOTINV;
 
@@ -463,12 +464,16 @@ void CTestGroundScene::MakePSO()
 	tempPso[0]->Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
 	tempPso[1] = new CTexturedIlluminatedPSO();
 	tempPso[1]->Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
-	tempPso[2] = new CDebugPSO();
-	tempPso[2]->Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
+	//tempPso[2] = new CDebugPSO();
+	//tempPso[2]->Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
 
 	pso[0] = tempPso[0]->GetPipelineState();
 	pso[1] = tempPso[1]->GetPipelineState();
-	pso[2] = tempPso[2]->GetPipelineState();
+	//pso[2] = tempPso[2]->GetPipelineState();
+
+	m_ObjMng->AddPSO(pso[0]);
+	m_ObjMng->AddPSO(pso[1]);
+	//m_ObjMng->AddPSO(pso[2]);
 }
 
 void CTestGroundScene::CreateDescriptorHeap()

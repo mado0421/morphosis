@@ -89,6 +89,7 @@ private:
 
 class AnimationMesh;
 struct ImportMeshData;
+class CAnimationController;
 
 class CMesh
 {
@@ -122,6 +123,9 @@ public:
 	virtual void CreateVertexBuffer(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, void *pData);
 	virtual void CreateIndexBuffer(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, void *pData);
 
+	virtual void SetAnimatedMatrix(CAnimationController* a);
+	virtual void CreateConstantBufferResource(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
+	virtual void UpdateConstantBuffer(ID3D12GraphicsCommandList *pd3dCommandList);
 };
 class CTexturedMesh : public CMesh
 {
@@ -154,6 +158,7 @@ class CAnimatedMesh : public CMesh {
 public:
 	CAnimatedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nVertices, XMFLOAT3 *pxmf3Positions, UINT nIndices, UINT *pnIndices) : CMesh(pd3dDevice, pd3dCommandList)
 	{
+		CreateConstantBufferResource(pd3dDevice, pd3dCommandList);
 		UINT nStride = sizeof(CAnimVertex);
 		this->nVertices = nVertices;
 
@@ -193,6 +198,8 @@ public:
 	CAnimatedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ImportMeshData& m);
 	virtual void Render(ID3D12GraphicsCommandList * pd3dCommandList)
 	{
+		UpdateConstantBuffer(pd3dCommandList);
+
 		pd3dCommandList->IASetPrimitiveTopology(primitiveTopology);
 		pd3dCommandList->IASetVertexBuffers(0, 1, &vertexBufferView);
 		if (pIndexBuffer)
@@ -205,6 +212,10 @@ public:
 			pd3dCommandList->DrawInstanced(nVertices, 1, 0, 0);
 		}
 	}
+
+	virtual void SetAnimatedMatrix(CAnimationController* a);
+	virtual void CreateConstantBufferResource(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
+	virtual void UpdateConstantBuffer(ID3D12GraphicsCommandList *pd3dCommandList);
 private:
 	ID3D12Resource					*pVertexBuffer = NULL;
 	ID3D12Resource					*pVertexUploadBuffer = NULL;
@@ -219,6 +230,10 @@ private:
 
 	UINT nIndices = 0;
 	UINT nVertices = 0;
+
+	ID3D12Resource					*m_pd3dcbAnimation = NULL;
+	XMMATRIX						*m_pcbxmAnimation = NULL;
+	XMMATRIX						m_a[g_NumAnimationBone];
 };
 class CTestMesh : public CIlluminatedTexturedMesh
 {

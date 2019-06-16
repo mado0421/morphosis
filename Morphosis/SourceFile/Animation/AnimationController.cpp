@@ -12,22 +12,23 @@ void CAnimationController::AddAnimData(AnimationClip * animData)
 {
 	m_AnimData.push_back(animData);
 }
-XMMATRIX CAnimationController::GetFinalMatrix(int boneIdx, float time)
+XMMATRIX CAnimationController::GetFinalMatrix(int boneIdx)
 {
 	XMVECTOR det;
 	XMMATRIX OffsetInv, ToRootInv;
 	det = XMMatrixDeterminant(XMLoadFloat4x4(&m_AnimData[m_AnimState]->m_BoneList[boneIdx].m_GlobalTransform));
 	OffsetInv = XMMatrixInverse(&det, XMLoadFloat4x4(&m_AnimData[m_AnimState]->m_BoneList[boneIdx].m_GlobalTransform));
-	ToRootInv = GetInterpolatedToRootMtx(boneIdx, time);
+	ToRootInv = GetInterpolatedToRootMtx(boneIdx);
 
 	det = XMMatrixDeterminant(ToRootInv);
 	ToRootInv = XMMatrixInverse(&det, ToRootInv);
 	return XMMatrixMultiply(OffsetInv, ToRootInv);
 }
-XMMATRIX CAnimationController::GetInterpolatedToRootMtx(int boneIdx, float time)
+XMMATRIX CAnimationController::GetInterpolatedToRootMtx(int boneIdx)
 {
 	int PrevIdx = 0;
 	float normalizedTime = 0;
+	float time = m_fTime;
 	// 만약 키프레임이 하나 밖에 없으면 맨 첫 번째 ToRoot를 반환
 	if (m_AnimData[m_AnimState]->m_nKeyTime == 1) return XMLoadFloat4x4(&m_AnimData[m_AnimState]->m_BoneList[boneIdx].m_pToRootTransforms[0]);
 	//if (isFurtherThanBack(time)) if (isLoop) time = GetClampTime(time);
@@ -59,6 +60,24 @@ XMMATRIX CAnimationController::GetOffset(int boneIdx)
 float CAnimationController::GetEndTime()
 {
 	return static_cast<float>(m_AnimData[m_AnimState]->m_KeyTime[m_AnimData[m_AnimState]->m_nKeyTime - 1]);
+}
+void CAnimationController::ChangeAnimClip(const char * animClipName)
+{
+	/*********************************************************************
+	2019-06-16
+	지금 애니메이션 어떻게 사용하지?
+	m_AnimState로 관리하던거 같은데
+	그럼 distance로 구해서 넣으면 되겠다.
+	*********************************************************************/
+	auto iter = find_if(m_AnimData.begin(), m_AnimData.end(), [animClipName](AnimationClip* a) { return a->m_AnimName == animClipName; });
+	if (iter != m_AnimData.end()) {
+		m_fTime = 0.0f;
+		m_AnimState = static_cast<int>( distance(m_AnimData.begin(), iter) );
+	}
+}
+void CAnimationController::Update(float fTime)
+{
+	m_fTime += fTime;
 }
 int CAnimationController::GetPrevIdx(float time)
 {

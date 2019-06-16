@@ -17,6 +17,21 @@ void CModel::Render(ID3D12GraphicsCommandList *pd3dCommandList, bool isDebug)
 	}
 }
 
+void CModel::SetAnimatedMatrix(CAnimationController * a)
+{
+	m_Mesh->SetAnimatedMatrix(a);
+}
+
+void CModel::CreateConstantBufferResource(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
+{
+	m_Mesh->CreateConstantBufferResource(pd3dDevice, pd3dCommandList);
+}
+
+void CModel::UpdateConstantBuffer(ID3D12GraphicsCommandList * pd3dCommandList)
+{
+	m_Mesh->UpdateConstantBuffer(pd3dCommandList);
+}
+
 void CCollisionBox::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 {
 }

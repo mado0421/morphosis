@@ -4,9 +4,16 @@ VS_TEXTURED_ILLUMINATED_VERTEX_OUTPUT VSAnimated(VS_ANIMATED_VERTEX_INPUT input)
 {
 	VS_TEXTURED_ILLUMINATED_VERTEX_OUTPUT output;
 	float3 weightedPos = 0;
+	float4x4 a = {
+	1,0,0,0,
+	0,1,0,0,
+	0,0,1,0,
+	0,0,0,1
+	};
 
 	for (int i = 0; i < 4; ++i) {
 		float4 bonePos = mul(float4(input.position, 1), AnimMatrix[input.boneIdx[i]]);
+		//float4 bonePos = mul(float4(input.position, 1), a);
 		weightedPos += input.weight[i] * bonePos.xyz;
 	}
 

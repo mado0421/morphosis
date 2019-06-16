@@ -127,12 +127,10 @@ CFollowCamera::~CFollowCamera()
 void CFollowCamera::SetTarget(void * target)
 {
 	m_pTarget = (CObject*)target;
-	XMFLOAT3 pos = m_pTarget->GetPosition();
-	pos.y += CAM_Y_DISTANCE;
-	/*포지션을 정하고 오프셋을 주어 포지션을 변경 시킨 뒤에 LookAt을 하지 않으면 
+	XMFLOAT3 pos = m_pTarget->GetCameraTargetPos();
+	/*포지션을 정하고 오프셋을 주어 포지션을 변경 시킨 뒤에 LookAt을 하지 않으면
 	눈의 위치와 바라보려는 곳이 겹치면서 바라보는 방향 벡터가 (0, 0, 0)이 되기 때문에
 	문제가 생김*/
-//	SetPosition(pos);
 	SetLookAt(pos);
 }
 
@@ -199,7 +197,7 @@ void CFollowCamera::Update(float fTimeElapsed)
 		}
 
 		/*먼저 회전말고 이동 먼저 해보자.*/
-		XMFLOAT3 targetPos = m_pTarget->GetPosition();
+		XMFLOAT3 targetPos = m_pTarget->GetCameraTargetPos();
 		if (!IsZero(targetPos.x - m_xmf3Position.x)) {
 			/*일정 거리 이상이면 차이의 0.7배만큼, 일정 거리 이하면 그 값으로 대체*/
 			m_xmf3Position.x += (targetPos.x - m_xmf3Position.x) * CAM_MOVE_SPEED * fTimeElapsed;

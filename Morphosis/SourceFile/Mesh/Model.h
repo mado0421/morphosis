@@ -41,6 +41,7 @@ CModel은 다음과 같이 구조를 변경한다.
 
 class CMesh;
 class CTexture;
+class CAnimationController;
 
 class CCollisionBox {
 public:
@@ -64,6 +65,9 @@ public:
 	void SetMesh(CMesh* mesh)			{ m_Mesh = mesh; }
 	void SetTexture(CTexture* texture)	{ m_Texture = texture; }
 
+	void SetAnimatedMatrix(CAnimationController* a);
+	void CreateConstantBufferResource(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
+	void UpdateConstantBuffer(ID3D12GraphicsCommandList *pd3dCommandList);
 private:
 	CMesh*			m_Mesh			= NULL;
 	CTexture*		m_Texture		= NULL;

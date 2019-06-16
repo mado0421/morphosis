@@ -97,7 +97,7 @@ void CImporter::ImportModel(const char * fileName, CTexture * texture, CObject *
 	TCHAR programpath[_MAX_PATH];
 	GetCurrentDirectory(_MAX_PATH, programpath);
 
-	string modelDataName/* = ASSETPATH*/;
+	string modelDataName = ASSETPATH;
 	modelDataName += fileName;
 	modelDataName += "_mesh.dat";
 	ImportModelData modelData;
@@ -118,4 +118,17 @@ void CImporter::ImportModel(const char * fileName, CTexture * texture, CObject *
 		model->SetTexture(texture);
 		obj->AddModel(model);
 	}
+}
+
+void CImporter::ImportAnimClip(const char * fileName, CObject * obj)
+{
+	string filePath("Assets/");
+	filePath += fileName;
+
+	string animDataName = filePath;
+	animDataName += "_anim.dat";
+	AnimationClip* animData = new AnimationClip();
+	animData->ImportFile(animDataName.c_str());
+
+	obj->AddAnimClip(animData);
 }

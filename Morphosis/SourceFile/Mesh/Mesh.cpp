@@ -82,6 +82,18 @@ void CMesh::CreateIndexBuffer(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLi
 
 }
 
+void CMesh::SetAnimatedMatrix(CAnimationController * a)
+{
+}
+
+void CMesh::CreateConstantBufferResource(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
+{
+}
+
+void CMesh::UpdateConstantBuffer(ID3D12GraphicsCommandList * pd3dCommandList)
+{
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 CIlluminatedMesh::CIlluminatedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList) : CMesh(pd3dDevice, pd3dCommandList)
@@ -804,55 +816,6 @@ CTestMesh::~CTestMesh()
 	if (m_pnIndices) delete[] m_pnIndices;
 }
 
-//CUITextured::CUITextured(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, XMFLOAT2 extents) : CTexturedMesh(pd3dDevice, pd3dCommandList)
-//{
-//	m_nVertices = 6;
-//	m_nStride = sizeof(CTexturedVertex);
-//	m_nOffset = 0;
-//	m_nSlot = 0;
-//	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-//
-//	float left		= -extents.x;
-//	float top		= extents.y;
-//	float right		= extents.x;
-//	float bottom	= -extents.y;
-//
-//
-//	XMFLOAT3 pxmf3Position[6];
-//	int i = 0;
-//	pxmf3Position[i++] = XMFLOAT3(right, top, 0);
-//	pxmf3Position[i++] = XMFLOAT3(left, bottom, 0);
-//	pxmf3Position[i++] = XMFLOAT3(left, top, 0);
-//
-//	pxmf3Position[i++] = XMFLOAT3(right, top, 0);
-//	pxmf3Position[i++] = XMFLOAT3(right, bottom, 0);
-//	pxmf3Position[i++] = XMFLOAT3(left, bottom, 0);
-//
-//	XMFLOAT2 pxmf2TexCoords[6];
-//	i = 0;
-//	pxmf2TexCoords[i++] = XMFLOAT2(1.0f, 0.0f);
-//	pxmf2TexCoords[i++] = XMFLOAT2(0.0f, 1.0f);
-//	pxmf2TexCoords[i++] = XMFLOAT2(0.0f, 0.0f);
-//
-//	pxmf2TexCoords[i++] = XMFLOAT2(1.0f, 0.0f);
-//	pxmf2TexCoords[i++] = XMFLOAT2(1.0f, 1.0f);
-//	pxmf2TexCoords[i++] = XMFLOAT2(0.0f, 1.0f);
-//
-//	CTexturedVertex pVertices[6];
-//	for (int i = 0; i < 6; ++i) pVertices[i] = CTexturedVertex(pxmf3Position[i], pxmf2TexCoords[i]);
-//	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
-//		pVertices, m_nStride * m_nVertices,
-//		D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
-//
-//	m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
-//	m_d3dVertexBufferView.StrideInBytes = m_nStride;
-//	m_d3dVertexBufferView.SizeInBytes = m_nStride * m_nVertices;
-//}
-//
-//CUITextured::~CUITextured()
-//{
-//}
-
 CAnimatedMesh::CAnimatedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ImportMeshData & m) : CMesh(pd3dDevice, pd3dCommandList)
 {
 	int nCtrlPoint		= static_cast<int>(m.m_nCtrlPointList);
@@ -888,4 +851,34 @@ CAnimatedMesh::CAnimatedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLis
 	vertexBufferView.BufferLocation = pVertexBuffer->GetGPUVirtualAddress();
 	vertexBufferView.StrideInBytes = nStride;
 	vertexBufferView.SizeInBytes = nStride * nVertices;
+
+	CreateConstantBufferResource(pd3dDevice, pd3dCommandList);
+}
+
+void CAnimatedMesh::SetAnimatedMatrix(CAnimationController * a)
+{
+	for (int i = 0; i < a->m_AnimData[0]->m_nBoneList; ++i) {
+		m_a[i] = XMMatrixTranspose( a->GetFinalMatrix(i));
+	}
+}
+
+void CAnimatedMesh::CreateConstantBufferResource(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
+{
+	UINT ncbElementBytes = (((sizeof(XMMATRIX) * g_NumAnimationBone) + 255) & ~255); //256의 배수
+	m_pd3dcbAnimation = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	m_pd3dcbAnimation->Map(0, NULL, (void **)&m_pcbxmAnimation);
+}
+
+void CAnimatedMesh::UpdateConstantBuffer(ID3D12GraphicsCommandList * pd3dCommandList)
+{
+	if (m_pd3dcbAnimation)
+	{
+		D3D12_GPU_VIRTUAL_ADDRESS d3dcbBoneOffsetsGpuVirtualAddress = m_pd3dcbAnimation->GetGPUVirtualAddress();
+		pd3dCommandList->SetGraphicsRootConstantBufferView(g_RootParameterAnimation, d3dcbBoneOffsetsGpuVirtualAddress); //Skinned Bone Offsets
+
+		for (int i = 0; i < g_NumAnimationBone; i++)
+		{
+			m_pcbxmAnimation[i] = m_a[i];
+		}
+	}
 }
