@@ -7,30 +7,29 @@
 
 CObject::CObject()
 {
-	m_xmf4x4World = Matrix4x4::Identity();
+	m_xmf4x4World			= Matrix4x4::Identity();
+	m_IsAlive				= true;
+	m_xmf3Variation			= XMFLOAT3(0, 0, 0);
+	m_xmf3RotateAngle		= XMFLOAT3(0, 0, 0);
+	m_xmf3CollisionOffset	= XMFLOAT3(0, 0, 0);
+	m_fSpeed				= g_PlayerDefaultSpeed;
+	m_trigInput[count];
 }
-
-
 CObject::~CObject()
 {
 }
 
-void CObject::Initialize()
-{
-
-}
-
 void CObject::SetRootParameter(ID3D12GraphicsCommandList * pd3dCommandList)
 {
-	pd3dCommandList->SetGraphicsRootDescriptorTable(RootParameter::OBJECT, m_d3dCbvGPUDescriptorHandle);
+	pd3dCommandList->SetGraphicsRootDescriptorTable(g_RootParameterObject, m_d3dCbvGPUDescriptorHandle);
 }
 
 void CObject::Render(ID3D12GraphicsCommandList * pd3dCommandList, CCamera * pCamera, bool isDebug)
 {
-	if (!isAlive) return;
+	if (!m_IsAlive) return;
 	if (!m_ModelList.empty()) {
 		for (auto p = m_ModelList.begin(); p != m_ModelList.end(); ++p) {
-			pd3dCommandList->SetGraphicsRootDescriptorTable(RootParameter::OBJECT, m_d3dCbvGPUDescriptorHandle);
+			pd3dCommandList->SetGraphicsRootDescriptorTable(g_RootParameterObject, m_d3dCbvGPUDescriptorHandle);
 			p->Render(pd3dCommandList, isDebug);
 		}
 	}
@@ -38,7 +37,7 @@ void CObject::Render(ID3D12GraphicsCommandList * pd3dCommandList, CCamera * pCam
 
 void CObject::Update(float fTimeElapsed)
 {
-	if (!isAlive) return;
+	if (!m_IsAlive) return;
 	XMFLOAT3 xmf3Right	= XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
 	XMFLOAT3 xmf3Up		= XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
 	XMFLOAT3 xmf3Look	= XMFLOAT3(m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33);
@@ -153,267 +152,6 @@ void CObject::ProcessInput(UCHAR * pKeysBuffer)
 	if (pKeysBuffer[KEY::E] & 0xF0) m_trigInput[E] = true;
 }
 
-
-//CMovingObject::CMovingObject()
-//{
-//	m_xmf3Variation = XMFLOAT3(0, 0, 0);
-//	m_xmf3RotateAngle = XMFLOAT3(0, 0, 0);
-//	m_xmf3CollisionOffset = XMFLOAT3(0, 0, 0);
-//}
-//
-//void CMovingObject::Update(float fTimeElapsed)
-//{
-//	if (!isAlive) return;
-//	//m_xmf4x4World._41 = m_collisionBox.Center.x - m_xmf3CollisionOffset.x;
-//	//m_xmf4x4World._42 = m_collisionBox.Center.y - m_xmf3CollisionOffset.y;
-//	//m_xmf4x4World._43 = m_collisionBox.Center.z - m_xmf3CollisionOffset.z;
-//	
-//	/*
-//	m_xmf4x4World._41 += m_xmf3Variation.x * fTimeElapsed * m_fSpeed;
-//	m_xmf4x4World._42 += m_xmf3Variation.y * fTimeElapsed * m_fSpeed - m_fGravityAccel * fTimeElapsed;
-//	m_xmf4x4World._43 += m_xmf3Variation.z * fTimeElapsed * m_fSpeed;*/
-//
-//	XMFLOAT3 xmf3Right = XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
-//	XMFLOAT3 xmf3Up = XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
-//	XMFLOAT3 xmf3Look = XMFLOAT3(m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33);
-//
-//	XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(m_xmf3RotateAngle.y * fTimeElapsed));
-//	xmf3Look = Vector3::TransformNormal(xmf3Look, xmmtxRotate);
-//	xmf3Right = Vector3::TransformNormal(xmf3Right, xmmtxRotate);
-//
-//	xmf3Look = Vector3::Normalize(xmf3Look);
-//	xmf3Right = Vector3::CrossProduct(xmf3Up, xmf3Look, true);
-//	xmf3Up = Vector3::CrossProduct(xmf3Look, xmf3Right, true);
-//
-//	m_xmf4x4World._11 = xmf3Right.x;	m_xmf4x4World._12 = xmf3Right.y;	m_xmf4x4World._13 = xmf3Right.z;
-//	m_xmf4x4World._21 = xmf3Up.x;		m_xmf4x4World._22 = xmf3Up.y;		m_xmf4x4World._23 = xmf3Up.z;
-//	m_xmf4x4World._31 = xmf3Look.x;		m_xmf4x4World._32 = xmf3Look.y;		m_xmf4x4World._33 = xmf3Look.z;
-//	m_xmf4x4World._41 += m_xmf3Variation.x;
-//	m_xmf4x4World._42 += m_xmf3Variation.y;
-//	m_xmf4x4World._43 += m_xmf3Variation.z;
-//
-//	m_xmf3RotateAngle.x = m_xmf3RotateAngle.y = m_xmf3RotateAngle.z = 0;
-//	m_xmf3Variation.x = m_xmf3Variation.y = m_xmf3Variation.z = 0;
-//
-//	XMFLOAT3 center = XMFLOAT3(
-//		m_xmf4x4World._41 + m_xmf3CollisionOffset.x,
-//		m_xmf4x4World._42 + m_xmf3CollisionOffset.y,
-//		m_xmf4x4World._43 + m_xmf3CollisionOffset.z);
-//	m_collisionBox.Center = center;
-//	XMStoreFloat4(&m_collisionBox.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_collisionBox.Orientation)));
-//
-//
-//}
-//
-//void CMovingObject::AddPosVariation(XMFLOAT3 xmf3Velocity)
-//{
-//	m_xmf3Variation.x += xmf3Velocity.x;
-//	m_xmf3Variation.y += xmf3Velocity.y;
-//	m_xmf3Variation.z += xmf3Velocity.z;
-//}
-//
-//void CMovingObject::AddRotateAngle(XMFLOAT3 xmf3Angle)
-//{
-//	m_xmf3RotateAngle.x += xmf3Angle.x;
-//	m_xmf3RotateAngle.y += xmf3Angle.y;
-//	m_xmf3RotateAngle.z += xmf3Angle.z;
-//}
-//
-//void CPlayerObject::Initialize()
-//{
-//	CObject::Initialize();
-//	m_hp = 100;
-//}
-//
-//void CPlayerObject::Update(float fTimeElapsed)
-//{
-//	if (!isAlive) {
-//		if (m_timer < 0) {
-//			Initialize();
-//			//Init
-//			return;
-//		}
-//		m_timer -= fTimeElapsed;
-//
-//	}
-//	else
-//	{
-//		CMovingObject::Update(fTimeElapsed);
-//		if (m_jump) {
-//			m_fGravityAccel = -fTimeElapsed * static_cast<float>( G )* 450;
-//			m_jump = false;
-//		}
-//		if (!IsFireable()) m_attTimer -= fTimeElapsed;
-//	}
-//
-//}
-//
-//void CPlayerObject::Attack()
-//{
-//	m_attTimer = static_cast<float>(TIMER_ATT);
-//	//투사체 생성은 Scene 키입력 받을 때 해주자
-//}
-//
-//void CPlayerObject::Damaged(int val)
-//{
-//	m_hp -= val;
-//}
-//
-//void CPlayerObject::Jump()
-//{
-//	if (!isFalling && !m_jump) m_jump = true;
-//}
-//
-//void CProjectileObject::Initialize()
-//{
-//	CObject::Initialize();
-//	m_fSpeed = 550;
-//	m_fLifeTime = 1.0f;
-//
-//}
-//
-//void CProjectileObject::Initialize(CMovingObject *user)
-//{
-//	CProjectileObject::Initialize();
-//	XMFLOAT3 pos = user->GetPosition();
-//	/*pos.y += 30;*/
-//	SetPosition(pos);
-//	SetLook(user->GetLook());
-//	SetUp(user->GetUp());
-//	SetRight(user->GetRight());
-//	m_collisionBox.Center = pos;
-//
-//}
-//
-//void CProjectileObject::Update(float fTimeElapsed)
-//{
-//	if (isAlive)
-//	{
-//		CMovingObject::Update(fTimeElapsed);
-//		m_xmf3Variation = GetLook();
-//		m_fLifeTime -= fTimeElapsed;
-//		if (m_fLifeTime <= 0) {
-//			isAlive = false;
-//		}
-//	}
-//
-//}
-//
-//void CCollideObejct::SetOOBBMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
-//{
-//	CTestMesh *pTestMesh = new CTestMesh(pd3dDevice, pd3dCommandList, m_collisionBox.Center, m_collisionBox.Extents);
-//
-//	if (m_ppTestMeshes)
-//	{
-//		m_ppTestMeshes[0] = pTestMesh;
-//		m_nTestMeshes = 1;
-//	}
-//	else
-//	{
-//		m_ppTestMeshes = new CMesh*;
-//		m_ppTestMeshes[0] = pTestMesh;
-//		m_nTestMeshes = 1;
-//	}
-//}
-//
-//void CCollideObejct::TestRender(ID3D12GraphicsCommandList * pd3dCommandList, CCamera * pCamera)
-//{
-//	if (!isAlive) return;
-//	if (m_ppTestMeshes && (m_nTestMeshes > 0))
-//	{
-//		SetRootParameter(pd3dCommandList);
-//
-//		for (int i = 0; i < m_nTestMeshes; i++)
-//		{
-//			if (m_ppTestMeshes[i]) m_ppTestMeshes[i]->Render(pd3dCommandList);
-//		}
-//	}
-//}
-//
-//CDefaultUI::CDefaultUI()
-//{
-//	extents.x = 0;
-//	extents.y = 0;
-//	texIdx = 0;
-//}
-//
-//CDefaultUI::~CDefaultUI()
-//{
-//}
-//
-//void CDefaultUI::SetRootParameter(ID3D12GraphicsCommandList * pd3dCommandList)
-//{
-//	pd3dCommandList->SetGraphicsRootDescriptorTable(RootParameter::UI, m_d3dCbvGPUDescriptorHandle);
-//}
-//
-//void CDefaultUI::SetExtents(XMFLOAT2 ext)
-//{
-//	SetExtents(ext.x, ext.y);
-//}
-//
-//void CDefaultUI::SetExtents(float x, float y)
-//{
-//	extents.x = x;
-//	extents.x = y;
-//}
-//
-//void CDefaultUI::Initialize()
-//{
-//	SetPosition(0, 0, 0);
-//	curLife = lifeTime;
-//	isAlive = true;
-//}
-//
-//void CDefaultUI::Initialize(CObject& other)
-//{
-//	other.GetPosition();
-//	SetPosition(other.GetPosition());
-//
-//
-//}
-//
-//void CDefaultUI::Update(float fTimeElapsed)
-//{
-//	if (isAlive) {
-//		m_xmf4x4World._42 += fTimeElapsed * 10;
-//		curLife -= fTimeElapsed;
-//		if (curLife < 0) isAlive = false;
-//	}
-//}
-
-//
-//void CAnimationPlayerObject::Update(float fTimeElapsed)
-//{
-//	if (IsDead()) {
-//		anim->m_AnimState = DIED;
-//		anim->isLoop = false;
-//		m_fAnimTime = 0.0f;
-//		return;
-//	}
-//	if (m_bIsMoving) {
-//		if (m_fAnimTime > anim->GetEndTime()) {
-//			m_bIsMoving = false;
-//			anim->m_AnimState = IDLE;
-//			m_fAnimTime = 0.0f;
-//		}
-//	}
-//	if (!IsMoving() && m_bIsMoving) {
-//		m_bIsMoving = false;
-//		anim->m_AnimState = IDLE;
-//		m_fAnimTime = 0.0f;
-//	}
-//	CPlayerObject::Update(fTimeElapsed);
-//
-//
-//
-//	m_fAnimTime += fTimeElapsed;
-//}
-//
-//XMMATRIX CAnimationPlayerObject::GetAnimMtx(int boneIdx)
-//{
-//	return anim->GetFinalMatrix(boneIdx, m_fAnimTime);
-//}
-
 CObjectManager::~CObjectManager()
 {
 	for (int i = 0; i < m_Objects.size(); ++i) delete m_Objects[i];
@@ -424,6 +162,27 @@ CObjectManager::~CObjectManager()
 
 void CObjectManager::Render()
 {
+	/*********************************************************************
+	2019-06-16
+	렌더 하기 전에 위치 행렬 등을 hlsl에서 쓸 수 있게 map한 주소로 복사해줘야 함.
+	*********************************************************************/
+	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
+	CB_OBJECT_INFO *pbMappedcbObject;
+	int count = 0;
+	for (unsigned int i = 0; i < m_nProps; i++) {
+		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedPropObjects + (i * ncbElementBytes));
+		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Objects[count++]->m_xmf4x4World)));
+	}
+	for (unsigned int i = count; i < m_nPlayers + m_nProps; i++) {
+		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedPlayers + (i * ncbElementBytes));
+		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Objects[count++]->m_xmf4x4World)));
+	}
+	for (unsigned int i = count; i < m_nProjectiles + m_nPlayers + m_nProps; i++) {
+		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedProjectiles + (i * ncbElementBytes));
+		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Objects[count++]->m_xmf4x4World)));
+	}
+
+
 	for (int i = 0; i < m_Objects.size(); ++i) {
 		m_Objects[i]->Render(m_pd3dCommandList);
 	}
@@ -460,21 +219,21 @@ void CObjectManager::CreateConstantBufferResorce()
 
 	m_pd3dCBPropResource = ::CreateBufferResource(m_pd3dDevice, m_pd3dCommandList, NULL, ncbElementBytes * m_nProps,
 		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-	m_pd3dCBPropResource->Map(0, NULL, (void **)&m_pCBMappedPropObjects);
+	if(nullptr != m_pd3dCBPropResource)	m_pd3dCBPropResource->Map(0, NULL, (void **)&m_pCBMappedPropObjects);
 
 	m_pd3dCBPlayersResource = ::CreateBufferResource(m_pd3dDevice, m_pd3dCommandList, NULL, ncbElementBytes * m_nPlayers,
 		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-	m_pd3dCBPlayersResource->Map(0, NULL, (void **)&m_pCBMappedPlayers);
+	if (nullptr != m_pd3dCBPlayersResource) m_pd3dCBPlayersResource->Map(0, NULL, (void **)&m_pCBMappedPlayers);
 
 	m_pd3dCBProjectilesResource = ::CreateBufferResource(m_pd3dDevice, m_pd3dCommandList, NULL, ncbElementBytes * m_nProjectiles,
 		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-	m_pd3dCBProjectilesResource->Map(0, NULL, (void **)&m_pCBMappedProjectiles);
+	if (nullptr != m_pd3dCBProjectilesResource) m_pd3dCBProjectilesResource->Map(0, NULL, (void **)&m_pCBMappedProjectiles);
 
 	ncbElementBytes = ((sizeof(XMMATRIX) + 255) & ~255);
 
 	m_pd3dCBAnimationMatrixResource = ::CreateBufferResource(m_pd3dDevice, m_pd3dCommandList, NULL, ncbElementBytes * m_nAnimationMatrix,
 		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-	m_pd3dCBAnimationMatrixResource->Map(0, NULL, (void **)&m_pCBMappedAnimationMatrix);
+	if (nullptr != m_pd3dCBAnimationMatrixResource) m_pd3dCBAnimationMatrixResource->Map(0, NULL, (void **)&m_pCBMappedAnimationMatrix);
 }
 
 void CObjectManager::CreateConstantBufferView()
@@ -487,37 +246,45 @@ void CObjectManager::CreateConstantBufferView()
 	ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
 	d3dCBVDesc.SizeInBytes = ncbElementBytes;
 
-	d3dGpuVirtualAddress = m_pd3dCBPropResource->GetGPUVirtualAddress();
-	for (unsigned int i = 0; i < m_nProps; i++) {
-		d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * count);
-		D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
-		d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * count++);
-		m_pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
+	if (nullptr != m_pd3dCBPropResource) {
+		d3dGpuVirtualAddress = m_pd3dCBPropResource->GetGPUVirtualAddress();
+		for (unsigned int i = 0; i < m_nProps; i++) {
+			d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * count);
+			D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
+			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * count++);
+			m_pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
+		}
 	}
-	d3dGpuVirtualAddress = m_pd3dCBPlayersResource->GetGPUVirtualAddress();
-	for (unsigned int i = 0; i < m_nPlayers; i++) {
-		d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * count);
-		D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
-		d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * count++);
-		m_pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
+	if (nullptr != m_pd3dCBPlayersResource) {
+		d3dGpuVirtualAddress = m_pd3dCBPlayersResource->GetGPUVirtualAddress();
+		for (unsigned int i = 0; i < m_nPlayers; i++) {
+			d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * count);
+			D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
+			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * count++);
+			m_pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
+		}
 	}
-	d3dGpuVirtualAddress = m_pd3dCBProjectilesResource->GetGPUVirtualAddress();
-	for (unsigned int i = 0; i < m_nProjectiles; i++) {
-		d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * count);
-		D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
-		d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * count++);
-		m_pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
+	if (nullptr != m_pd3dCBProjectilesResource) {
+		d3dGpuVirtualAddress = m_pd3dCBProjectilesResource->GetGPUVirtualAddress();
+		for (unsigned int i = 0; i < m_nProjectiles; i++) {
+			d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * count);
+			D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
+			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * count++);
+			m_pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
+		}
 	}
 
 	ncbElementBytes = ((sizeof(XMMATRIX) + 255) & ~255);
 	d3dCBVDesc.SizeInBytes = ncbElementBytes;
 
-	d3dGpuVirtualAddress = m_pd3dCBAnimationMatrixResource->GetGPUVirtualAddress();
-	for (unsigned int i = 0; i < m_nAnimationMatrix; i++) {
-		d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * count);
-		D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
-		d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * count++);
-		m_pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
+	if (nullptr != m_pd3dCBAnimationMatrixResource) {
+		d3dGpuVirtualAddress = m_pd3dCBAnimationMatrixResource->GetGPUVirtualAddress();
+		for (unsigned int i = 0; i < m_nAnimationMatrix; i++) {
+			d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * count);
+			D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
+			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * count++);
+			m_pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
+		}
 	}
 }
 
@@ -559,11 +326,16 @@ void CObjectManager::CreateObjectData()
 	m_nProps는 LevelData에서 읽어오고, 나머지는 Defines.h에서 가져올 것.
 	*********************************************************************/
 	CImporter importer(m_pd3dDevice, m_pd3dCommandList);
-	m_nProps = 10;
-	m_nPlayers = 1;
-	m_nProjectiles = m_nPlayers * 30;
-	m_nObjects = m_nProps + m_nPlayers + m_nProjectiles;
-	m_nAnimationMatrix = (m_nProps + m_nPlayers) * g_NumAnimationBone;
+	//m_nProps			= 10;
+	//m_nPlayers			= 1;
+	//m_nProjectiles		= m_nPlayers * 30;
+	//m_nObjects			= m_nProps + m_nPlayers + m_nProjectiles;
+	//m_nAnimationMatrix	= (m_nProps + m_nPlayers) * g_NumAnimationBone;
+	m_nProps			= 1;
+	m_nPlayers			= 0;
+	m_nProjectiles		= 0;
+	m_nObjects			= 1;
+	m_nAnimationMatrix	= 1;
 
 	CreateDescriptorHeap();
 	/*********************************************************************
@@ -597,7 +369,7 @@ void CObjectManager::CreateObjectData()
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 		m_Objects.push_back(obj);
 	}
-	for (unsigned int i = m_nProps; i < m_nPlayers; i++) {
+	for (unsigned int i = count; i < m_nPlayers + m_nProps; i++) {
 		CObject* obj = new CObject();
 
 		importer.ImportModel("0615_Box", m_TextureList[0], obj);
@@ -605,7 +377,7 @@ void CObjectManager::CreateObjectData()
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 		m_Objects.push_back(obj);
 	}
-	for (unsigned int i = m_nPlayers; i < m_nProjectiles; i++) {
+	for (unsigned int i = count; i < m_nProjectiles + m_nPlayers + m_nProps; i++) {
 		CObject* obj = new CObject();
 
 		importer.ImportModel("0615_Box", m_TextureList[0], obj);

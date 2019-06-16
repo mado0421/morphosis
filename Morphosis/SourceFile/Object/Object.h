@@ -17,8 +17,6 @@ public:
 	~CObject();
 
 public:
-	virtual void Initialize();
-
 	void SetCbvGPUDescriptorHandle(D3D12_GPU_DESCRIPTOR_HANDLE d3dCbvGPUDescriptorHandle) { m_d3dCbvGPUDescriptorHandle = d3dCbvGPUDescriptorHandle; }
 	void SetCbvGPUDescriptorHandlePtr(UINT64 nCbvGPUDescriptorHandlePtr) { m_d3dCbvGPUDescriptorHandle.ptr = nCbvGPUDescriptorHandlePtr; }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetCbvGPUDescriptorHandle() { return(m_d3dCbvGPUDescriptorHandle); }
@@ -67,7 +65,7 @@ public:
 
 
 private:
-	bool							isAlive					= true;
+	bool							m_IsAlive;
 	std::vector<CModel>				m_ModelList;
 
 	D3D12_GPU_DESCRIPTOR_HANDLE		m_d3dCbvGPUDescriptorHandle;
@@ -76,18 +74,15 @@ private:
 
 	/*************************************************************************
 	이동 관련 파트*/
-	XMFLOAT3						m_xmf3Variation			= XMFLOAT3(0, 0, 0);
-	XMFLOAT3						m_xmf3RotateAngle		= XMFLOAT3(0, 0, 0);
-	XMFLOAT3						m_xmf3CollisionOffset	= XMFLOAT3(0, 0, 0);
-	float							m_fSpeed				= 100.0f;
-	float							m_fGravityAccel			= 0;
-	float							prevHeight				= 0;
-	bool							isFalling				= true;
+	XMFLOAT3						m_xmf3Variation;
+	XMFLOAT3						m_xmf3RotateAngle;
+	XMFLOAT3						m_xmf3CollisionOffset;
+	float							m_fSpeed;
 	bool							m_trigInput[count];
 
 	/*************************************************************************
 	애니메이션 관련 파트*/
-	CAnimationController*			m_AnimationController = NULL;
+	CAnimationController			*m_AnimationController = NULL;
 };
 //class CCollideObejct : public CObject
 //{
@@ -237,6 +232,11 @@ public:
 		: m_pd3dDevice(pd3dDevice)
 		, m_pd3dCommandList(pd3dCommandList) 
 	{
+		m_nObjects			= 0;
+		m_nProps			= 0;
+		m_nPlayers			= 0;
+		m_nProjectiles		= 0;
+		m_nAnimationMatrix	= 0;
 		CreateObjectData();
 	}
 	~CObjectManager();
@@ -246,7 +246,8 @@ public:
 	void Update(float fTime);
 
 	CObject* GetPlayer(int i) {
-		return m_Objects[m_nProps + i];
+		return m_Objects[0];
+		//return m_Objects[m_nProps + i];
 	}
 	ID3D12DescriptorHeap* GetDescriptorHeap() {
 		return m_pd3dCbvSrvDescriptorHeap;
