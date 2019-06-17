@@ -35,43 +35,31 @@ public:
 	void SetPosition(float x, float y, float z);
 	void SetPosition(const XMFLOAT3 xmf3Position);
 
-	const XMFLOAT3 GetPosition();
-	const XMFLOAT3 GetLook();
-	const XMFLOAT3 GetUp();
-	const XMFLOAT3 GetRight();
-	XMMATRIX GetAnimationMatrix(int boneIdx);
-	int GetNumAnimationBone();
+	const XMFLOAT3	GetPosition();
+	const XMFLOAT3	GetLook();
+	const XMFLOAT3	GetUp();
+	const XMFLOAT3	GetRight();
+	XMMATRIX		GetAnimationMatrix(int boneIdx);
+	int				GetNumAnimationBone();
+	XMFLOAT3		GetCameraTargetPos();
 
 	void SetLook(XMFLOAT3 look);
 	void SetUp(XMFLOAT3 up);
 	void SetRight(XMFLOAT3 right);
 	void SetCameraTargetPos(XMFLOAT3 pos);
-	XMFLOAT3 GetCameraTargetPos();
+	void SetAlive(bool state) { m_IsAlive = state; }
 
 	bool IsCollide(const BoundingOrientedBox& other);
+	bool IsAlive() { return m_IsAlive; }
+	virtual void ProcessInput(UCHAR* pKeysBuffer);
 
-private:
-	void TriggerOff();
-	XMFLOAT3 Move(float fTimeElapsed);
-	float Rotate(float fTimeElapsed);
-	void ProcessInput(UCHAR* pKeysBuffer);
+protected:
 
-	enum {
-		W,
-		A,
-		S,
-		D,
-		Q,
-		E,
-
-		count
-	};
 
 public:
 	XMFLOAT4X4						m_xmf4x4World;
 
-
-private:
+protected:
 	bool							m_IsAlive;
 	std::vector<CModel>				m_ModelList;
 
@@ -81,17 +69,89 @@ private:
 
 	XMFLOAT3						m_xmf3CameraTargetPos;
 
-	/*************************************************************************
-	이동 관련 파트*/
-	XMFLOAT3						m_xmf3Variation;
-	XMFLOAT3						m_xmf3RotateAngle;
+	/*********************************************************************
+	2019-06-17
+	이동 관련 부분
+	*********************************************************************/
 	XMFLOAT3						m_xmf3CollisionOffset;
-	float							m_fSpeed;
-	bool							m_trigInput[count];
 
-	/*************************************************************************
-	애니메이션 관련 파트*/
+	/*********************************************************************
+	2019-06-15
+	애니메이션 관련 부분
+	*********************************************************************/
 	CAnimationController			*m_AnimationController = NULL;
+	int								m_AnimationState;
+};
+
+class CPlayer : public CObject {
+public:
+	CPlayer();
+
+public:
+	virtual void	Update(float fTimeElapsed);
+	virtual void	ProcessInput(UCHAR* pKeysBuffer);
+
+protected:
+	virtual bool	IsMoving() {
+		for (int i = 0; i < static_cast<int>(Move::count); ++i)
+			if (m_trigInput[i]) return true;
+		return false;
+	}
+	void			TriggerOff();
+	XMFLOAT3		Move(float fTimeElapsed);
+	float			Rotate(float fTimeElapsed);
+
+	enum class		Move {
+		W,
+		A,
+		S,
+		D,
+		Q,
+		E,
+
+		count
+	};
+	enum class		AnimationState {
+		IDLE,
+		RUN,
+		FIRE,
+		STARTJUMP,
+		ENDJUMP,
+		DIE,
+
+		count
+	};
+
+protected:
+	float			m_fSpeed;
+	bool			m_trigInput[static_cast<int>(Move::count)];
+
+};
+
+class CProjectile : public CObject {
+public:
+	CProjectile();
+
+protected:
+	/*********************************************************************
+	2019-06-17
+	이동 관련 부분
+
+	직접 입력을 받아서 이동하는 객체가 있고 고정된 값으로 계속 이동해야 하는
+	객체도 있다. 컴포넌트 방식 쓰고 싶다. 하지만 지금은 무리.
+
+	투사체의 경우는 이동하는 속력, 방향, 중력의 영향을 받는지 여부 등을 가져야
+	한다.
+
+	중력의 영향을 안 받는 직선 이동 투사체의 경우는 플레이어의 Look, Right, Up
+	을 그대로 쓰면 된다. 노멀라이즈 정도만 해주면 될 듯.
+	중력의 영향을 받는 경우, 투사체는 플레이어의 RIght를 먼저 받고 Look벡터를
+	Right벡터 축을 기준으로 위로 약간 회전시켜 준 다음에 그 둘을 가지고 Up 벡터
+	를 구해주면 된다.
+	아니 그냥 점점 y축으로 떨어지게 해버려. 뭘 어렵게 생각해. 그러게.
+	*********************************************************************/
+	XMFLOAT3						m_xmf3Direction;
+
 
 };
 
@@ -126,6 +186,7 @@ public:
 	void AddPSO(ID3D12PipelineState* pso) {
 		m_PSO.push_back(pso);
 	}
+	void ProcessInput(UCHAR * pKeysBuffer);
 
 private:
 	void CreateDescriptorHeap();

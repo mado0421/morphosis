@@ -7,14 +7,13 @@
 
 CObject::CObject()
 {
+	SetPosition(XMFLOAT3(0, 0, 0));
 	m_xmf4x4World			= Matrix4x4::Identity();
 	m_IsAlive				= true;
-	m_xmf3Variation			= XMFLOAT3(0, 0, 0);
-	m_xmf3RotateAngle		= XMFLOAT3(0, 0, 0);
 	m_xmf3CollisionOffset	= XMFLOAT3(0, 0, 0);
 	m_xmf3CameraTargetPos	= XMFLOAT3(0, 0, 0);
-	m_fSpeed				= g_PlayerDefaultSpeed;
-	m_trigInput[count];
+	m_AnimationState		= static_cast<int>( 0 );
+
 }
 CObject::~CObject()
 {
@@ -27,7 +26,6 @@ void CObject::SetRootParameter(ID3D12GraphicsCommandList * pd3dCommandList)
 
 void CObject::Render(ID3D12GraphicsCommandList * pd3dCommandList, CCamera * pCamera, bool isDebug)
 {
-
 	if (!m_IsAlive) return;
 	if (!m_ModelList.empty()) {
 		for (auto p = m_ModelList.begin(); p != m_ModelList.end(); ++p) {
@@ -41,28 +39,16 @@ void CObject::Render(ID3D12GraphicsCommandList * pd3dCommandList, CCamera * pCam
 void CObject::Update(float fTimeElapsed)
 {
 	if (!m_IsAlive) return;
-	XMFLOAT3 xmf3Right	= XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
-	XMFLOAT3 xmf3Up		= XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
-	XMFLOAT3 xmf3Look	= XMFLOAT3(m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33);
-	XMFLOAT3 xmf3Move	= Move(fTimeElapsed);
 
-	XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(Rotate(fTimeElapsed)));
-	xmf3Look = Vector3::TransformNormal(xmf3Look, xmmtxRotate);
-	xmf3Right = Vector3::TransformNormal(xmf3Right, xmmtxRotate);
+	/*********************************************************************
+	2019-06-17
+	이동 파트
+	*********************************************************************/
 
-	xmf3Look = Vector3::Normalize(xmf3Look);
-	xmf3Right = Vector3::CrossProduct(xmf3Up, xmf3Look, true);
-	xmf3Up = Vector3::CrossProduct(xmf3Look, xmf3Right, true);
-
-	m_xmf4x4World._11 = xmf3Right.x;	m_xmf4x4World._12 = xmf3Right.y;	m_xmf4x4World._13 = xmf3Right.z;
-	m_xmf4x4World._21 = xmf3Up.x;		m_xmf4x4World._22 = xmf3Up.y;		m_xmf4x4World._23 = xmf3Up.z;
-	m_xmf4x4World._31 = xmf3Look.x;		m_xmf4x4World._32 = xmf3Look.y;		m_xmf4x4World._33 = xmf3Look.z;
-	m_xmf4x4World._41 += xmf3Move.x;
-	m_xmf4x4World._42 += xmf3Move.y;
-	m_xmf4x4World._43 += xmf3Move.z;
-
-	TriggerOff();
-
+	/*********************************************************************
+	2019-06-17
+	애니메이션 파트
+	*********************************************************************/
 	if (m_AnimationController) m_AnimationController->Update(fTimeElapsed);
 }
 
@@ -165,38 +151,8 @@ XMFLOAT3 CObject::GetCameraTargetPos()
 	//return m_xmf3CameraTargetPos;
 }
 
-void CObject::TriggerOff()
-{
-	for (int i = 0; i < count; i++) m_trigInput[i] = false;
-}
-
-XMFLOAT3 CObject::Move(float fTimeElapsed)
-{
-	XMFLOAT3 temp(0,0,0);
-	if (m_trigInput[W]) { temp = Vector3::Add(temp, Vector3::ScalarProduct(GetLook(), fTimeElapsed   * m_fSpeed, false)); }
-	if (m_trigInput[A]) { temp = Vector3::Add(temp, Vector3::ScalarProduct(GetRight(), -fTimeElapsed * m_fSpeed, false)); }
-	if (m_trigInput[S]) { temp = Vector3::Add(temp, Vector3::ScalarProduct(GetLook(), -fTimeElapsed  * m_fSpeed, false)); }
-	if (m_trigInput[D]) { temp = Vector3::Add(temp, Vector3::ScalarProduct(GetRight(), fTimeElapsed  * m_fSpeed, false)); }
-	return temp;
-}
-
-float CObject::Rotate(float fTimeElapsed)
-{
-	float temp = 0;
-	if (m_trigInput[Q]) temp += fTimeElapsed * m_fSpeed * -1;
-	if (m_trigInput[E]) temp += fTimeElapsed * m_fSpeed;
-
-	return temp;
-}
-
 void CObject::ProcessInput(UCHAR * pKeysBuffer)
 {
-	if (pKeysBuffer[KEY::W] & 0xF0) m_trigInput[W] = true;
-	if (pKeysBuffer[KEY::A] & 0xF0) m_trigInput[A] = true;
-	if (pKeysBuffer[KEY::S] & 0xF0) m_trigInput[S] = true;
-	if (pKeysBuffer[KEY::D] & 0xF0) m_trigInput[D] = true;
-	if (pKeysBuffer[KEY::Q] & 0xF0) m_trigInput[Q] = true;
-	if (pKeysBuffer[KEY::E] & 0xF0) m_trigInput[E] = true;
 }
 
 CObjectManager::~CObjectManager()
@@ -223,16 +179,25 @@ void CObjectManager::Render()
 	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
 	CB_OBJECT_INFO	*pbMappedcbObject;
 
+
+	/*********************************************************************
+	2019-06-17
+	각 객체의 Render와 Update 함수에서 IsAlive를 체크하고 있기 때문에 hlsl의
+	정보를 업데이트 하는 부분에만 IsAlive를 체크하게 추가하였다.
+	*********************************************************************/
 	for (unsigned int i = 0; i < m_nProps; i++) {
+		if (!m_Props[i]->IsAlive()) continue;
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedPropObjects + (i * ncbElementBytes));
 		memset(pbMappedcbObject, NULL, ncbElementBytes);
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Props[i]->m_xmf4x4World)));
 	}
 	for (unsigned int i = 0; i < m_nPlayers; i++) {
+		if (!m_Players[i]->IsAlive()) continue;
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedPlayers + (i * ncbElementBytes));
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Players[i]->m_xmf4x4World)));
 	}
 	for (unsigned int i = 0; i < m_nProjectiles; i++) {
+		if (!m_Projectiles[i]->IsAlive()) continue;
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedProjectiles + (i * ncbElementBytes));
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Projectiles[i]->m_xmf4x4World)));
 	}
@@ -251,6 +216,30 @@ void CObjectManager::Update(float fTime)
 	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->Update(fTime);
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->Update(fTime);
 
+}
+
+void CObjectManager::ProcessInput(UCHAR * pKeysBuffer)
+{
+	if (m_Players[0]->IsAlive()) m_Players[0]->ProcessInput(pKeysBuffer);
+
+	if (pKeysBuffer[VK_LBUTTON] & 0xF0) {
+		/*********************************************************************
+		2019-06-17
+		마우스를 클릭하면 해줘야 하는 것들.
+
+		먼저, IsAlive == false인 투사체를 찾는다.
+		찾았으면 그 객체를 초기화하고(위치 변경, 방향 변경 등등)
+		IsAlive = true로 변경한다.
+
+		Render와 Update는 IsAlive가 true 일 때만 되게 해야 한다.
+		*********************************************************************/
+		auto iter = find_if(m_Projectiles.begin(), m_Projectiles.end(), [](CObject* p) {return !(p->IsAlive()); });
+		if (iter != m_Projectiles.end()) {
+			(*iter)->SetPosition(m_Players[0]->GetPosition());
+			//(*iter)->SetTeam(m_Player[0]->GetTeam());
+			(*iter)->SetAlive(true);
+		}
+	}
 }
 
 void CObjectManager::CreateDescriptorHeap()
@@ -364,7 +353,7 @@ void CObjectManager::CreateObjectData()
 	CImporter importer(m_pd3dDevice, m_pd3dCommandList);
 	m_nProps			= 2;
 	m_nPlayers			= 2;
-	m_nProjectiles		= 0;
+	m_nProjectiles		= m_nPlayers * g_NumProjectilePerPlayer;
 	m_nObjects			= m_nProps + m_nPlayers + m_nProjectiles;
 
 	CreateDescriptorHeap();
@@ -404,7 +393,7 @@ void CObjectManager::CreateObjectData()
 		m_Props.push_back(obj);
 	}
 	for (unsigned int i = 0; i < m_nPlayers; i++) {
-		CObject* obj = new CObject();
+		CPlayer* obj = new CPlayer();
 
 		importer.ImportModel("0603_CharacterIdle", m_TextureList[1], obj);
 		importer.ImportAnimClip("0603_CharacterIdle", obj);
@@ -419,11 +408,111 @@ void CObjectManager::CreateObjectData()
 		m_Players.push_back(obj);
 	}
 	for (unsigned int i = 0; i < m_nProjectiles; i++) {
-		CObject* obj = new CObject();
+		CProjectile* obj = new CProjectile();
 
+		/*********************************************************************
+		2019-06-17
+		투사체는 전부 미리 만들어두고 IsAlive를 false로 해둔다.
+		*********************************************************************/
 		importer.ImportModel("0615_Box", m_TextureList[0], obj);
-		obj->SetPosition(200, 0, i * 64.0f);
+		obj->SetAlive(false);
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 		m_Projectiles.push_back(obj);
 	}
+}
+
+CProjectile::CProjectile() : CObject()
+{
+	m_IsAlive		= false;
+	m_xmf3Direction = XMFLOAT3(0, 0, 0);
+}
+
+CPlayer::CPlayer() : CObject()
+{
+	m_fSpeed = g_PlayerDefaultSpeed;
+}
+
+void CPlayer::Update(float fTimeElapsed)
+{
+	if (!m_IsAlive) return;
+
+	/*********************************************************************
+	2019-06-17
+	이동 파트
+	*********************************************************************/
+	XMFLOAT3 xmf3Right = XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
+	XMFLOAT3 xmf3Up = XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
+	XMFLOAT3 xmf3Look = XMFLOAT3(m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33);
+	XMFLOAT3 xmf3Move = Move(fTimeElapsed);
+
+	XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(Rotate(fTimeElapsed)));
+	xmf3Look = Vector3::TransformNormal(xmf3Look, xmmtxRotate);
+	xmf3Right = Vector3::TransformNormal(xmf3Right, xmmtxRotate);
+
+	xmf3Look = Vector3::Normalize(xmf3Look);
+	xmf3Right = Vector3::CrossProduct(xmf3Up, xmf3Look, true);
+	xmf3Up = Vector3::CrossProduct(xmf3Look, xmf3Right, true);
+
+	m_xmf4x4World._11 = xmf3Right.x;	m_xmf4x4World._12 = xmf3Right.y;	m_xmf4x4World._13 = xmf3Right.z;
+	m_xmf4x4World._21 = xmf3Up.x;		m_xmf4x4World._22 = xmf3Up.y;		m_xmf4x4World._23 = xmf3Up.z;
+	m_xmf4x4World._31 = xmf3Look.x;		m_xmf4x4World._32 = xmf3Look.y;		m_xmf4x4World._33 = xmf3Look.z;
+	m_xmf4x4World._41 += xmf3Move.x;
+	m_xmf4x4World._42 += xmf3Move.y;
+	m_xmf4x4World._43 += xmf3Move.z;
+
+	/*********************************************************************
+	2019-06-17
+	애니메이션 파트
+	*********************************************************************/
+	if (m_AnimationController) m_AnimationController->Update(fTimeElapsed);
+
+	if (static_cast<int>(AnimationState::IDLE) == m_AnimationState) {
+		if (IsMoving()) {
+			m_AnimationState = static_cast<int>(AnimationState::RUN);
+			m_AnimationController->ChangeAnimClip("PlayerRun");
+		}
+	}
+	else {
+		if (!IsMoving()) {
+			m_AnimationState = static_cast<int>(AnimationState::IDLE);
+			m_AnimationController->ChangeAnimClip("PlayerIdle");
+		}
+	}
+
+
+	TriggerOff();
+}
+
+void CPlayer::ProcessInput(UCHAR * pKeysBuffer)
+{
+	if (pKeysBuffer[KEY::W] & 0xF0) m_trigInput[static_cast<int>(Move::W)] = true;
+	if (pKeysBuffer[KEY::A] & 0xF0) m_trigInput[static_cast<int>(Move::A)] = true;
+	if (pKeysBuffer[KEY::S] & 0xF0) m_trigInput[static_cast<int>(Move::S)] = true;
+	if (pKeysBuffer[KEY::D] & 0xF0) m_trigInput[static_cast<int>(Move::D)] = true;
+	if (pKeysBuffer[KEY::Q] & 0xF0) m_trigInput[static_cast<int>(Move::Q)] = true;
+	if (pKeysBuffer[KEY::E] & 0xF0) m_trigInput[static_cast<int>(Move::E)] = true;
+}
+
+void CPlayer::TriggerOff()
+{
+	for (int i = 0; i < static_cast<int>(Move::count); i++) m_trigInput[i] = false;
+}
+
+XMFLOAT3 CPlayer::Move(float fTimeElapsed)
+{
+	XMFLOAT3 temp(0, 0, 0);
+	if (m_trigInput[static_cast<int>(Move::W)]) { temp = Vector3::Add(temp, Vector3::ScalarProduct(GetLook(), fTimeElapsed   * m_fSpeed, false)); }
+	if (m_trigInput[static_cast<int>(Move::A)]) { temp = Vector3::Add(temp, Vector3::ScalarProduct(GetRight(), -fTimeElapsed * m_fSpeed, false)); }
+	if (m_trigInput[static_cast<int>(Move::S)]) { temp = Vector3::Add(temp, Vector3::ScalarProduct(GetLook(), -fTimeElapsed * m_fSpeed, false)); }
+	if (m_trigInput[static_cast<int>(Move::D)]) { temp = Vector3::Add(temp, Vector3::ScalarProduct(GetRight(), fTimeElapsed  * m_fSpeed, false)); }
+	return temp;
+}
+
+float CPlayer::Rotate(float fTimeElapsed)
+{
+	float temp = 0;
+	if (m_trigInput[static_cast<int>(Move::Q)]) temp += fTimeElapsed * m_fSpeed * -1;
+	if (m_trigInput[static_cast<int>(Move::E)]) temp += fTimeElapsed * m_fSpeed;
+
+	return temp;
 }

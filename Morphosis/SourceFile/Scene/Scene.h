@@ -50,28 +50,13 @@ public:
 	virtual void OnProcessingMouseMessage()=0;
 	virtual void OnProcessingKeyboardMessage()=0;
 
-	// 상수 버퍼를 만들고 관리하는 함수들
-	//virtual void CreateObjectBuffers()=0;
-	//virtual void UpdateObjectBuffers()=0;
-	//virtual void ReleaseObjectBuffers()=0;
-
 	virtual void CreateCbvAndSrvDescriptorHeaps(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int nConstantBufferViews, int nShaderResourceViews);
 	virtual void CreateShaderVariables(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, int nConstantBufferViews);
 	virtual void CreateConstantBufferViews(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int nConstantBufferViews, ID3D12Resource *pd3dConstantBuffers, UINT nStride);
-	//virtual void CreateShaderResourceViews(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, CTexture *pTexture, UINT nRootParameterStartIndex, bool bAutoIncrement);
 
 	virtual void ReleaseShaderVariables();
 
 	virtual ID3D12RootSignature *CreateRootSignature(ID3D12Device *pd3dDevice) = 0;
-};
-
-struct CB_DESC {
-	UINT								nMappedData;
-	LPVOID								pMappedPtr;
-	UINT								RootParamIdx;
-	D3D12_CONSTANT_BUFFER_VIEW_DESC		view_desc;
-	D3D12_CPU_DESCRIPTOR_HANDLE			hCPUDescTable;
-	D3D12_GPU_DESCRIPTOR_HANDLE			hGPUDescTable;
 };
 
 class CTestGroundScene : public CScene {

@@ -191,6 +191,9 @@ void CTestGroundScene::Update(float fTimeElapsed)
 
 void CTestGroundScene::ProcessInput(UCHAR * pKeysBuffer)
 {
+	//if (m_ObjMng->GetTarget(0)->IsAlive()) m_ObjMng->GetTarget(0)->ProcessInput(pKeysBuffer);
+	m_ObjMng->ProcessInput(pKeysBuffer);
+
 	if (pKeysBuffer[KEY::_1] & 0xF0) { if (m_pCamera->GetTarget() != m_ObjMng->GetTarget(0)) { m_pCamera->SetOffset(XMFLOAT3(0, 10.0f, 50.0f)); m_pCamera->SetTarget(m_ObjMng->GetTarget(0)); } }
 	if (pKeysBuffer[KEY::_2] & 0xF0) { if (m_pCamera->GetTarget() != m_ObjMng->GetTarget(1)) { m_pCamera->SetOffset(XMFLOAT3(0, 10.0f, 50.0f)); m_pCamera->SetTarget(m_ObjMng->GetTarget(1)); } }
 }
