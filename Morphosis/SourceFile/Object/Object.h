@@ -50,11 +50,14 @@ public:
 	void SetLook(XMFLOAT3 look);
 	void SetUp(XMFLOAT3 up);
 	void SetRight(XMFLOAT3 right);
-	void SetCameraTargetPos(XMFLOAT3 pos);
-	void SetAlive(bool state) { m_IsAlive = state; }
+	void SetCameraTargetOffset(XMFLOAT3 pos);
 	void SetTeam(int team) { m_Team = team; }
 
-	const bool IsCollide(const CObject& other);
+	virtual void Enable() { SetAlive(true); }
+	virtual void Disable() { SetAlive(false); }
+	void SetAlive(bool state) { m_IsAlive = state; }
+
+	const bool IsCollide(CObject* other);
 	const bool IsAlive() const { return m_IsAlive; }
 	virtual void ProcessInput(UCHAR* pKeysBuffer);
 
@@ -62,10 +65,11 @@ public:
 
 public:
 	XMFLOAT4X4						m_xmf4x4World;
+	Tag								m_Tag;
 
 protected:
 	bool							m_IsAlive;
-	XMFLOAT3						m_xmf3CameraTargetPos;
+	XMFLOAT3						m_xmf3CameraTargetOffset;
 	int								m_Team;
 
 	/*********************************************************************
@@ -108,8 +112,24 @@ public:
 	virtual void	LateUpdate(float fTimeElapsed);
 	virtual void	ProcessInput(UCHAR* pKeysBuffer);
 
+	/*********************************************************************
+	2019-06-18
+	플레이어가 처음 생성되거나, 리스폰 될 때 처리
+	- 체력 복구
+	- 위치 복구
+	- 바운딩박스 복구
+
+	플레이어가 죽을 때 처리
+	- 리스폰 타이머 시작
+	*********************************************************************/
+	virtual void	Enable();
+	virtual void	Disable();
+
 	void			Shoot();
+	void			SetSpawnPoint(const XMFLOAT3& pos) { m_xmf3SpawnPoint = pos; }
 	bool			IsShootable();
+
+	void			TakeDamage(int val) { m_HealthPoint -= val; }
 
 protected:
 	void			TriggerOff();
@@ -143,11 +163,31 @@ protected:
 	};
 
 protected:
+
+	/*********************************************************************
+	2019-06-18
+	이동과 이동 무효
+	*********************************************************************/
+	XMFLOAT3		m_xmf3Move;
 	float			m_fSpeed;
-	float			m_fRPM;	// 1 / Round Per Minute
-	float			m_fRemainingTimeOfFire;
 	bool			m_trigInput[static_cast<int>(Move::count)];
 
+	/*********************************************************************
+	2019-06-18
+	공격 관련 부분
+	*********************************************************************/
+	float			m_fRPM;	// 1 / Round Per Minute
+	float			m_fRemainingTimeOfFire;
+
+
+	/*********************************************************************
+	2019-06-18
+	체력과 리스폰 관련 부분
+	*********************************************************************/
+	XMFLOAT3		m_xmf3SpawnPoint;
+	int				m_HealthPoint;
+	float			m_fRemainingTimeOfRespawn;
+	
 };
 
 class CProjectile : public CObject {
@@ -158,7 +198,7 @@ public:
 	void			Initialize(CObject* obj);
 	virtual void	Update(float fTimeElapsed);
 	virtual void	LateUpdate(float fTimeElapsed);
-
+	void			Damage(CObject* obj);
 
 private:
 	bool			IsExpired() const { return m_fLifeTime <= 0; }
@@ -184,6 +224,7 @@ protected:
 	XMFLOAT3		m_xmf3Direction;	//Normal Vector
 	float			m_fSpeed;
 	float			m_fLifeTime;
+	float			m_BaseDamage;
 };
 
 class CObjectManager {

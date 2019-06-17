@@ -62,7 +62,11 @@ public:
 	XMFLOAT3& GetLook()		{ return(m_xmf3Look); }
 
 	//	void SetOffset(XMFLOAT3 xmf3Offset) { m_xmf3Offset = xmf3Offset; }
-	void SetOffset(XMFLOAT3 xmf3Offset) { m_xmf3Offset = xmf3Offset; m_xmf3Position.x += xmf3Offset.x; m_xmf3Position.y += xmf3Offset.y; m_xmf3Position.z += xmf3Offset.z; }
+	void SetOffset(const XMFLOAT3& xmf3Offset) { m_xmf3Offset = xmf3Offset; m_xmf3Position.x += xmf3Offset.x; m_xmf3Position.y += xmf3Offset.y; m_xmf3Position.z += xmf3Offset.z; }
+	void SetOffset(const XMFLOAT3& xmf3Offset, const XMFLOAT3& objPos) { 
+		m_xmf3Offset = xmf3Offset; 
+		m_xmf3Position = Vector3::Add(objPos, xmf3Offset);
+	}
 	XMFLOAT3& GetOffset() { return(m_xmf3Offset); }
 
 	void SetTimeLag(float fTimeLag) { m_fTimeLag = fTimeLag; }

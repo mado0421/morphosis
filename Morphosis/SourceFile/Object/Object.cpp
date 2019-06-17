@@ -11,12 +11,13 @@ CObject
 CObject::CObject()
 {
 	SetPosition(XMFLOAT3(0, 0, 0));
-	m_xmf4x4World = Matrix4x4::Identity();
-	m_IsAlive = true;
-	m_xmf3CollisionOffset = XMFLOAT3(0, 0, 0);
-	m_xmf3CameraTargetPos = XMFLOAT3(0, 0, 0);
-	m_AnimationState = static_cast<int>(0);
-	m_Team = TEAM_DEFAULT;
+	m_xmf4x4World			= Matrix4x4::Identity();
+	m_IsAlive				= true;
+	m_xmf3CollisionOffset	= XMFLOAT3(0, 0, 0);
+	m_xmf3CameraTargetOffset= XMFLOAT3(0, 0, 0);
+	m_AnimationState		= static_cast<int>(0);
+	m_Team					= TEAM_DEFAULT;
+	m_Tag					= Tag::Prop;
 }
 CObject::~CObject()
 {
@@ -45,6 +46,7 @@ void CObject::Update(float fTimeElapsed)
 	이동 파트
 	*********************************************************************/
 
+
 	/*********************************************************************
 	2019-06-17
 	애니메이션 파트
@@ -53,6 +55,7 @@ void CObject::Update(float fTimeElapsed)
 }
 void CObject::LateUpdate(float fTimeElapsed)
 {
+	if (!m_IsAlive) return;
 }
 void CObject::AddAnimClip(AnimationClip * animClip)
 {
@@ -137,26 +140,26 @@ void CObject::SetRight(XMFLOAT3 right)
 	m_xmf4x4World._12 = right.y;
 	m_xmf4x4World._13 = right.z;
 }
-void CObject::SetCameraTargetPos(XMFLOAT3 pos)
+void CObject::SetCameraTargetOffset(XMFLOAT3 pos)
 {
-	m_xmf3CameraTargetPos = pos;
+	m_xmf3CameraTargetOffset = pos;
 }
 XMFLOAT3 const CObject::GetCameraTargetPos()
 {
-	return Vector3::Add(GetPosition(), m_xmf3CameraTargetPos);
-	//return m_xmf3CameraTargetPos;
+	return Vector3::Add(GetPosition(), m_xmf3CameraTargetOffset);
+	//return m_xmf3CameraTargetOffset;
 }
-const bool CObject::IsCollide(const CObject & other)
+const bool CObject::IsCollide(CObject* other)
 {
 	/*********************************************************************
 	2019-06-18
 	other의 충돌체들과 내 충돌체들을 전부 비교해야 함.
 	*********************************************************************/
-	for (auto otb = other.m_CollisionBox.cbegin(); otb != other.m_CollisionBox.cend(); ++otb) {
+	for (auto otb = other->m_CollisionBox.cbegin(); otb != other->m_CollisionBox.cend(); ++otb) {
 		for (auto myb = m_CollisionBox.cbegin(); myb != m_CollisionBox.cend(); ++myb)		if (otb->Intersects(*myb)) return true;
 		for (auto mys = m_CollisionSphere.cbegin(); mys != m_CollisionSphere.cend(); ++mys) if (otb->Intersects(*mys)) return true;
 	}
-	for (auto ots = other.m_CollisionSphere.cbegin(); ots != other.m_CollisionSphere.cend(); ++ots) {
+	for (auto ots = other->m_CollisionSphere.cbegin(); ots != other->m_CollisionSphere.cend(); ++ots) {
 		for (auto myb = m_CollisionBox.cbegin(); myb != m_CollisionBox.cend(); ++myb)		if (ots->Intersects(*myb)) return true;
 		for (auto mys = m_CollisionSphere.cbegin(); mys != m_CollisionSphere.cend(); ++mys) if (ots->Intersects(*mys)) return true;
 	}
@@ -178,13 +181,25 @@ CPlayer
 *********************************************************************/
 CPlayer::CPlayer() : CObject()
 {
-	m_fSpeed = g_PlayerDefaultSpeed;
-	m_fRemainingTimeOfFire = 0.0f;
-	m_fRPM = (1 / static_cast<float>(g_DefaultRPM)) * 60.0f;
+	m_fSpeed					= g_PlayerDefaultSpeed;
+	m_fRemainingTimeOfFire		= 0.0f;
+	m_fRPM						= (1 / static_cast<float>(g_DefaultRPM)) * 60.0f;
+	m_Tag						= Tag::Player;
+	m_xmf3Move					= XMFLOAT3(0, 0, 0);
+	m_xmf3SpawnPoint			= GetPosition();
+	m_HealthPoint				= g_DefaultHealthPoint;
+	m_fRemainingTimeOfRespawn	= 0.0f;
 }
 void CPlayer::Update(float fTimeElapsed)
 {
-	if (!m_IsAlive) return;
+	if (!m_IsAlive) {
+		m_fRemainingTimeOfRespawn -= fTimeElapsed;
+		if (m_fRemainingTimeOfRespawn <= 0.0f) {
+			CPlayer::Enable();
+		}
+		return;
+	}
+	
 
 	/*********************************************************************
 	2019-06-18
@@ -199,9 +214,10 @@ void CPlayer::Update(float fTimeElapsed)
 	XMFLOAT3 xmf3Right = XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
 	XMFLOAT3 xmf3Up = XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
 	XMFLOAT3 xmf3Look = XMFLOAT3(m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33);
-	XMFLOAT3 xmf3Move = Move(fTimeElapsed);
+	m_xmf3Move = Move(fTimeElapsed);
 
-	XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(Rotate(fTimeElapsed)));
+	float rotationAngle = Rotate(fTimeElapsed);
+	XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(rotationAngle));
 	xmf3Look = Vector3::TransformNormal(xmf3Look, xmmtxRotate);
 	xmf3Right = Vector3::TransformNormal(xmf3Right, xmmtxRotate);
 
@@ -212,18 +228,21 @@ void CPlayer::Update(float fTimeElapsed)
 	m_xmf4x4World._11 = xmf3Right.x;	m_xmf4x4World._12 = xmf3Right.y;	m_xmf4x4World._13 = xmf3Right.z;
 	m_xmf4x4World._21 = xmf3Up.x;		m_xmf4x4World._22 = xmf3Up.y;		m_xmf4x4World._23 = xmf3Up.z;
 	m_xmf4x4World._31 = xmf3Look.x;		m_xmf4x4World._32 = xmf3Look.y;		m_xmf4x4World._33 = xmf3Look.z;
-	m_xmf4x4World._41 += xmf3Move.x;
-	m_xmf4x4World._42 += xmf3Move.y;
-	m_xmf4x4World._43 += xmf3Move.z;
+	m_xmf4x4World._41 += m_xmf3Move.x;
+	m_xmf4x4World._42 += m_xmf3Move.y;
+	m_xmf4x4World._43 += m_xmf3Move.z;
+
+	
+	XMStoreFloat3(&m_xmf3CameraTargetOffset, XMVector3Rotate(XMLoadFloat3(&m_xmf3CameraTargetOffset), XMQuaternionRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(rotationAngle))));
 
 	/*********************************************************************
 	2019-06-18
 	충돌체 파트
 	*********************************************************************/
 	for (auto myb = m_CollisionBox.begin(); myb != m_CollisionBox.end(); ++myb)
-		myb->Center = Vector3::Add(myb->Center, xmf3Move);
+		myb->Center = Vector3::Add(myb->Center, m_xmf3Move);
 	for (auto mys = m_CollisionSphere.begin(); mys != m_CollisionSphere.end(); ++mys)
-		mys->Center = Vector3::Add(mys->Center, xmf3Move);
+		mys->Center = Vector3::Add(mys->Center, m_xmf3Move);
 
 	/*********************************************************************
 	2019-06-17
@@ -244,11 +263,35 @@ void CPlayer::Update(float fTimeElapsed)
 		}
 	}
 
-
 	TriggerOff();
 }
 void CPlayer::LateUpdate(float fTimeElapsed)
 {
+	if (!m_IsAlive) return;
+
+	bool alreadyRestore = false;	// 이동을 무효 처리 했는지 여부
+	while (!m_CollideInfo.empty()) {
+		if (!alreadyRestore && Tag::Prop == m_CollideInfo.front()->m_Tag) {
+			alreadyRestore = true;
+			m_xmf4x4World._41 -= m_xmf3Move.x;
+			m_xmf4x4World._42 -= m_xmf3Move.y;
+			m_xmf4x4World._43 -= m_xmf3Move.z;
+		}
+		if (!alreadyRestore && Tag::Player == m_CollideInfo.front()->m_Tag) {
+			alreadyRestore = true;
+			m_xmf4x4World._41 -= m_xmf3Move.x;
+			m_xmf4x4World._42 -= m_xmf3Move.y;
+			m_xmf4x4World._43 -= m_xmf3Move.z;
+		}
+		if (Tag::Projectile == m_CollideInfo.front()->m_Tag) {
+			dynamic_cast<CProjectile*>(m_CollideInfo.front())->Damage(this);
+		}
+
+		m_CollideInfo.pop();
+	}
+
+	if (m_HealthPoint <= 0) CPlayer::Disable();
+
 }
 void CPlayer::ProcessInput(UCHAR * pKeysBuffer)
 {
@@ -258,6 +301,21 @@ void CPlayer::ProcessInput(UCHAR * pKeysBuffer)
 	if (pKeysBuffer[KEY::D] & 0xF0) m_trigInput[static_cast<int>(Move::D)] = true;
 	if (pKeysBuffer[KEY::Q] & 0xF0) m_trigInput[static_cast<int>(Move::Q)] = true;
 	if (pKeysBuffer[KEY::E] & 0xF0) m_trigInput[static_cast<int>(Move::E)] = true;
+}
+void CPlayer::Enable()
+{
+	m_HealthPoint = g_DefaultHealthPoint;
+	SetPosition(m_xmf3SpawnPoint);
+	for (auto myb = m_CollisionBox.begin(); myb != m_CollisionBox.end(); ++myb)
+		myb->Center = GetPosition();
+	for (auto mys = m_CollisionSphere.begin(); mys != m_CollisionSphere.end(); ++mys)
+		mys->Center = GetPosition();
+	CObject::Enable();
+}
+void CPlayer::Disable()
+{
+	m_fRemainingTimeOfRespawn = g_RespawnDelay;
+	CObject::Disable();
 }
 void CPlayer::Shoot()
 {
@@ -296,10 +354,12 @@ CProjectile
 *********************************************************************/
 CProjectile::CProjectile() : CObject()
 {
-	m_IsAlive = false;
+	m_IsAlive		= false;
 	m_xmf3Direction = XMFLOAT3(0, 0, 0);
-	m_fSpeed = g_ProjectileDefaultSpeed;
-	m_fLifeTime = g_DefaultProjectileLifeTime;
+	m_fSpeed		= g_ProjectileDefaultSpeed;
+	m_fLifeTime		= g_DefaultProjectileLifeTime;
+	m_Tag			= Tag::Projectile;
+	m_BaseDamage	= g_DefaultDamage;
 }
 
 void CProjectile::Initialize(CObject * obj)
@@ -310,8 +370,14 @@ void CProjectile::Initialize(CObject * obj)
 	인자로 받아온 오브젝트로부터 위치와 방향, 팀을 받아야 한다는 것.
 
 	아 투사체가 회전하면서 내려와야 하면 흠. 그러면 흠. 방향을 흠.
+
+	충돌체 위치도 바꿔줘야 함.
 	*********************************************************************/
 	SetPosition(obj->GetPosition());
+	for (auto myb = m_CollisionBox.begin(); myb != m_CollisionBox.end(); ++myb)
+		myb->Center = obj->GetPosition();
+	for (auto mys = m_CollisionSphere.begin(); mys != m_CollisionSphere.end(); ++mys)
+		mys->Center = obj->GetPosition();
 
 	/*********************************************************************
 	2019-06-17
@@ -323,8 +389,8 @@ void CProjectile::Initialize(CObject * obj)
 
 	SetTeam(obj->GetTeam());
 
-	m_xmf3Direction = Vector3::Normalize(obj->GetLook());
-	m_fLifeTime = g_DefaultProjectileLifeTime;
+	m_xmf3Direction		= Vector3::Normalize(obj->GetLook());
+	m_fLifeTime			= g_DefaultProjectileLifeTime;
 }
 
 void CProjectile::Update(float fTimeElapsed)
@@ -359,6 +425,13 @@ void CProjectile::Update(float fTimeElapsed)
 
 void CProjectile::LateUpdate(float fTimeElapsed)
 {
+	if (!m_IsAlive) return;
+
+}
+
+void CProjectile::Damage(CObject* obj)
+{
+	dynamic_cast<CPlayer*>(obj)->TakeDamage(static_cast<int>(m_BaseDamage));
 }
 
 /*********************************************************************
@@ -424,6 +497,7 @@ void CObjectManager::Update(float fTime)
 	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->Update(fTime);
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->Update(fTime);
 
+	LateUpdate(fTime);
 }
 void CObjectManager::ProcessInput(UCHAR * pKeysBuffer)
 {
@@ -452,7 +526,11 @@ void CObjectManager::ProcessInput(UCHAR * pKeysBuffer)
 }
 void CObjectManager::LateUpdate(float fTime)
 {
+	CollisionCheck();
 
+	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->LateUpdate(fTime);
+	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->LateUpdate(fTime);
+	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->LateUpdate(fTime);
 }
 void CObjectManager::CreateDescriptorHeap()
 {
@@ -595,9 +673,9 @@ void CObjectManager::CreateObjectData()
 	for (unsigned int i = 0; i < m_nProps; i++) {
 		CObject* obj = new CObject();
 
-
 		importer.ImportModel("0615_Box", m_TextureList[0], obj);
 		obj->SetPosition(0, 0, i * 64.0f);
+		obj->AddCollider(BoundingSphere(obj->GetPosition(), 10.0f));
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 		m_Props.push_back(obj);
 	}
@@ -612,9 +690,11 @@ void CObjectManager::CreateObjectData()
 		importer.ImportAnimClip("0603_CharacterEndJump", obj);
 		importer.ImportAnimClip("0603_CharacterDied", obj);
 		obj->SetPosition(100, 0, i * 64.0f);
+		obj->SetSpawnPoint(obj->GetPosition());
+		obj->AddCollider(BoundingSphere(obj->GetPosition(), 10.0f));
 		obj->SetTeam((i % 2) + 1);
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
-		obj->SetCameraTargetPos(XMFLOAT3(0, 30, 0));
+		obj->SetCameraTargetOffset(XMFLOAT3(0, 47, -21));
 		m_Players.push_back(obj);
 	}
 	for (unsigned int i = 0; i < m_nProjectiles; i++) {
@@ -626,6 +706,7 @@ void CObjectManager::CreateObjectData()
 		*********************************************************************/
 		importer.ImportModel("0615_Box", m_TextureList[0], obj);
 		obj->SetAlive(false);
+		obj->AddCollider(BoundingSphere(XMFLOAT3(0,0,0), 10.0f));
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 		m_Projectiles.push_back(obj);
 	}
@@ -663,14 +744,38 @@ void CObjectManager::CollisionCheck()
 	누구랑 충돌했는지 그냥 전달해주기로 함.
 	*********************************************************************/
 	for (auto player = m_Players.begin(); player != m_Players.end(); ++player) {
-
 		// 활성화된 애만 처리할 것.
 		if ((*player)->IsAlive()) {
 
 			for (auto prop = m_Props.begin(); prop != m_Props.end(); ++prop)
-				if (IsCollidable((*player), (*prop))) {
-					(*player)->AddCollideInfo((*prop));
-				}
+				if (IsCollidable((*player), (*prop)))
+					if ((*player)->IsCollide((*prop)))
+						(*player)->AddCollideInfo((*prop));
+
+			for (auto otherPlayer = m_Players.begin(); otherPlayer != m_Players.end(); ++otherPlayer)
+				if (IsCollidable((*player), (*otherPlayer)))
+					if ((*player)->IsCollide((*otherPlayer))) {
+						(*player)->AddCollideInfo((*otherPlayer));
+						(*otherPlayer)->AddCollideInfo((*player));
+					}
+			for (auto projectile = m_Projectiles.begin(); projectile != m_Projectiles.end(); ++projectile)
+				if (IsCollidable((*player), (*projectile)))
+					if ((*player)->IsCollide((*projectile))) {
+						(*player)->AddCollideInfo((*projectile));
+						(*projectile)->Disable();
+					}
+		}
+	}
+	for (auto projectile = m_Projectiles.begin(); projectile != m_Projectiles.end(); ++projectile) {
+		// 활성화된 애만 처리할 것.
+		if ((*projectile)->IsAlive()) {
+			for (auto prop = m_Props.begin(); prop != m_Props.end(); ++prop)
+				if (IsCollidable((*projectile), (*prop)))
+					if ((*projectile)->IsCollide((*prop))) {
+						(*projectile)->Disable();
+						break;
+					}
+
 		}
 	}
 }

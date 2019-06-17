@@ -1,7 +1,7 @@
 #pragma once
 
 // Define Á¤ÀÇ
-#define TEST_
+//#define TEST_
 
 /*********************************************************************
 2019-06-16
@@ -62,8 +62,18 @@ constexpr int		TEAM_DEFAULT				= 0;
 constexpr int		TEAM_RED					= 1;
 constexpr int		TEAM_BLUE					= 2;
 
+constexpr int		g_DefaultHealthPoint		= 100;
+constexpr float		g_RespawnDelay				= 5.0f;
+
+constexpr int		g_DefaultDamage				= 10;
 constexpr int		g_DefaultRPM				= 550;
 constexpr float		g_DefaultProjectileLifeTime = 5.0f;
+
+enum class Tag {
+	Prop,
+	Player,
+	Projectile
+};
 
 /*********************************************************************
 2019-06-16
