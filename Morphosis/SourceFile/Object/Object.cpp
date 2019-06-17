@@ -4,7 +4,10 @@
 #include "Mesh/Mesh.h"
 #include "Importer/Importer.h"
 
-
+/*********************************************************************
+2019-06-17
+CObject
+*********************************************************************/
 CObject::CObject()
 {
 	SetPosition(XMFLOAT3(0, 0, 0));
@@ -13,17 +16,15 @@ CObject::CObject()
 	m_xmf3CollisionOffset	= XMFLOAT3(0, 0, 0);
 	m_xmf3CameraTargetPos	= XMFLOAT3(0, 0, 0);
 	m_AnimationState		= static_cast<int>( 0 );
-
+	m_Team					= TEAM_DEFAULT;
 }
 CObject::~CObject()
 {
 }
-
 void CObject::SetRootParameter(ID3D12GraphicsCommandList * pd3dCommandList)
 {
 	pd3dCommandList->SetGraphicsRootDescriptorTable(g_RootParameterObject, m_d3dCbvGPUDescriptorHandle);
 }
-
 void CObject::Render(ID3D12GraphicsCommandList * pd3dCommandList, CCamera * pCamera, bool isDebug)
 {
 	if (!m_IsAlive) return;
@@ -35,7 +36,6 @@ void CObject::Render(ID3D12GraphicsCommandList * pd3dCommandList, CCamera * pCam
 		}
 	}
 }
-
 void CObject::Update(float fTimeElapsed)
 {
 	if (!m_IsAlive) return;
@@ -51,7 +51,6 @@ void CObject::Update(float fTimeElapsed)
 	*********************************************************************/
 	if (m_AnimationController) m_AnimationController->Update(fTimeElapsed);
 }
-
 void CObject::AddAnimClip(AnimationClip * animClip)
 {
 	/*********************************************************************
@@ -62,55 +61,46 @@ void CObject::AddAnimClip(AnimationClip * animClip)
 		m_AnimationController = new CAnimationController();
 	m_AnimationController->AddAnimData(animClip);
 }
-
 void CObject::ChangeAnimClip(const char * animClipName)
 {
 	m_AnimationController->ChangeAnimClip(animClipName);
 }
-
 void CObject::SetPosition(float x, float y, float z)
 {
 	m_xmf4x4World._41 = x;
 	m_xmf4x4World._42 = y;
 	m_xmf4x4World._43 = z;
 }
-
 void CObject::SetPosition(const XMFLOAT3 xmf3Position)
 {
 	SetPosition(xmf3Position.x, xmf3Position.y, xmf3Position.z);
 }
-
 XMFLOAT3 const CObject::GetPosition()
 {
 	return(XMFLOAT3(m_xmf4x4World._41, m_xmf4x4World._42, m_xmf4x4World._43));
 
 }
-
 XMFLOAT3 const CObject::GetLook()
 {
 	XMFLOAT3 vector = { m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33 };
 	return Vector3::Normalize(vector);
 }
-
 XMFLOAT3 const CObject::GetUp()
 {
 	XMFLOAT3 vector = { m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23 };
 	return Vector3::Normalize(vector);
 }
-
 XMFLOAT3 const CObject::GetRight()
 {
 	XMFLOAT3 vector = { m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13 };
 	return Vector3::Normalize(vector);
 }
-
-XMMATRIX CObject::GetAnimationMatrix(int boneIdx)
+XMMATRIX const CObject::GetAnimationMatrix(int boneIdx)
 {
 	if(m_AnimationController) return m_AnimationController->GetFinalMatrix(boneIdx);
 	else return XMMatrixIdentity();
 }
-
-int CObject::GetNumAnimationBone()
+int const CObject::GetNumAnimationBone()
 {
 	if (m_AnimationController) {
 		if(!m_AnimationController->m_AnimData.empty())
@@ -118,43 +108,200 @@ int CObject::GetNumAnimationBone()
 	}
 	return 0;
 }
-
 void CObject::SetLook(XMFLOAT3 look)
 {
 	m_xmf4x4World._31 = look.x;
 	m_xmf4x4World._32 = look.y;
 	m_xmf4x4World._33 = look.z;
 }
-
 void CObject::SetUp(XMFLOAT3 up)
 {
 	m_xmf4x4World._21 = up.x;
 	m_xmf4x4World._22 = up.y;
 	m_xmf4x4World._23 = up.z;
 }
-
 void CObject::SetRight(XMFLOAT3 right)
 {
 	m_xmf4x4World._11 = right.x;
 	m_xmf4x4World._12 = right.y;
 	m_xmf4x4World._13 = right.z;
 }
-
 void CObject::SetCameraTargetPos(XMFLOAT3 pos)
 {
 	m_xmf3CameraTargetPos = pos;
 }
-
-XMFLOAT3 CObject::GetCameraTargetPos()
+XMFLOAT3 const CObject::GetCameraTargetPos()
 {
 	return Vector3::Add(GetPosition(), m_xmf3CameraTargetPos);
 	//return m_xmf3CameraTargetPos;
 }
-
 void CObject::ProcessInput(UCHAR * pKeysBuffer)
 {
 }
 
+/*********************************************************************
+2019-06-17
+CPlayer
+*********************************************************************/
+CPlayer::CPlayer() : CObject()
+{
+	m_fSpeed				= g_PlayerDefaultSpeed;
+	m_fRemainingTimeOfFire	= 0.0f;
+	m_fRPM					= (1 / static_cast<float>(g_DefaultRPM)) * 60.0f;
+}
+void CPlayer::Update(float fTimeElapsed)
+{
+	if (!m_IsAlive) return;
+
+	/*********************************************************************
+	2019-06-18
+	공격 타이머 파트
+	*********************************************************************/
+	m_fRemainingTimeOfFire -= fTimeElapsed;
+
+	/*********************************************************************
+	2019-06-17
+	이동 파트
+	*********************************************************************/
+	XMFLOAT3 xmf3Right = XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
+	XMFLOAT3 xmf3Up = XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
+	XMFLOAT3 xmf3Look = XMFLOAT3(m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33);
+	XMFLOAT3 xmf3Move = Move(fTimeElapsed);
+
+	XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(Rotate(fTimeElapsed)));
+	xmf3Look = Vector3::TransformNormal(xmf3Look, xmmtxRotate);
+	xmf3Right = Vector3::TransformNormal(xmf3Right, xmmtxRotate);
+
+	xmf3Look = Vector3::Normalize(xmf3Look);
+	xmf3Right = Vector3::CrossProduct(xmf3Up, xmf3Look, true);
+	xmf3Up = Vector3::CrossProduct(xmf3Look, xmf3Right, true);
+
+	m_xmf4x4World._11 = xmf3Right.x;	m_xmf4x4World._12 = xmf3Right.y;	m_xmf4x4World._13 = xmf3Right.z;
+	m_xmf4x4World._21 = xmf3Up.x;		m_xmf4x4World._22 = xmf3Up.y;		m_xmf4x4World._23 = xmf3Up.z;
+	m_xmf4x4World._31 = xmf3Look.x;		m_xmf4x4World._32 = xmf3Look.y;		m_xmf4x4World._33 = xmf3Look.z;
+	m_xmf4x4World._41 += xmf3Move.x;
+	m_xmf4x4World._42 += xmf3Move.y;
+	m_xmf4x4World._43 += xmf3Move.z;
+
+	/*********************************************************************
+	2019-06-17
+	애니메이션 파트
+	*********************************************************************/
+	if (m_AnimationController) m_AnimationController->Update(fTimeElapsed);
+
+	if (static_cast<int>(AnimationState::IDLE) == m_AnimationState) {
+		if (IsMoving()) {
+			m_AnimationState = static_cast<int>(AnimationState::RUN);
+			m_AnimationController->ChangeAnimClip("PlayerRun");
+		}
+	}
+	else {
+		if (!IsMoving()) {
+			m_AnimationState = static_cast<int>(AnimationState::IDLE);
+			m_AnimationController->ChangeAnimClip("PlayerIdle");
+		}
+	}
+
+
+	TriggerOff();
+}
+void CPlayer::ProcessInput(UCHAR * pKeysBuffer)
+{
+	if (pKeysBuffer[KEY::W] & 0xF0) m_trigInput[static_cast<int>(Move::W)] = true;
+	if (pKeysBuffer[KEY::A] & 0xF0) m_trigInput[static_cast<int>(Move::A)] = true;
+	if (pKeysBuffer[KEY::S] & 0xF0) m_trigInput[static_cast<int>(Move::S)] = true;
+	if (pKeysBuffer[KEY::D] & 0xF0) m_trigInput[static_cast<int>(Move::D)] = true;
+	if (pKeysBuffer[KEY::Q] & 0xF0) m_trigInput[static_cast<int>(Move::Q)] = true;
+	if (pKeysBuffer[KEY::E] & 0xF0) m_trigInput[static_cast<int>(Move::E)] = true;
+}
+void CPlayer::Shoot()
+{
+	m_fRemainingTimeOfFire = m_fRPM;
+}
+bool CPlayer::IsShootable()
+{
+	return m_fRemainingTimeOfFire <= 0;
+}
+void CPlayer::TriggerOff()
+{
+	for (int i = 0; i < static_cast<int>(Move::count); i++) m_trigInput[i] = false;
+}
+XMFLOAT3 CPlayer::Move(float fTimeElapsed)
+{
+	XMFLOAT3 temp(0, 0, 0);
+	if (m_trigInput[static_cast<int>(Move::W)]) { temp = Vector3::Add(temp, Vector3::ScalarProduct(GetLook(), fTimeElapsed   * m_fSpeed, false)); }
+	if (m_trigInput[static_cast<int>(Move::A)]) { temp = Vector3::Add(temp, Vector3::ScalarProduct(GetRight(), -fTimeElapsed * m_fSpeed, false)); }
+	if (m_trigInput[static_cast<int>(Move::S)]) { temp = Vector3::Add(temp, Vector3::ScalarProduct(GetLook(), -fTimeElapsed * m_fSpeed, false)); }
+	if (m_trigInput[static_cast<int>(Move::D)]) { temp = Vector3::Add(temp, Vector3::ScalarProduct(GetRight(), fTimeElapsed  * m_fSpeed, false)); }
+	return temp;
+}
+float CPlayer::Rotate(float fTimeElapsed)
+{
+	float temp = 0;
+	if (m_trigInput[static_cast<int>(Move::Q)]) temp += fTimeElapsed * m_fSpeed * -1;
+	if (m_trigInput[static_cast<int>(Move::E)]) temp += fTimeElapsed * m_fSpeed;
+
+	return temp;
+}
+
+/*********************************************************************
+2019-06-17
+CProjectile
+*********************************************************************/
+CProjectile::CProjectile() : CObject()
+{
+	m_IsAlive		= false;
+	m_xmf3Direction = XMFLOAT3(0, 0, 0);
+	m_fSpeed		= g_ProjectileDefaultSpeed;
+	m_fLifeTime		= g_DefaultProjectileLifeTime;
+}
+
+void CProjectile::Initialize(CObject * obj)
+{
+	/*********************************************************************
+	2019-06-17
+	여기서 해줘야 하는 것은
+	인자로 받아온 오브젝트로부터 위치와 방향, 팀을 받아야 한다는 것.
+
+	아 투사체가 회전하면서 내려와야 하면 흠. 그러면 흠. 방향을 흠.
+	*********************************************************************/
+	SetPosition(obj->GetPosition());
+
+	/*********************************************************************
+	2019-06-17
+	렌더링할 메쉬의 방향
+	*********************************************************************/
+	SetLook(obj->GetLook());
+	SetUp(obj->GetUp());
+	SetRight(obj->GetRight());
+
+	SetTeam(obj->GetTeam());
+
+	m_xmf3Direction = Vector3::Normalize(obj->GetLook());
+	m_fLifeTime = g_DefaultProjectileLifeTime;
+}
+
+void CProjectile::Update(float fTimeElapsed)
+{
+	if (!m_IsAlive) return;
+	/*********************************************************************
+	2019-06-18
+	LifeTime 관리
+	*********************************************************************/
+	m_fLifeTime -= fTimeElapsed;
+	if (IsExpired()) { m_IsAlive = false; return; }
+
+	m_xmf4x4World._41 += m_xmf3Direction.x * m_fSpeed * fTimeElapsed;
+	m_xmf4x4World._42 += m_xmf3Direction.y * m_fSpeed * fTimeElapsed;
+	m_xmf4x4World._43 += m_xmf3Direction.z * m_fSpeed * fTimeElapsed;
+
+	if (m_AnimationController) m_AnimationController->Update(fTimeElapsed);
+}
+
+/*********************************************************************
+2019-06-17
+CObjectManager
+*********************************************************************/
 CObjectManager::~CObjectManager()
 {
 	for (int i = 0; i < m_Props.size(); ++i) delete m_Props[i];
@@ -169,7 +316,6 @@ CObjectManager::~CObjectManager()
 	for (int i = 0; i < m_TextureList.size(); ++i) delete m_TextureList[i];
 	m_TextureList.erase(m_TextureList.begin(), m_TextureList.end());
 }
-
 void CObjectManager::Render()
 {
 	/*********************************************************************
@@ -209,7 +355,6 @@ void CObjectManager::Render()
 	m_pd3dCommandList->SetPipelineState(m_PSO[0]);
 	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->Render(m_pd3dCommandList);
 }
-
 void CObjectManager::Update(float fTime)
 {
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Update(fTime);
@@ -217,7 +362,6 @@ void CObjectManager::Update(float fTime)
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->Update(fTime);
 
 }
-
 void CObjectManager::ProcessInput(UCHAR * pKeysBuffer)
 {
 	if (m_Players[0]->IsAlive()) m_Players[0]->ProcessInput(pKeysBuffer);
@@ -233,15 +377,16 @@ void CObjectManager::ProcessInput(UCHAR * pKeysBuffer)
 
 		Render와 Update는 IsAlive가 true 일 때만 되게 해야 한다.
 		*********************************************************************/
-		auto iter = find_if(m_Projectiles.begin(), m_Projectiles.end(), [](CObject* p) {return !(p->IsAlive()); });
-		if (iter != m_Projectiles.end()) {
-			(*iter)->SetPosition(m_Players[0]->GetPosition());
-			//(*iter)->SetTeam(m_Player[0]->GetTeam());
-			(*iter)->SetAlive(true);
+		if (dynamic_cast<CPlayer*>(m_Players[0])->IsShootable()) {
+			dynamic_cast<CPlayer*>(m_Players[0])->Shoot();
+			auto iter = find_if(m_Projectiles.begin(), m_Projectiles.end(), [](CObject* p) {return !(p->IsAlive()); });
+			if (iter != m_Projectiles.end()) {
+				dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[0]);
+				(*iter)->SetAlive(true);
+			}
 		}
 	}
 }
-
 void CObjectManager::CreateDescriptorHeap()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC d3dDescriptorHeapDesc;
@@ -258,7 +403,6 @@ void CObjectManager::CreateDescriptorHeap()
 	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (m_nObjects));
 	m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (m_nObjects));
 }
-
 void CObjectManager::CreateConstantBufferResorce()
 {
 	UINT ncbElementBytes;
@@ -276,7 +420,6 @@ void CObjectManager::CreateConstantBufferResorce()
 		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
 	if (nullptr != m_pd3dCBProjectilesResource) m_pd3dCBProjectilesResource->Map(0, NULL, (void **)&m_pCBMappedProjectiles);
 }
-
 void CObjectManager::CreateConstantBufferView()
 {
 	UINT ncbElementBytes;
@@ -319,7 +462,6 @@ void CObjectManager::CreateConstantBufferView()
 		}
 	}
 }
-
 void CObjectManager::CreateTextureResourceView(CTexture * pTexture)
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE d3dSrvCPUDescriptorHandle = m_d3dSrvCPUDescriptorStartHandle;
@@ -334,7 +476,6 @@ void CObjectManager::CreateTextureResourceView(CTexture * pTexture)
 	pTexture->SetRootArgument(g_RootParameterTexture, d3dSrvGPUDescriptorHandle);
 	m_d3dSrvGPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
 }
-
 void CObjectManager::CreateObjectData()
 {
 	/*********************************************************************
@@ -403,6 +544,7 @@ void CObjectManager::CreateObjectData()
 		importer.ImportAnimClip("0603_CharacterEndJump", obj);
 		importer.ImportAnimClip("0603_CharacterDied", obj);
 		obj->SetPosition(100, 0, i * 64.0f);
+		obj->SetTeam((i % 2) + 1);
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 		obj->SetCameraTargetPos(XMFLOAT3(0, 30, 0));
 		m_Players.push_back(obj);
@@ -419,100 +561,4 @@ void CObjectManager::CreateObjectData()
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 		m_Projectiles.push_back(obj);
 	}
-}
-
-CProjectile::CProjectile() : CObject()
-{
-	m_IsAlive		= false;
-	m_xmf3Direction = XMFLOAT3(0, 0, 0);
-}
-
-CPlayer::CPlayer() : CObject()
-{
-	m_fSpeed = g_PlayerDefaultSpeed;
-}
-
-void CPlayer::Update(float fTimeElapsed)
-{
-	if (!m_IsAlive) return;
-
-	/*********************************************************************
-	2019-06-17
-	이동 파트
-	*********************************************************************/
-	XMFLOAT3 xmf3Right = XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
-	XMFLOAT3 xmf3Up = XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
-	XMFLOAT3 xmf3Look = XMFLOAT3(m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33);
-	XMFLOAT3 xmf3Move = Move(fTimeElapsed);
-
-	XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(Rotate(fTimeElapsed)));
-	xmf3Look = Vector3::TransformNormal(xmf3Look, xmmtxRotate);
-	xmf3Right = Vector3::TransformNormal(xmf3Right, xmmtxRotate);
-
-	xmf3Look = Vector3::Normalize(xmf3Look);
-	xmf3Right = Vector3::CrossProduct(xmf3Up, xmf3Look, true);
-	xmf3Up = Vector3::CrossProduct(xmf3Look, xmf3Right, true);
-
-	m_xmf4x4World._11 = xmf3Right.x;	m_xmf4x4World._12 = xmf3Right.y;	m_xmf4x4World._13 = xmf3Right.z;
-	m_xmf4x4World._21 = xmf3Up.x;		m_xmf4x4World._22 = xmf3Up.y;		m_xmf4x4World._23 = xmf3Up.z;
-	m_xmf4x4World._31 = xmf3Look.x;		m_xmf4x4World._32 = xmf3Look.y;		m_xmf4x4World._33 = xmf3Look.z;
-	m_xmf4x4World._41 += xmf3Move.x;
-	m_xmf4x4World._42 += xmf3Move.y;
-	m_xmf4x4World._43 += xmf3Move.z;
-
-	/*********************************************************************
-	2019-06-17
-	애니메이션 파트
-	*********************************************************************/
-	if (m_AnimationController) m_AnimationController->Update(fTimeElapsed);
-
-	if (static_cast<int>(AnimationState::IDLE) == m_AnimationState) {
-		if (IsMoving()) {
-			m_AnimationState = static_cast<int>(AnimationState::RUN);
-			m_AnimationController->ChangeAnimClip("PlayerRun");
-		}
-	}
-	else {
-		if (!IsMoving()) {
-			m_AnimationState = static_cast<int>(AnimationState::IDLE);
-			m_AnimationController->ChangeAnimClip("PlayerIdle");
-		}
-	}
-
-
-	TriggerOff();
-}
-
-void CPlayer::ProcessInput(UCHAR * pKeysBuffer)
-{
-	if (pKeysBuffer[KEY::W] & 0xF0) m_trigInput[static_cast<int>(Move::W)] = true;
-	if (pKeysBuffer[KEY::A] & 0xF0) m_trigInput[static_cast<int>(Move::A)] = true;
-	if (pKeysBuffer[KEY::S] & 0xF0) m_trigInput[static_cast<int>(Move::S)] = true;
-	if (pKeysBuffer[KEY::D] & 0xF0) m_trigInput[static_cast<int>(Move::D)] = true;
-	if (pKeysBuffer[KEY::Q] & 0xF0) m_trigInput[static_cast<int>(Move::Q)] = true;
-	if (pKeysBuffer[KEY::E] & 0xF0) m_trigInput[static_cast<int>(Move::E)] = true;
-}
-
-void CPlayer::TriggerOff()
-{
-	for (int i = 0; i < static_cast<int>(Move::count); i++) m_trigInput[i] = false;
-}
-
-XMFLOAT3 CPlayer::Move(float fTimeElapsed)
-{
-	XMFLOAT3 temp(0, 0, 0);
-	if (m_trigInput[static_cast<int>(Move::W)]) { temp = Vector3::Add(temp, Vector3::ScalarProduct(GetLook(), fTimeElapsed   * m_fSpeed, false)); }
-	if (m_trigInput[static_cast<int>(Move::A)]) { temp = Vector3::Add(temp, Vector3::ScalarProduct(GetRight(), -fTimeElapsed * m_fSpeed, false)); }
-	if (m_trigInput[static_cast<int>(Move::S)]) { temp = Vector3::Add(temp, Vector3::ScalarProduct(GetLook(), -fTimeElapsed * m_fSpeed, false)); }
-	if (m_trigInput[static_cast<int>(Move::D)]) { temp = Vector3::Add(temp, Vector3::ScalarProduct(GetRight(), fTimeElapsed  * m_fSpeed, false)); }
-	return temp;
-}
-
-float CPlayer::Rotate(float fTimeElapsed)
-{
-	float temp = 0;
-	if (m_trigInput[static_cast<int>(Move::Q)]) temp += fTimeElapsed * m_fSpeed * -1;
-	if (m_trigInput[static_cast<int>(Move::E)]) temp += fTimeElapsed * m_fSpeed;
-
-	return temp;
 }

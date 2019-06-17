@@ -39,35 +39,38 @@ public:
 	const XMFLOAT3	GetLook();
 	const XMFLOAT3	GetUp();
 	const XMFLOAT3	GetRight();
-	XMMATRIX		GetAnimationMatrix(int boneIdx);
-	int				GetNumAnimationBone();
-	XMFLOAT3		GetCameraTargetPos();
+	const XMMATRIX	GetAnimationMatrix(int boneIdx);
+	const XMFLOAT3	GetCameraTargetPos();
+	const int		GetNumAnimationBone();
+	const int		GetTeam() { return m_Team; }
 
 	void SetLook(XMFLOAT3 look);
 	void SetUp(XMFLOAT3 up);
 	void SetRight(XMFLOAT3 right);
 	void SetCameraTargetPos(XMFLOAT3 pos);
 	void SetAlive(bool state) { m_IsAlive = state; }
+	void SetTeam(int team) { m_Team = team; }
 
-	bool IsCollide(const BoundingOrientedBox& other);
-	bool IsAlive() { return m_IsAlive; }
+	const bool IsCollide(const BoundingOrientedBox& other);
+	const bool IsAlive() { return m_IsAlive; }
 	virtual void ProcessInput(UCHAR* pKeysBuffer);
-
-protected:
-
 
 public:
 	XMFLOAT4X4						m_xmf4x4World;
 
 protected:
 	bool							m_IsAlive;
-	std::vector<CModel>				m_ModelList;
+	XMFLOAT3						m_xmf3CameraTargetPos;
+	int								m_Team;
 
+	/*********************************************************************
+	2019-06-15
+	렌더링 관련 부분
+	*********************************************************************/
+	std::vector<CModel>				m_ModelList;
 	D3D12_GPU_DESCRIPTOR_HANDLE		m_d3dCbvGPUDescriptorHandle;
 	CB_OBJECT_INFO					*m_pcbMappedObject		= NULL;
 	ID3D12Resource					*m_pd3dcbObject			= NULL;
-
-	XMFLOAT3						m_xmf3CameraTargetPos;
 
 	/*********************************************************************
 	2019-06-17
@@ -91,13 +94,16 @@ public:
 	virtual void	Update(float fTimeElapsed);
 	virtual void	ProcessInput(UCHAR* pKeysBuffer);
 
+	void			Shoot();
+	bool			IsShootable();
+
 protected:
-	virtual bool	IsMoving() {
+	void			TriggerOff();
+	bool			IsMoving() {
 		for (int i = 0; i < static_cast<int>(Move::count); ++i)
 			if (m_trigInput[i]) return true;
 		return false;
 	}
-	void			TriggerOff();
 	XMFLOAT3		Move(float fTimeElapsed);
 	float			Rotate(float fTimeElapsed);
 
@@ -124,6 +130,8 @@ protected:
 
 protected:
 	float			m_fSpeed;
+	float			m_fRPM;	// 1 / Round Per Second
+	float			m_fRemainingTimeOfFire;
 	bool			m_trigInput[static_cast<int>(Move::count)];
 
 };
@@ -131,6 +139,13 @@ protected:
 class CProjectile : public CObject {
 public:
 	CProjectile();
+
+public:
+	void			Initialize(CObject* obj);
+	virtual void	Update(float fTimeElapsed);
+
+private:
+	bool			IsExpired() { return m_fLifeTime <= 0; }
 
 protected:
 	/*********************************************************************
@@ -150,9 +165,9 @@ protected:
 	를 구해주면 된다.
 	아니 그냥 점점 y축으로 떨어지게 해버려. 뭘 어렵게 생각해. 그러게.
 	*********************************************************************/
-	XMFLOAT3						m_xmf3Direction;
-
-
+	XMFLOAT3		m_xmf3Direction;	//Normal Vector
+	float			m_fSpeed;
+	float			m_fLifeTime;
 };
 
 class CTexture;
