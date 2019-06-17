@@ -108,7 +108,6 @@ public:
 		m_nProps			= 0;
 		m_nPlayers			= 0;
 		m_nProjectiles		= 0;
-		//m_nAnimationMatrix	= 0;
 		CreateObjectData();
 	}
 	~CObjectManager();
@@ -159,23 +158,19 @@ private:
 	unsigned int		m_nProps						= 0;
 	unsigned int		m_nPlayers						= 0;
 	unsigned int		m_nProjectiles					= 0;
-	//unsigned int		m_nAnimationMatrix				= 0;
 	
 	ID3D12Resource*		m_pd3dCBPropResource			= NULL;
 	ID3D12Resource*		m_pd3dCBPlayersResource			= NULL;
 	ID3D12Resource*		m_pd3dCBProjectilesResource		= NULL;
-	//ID3D12Resource*		m_pd3dCBAnimationMatrixResource = NULL;
 
 	CB_OBJECT_INFO*		m_pCBMappedPropObjects			= NULL;
 	CB_OBJECT_INFO*		m_pCBMappedPlayers				= NULL;
 	CB_OBJECT_INFO*		m_pCBMappedProjectiles			= NULL;
-	//XMMATRIX*			m_pCBMappedAnimationMatrix		= NULL;
 
 	/*********************************************************************
 	2019-06-15
 	생성한 객체들을 관리할 벡터.
 	*********************************************************************/
-	//vector<CObject*>	m_Objects;
 	vector<CObject*>	m_Props;
 	vector<CObject*>	m_Players;
 	vector<CObject*>	m_Projectiles;

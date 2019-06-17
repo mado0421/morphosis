@@ -222,10 +222,10 @@ void CObjectManager::Render()
 	*********************************************************************/
 	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
 	CB_OBJECT_INFO	*pbMappedcbObject;
-	//XMMATRIX		*pbMappedcbMatrix;
 
 	for (unsigned int i = 0; i < m_nProps; i++) {
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedPropObjects + (i * ncbElementBytes));
+		memset(pbMappedcbObject, NULL, ncbElementBytes);
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Props[i]->m_xmf4x4World)));
 	}
 	for (unsigned int i = 0; i < m_nPlayers; i++) {
@@ -236,25 +236,6 @@ void CObjectManager::Render()
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedProjectiles + (i * ncbElementBytes));
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Projectiles[i]->m_xmf4x4World)));
 	}
-
-
-
-	//D3D12_GPU_VIRTUAL_ADDRESS d3dcbAnimationGpuVirtualAddress = m_pd3dCBAnimationMatrixResource->GetGPUVirtualAddress();
-	//m_pd3dCommandList->SetGraphicsRootConstantBufferView(g_RootParameterAnimation, d3dcbAnimationGpuVirtualAddress);
-//	ncbElementBytes = (((sizeof(XMMATRIX)*g_NumAnimationBone) + 255) & ~255);
-//	for (unsigned int i = 0; i < m_nAnimationMatrix; i++) {
-//		//pbMappedcbMatrix = m_pCBMappedAnimationMatrix + (i * ncbElementBytes);
-//		//pbMappedcbMatrix = new XMMATRIX[g_NumAnimationBone];
-//		for (int j = 0; j < m_Players[i]->GetNumAnimationBone(); ++j) {
-//			m_pCBMappedAnimationMatrix[j] = XMMatrixTranspose(m_Players[i]->GetAnimationMatrix(j));
-//		}
-///*
-//		for(int j = 0; j < g_NumAnimationBone; ++j)
-//			pbMappedcbMatrix[j] = XMMatrixIdentity();
-//		memcpy(m_pCBMappedAnimationMatrix + (i * ncbElementBytes), pbMappedcbMatrix, sizeof(XMMATRIX) * g_NumAnimationBone);*/
-//	}
-
-
 
 	m_pd3dCommandList->SetPipelineState(m_PSO[1]);
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Render(m_pd3dCommandList);
@@ -275,7 +256,7 @@ void CObjectManager::Update(float fTime)
 void CObjectManager::CreateDescriptorHeap()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC d3dDescriptorHeapDesc;
-	d3dDescriptorHeapDesc.NumDescriptors = m_nObjects /*+ m_nAnimationMatrix*/ + 1;
+	d3dDescriptorHeapDesc.NumDescriptors = m_nObjects + 1;
 	d3dDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	d3dDescriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	d3dDescriptorHeapDesc.NodeMask = 0;
@@ -285,8 +266,8 @@ void CObjectManager::CreateDescriptorHeap()
 
 	m_d3dCbvCPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	m_d3dCbvGPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart();
-	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (m_nObjects/* + m_nAnimationMatrix*/));
-	m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (m_nObjects/* + m_nAnimationMatrix*/));
+	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (m_nObjects));
+	m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (m_nObjects));
 }
 
 void CObjectManager::CreateConstantBufferResorce()
@@ -305,11 +286,6 @@ void CObjectManager::CreateConstantBufferResorce()
 	m_pd3dCBProjectilesResource = ::CreateBufferResource(m_pd3dDevice, m_pd3dCommandList, NULL, ncbElementBytes * m_nProjectiles,
 		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
 	if (nullptr != m_pd3dCBProjectilesResource) m_pd3dCBProjectilesResource->Map(0, NULL, (void **)&m_pCBMappedProjectiles);
-
-	//ncbElementBytes = (((sizeof(XMMATRIX)*g_NumAnimationBone) + 255) & ~255);
-	//m_pd3dCBAnimationMatrixResource = ::CreateBufferResource(m_pd3dDevice, m_pd3dCommandList, NULL, ncbElementBytes * m_nAnimationMatrix,
-	//	D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-	//if (nullptr != m_pd3dCBAnimationMatrixResource) m_pd3dCBAnimationMatrixResource->Map(0, NULL, (void **)&m_pCBMappedAnimationMatrix);
 }
 
 void CObjectManager::CreateConstantBufferView()
@@ -353,41 +329,10 @@ void CObjectManager::CreateConstantBufferView()
 			m_pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
 		}
 	}
-
-	//ncbElementBytes = (((sizeof(XMMATRIX)*g_NumAnimationBone) + 255) & ~255);
-	//d3dCBVDesc.SizeInBytes = ncbElementBytes;
-	//if (nullptr != m_pd3dCBAnimationMatrixResource) {
-	//	d3dGpuVirtualAddress = m_pd3dCBAnimationMatrixResource->GetGPUVirtualAddress();
-	//	for (unsigned int i = 0; i < m_nAnimationMatrix; i++) {
-	//		d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * i);
-	//		D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
-	//		d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (i + m_nProps + m_nPlayers + m_nProjectiles));
-	//		m_pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
-	//	}
-	//}
 }
 
 void CObjectManager::CreateTextureResourceView(CTexture * pTexture)
 {
-
-	//D3D12_CPU_DESCRIPTOR_HANDLE d3dSrvCPUDescriptorHandle = m_d3dSrvCPUDescriptorStartHandle;
-	//D3D12_GPU_DESCRIPTOR_HANDLE d3dSrvGPUDescriptorHandle = m_d3dSrvGPUDescriptorStartHandle;
-	//int nTextures = m_TextureList.size();
-	//for (int i = 0; i < nTextures; i++)
-	//{
-	//	int nTextureType = m_TextureList[i]->GetTextureType();
-	//	ID3D12Resource *pShaderResource = m_TextureList[i]->GetTexture();
-	//	D3D12_RESOURCE_DESC d3dResourceDesc = pShaderResource->GetDesc();
-	//	D3D12_SHADER_RESOURCE_VIEW_DESC d3dShaderResourceViewDesc = GetShaderResourceViewDesc(d3dResourceDesc, nTextureType);
-	//	m_pd3dDevice->CreateShaderResourceView(pShaderResource, &d3dShaderResourceViewDesc, d3dSrvCPUDescriptorHandle);
-
-	//	m_d3dSrvCPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
-
-	//	m_TextureList[i]->SetRootArgument(g_RootParameterTexture, d3dSrvGPUDescriptorHandle);
-	//	m_d3dSrvGPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
-	//}
-
-
 	D3D12_CPU_DESCRIPTOR_HANDLE d3dSrvCPUDescriptorHandle = m_d3dSrvCPUDescriptorStartHandle;
 	D3D12_GPU_DESCRIPTOR_HANDLE d3dSrvGPUDescriptorHandle = m_d3dSrvGPUDescriptorStartHandle;
 	int nTextureType = pTexture->GetTextureType();
@@ -399,40 +344,6 @@ void CObjectManager::CreateTextureResourceView(CTexture * pTexture)
 
 	pTexture->SetRootArgument(g_RootParameterTexture, d3dSrvGPUDescriptorHandle);
 	m_d3dSrvGPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
-
-
-
-
-
-
-
-	//for (int i = 0; i < m_TextureList.size(); ++i) {
-	//	D3D12_CPU_DESCRIPTOR_HANDLE d3dSrvCPUDescriptorHandle; d3dSrvCPUDescriptorHandle.ptr = m_d3dSrvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * i);
-	//	D3D12_GPU_DESCRIPTOR_HANDLE d3dSrvGPUDescriptorHandle; d3dSrvGPUDescriptorHandle.ptr = m_d3dSrvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * i);
-	//	int nTextures = m_TextureList[i]->GetTextureCount();
-	//	int nTextureType = m_TextureList[i]->GetTextureType();
-	//	ID3D12Resource *pShaderResource = m_TextureList[i]->GetTexture();
-	//	D3D12_RESOURCE_DESC d3dResourceDesc = pShaderResource->GetDesc();
-	//	D3D12_SHADER_RESOURCE_VIEW_DESC d3dShaderResourceViewDesc = GetShaderResourceViewDesc(d3dResourceDesc, nTextureType);
-	//	m_pd3dDevice->CreateShaderResourceView(pShaderResource, &d3dShaderResourceViewDesc, d3dSrvCPUDescriptorHandle);
-
-	//	m_d3dSrvCPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
-
-	//	m_TextureList[i]->SetRootArgument(g_RootParameterTexture, d3dSrvGPUDescriptorHandle);
-	//	m_d3dSrvGPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
-	//	//for (int j = 0; j < nTextures; j++)
-	//	//{
-	//	//	ID3D12Resource *pShaderResource = m_TextureList[i]->GetTexture();
-	//	//	D3D12_RESOURCE_DESC d3dResourceDesc = pShaderResource->GetDesc();
-	//	//	D3D12_SHADER_RESOURCE_VIEW_DESC d3dShaderResourceViewDesc = GetShaderResourceViewDesc(d3dResourceDesc, nTextureType);
-	//	//	m_pd3dDevice->CreateShaderResourceView(pShaderResource, &d3dShaderResourceViewDesc, d3dSrvCPUDescriptorHandle);
-
-	//	//	m_d3dSrvCPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
-
-	//	//	m_TextureList[i]->SetRootArgument(g_RootParameterTexture, d3dSrvGPUDescriptorHandle);
-	//	//	m_d3dSrvGPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
-	//	//}
-	//}
 }
 
 void CObjectManager::CreateObjectData()
@@ -451,11 +362,6 @@ void CObjectManager::CreateObjectData()
 	m_nProps는 LevelData에서 읽어오고, 나머지는 Defines.h에서 가져올 것.
 	*********************************************************************/
 	CImporter importer(m_pd3dDevice, m_pd3dCommandList);
-	//m_nProps			= 10;
-	//m_nPlayers			= 1;
-	//m_nProjectiles		= m_nPlayers * 30;
-	//m_nObjects			= m_nProps + m_nPlayers + m_nProjectiles;
-	//m_nAnimationMatrix	= (m_nProps + m_nPlayers) * g_NumAnimationBone;
 	m_nProps			= 2;
 	m_nPlayers			= 2;
 	m_nProjectiles		= 0;

@@ -31,7 +31,6 @@ XMMATRIX CAnimationController::GetInterpolatedToRootMtx(int boneIdx)
 	float time = m_fTime;
 	// 만약 키프레임이 하나 밖에 없으면 맨 첫 번째 ToRoot를 반환
 	if (m_AnimData[m_AnimState]->m_nKeyTime == 1) return XMLoadFloat4x4(&m_AnimData[m_AnimState]->m_BoneList[boneIdx].m_pToRootTransforms[0]);
-	//if (isFurtherThanBack(time)) if (isLoop) time = GetClampTime(time);
 
 	// 시간을 비교해서 보간할 idx 두 개를 구해야 함.
 	// 시간이 맨 앞보다 빠르면 맨 앞을 반환.

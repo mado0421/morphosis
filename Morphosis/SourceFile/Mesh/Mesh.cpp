@@ -818,6 +818,9 @@ CTestMesh::~CTestMesh()
 
 CAnimatedMesh::CAnimatedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ImportMeshData & m) : CMesh(pd3dDevice, pd3dCommandList)
 {
+	CreateConstantBufferResource(pd3dDevice, pd3dCommandList);
+	for (int i = 0; i < g_NumAnimationBone; ++i) m_a[i] = XMMatrixIdentity();
+
 	int nCtrlPoint		= static_cast<int>(m.m_nCtrlPointList);
 	int nPolyongVertex	= static_cast<int>(m.m_nVertexList);
 
@@ -852,7 +855,6 @@ CAnimatedMesh::CAnimatedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLis
 	vertexBufferView.StrideInBytes = nStride;
 	vertexBufferView.SizeInBytes = nStride * nVertices;
 
-	CreateConstantBufferResource(pd3dDevice, pd3dCommandList);
 }
 
 void CAnimatedMesh::SetAnimatedMatrix(CAnimationController * a)
@@ -874,7 +876,7 @@ void CAnimatedMesh::UpdateConstantBuffer(ID3D12GraphicsCommandList * pd3dCommand
 	if (m_pd3dcbAnimation)
 	{
 		D3D12_GPU_VIRTUAL_ADDRESS d3dcbBoneOffsetsGpuVirtualAddress = m_pd3dcbAnimation->GetGPUVirtualAddress();
-		pd3dCommandList->SetGraphicsRootConstantBufferView(g_RootParameterAnimation, d3dcbBoneOffsetsGpuVirtualAddress); //Skinned Bone Offsets
+		pd3dCommandList->SetGraphicsRootConstantBufferView(g_RootParameterAnimation, d3dcbBoneOffsetsGpuVirtualAddress);
 
 		for (int i = 0; i < g_NumAnimationBone; i++)
 		{

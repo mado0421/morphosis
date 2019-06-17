@@ -74,53 +74,6 @@ struct CB_DESC {
 	D3D12_GPU_DESCRIPTOR_HANDLE			hGPUDescTable;
 };
 
-inline bool AllocUploadBuffer(
-	CB_DESC& cb_desc, 
-	UINT nBytes, 
-	ID3D12Resource *resource, 
-	UINT *UploadBufferCurrentIdx, 
-	void *UploadBufferMappedPtr) 
-{
-	if (nullptr == resource) return false;
-	UINT ncbElementBytes = ((nBytes + 255) & ~255);
-
-	cb_desc.nMappedData = ncbElementBytes;
-	cb_desc.view_desc.SizeInBytes = ncbElementBytes;
-	cb_desc.view_desc.BufferLocation = resource->GetGPUVirtualAddress() + (*UploadBufferCurrentIdx);
-	cb_desc.pMappedPtr = reinterpret_cast<LPVOID>(
-		(*UploadBufferCurrentIdx) + reinterpret_cast<long long>(UploadBufferMappedPtr));
-
-	(*UploadBufferCurrentIdx) += ncbElementBytes;
-	return true;
-}
-
-//class CGroundScene : public CScene 
-//{
-//protected:
-//	ID3D12PipelineState		**m_ppPSO					= nullptr;
-//
-//public:
-//	// Scene의 기본적인 함수들
-//	//virtual void Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pContext);
-//	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
-//	virtual void Update(float fTimeElapsed);
-//
-//	//virtual ID3D12RootSignature *CreateRootSignature(ID3D12Device *pd3dDevice);
-//
-//	// 상수 버퍼를 만들고 관리하는 함수들
-//	virtual void CreateObjectBuffers();
-//	virtual void UpdateObjectBuffers();
-//	virtual void ReleaseObjectBuffers();
-//
-//	virtual void CreateCbvAndSrvDescriptorHeaps(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int nConstantBufferViews, int nShaderResourceViews);
-//	virtual void CreateShaderVariables(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, int nConstantBufferViews);
-//	virtual void CreateConstantBufferViews(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int nConstantBufferViews, ID3D12Resource *pd3dConstantBuffers, UINT nStride);
-//	//virtual void CreateShaderResourceViews(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, CTexture *pTexture, UINT nRootParameterStartIndex, bool bAutoIncrement);
-//
-//	virtual void ReleaseShaderVariables();
-//
-//};
-
 class CTestGroundScene : public CScene {
 public:
 	virtual ID3D12RootSignature *CreateRootSignature(ID3D12Device *pd3dDevice);
@@ -135,17 +88,13 @@ public:
 
 private:
 	virtual void MakePSO();
-	virtual void CreateDescriptorHeap();
-	virtual void CreateConstantView();
 
 private:
 	bool isTimeflow = true;
 
-	ID3D12PipelineState ** pso							= NULL;
-	ID3D12Resource		* interpolatedMatrixResource	= NULL;
-	XMMATRIX			* pCBMappedMatrix				= NULL;
-	float				ttt = 0.0f;
-	ID3D12PipelineState		**m_ppPSO = nullptr;
+	vector<ID3D12PipelineState*> m_PSO;
+
+	float					ttt			= 0.0f;
 
 private:
 	CObjectManager* m_ObjMng = NULL;

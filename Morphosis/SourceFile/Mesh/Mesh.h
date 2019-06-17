@@ -159,6 +159,7 @@ public:
 	CAnimatedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nVertices, XMFLOAT3 *pxmf3Positions, UINT nIndices, UINT *pnIndices) : CMesh(pd3dDevice, pd3dCommandList)
 	{
 		CreateConstantBufferResource(pd3dDevice, pd3dCommandList);
+		for (int i = 0; i < g_NumAnimationBone; ++i) m_a[i] = XMMatrixIdentity();
 		UINT nStride = sizeof(CAnimVertex);
 		this->nVertices = nVertices;
 
