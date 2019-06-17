@@ -11,12 +11,12 @@ CObject
 CObject::CObject()
 {
 	SetPosition(XMFLOAT3(0, 0, 0));
-	m_xmf4x4World			= Matrix4x4::Identity();
-	m_IsAlive				= true;
-	m_xmf3CollisionOffset	= XMFLOAT3(0, 0, 0);
-	m_xmf3CameraTargetPos	= XMFLOAT3(0, 0, 0);
-	m_AnimationState		= static_cast<int>( 0 );
-	m_Team					= TEAM_DEFAULT;
+	m_xmf4x4World = Matrix4x4::Identity();
+	m_IsAlive = true;
+	m_xmf3CollisionOffset = XMFLOAT3(0, 0, 0);
+	m_xmf3CameraTargetPos = XMFLOAT3(0, 0, 0);
+	m_AnimationState = static_cast<int>(0);
+	m_Team = TEAM_DEFAULT;
 }
 CObject::~CObject()
 {
@@ -51,15 +51,26 @@ void CObject::Update(float fTimeElapsed)
 	*********************************************************************/
 	if (m_AnimationController) m_AnimationController->Update(fTimeElapsed);
 }
+void CObject::LateUpdate(float fTimeElapsed)
+{
+}
 void CObject::AddAnimClip(AnimationClip * animClip)
 {
 	/*********************************************************************
 	2019-06-16
 	애니메이션 컨트롤러가 없으면 생성하고 추가해준다.
 	*********************************************************************/
-	if (NULL == m_AnimationController) 
+	if (NULL == m_AnimationController)
 		m_AnimationController = new CAnimationController();
 	m_AnimationController->AddAnimData(animClip);
+}
+void CObject::AddCollider(BoundingOrientedBox box)
+{
+	m_CollisionBox.push_back(box);
+}
+void CObject::AddCollider(BoundingSphere sphere)
+{
+	m_CollisionSphere.push_back(sphere);
 }
 void CObject::ChangeAnimClip(const char * animClipName)
 {
@@ -97,13 +108,13 @@ XMFLOAT3 const CObject::GetRight()
 }
 XMMATRIX const CObject::GetAnimationMatrix(int boneIdx)
 {
-	if(m_AnimationController) return m_AnimationController->GetFinalMatrix(boneIdx);
+	if (m_AnimationController) return m_AnimationController->GetFinalMatrix(boneIdx);
 	else return XMMatrixIdentity();
 }
 int const CObject::GetNumAnimationBone()
 {
 	if (m_AnimationController) {
-		if(!m_AnimationController->m_AnimData.empty())
+		if (!m_AnimationController->m_AnimData.empty())
 			return m_AnimationController->m_AnimData.front()->m_nBoneList;
 	}
 	return 0;
@@ -135,8 +146,30 @@ XMFLOAT3 const CObject::GetCameraTargetPos()
 	return Vector3::Add(GetPosition(), m_xmf3CameraTargetPos);
 	//return m_xmf3CameraTargetPos;
 }
+const bool CObject::IsCollide(const CObject & other)
+{
+	/*********************************************************************
+	2019-06-18
+	other의 충돌체들과 내 충돌체들을 전부 비교해야 함.
+	*********************************************************************/
+	for (auto otb = other.m_CollisionBox.cbegin(); otb != other.m_CollisionBox.cend(); ++otb) {
+		for (auto myb = m_CollisionBox.cbegin(); myb != m_CollisionBox.cend(); ++myb)		if (otb->Intersects(*myb)) return true;
+		for (auto mys = m_CollisionSphere.cbegin(); mys != m_CollisionSphere.cend(); ++mys) if (otb->Intersects(*mys)) return true;
+	}
+	for (auto ots = other.m_CollisionSphere.cbegin(); ots != other.m_CollisionSphere.cend(); ++ots) {
+		for (auto myb = m_CollisionBox.cbegin(); myb != m_CollisionBox.cend(); ++myb)		if (ots->Intersects(*myb)) return true;
+		for (auto mys = m_CollisionSphere.cbegin(); mys != m_CollisionSphere.cend(); ++mys) if (ots->Intersects(*mys)) return true;
+	}
+
+	return false;
+}
 void CObject::ProcessInput(UCHAR * pKeysBuffer)
 {
+}
+
+void CObject::AddCollideInfo(CObject * obj)
+{
+	m_CollideInfo.push(obj);
 }
 
 /*********************************************************************
@@ -145,9 +178,9 @@ CPlayer
 *********************************************************************/
 CPlayer::CPlayer() : CObject()
 {
-	m_fSpeed				= g_PlayerDefaultSpeed;
-	m_fRemainingTimeOfFire	= 0.0f;
-	m_fRPM					= (1 / static_cast<float>(g_DefaultRPM)) * 60.0f;
+	m_fSpeed = g_PlayerDefaultSpeed;
+	m_fRemainingTimeOfFire = 0.0f;
+	m_fRPM = (1 / static_cast<float>(g_DefaultRPM)) * 60.0f;
 }
 void CPlayer::Update(float fTimeElapsed)
 {
@@ -184,6 +217,15 @@ void CPlayer::Update(float fTimeElapsed)
 	m_xmf4x4World._43 += xmf3Move.z;
 
 	/*********************************************************************
+	2019-06-18
+	충돌체 파트
+	*********************************************************************/
+	for (auto myb = m_CollisionBox.begin(); myb != m_CollisionBox.end(); ++myb)
+		myb->Center = Vector3::Add(myb->Center, xmf3Move);
+	for (auto mys = m_CollisionSphere.begin(); mys != m_CollisionSphere.end(); ++mys)
+		mys->Center = Vector3::Add(mys->Center, xmf3Move);
+
+	/*********************************************************************
 	2019-06-17
 	애니메이션 파트
 	*********************************************************************/
@@ -204,6 +246,9 @@ void CPlayer::Update(float fTimeElapsed)
 
 
 	TriggerOff();
+}
+void CPlayer::LateUpdate(float fTimeElapsed)
+{
 }
 void CPlayer::ProcessInput(UCHAR * pKeysBuffer)
 {
@@ -229,11 +274,12 @@ void CPlayer::TriggerOff()
 XMFLOAT3 CPlayer::Move(float fTimeElapsed)
 {
 	XMFLOAT3 temp(0, 0, 0);
-	if (m_trigInput[static_cast<int>(Move::W)]) { temp = Vector3::Add(temp, Vector3::ScalarProduct(GetLook(), fTimeElapsed   * m_fSpeed, false)); }
-	if (m_trigInput[static_cast<int>(Move::A)]) { temp = Vector3::Add(temp, Vector3::ScalarProduct(GetRight(), -fTimeElapsed * m_fSpeed, false)); }
-	if (m_trigInput[static_cast<int>(Move::S)]) { temp = Vector3::Add(temp, Vector3::ScalarProduct(GetLook(), -fTimeElapsed * m_fSpeed, false)); }
-	if (m_trigInput[static_cast<int>(Move::D)]) { temp = Vector3::Add(temp, Vector3::ScalarProduct(GetRight(), fTimeElapsed  * m_fSpeed, false)); }
-	return temp;
+	if (m_trigInput[static_cast<int>(Move::W)]) { temp = Vector3::Add(temp, Vector3::Normalize(GetLook())); }
+	if (m_trigInput[static_cast<int>(Move::A)]) { temp = Vector3::Add(temp, Vector3::Normalize(Vector3::Multiply(-1, GetRight()))); }
+	if (m_trigInput[static_cast<int>(Move::S)]) { temp = Vector3::Add(temp, Vector3::Normalize(Vector3::Multiply(-1, GetLook()))); }
+	if (m_trigInput[static_cast<int>(Move::D)]) { temp = Vector3::Add(temp, Vector3::Normalize(GetRight())); }
+	temp = Vector3::Normalize(temp);
+	return Vector3::Multiply(fTimeElapsed * m_fSpeed, temp);
 }
 float CPlayer::Rotate(float fTimeElapsed)
 {
@@ -250,10 +296,10 @@ CProjectile
 *********************************************************************/
 CProjectile::CProjectile() : CObject()
 {
-	m_IsAlive		= false;
+	m_IsAlive = false;
 	m_xmf3Direction = XMFLOAT3(0, 0, 0);
-	m_fSpeed		= g_ProjectileDefaultSpeed;
-	m_fLifeTime		= g_DefaultProjectileLifeTime;
+	m_fSpeed = g_ProjectileDefaultSpeed;
+	m_fLifeTime = g_DefaultProjectileLifeTime;
 }
 
 void CProjectile::Initialize(CObject * obj)
@@ -291,11 +337,28 @@ void CProjectile::Update(float fTimeElapsed)
 	m_fLifeTime -= fTimeElapsed;
 	if (IsExpired()) { m_IsAlive = false; return; }
 
-	m_xmf4x4World._41 += m_xmf3Direction.x * m_fSpeed * fTimeElapsed;
-	m_xmf4x4World._42 += m_xmf3Direction.y * m_fSpeed * fTimeElapsed;
-	m_xmf4x4World._43 += m_xmf3Direction.z * m_fSpeed * fTimeElapsed;
+	XMFLOAT3 xmf3Move = m_xmf3Direction;
+	xmf3Move = Vector3::Multiply(m_fSpeed, xmf3Move);
+	xmf3Move = Vector3::Multiply(fTimeElapsed, xmf3Move);
+
+	m_xmf4x4World._41 += xmf3Move.x;
+	m_xmf4x4World._42 += xmf3Move.y;
+	m_xmf4x4World._43 += xmf3Move.z;
 
 	if (m_AnimationController) m_AnimationController->Update(fTimeElapsed);
+
+	/*********************************************************************
+	2019-06-18
+	충돌체 파트
+	*********************************************************************/
+	for (auto myb = m_CollisionBox.begin(); myb != m_CollisionBox.end(); ++myb)
+		myb->Center = Vector3::Add(myb->Center, xmf3Move);
+	for (auto mys = m_CollisionSphere.begin(); mys != m_CollisionSphere.end(); ++mys)
+		mys->Center = Vector3::Add(mys->Center, xmf3Move);
+}
+
+void CProjectile::LateUpdate(float fTimeElapsed)
+{
 }
 
 /*********************************************************************
@@ -387,6 +450,10 @@ void CObjectManager::ProcessInput(UCHAR * pKeysBuffer)
 		}
 	}
 }
+void CObjectManager::LateUpdate(float fTime)
+{
+
+}
 void CObjectManager::CreateDescriptorHeap()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC d3dDescriptorHeapDesc;
@@ -410,7 +477,7 @@ void CObjectManager::CreateConstantBufferResorce()
 
 	m_pd3dCBPropResource = ::CreateBufferResource(m_pd3dDevice, m_pd3dCommandList, NULL, ncbElementBytes * m_nProps,
 		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-	if(nullptr != m_pd3dCBPropResource)	m_pd3dCBPropResource->Map(0, NULL, (void **)&m_pCBMappedPropObjects);
+	if (nullptr != m_pd3dCBPropResource)	m_pd3dCBPropResource->Map(0, NULL, (void **)&m_pCBMappedPropObjects);
 
 	m_pd3dCBPlayersResource = ::CreateBufferResource(m_pd3dDevice, m_pd3dCommandList, NULL, ncbElementBytes * m_nPlayers,
 		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
@@ -481,7 +548,7 @@ void CObjectManager::CreateObjectData()
 	/*********************************************************************
 	2019-06-14
 	프롭을 생성해야 한다. 레벨 데이터에서 프롭의 종류와 위치 등을 빼와야 함.
-	지금은 없으니까 대충 만들자. 
+	지금은 없으니까 대충 만들자.
 	*********************************************************************/
 
 
@@ -492,10 +559,10 @@ void CObjectManager::CreateObjectData()
 	m_nProps는 LevelData에서 읽어오고, 나머지는 Defines.h에서 가져올 것.
 	*********************************************************************/
 	CImporter importer(m_pd3dDevice, m_pd3dCommandList);
-	m_nProps			= 2;
-	m_nPlayers			= 2;
-	m_nProjectiles		= m_nPlayers * g_NumProjectilePerPlayer;
-	m_nObjects			= m_nProps + m_nPlayers + m_nProjectiles;
+	m_nProps = 2;
+	m_nPlayers = 2;
+	m_nProjectiles = m_nPlayers * g_NumProjectilePerPlayer;
+	m_nObjects = m_nProps + m_nPlayers + m_nProjectiles;
 
 	CreateDescriptorHeap();
 	/*********************************************************************
@@ -527,6 +594,7 @@ void CObjectManager::CreateObjectData()
 	int count = 0;
 	for (unsigned int i = 0; i < m_nProps; i++) {
 		CObject* obj = new CObject();
+
 
 		importer.ImportModel("0615_Box", m_TextureList[0], obj);
 		obj->SetPosition(0, 0, i * 64.0f);
@@ -560,5 +628,49 @@ void CObjectManager::CreateObjectData()
 		obj->SetAlive(false);
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 		m_Projectiles.push_back(obj);
+	}
+}
+
+void CObjectManager::CollisionCheck()
+{
+	/*********************************************************************
+	2019-06-18
+	충돌검사 표
+	┼──────────┼────────────┼────────────┼────────────┼
+	│		   │    Prop    │   Player   │ Projectile │
+	┼──────────┼────────────┼────────────┼────────────┼
+	│Prop	   │			│	  O		 │	   O	  │
+	┼──────────┼────────────┼────────────┼────────────┼
+	│Player	   │	 O	    │	  O		 │	   O	  │
+	┼──────────┼────────────┼────────────┼────────────┼
+	│Projectile│	 O	    │	  O		 │			  │
+	┼──────────┼────────────┼────────────┼────────────┼
+	디비전처럼 날아오는 수류탄을 총으로 쏴서 맞추고 할 거면 뭐...
+
+	플레이어로 다 돌리고 투사체로 프롭이랑 하면 될 것 같다.
+	충돌하면? 여기서 처리 다 해?
+
+	충돋했을 때 처리들:
+	- 플레이어가 프롭과 충돌하면 이동 무효. (슬라이드는 나중에 구현하기)
+	- 플레이어가 플레이어와 충돌하면 이동 무효. (서로 밀치기는 나중에 구현하기)
+	- 플레이어가 프로젝타일과 충돌하면 프로젝타일의 효과를 플레이어에게 적용.
+	- 프로젝타일이 프롭과 충돌하면 프로젝타일 비활성화.
+
+	이동 무효를 하려면 플레이어의 트리거를 꺼버리면 되나?
+	근데 충돌체크는 이동 후에 검사해야 하는데?
+	그럼 LateUpdate()를 만들자! 충돌검사를 하고 충돌했으면 각 객체에게 트리거를 켜주고
+	LateUpdate()를 하게 하기.
+	누구랑 충돌했는지 그냥 전달해주기로 함.
+	*********************************************************************/
+	for (auto player = m_Players.begin(); player != m_Players.end(); ++player) {
+
+		// 활성화된 애만 처리할 것.
+		if ((*player)->IsAlive()) {
+
+			for (auto prop = m_Props.begin(); prop != m_Props.end(); ++prop)
+				if (IsCollidable((*player), (*prop))) {
+					(*player)->AddCollideInfo((*prop));
+				}
+		}
 	}
 }

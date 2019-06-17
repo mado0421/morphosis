@@ -1,28 +1,6 @@
 #pragma once
 #include "stdafx.h"
 
-
-//class CModel
-//{
-//public:
-//	void AddMesh(CMesh* mesh);
-//	void SetTexture(CTexture* pTexture);
-//	void Render(ID3D12GraphicsCommandList *pd3dCommandList);
-//	void UpdateShaderVar(ID3D12GraphicsCommandList * pd3dCommandList);
-//
-//public:
-//	CModel();
-//	~CModel();
-//
-//private:
-//	vector<CMesh>	meshArr;
-//	CMesh			**meshes = NULL;
-//	int				numOfMeshes = 0;
-//	CTexture		*texture = NULL;
-//
-//};
-
-
 /*********************************************************************
 2019-06-11
 CModel은 다음과 같이 구조를 변경한다.
@@ -43,20 +21,6 @@ class CMesh;
 class CTexture;
 class CAnimationController;
 
-class CCollisionBox {
-public:
-	void Render(ID3D12GraphicsCommandList *pd3dCommandList);
-	void Update(const XMFLOAT4X4& xmf4x4World);
-
-public:
-	CCollisionBox() = delete;
-	CCollisionBox(const XMFLOAT3& pos, const XMFLOAT3& extent, const XMFLOAT4& quat);
-
-private:
-	BoundingOrientedBox m_BoundingBox;
-	CMesh*				m_DebugMesh;
-};
-
 class CModel
 {
 public:
@@ -71,7 +35,4 @@ public:
 private:
 	CMesh*			m_Mesh			= NULL;
 	CTexture*		m_Texture		= NULL;
-	CCollisionBox*	m_CollisionBox	= NULL;
-
-
 };

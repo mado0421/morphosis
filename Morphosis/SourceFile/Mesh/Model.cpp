@@ -9,12 +9,9 @@
 void CModel::Render(ID3D12GraphicsCommandList *pd3dCommandList, bool isDebug)
 {
 	if (m_Texture) m_Texture->UpdateShaderVariables(pd3dCommandList);
-	if (isDebug) {
-		if (m_CollisionBox) m_CollisionBox->Render(pd3dCommandList);
-	}
-	else {
-		if (m_Mesh) m_Mesh->Render(pd3dCommandList);
-	}
+	//if (isDebug) 
+	//	if (m_CollisionBox) m_CollisionBox->Render(pd3dCommandList);
+	if (m_Mesh) m_Mesh->Render(pd3dCommandList);
 }
 
 void CModel::SetAnimatedMatrix(CAnimationController * a)
@@ -30,8 +27,4 @@ void CModel::CreateConstantBufferResource(ID3D12Device * pd3dDevice, ID3D12Graph
 void CModel::UpdateConstantBuffer(ID3D12GraphicsCommandList * pd3dCommandList)
 {
 	m_Mesh->UpdateConstantBuffer(pd3dCommandList);
-}
-
-void CCollisionBox::Render(ID3D12GraphicsCommandList * pd3dCommandList)
-{
 }

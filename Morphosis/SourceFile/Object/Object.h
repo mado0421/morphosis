@@ -2,13 +2,13 @@
 #include "Mesh/Model.h"
 #include "Camera/Camera.h"
 
-
 struct CB_OBJECT_INFO {
 	XMFLOAT4X4	m_xmf4x4World;
 	UINT		m_nMaterialIndex;
 };
 
 class CAnimationController;
+class CTexture;
 struct AnimationClip;
 
 class CObject
@@ -26,11 +26,14 @@ public:
 
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL, bool isDebug = false);
 	virtual void Update(float fTimeElapsed);
+	virtual void LateUpdate(float fTimeElapsed);
 
 	void AddModel(CModel* model) {
 		m_ModelList.push_back(*model);
 	}
 	void AddAnimClip(AnimationClip* animClip);
+	void AddCollider(BoundingOrientedBox box);
+	void AddCollider(BoundingSphere sphere);
 	void ChangeAnimClip(const char* animClipName);
 	void SetPosition(float x, float y, float z);
 	void SetPosition(const XMFLOAT3 xmf3Position);
@@ -42,7 +45,7 @@ public:
 	const XMMATRIX	GetAnimationMatrix(int boneIdx);
 	const XMFLOAT3	GetCameraTargetPos();
 	const int		GetNumAnimationBone();
-	const int		GetTeam() { return m_Team; }
+	const int		GetTeam() const { return m_Team; }
 
 	void SetLook(XMFLOAT3 look);
 	void SetUp(XMFLOAT3 up);
@@ -51,9 +54,11 @@ public:
 	void SetAlive(bool state) { m_IsAlive = state; }
 	void SetTeam(int team) { m_Team = team; }
 
-	const bool IsCollide(const BoundingOrientedBox& other);
-	const bool IsAlive() { return m_IsAlive; }
+	const bool IsCollide(const CObject& other);
+	const bool IsAlive() const { return m_IsAlive; }
 	virtual void ProcessInput(UCHAR* pKeysBuffer);
+
+	void AddCollideInfo(CObject* obj);
 
 public:
 	XMFLOAT4X4						m_xmf4x4World;
@@ -84,6 +89,14 @@ protected:
 	*********************************************************************/
 	CAnimationController			*m_AnimationController = NULL;
 	int								m_AnimationState;
+
+	/*********************************************************************
+	2019-06-18
+	충돌체 관련 부분
+	*********************************************************************/
+	std::vector<BoundingOrientedBox>	m_CollisionBox;
+	std::vector<BoundingSphere>			m_CollisionSphere;
+	std::queue<CObject*>				m_CollideInfo;
 };
 
 class CPlayer : public CObject {
@@ -92,6 +105,7 @@ public:
 
 public:
 	virtual void	Update(float fTimeElapsed);
+	virtual void	LateUpdate(float fTimeElapsed);
 	virtual void	ProcessInput(UCHAR* pKeysBuffer);
 
 	void			Shoot();
@@ -130,7 +144,7 @@ protected:
 
 protected:
 	float			m_fSpeed;
-	float			m_fRPM;	// 1 / Round Per Second
+	float			m_fRPM;	// 1 / Round Per Minute
 	float			m_fRemainingTimeOfFire;
 	bool			m_trigInput[static_cast<int>(Move::count)];
 
@@ -143,9 +157,11 @@ public:
 public:
 	void			Initialize(CObject* obj);
 	virtual void	Update(float fTimeElapsed);
+	virtual void	LateUpdate(float fTimeElapsed);
+
 
 private:
-	bool			IsExpired() { return m_fLifeTime <= 0; }
+	bool			IsExpired() const { return m_fLifeTime <= 0; }
 
 protected:
 	/*********************************************************************
@@ -169,8 +185,6 @@ protected:
 	float			m_fSpeed;
 	float			m_fLifeTime;
 };
-
-class CTexture;
 
 class CObjectManager {
 public:
@@ -204,11 +218,21 @@ public:
 	void ProcessInput(UCHAR * pKeysBuffer);
 
 private:
+	void LateUpdate(float fTime);
+
 	void CreateDescriptorHeap();
 	void CreateConstantBufferResorce();
 	void CreateConstantBufferView();
 	void CreateTextureResourceView(CTexture* pTexture);
 	void CreateObjectData();
+
+	bool IsCollidable(CObject* src, CObject* dst) {
+		if (!dst->IsAlive()) return false;
+		if (IsAnotherTeam(src, dst)) return true;
+		return false;
+	}
+	bool IsAnotherTeam(CObject* src, CObject* dst) const { return src->GetTeam() != dst->GetTeam(); }
+	void CollisionCheck();
 
 private:
 	ID3D12Device					*m_pd3dDevice				= NULL;
