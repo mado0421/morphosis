@@ -276,12 +276,20 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 			m_xmf4x4World._41 -= m_xmf3Move.x;
 			m_xmf4x4World._42 -= m_xmf3Move.y;
 			m_xmf4x4World._43 -= m_xmf3Move.z;
+			for (auto myb = m_CollisionBox.begin(); myb != m_CollisionBox.end(); ++myb)
+				myb->Center = Vector3::Subtract(myb->Center, m_xmf3Move);
+			for (auto mys = m_CollisionSphere.begin(); mys != m_CollisionSphere.end(); ++mys)
+				mys->Center = Vector3::Subtract(mys->Center, m_xmf3Move);
 		}
 		if (!alreadyRestore && Tag::Player == m_CollideInfo.front()->m_Tag) {
 			alreadyRestore = true;
 			m_xmf4x4World._41 -= m_xmf3Move.x;
 			m_xmf4x4World._42 -= m_xmf3Move.y;
 			m_xmf4x4World._43 -= m_xmf3Move.z;
+			for (auto myb = m_CollisionBox.begin(); myb != m_CollisionBox.end(); ++myb)
+				myb->Center = Vector3::Subtract(myb->Center, m_xmf3Move);
+			for (auto mys = m_CollisionSphere.begin(); mys != m_CollisionSphere.end(); ++mys)
+				mys->Center = Vector3::Subtract(mys->Center, m_xmf3Move);
 		}
 		if (Tag::Projectile == m_CollideInfo.front()->m_Tag) {
 			dynamic_cast<CProjectile*>(m_CollideInfo.front())->Damage(this);
@@ -637,8 +645,8 @@ void CObjectManager::CreateObjectData()
 	m_nProps는 LevelData에서 읽어오고, 나머지는 Defines.h에서 가져올 것.
 	*********************************************************************/
 	CImporter importer(m_pd3dDevice, m_pd3dCommandList);
-	m_nProps = 2;
-	m_nPlayers = 2;
+	m_nProps = 10;
+	m_nPlayers = 1;
 	m_nProjectiles = m_nPlayers * g_NumProjectilePerPlayer;
 	m_nObjects = m_nProps + m_nPlayers + m_nProjectiles;
 

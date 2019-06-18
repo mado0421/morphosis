@@ -191,25 +191,10 @@ void CTestGroundScene::Update(float fTimeElapsed)
 
 void CTestGroundScene::ProcessInput(UCHAR * pKeysBuffer)
 {
-	//static float camHeight = 30.0;
-	//static float camForward = 50.0;
-	//static float charHeight = 30.0;
-	//static float charForward = 0.0;
-	//if (m_ObjMng->GetTarget(0)->IsAlive()) m_ObjMng->GetTarget(0)->ProcessInput(pKeysBuffer);
 	m_ObjMng->ProcessInput(pKeysBuffer);
 
 	if (pKeysBuffer[KEY::_1] & 0xF0) { if (m_pCamera->GetTarget() != m_ObjMng->GetTarget(0)) { m_pCamera->SetOffset(XMFLOAT3(0, 30.0f, 50.0f)); m_pCamera->SetTarget(m_ObjMng->GetTarget(0)); } }
 	if (pKeysBuffer[KEY::_2] & 0xF0) { if (m_pCamera->GetTarget() != m_ObjMng->GetTarget(1)) { m_pCamera->SetOffset(XMFLOAT3(0, 30.0f, 50.0f)); m_pCamera->SetTarget(m_ObjMng->GetTarget(1)); } }
-
-	//if (pKeysBuffer[KEY::Z] & 0xF0) { camHeight += 0.1;  m_pCamera->SetOffset(XMFLOAT3(0, camHeight, camForward), m_ObjMng->GetTarget(0)->GetPosition()); }
-	//if (pKeysBuffer[KEY::X] & 0xF0) { camHeight -= 0.1;  m_pCamera->SetOffset(XMFLOAT3(0, camHeight, camForward), m_ObjMng->GetTarget(0)->GetPosition()); }
-	//if (pKeysBuffer[KEY::C] & 0xF0) { camForward += 0.1;  m_pCamera->SetOffset(XMFLOAT3(0, camHeight, camForward), m_ObjMng->GetTarget(0)->GetPosition()); }
-	//if (pKeysBuffer[KEY::V] & 0xF0) { camForward -= 0.1;  m_pCamera->SetOffset(XMFLOAT3(0, camHeight, camForward), m_ObjMng->GetTarget(0)->GetPosition()); }
-
-	//if (pKeysBuffer[KEY::H] & 0xF0) { charHeight += 0.1;  m_ObjMng->GetTarget(0)->SetCameraTargetOffset(XMFLOAT3(0, charHeight, charForward)); }
-	//if (pKeysBuffer[KEY::J] & 0xF0) { charHeight -= 0.1;  m_ObjMng->GetTarget(0)->SetCameraTargetOffset(XMFLOAT3(0, charHeight, charForward)); }
-	//if (pKeysBuffer[KEY::K] & 0xF0) { charForward += 0.1; m_ObjMng->GetTarget(0)->SetCameraTargetOffset(XMFLOAT3(0, charHeight, charForward)); }
-	//if (pKeysBuffer[KEY::L] & 0xF0) { charForward -= 0.1; m_ObjMng->GetTarget(0)->SetCameraTargetOffset(XMFLOAT3(0, charHeight, charForward)); }
 }
 
 void CTestGroundScene::OnProcessingMouseMessage()
