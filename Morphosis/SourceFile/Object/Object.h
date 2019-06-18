@@ -131,6 +131,7 @@ public:
 
 	void			TakeDamage(int val) { m_HealthPoint -= val; }
 
+	XMFLOAT4X4		GetHandMatrix();
 protected:
 	void			TriggerOff();
 	bool			IsMoving() {
@@ -140,6 +141,13 @@ protected:
 	}
 	XMFLOAT3		Move(float fTimeElapsed);
 	float			Rotate(float fTimeElapsed);
+
+	/*********************************************************************
+	2019-06-18
+	적어도 탄이 손 위치에선 나가야 하지 않을까요?
+	AnimationController에서 그 본의 위치를 받아올 수 있지 않을까요?
+	*********************************************************************/
+	void			SetHandMatrix();
 
 	enum class		Move {
 		W,
@@ -178,7 +186,7 @@ protected:
 	*********************************************************************/
 	float			m_fRPM;	// 1 / Round Per Minute
 	float			m_fRemainingTimeOfFire;
-
+	XMFLOAT4X4		m_xmf4x4Hand;
 
 	/*********************************************************************
 	2019-06-18

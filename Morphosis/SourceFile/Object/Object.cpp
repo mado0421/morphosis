@@ -189,6 +189,7 @@ CPlayer::CPlayer() : CObject()
 	m_xmf3SpawnPoint			= GetPosition();
 	m_HealthPoint				= g_DefaultHealthPoint;
 	m_fRemainingTimeOfRespawn	= 0.0f;
+	m_xmf4x4Hand				= Matrix4x4::Identity();
 }
 void CPlayer::Update(float fTimeElapsed)
 {
@@ -206,6 +207,7 @@ void CPlayer::Update(float fTimeElapsed)
 	공격 타이머 파트
 	*********************************************************************/
 	m_fRemainingTimeOfFire -= fTimeElapsed;
+	SetHandMatrix();
 
 	/*********************************************************************
 	2019-06-17
@@ -256,12 +258,34 @@ void CPlayer::Update(float fTimeElapsed)
 			m_AnimationController->ChangeAnimClip("PlayerRun");
 		}
 	}
-	else {
+	else if (static_cast<int>(AnimationState::RUN) == m_AnimationState) {
 		if (!IsMoving()) {
 			m_AnimationState = static_cast<int>(AnimationState::IDLE);
 			m_AnimationController->ChangeAnimClip("PlayerIdle");
 		}
 	}
+	else if (static_cast<int>(AnimationState::FIRE) == m_AnimationState) {
+		if (m_AnimationController->IsClipEnd()) {
+			m_AnimationState = static_cast<int>(AnimationState::RUN);
+			m_AnimationController->ChangeAnimClip("PlayerRun");
+		}
+	}
+
+
+
+
+	//if (static_cast<int>(AnimationState::IDLE) == m_AnimationState) {
+	//	if (IsMoving()) {
+	//		m_AnimationState = static_cast<int>(AnimationState::RUN);
+	//		m_AnimationController->ChangeAnimClip("PlayerRun");
+	//	}
+	//}
+	//else {
+	//	if (!IsMoving()) {
+	//		m_AnimationState = static_cast<int>(AnimationState::IDLE);
+	//		m_AnimationController->ChangeAnimClip("PlayerIdle");
+	//	}
+	//}
 
 	TriggerOff();
 }
@@ -327,11 +351,17 @@ void CPlayer::Disable()
 }
 void CPlayer::Shoot()
 {
+	m_AnimationState = static_cast<int>(AnimationState::FIRE);
+	m_AnimationController->ChangeAnimClip("PlayerFire");
 	m_fRemainingTimeOfFire = m_fRPM;
 }
 bool CPlayer::IsShootable()
 {
 	return m_fRemainingTimeOfFire <= 0;
+}
+XMFLOAT4X4 CPlayer::GetHandMatrix()
+{
+	return m_xmf4x4Hand;
 }
 void CPlayer::TriggerOff()
 {
@@ -354,6 +384,11 @@ float CPlayer::Rotate(float fTimeElapsed)
 	if (m_trigInput[static_cast<int>(Move::E)]) temp += fTimeElapsed * m_fSpeed;
 
 	return temp;
+}
+
+void CPlayer::SetHandMatrix()
+{
+	m_xmf4x4Hand = m_AnimationController->GetPositionOfBone("Bip001 L Hand");
 }
 
 /*********************************************************************
@@ -381,24 +416,47 @@ void CProjectile::Initialize(CObject * obj)
 
 	충돌체 위치도 바꿔줘야 함.
 	*********************************************************************/
-	SetPosition(obj->GetPosition());
-	for (auto myb = m_CollisionBox.begin(); myb != m_CollisionBox.end(); ++myb)
-		myb->Center = obj->GetPosition();
-	for (auto mys = m_CollisionSphere.begin(); mys != m_CollisionSphere.end(); ++mys)
-		mys->Center = obj->GetPosition();
+	//SetPosition(obj->GetPosition());
+	//for (auto myb = m_CollisionBox.begin(); myb != m_CollisionBox.end(); ++myb)
+	//	myb->Center = obj->GetPosition();
+	//for (auto mys = m_CollisionSphere.begin(); mys != m_CollisionSphere.end(); ++mys)
+	//	mys->Center = obj->GetPosition();
 
 	/*********************************************************************
 	2019-06-17
 	렌더링할 메쉬의 방향
 	*********************************************************************/
-	SetLook(obj->GetLook());
-	SetUp(obj->GetUp());
-	SetRight(obj->GetRight());
+	//SetLook(obj->GetLook());
+	//SetUp(obj->GetUp());
+	//SetRight(obj->GetRight());
 
 	SetTeam(obj->GetTeam());
 
 	m_xmf3Direction		= Vector3::Normalize(obj->GetLook());
 	m_fLifeTime			= g_DefaultProjectileLifeTime;
+
+
+	/*********************************************************************
+	2019-06-18
+	손의 행렬을 얻어왔다. 그럼 그 행렬로부터 위치랑 방향을 뽑아내면?
+	*********************************************************************/
+	XMFLOAT4X4 hand = dynamic_cast<CPlayer*>(obj)->GetHandMatrix();
+	XMFLOAT3 xmf3Right		= XMFLOAT3(hand._11, hand._12, hand._13);
+	XMFLOAT3 xmf3Up			= XMFLOAT3(hand._21, hand._22, hand._23);
+	XMFLOAT3 xmf3Look		= XMFLOAT3(hand._31, hand._32, hand._33);
+	XMFLOAT3 xmf3Position	= XMFLOAT3(hand._41, hand._42, hand._43);
+
+	xmf3Position = Vector3::Add(xmf3Position, obj->GetPosition());
+
+	SetPosition(xmf3Position);
+	for (auto myb = m_CollisionBox.begin(); myb != m_CollisionBox.end(); ++myb)
+		myb->Center = xmf3Position;
+	for (auto mys = m_CollisionSphere.begin(); mys != m_CollisionSphere.end(); ++mys)
+		mys->Center = xmf3Position;
+
+	SetLook(xmf3Look);
+	SetUp(xmf3Up);
+	SetRight(xmf3Right);
 }
 
 void CProjectile::Update(float fTimeElapsed)
@@ -683,7 +741,7 @@ void CObjectManager::CreateObjectData()
 
 		importer.ImportModel("0615_Box", m_TextureList[0], obj);
 		obj->SetPosition(0, 0, i * 64.0f);
-		obj->AddCollider(BoundingSphere(obj->GetPosition(), 10.0f));
+		obj->AddCollider(BoundingOrientedBox(obj->GetPosition(), XMFLOAT3(9.69/2, 6.689/2, 5.122/2), XMFLOAT4(0,0,0,1)));
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 		m_Props.push_back(obj);
 	}
@@ -699,7 +757,13 @@ void CObjectManager::CreateObjectData()
 		importer.ImportAnimClip("0603_CharacterDied", obj);
 		obj->SetPosition(100, 0, i * 64.0f);
 		obj->SetSpawnPoint(obj->GetPosition());
-		obj->AddCollider(BoundingSphere(obj->GetPosition(), 10.0f));
+		XMFLOAT3 pos = obj->GetPosition();
+		pos.y += 2.577;
+		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(16/2, 16/2, 5.122/2), XMFLOAT4(0, 0, 0, 1)));
+		pos = obj->GetPosition();
+		pos.y += 18.404;
+		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(11.766/2, 13.198/2, 36.807/2), XMFLOAT4(0, 0, 0, 1)));
+
 		obj->SetTeam((i % 2) + 1);
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 		obj->SetCameraTargetOffset(XMFLOAT3(0, 47, -21));

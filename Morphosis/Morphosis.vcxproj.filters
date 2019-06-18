@@ -87,7 +87,7 @@
       <Filter>소스 파일\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="SourceFile\Animation\AnimationController.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\Animation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -155,12 +155,14 @@
     <ClInclude Include="SourceFile\Material\Texture.h">
       <Filter>소스 파일\Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="SourceFile\Animation\AnimationController.h" />
     <ClInclude Include="MathHelper.h">
       <Filter>소스 파일</Filter>
     </ClInclude>
     <ClInclude Include="Defines.h">
       <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceFile\Animation\AnimationController.h">
+      <Filter>소스 파일\Animation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

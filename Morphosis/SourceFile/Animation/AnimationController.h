@@ -16,6 +16,9 @@ public:
 	void		ChangeAnimClip(const char* animClipName);
 	void		Update(float fTime);
 
+	XMFLOAT4X4	GetPositionOfBone(const char* animClipName);
+
+	bool		IsClipEnd();
 private:
 	XMMATRIX	GetInterpolatedToRootMtx(int boneIdx);
 	XMMATRIX	GetOffset(int boneIdx);

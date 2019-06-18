@@ -49,8 +49,10 @@ extern int g_RootParameterAnimation;
 2019-06-16
 오브젝트 관련 상수
 *********************************************************************/
+constexpr float		g_DefaultUnitStandard		= 20.0f;
+
 extern unsigned int	gnCbvSrvDescriptorIncrementSize;
-constexpr float		g_PlayerDefaultSpeed		= 128.0f;
+constexpr float		g_PlayerDefaultSpeed		= g_DefaultUnitStandard * 10;
 constexpr float		g_ProjectileDefaultSpeed	= g_PlayerDefaultSpeed * 3.0f;
 constexpr int		g_NumAnimationBone			= 64;
 constexpr int		g_NumProjectilePerPlayer	= 30;

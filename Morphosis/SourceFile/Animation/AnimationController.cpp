@@ -78,6 +78,20 @@ void CAnimationController::Update(float fTime)
 {
 	m_fTime += fTime;
 }
+XMFLOAT4X4 CAnimationController::GetPositionOfBone(const char * animClipName)
+{
+	XMFLOAT4X4 temp = Matrix4x4::Identity();
+	for (int i = 0; i < m_AnimData[m_AnimState]->m_nBoneList; ++i) {
+		if (m_AnimData[m_AnimState]->m_BoneList[i].m_Name == animClipName)
+			XMStoreFloat4x4(&temp, GetFinalMatrix(i));
+	}
+	
+	return temp;
+}
+bool CAnimationController::IsClipEnd()
+{
+	return m_fTime >= m_AnimData[m_AnimState]->m_KeyTime[m_AnimData[m_AnimState]->m_nKeyTime - 1];
+}
 int CAnimationController::GetPrevIdx(float time)
 {
 	for (int i = 0; i < m_AnimData[m_AnimState]->m_nKeyTime; ++i)
