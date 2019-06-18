@@ -11,6 +11,22 @@ class CAnimationController;
 class CTexture;
 struct AnimationClip;
 
+struct CollisionBox {
+	CollisionBox(BoundingOrientedBox b, XMFLOAT3 pos)
+		: collisionBox(b)
+		, InitPosition(pos) {}
+	BoundingOrientedBox collisionBox;
+	XMFLOAT3			InitPosition = XMFLOAT3(0, 0, 0);
+};
+struct CollisionSphere {
+	CollisionSphere(BoundingSphere b, XMFLOAT3 pos)
+		: collisionSphere(b)
+		, InitPosition(pos) {}
+	BoundingSphere		collisionSphere;
+	XMFLOAT3			InitPosition = XMFLOAT3(0, 0, 0);
+};
+
+
 class CObject
 {
 public:
@@ -98,9 +114,9 @@ protected:
 	2019-06-18
 	충돌체 관련 부분
 	*********************************************************************/
-	std::vector<BoundingOrientedBox>	m_CollisionBox;
-	std::vector<BoundingSphere>			m_CollisionSphere;
-	std::queue<CObject*>				m_CollideInfo;
+	std::vector<CollisionBox>		m_CollisionBox;
+	std::vector<CollisionSphere>	m_CollisionSphere;
+	std::queue<CObject*>			m_CollideInfo;
 };
 
 class CPlayer : public CObject {

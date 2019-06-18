@@ -714,7 +714,7 @@ void ExportMeshFile(const char* fileName, const char* modelName) {
 	out.close();
 }
 
-const char * SAMPLE_FILENAME = "0615_Box";
+const char * SAMPLE_FILENAME = "0618_LevelTest";
 
 
 int main(int argc, char** argv)
@@ -759,7 +759,7 @@ int main(int argc, char** argv)
 	FbxString meshFileName;
 	meshFileName += lFilePath;
 	meshFileName += "_mesh.dat";
-	ExportMeshFile(meshFileName, "Prop_Box");
+	ExportMeshFile(meshFileName, "LevelTest");
 
     DestroySdkObjects(lSdkManager, lResult);
 	

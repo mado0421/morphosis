@@ -65,7 +65,7 @@ constexpr int		TEAM_RED					= 1;
 constexpr int		TEAM_BLUE					= 2;
 
 constexpr int		g_DefaultHealthPoint		= 100;
-constexpr float		g_RespawnDelay				= 5.0f;
+constexpr float		g_RespawnDelay				= 3.0f;
 
 constexpr int		g_DefaultDamage				= 10;
 constexpr int		g_DefaultRPM				= 550;
