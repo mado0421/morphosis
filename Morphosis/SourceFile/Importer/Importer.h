@@ -63,6 +63,7 @@ public:
 			m_BoneList[i].m_Name = name;
 
 			in.read((char*)&m_BoneList[i].m_GlobalTransform, sizeof(XMFLOAT4X4));
+			ZeroMemory(name, sizeof(name));
 		}
 
 		for (int i = 0; i < m_nBoneList; ++i) {

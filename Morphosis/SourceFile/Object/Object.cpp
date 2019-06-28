@@ -169,7 +169,6 @@ const bool CObject::IsCollide(CObject* other)
 void CObject::ProcessInput(UCHAR * pKeysBuffer)
 {
 }
-
 void CObject::AddCollideInfo(CObject * obj)
 {
 	m_CollideInfo.push(obj);
@@ -385,7 +384,6 @@ float CPlayer::Rotate(float fTimeElapsed)
 
 	return temp;
 }
-
 void CPlayer::SetHandMatrix()
 {
 	m_xmf4x4Hand = m_AnimationController->GetPositionOfBone("Bip001 L Hand");
@@ -404,7 +402,6 @@ CProjectile::CProjectile() : CObject()
 	m_Tag			= Tag::Projectile;
 	m_BaseDamage	= g_DefaultDamage;
 }
-
 void CProjectile::Initialize(CObject * obj)
 {
 	/*********************************************************************
@@ -459,7 +456,6 @@ void CProjectile::Initialize(CObject * obj)
 	//SetUp(xmf3Up);
 	//SetRight(xmf3Right);
 }
-
 void CProjectile::Update(float fTimeElapsed)
 {
 	if (!m_IsAlive) return;
@@ -489,13 +485,11 @@ void CProjectile::Update(float fTimeElapsed)
 	for (auto mys = m_CollisionSphere.begin(); mys != m_CollisionSphere.end(); ++mys)
 		mys->collisionSphere.Center = Vector3::Add(mys->collisionSphere.Center, xmf3Move);
 }
-
 void CProjectile::LateUpdate(float fTimeElapsed)
 {
 	if (!m_IsAlive) return;
 
 }
-
 void CProjectile::Damage(CObject* obj)
 {
 	dynamic_cast<CPlayer*>(obj)->TakeDamage(static_cast<int>(m_BaseDamage));
@@ -552,7 +546,7 @@ void CObjectManager::Render()
 	}
 
 	m_pd3dCommandList->SetPipelineState(m_PSO[1]);
-	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Render(m_pd3dCommandList);
+	//for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Render(m_pd3dCommandList);
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->Render(m_pd3dCommandList);
 
 	m_pd3dCommandList->SetPipelineState(m_PSO[0]);
@@ -741,15 +735,18 @@ void CObjectManager::CreateObjectData()
 	int count = 0;
 	for (unsigned int i = 0; i < m_nProps; i++) {
 		CObject* obj = new CObject();
-		if (count == 9) {
-			importer.ImportModel("0618_LevelTest", m_TextureList[2], obj);
-			obj->SetPosition(0, 0, 0);
-		}
-		else {
-			importer.ImportModel("0615_Box", m_TextureList[0], obj);
-			obj->SetPosition(0, 0, i * 64.0f);
-			obj->AddCollider(BoundingOrientedBox(obj->GetPosition(), XMFLOAT3(9.69 / 2, 6.689 / 2, 5.122 / 2), XMFLOAT4(0, 0, 0, 1)));
-		}
+		//if (count == 9) {
+		//	importer.ImportModel("0618_LevelTest", m_TextureList[2], obj);
+		//	obj->SetPosition(0, 0, 0);
+		//}
+		//else {
+		//	importer.ImportModel("0615_Box", m_TextureList[0], obj);
+		//	obj->SetPosition(0, 0, i * 64.0f);
+		//	obj->AddCollider(BoundingOrientedBox(obj->GetPosition(), XMFLOAT3(9.69 / 2, 6.689 / 2, 5.122 / 2), XMFLOAT4(0, 0, 0, 1)));
+		//}
+		importer.ImportModel("0615_Box", m_TextureList[0], obj);
+		obj->SetPosition(0, 0, i * 64.0f);
+		obj->AddCollider(BoundingOrientedBox(obj->GetPosition(), XMFLOAT3(9.69 / 2, 6.689 / 2, 5.122 / 2), XMFLOAT4(0, 0, 0, 1)));
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 		m_Props.push_back(obj);
 	}
@@ -791,7 +788,6 @@ void CObjectManager::CreateObjectData()
 		m_Projectiles.push_back(obj);
 	}
 }
-
 void CObjectManager::CollisionCheck()
 {
 	/*********************************************************************
