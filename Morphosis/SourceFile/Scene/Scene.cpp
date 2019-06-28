@@ -17,6 +17,8 @@ int g_RootParameterCamera;
 int g_RootParameterObject;
 int g_RootParameterTexture;
 int g_RootParameterAnimation;
+ID3D12PipelineState* g_PipelineStates[g_NumPipelineStates];
+
 
 
 CScene::CScene()
@@ -209,12 +211,10 @@ void CTestGroundScene::MakePSO()
 {
 	CAnimatedPSO* AnimatedPso = new CAnimatedPSO();
 	AnimatedPso->Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
-	m_PSO.push_back(AnimatedPso->GetPipelineState());
 
 	CTexturedIlluminatedPSO* TexturedPso = new CTexturedIlluminatedPSO();
 	TexturedPso->Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
-	m_PSO.push_back(TexturedPso->GetPipelineState());
 
-	m_ObjMng->AddPSO(m_PSO[0]);
-	m_ObjMng->AddPSO(m_PSO[1]);
+	g_PipelineStates[0] = AnimatedPso->GetPipelineState();
+	g_PipelineStates[1] = TexturedPso->GetPipelineState();
 }

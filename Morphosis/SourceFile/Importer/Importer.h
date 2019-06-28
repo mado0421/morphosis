@@ -122,7 +122,11 @@ public:
 	void ImportFile(const char* fileName) {
 		std::ifstream in;
 
-		in.open(fileName, std::ios::in | std::ios::binary);
+
+		while (!in.is_open()) {
+			in.open(fileName, std::ios::in | std::ios::binary);
+		}
+
 		char ModelName[32];
 		in.read((char*)&ModelName, sizeof(ModelName));
 		m_ModelName = ModelName;

@@ -258,10 +258,6 @@ public:
 		: m_pd3dDevice(pd3dDevice)
 		, m_pd3dCommandList(pd3dCommandList) 
 	{
-		m_nObjects			= 0;
-		m_nProps			= 0;
-		m_nPlayers			= 0;
-		m_nProjectiles		= 0;
 		CreateObjectData();
 	}
 	~CObjectManager();
@@ -276,9 +272,6 @@ public:
 	}
 	ID3D12DescriptorHeap* GetDescriptorHeap() {
 		return m_pd3dCbvSrvDescriptorHeap;
-	}
-	void AddPSO(ID3D12PipelineState* pso) {
-		m_PSO.push_back(pso);
 	}
 	void ProcessInput(UCHAR * pKeysBuffer);
 
@@ -319,10 +312,10 @@ private:
 	m_nObjects는 프롭과 플레이어, 투사체의 개수를 합한 값.
 	m_nAnimationMatrix는 m_nObject * g_NumAnimationBone를 한 값.
 	*********************************************************************/
-	unsigned int		m_nObjects						= 0;
-	unsigned int		m_nProps						= 0;
-	unsigned int		m_nPlayers						= 0;
-	unsigned int		m_nProjectiles					= 0;
+	//unsigned int		m_nObjects						= 0;
+	//unsigned int		m_nProps						= 0;
+	//unsigned int		m_nPlayers						= 0;
+	//unsigned int		m_nProjectiles					= 0;
 	
 	ID3D12Resource*		m_pd3dCBPropResource			= NULL;
 	ID3D12Resource*		m_pd3dCBPlayersResource			= NULL;
@@ -347,19 +340,20 @@ private:
 
 	*********************************************************************/
 	CObject* m_pObjects[g_NumObjects];
-
+	CTexture* m_pTexture[g_NumTextures];
 
 	//vector<CObject*>	m_Props;
 	//vector<CObject*>	m_Players;
 	//vector<CObject*>	m_Projectiles;
-	vector<CTexture*>	m_TextureList;
+	//vector<CTexture*>	m_TextureList;
 
 
 	/*********************************************************************
 	2019-06-16
 	PSO 관리를 해야 Render()에서 그릴 수 있을 듯.
 
+	2019-06-29
+	아니~ 지워버렸어~
 	*********************************************************************/
-	vector<ID3D12PipelineState*> m_PSO;
 };
 

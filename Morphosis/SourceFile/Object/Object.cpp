@@ -501,10 +501,8 @@ CObjectManager
 *********************************************************************/
 CObjectManager::~CObjectManager()
 {
-	delete[] m_pObjects;
-
-	for (int i = 0; i < m_TextureList.size(); ++i) delete m_TextureList[i];
-	m_TextureList.erase(m_TextureList.begin(), m_TextureList.end());
+	delete[] &m_pObjects;
+	delete[] &m_pTexture;
 }
 void CObjectManager::Render()
 {
@@ -541,10 +539,10 @@ void CObjectManager::Render()
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_pObjects[i]->m_xmf4x4World)));
 	}
 
-	m_pd3dCommandList->SetPipelineState(m_PSO[1]);
+	m_pd3dCommandList->SetPipelineState(g_PipelineStates[1]);
 	for (int i = g_IdxPlayers; i < g_IdxProjectiles; ++i)	m_pObjects[i]->Render(m_pd3dCommandList);
 	for (int i = g_IdxProjectiles; i < g_NumObjects; ++i)	m_pObjects[i]->Render(m_pd3dCommandList);
-	m_pd3dCommandList->SetPipelineState(m_PSO[0]);
+	m_pd3dCommandList->SetPipelineState(g_PipelineStates[0]);
 	for (int i = g_IdxProps; i < g_IdxPlayers; ++i)			m_pObjects[i]->Render(m_pd3dCommandList);
 }
 void CObjectManager::Update(float fTime)
@@ -589,7 +587,7 @@ void CObjectManager::LateUpdate(float fTime)
 void CObjectManager::CreateDescriptorHeap()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC d3dDescriptorHeapDesc;
-	d3dDescriptorHeapDesc.NumDescriptors = m_nObjects + 1;
+	d3dDescriptorHeapDesc.NumDescriptors = g_NumObjects + 1;
 	d3dDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	d3dDescriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	d3dDescriptorHeapDesc.NodeMask = 0;
@@ -599,23 +597,23 @@ void CObjectManager::CreateDescriptorHeap()
 
 	m_d3dCbvCPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	m_d3dCbvGPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart();
-	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (m_nObjects));
-	m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (m_nObjects));
+	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (g_NumObjects));
+	m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (g_NumObjects));
 }
 void CObjectManager::CreateConstantBufferResorce()
 {
 	UINT ncbElementBytes;
 	ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
 
-	m_pd3dCBPropResource = ::CreateBufferResource(m_pd3dDevice, m_pd3dCommandList, NULL, ncbElementBytes * m_nProps,
+	m_pd3dCBPropResource = ::CreateBufferResource(m_pd3dDevice, m_pd3dCommandList, NULL, ncbElementBytes * g_NumProps,
 		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
 	if (nullptr != m_pd3dCBPropResource)	m_pd3dCBPropResource->Map(0, NULL, (void **)&m_pCBMappedPropObjects);
 
-	m_pd3dCBPlayersResource = ::CreateBufferResource(m_pd3dDevice, m_pd3dCommandList, NULL, ncbElementBytes * m_nPlayers,
+	m_pd3dCBPlayersResource = ::CreateBufferResource(m_pd3dDevice, m_pd3dCommandList, NULL, ncbElementBytes * g_NumPlayers,
 		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
 	if (nullptr != m_pd3dCBPlayersResource) m_pd3dCBPlayersResource->Map(0, NULL, (void **)&m_pCBMappedPlayers);
 
-	m_pd3dCBProjectilesResource = ::CreateBufferResource(m_pd3dDevice, m_pd3dCommandList, NULL, ncbElementBytes * m_nProjectiles,
+	m_pd3dCBProjectilesResource = ::CreateBufferResource(m_pd3dDevice, m_pd3dCommandList, NULL, ncbElementBytes * g_NumProjectiles,
 		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
 	if (nullptr != m_pd3dCBProjectilesResource) m_pd3dCBProjectilesResource->Map(0, NULL, (void **)&m_pCBMappedProjectiles);
 }
@@ -635,7 +633,7 @@ void CObjectManager::CreateConstantBufferView()
 	*********************************************************************/
 	if (nullptr != m_pd3dCBPropResource) {
 		d3dGpuVirtualAddress = m_pd3dCBPropResource->GetGPUVirtualAddress();
-		for (unsigned int i = 0; i < m_nProps; i++) {
+		for (unsigned int i = 0; i < g_NumProps; i++) {
 			d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * i);
 			D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
 			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * i);
@@ -644,19 +642,19 @@ void CObjectManager::CreateConstantBufferView()
 	}
 	if (nullptr != m_pd3dCBPlayersResource) {
 		d3dGpuVirtualAddress = m_pd3dCBPlayersResource->GetGPUVirtualAddress();
-		for (unsigned int i = 0; i < m_nPlayers; i++) {
+		for (unsigned int i = 0; i < g_NumPlayers; i++) {
 			d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * i);
 			D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
-			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (i + m_nProps));
+			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (i + g_IdxPlayers));
 			m_pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
 		}
 	}
 	if (nullptr != m_pd3dCBProjectilesResource) {
 		d3dGpuVirtualAddress = m_pd3dCBProjectilesResource->GetGPUVirtualAddress();
-		for (unsigned int i = 0; i < m_nProjectiles; i++) {
+		for (unsigned int i = 0; i < g_NumProjectiles; i++) {
 			d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * i);
 			D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
-			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (i + m_nProps + m_nPlayers));
+			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (i + g_IdxProjectiles));
 			m_pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
 		}
 	}
@@ -682,23 +680,12 @@ void CObjectManager::CreateObjectData()
 	프롭을 생성해야 한다. 레벨 데이터에서 프롭의 종류와 위치 등을 빼와야 함.
 	지금은 없으니까 대충 만들자.
 	*********************************************************************/
-
-
-
 	/*********************************************************************
 	2019-06-15
 	서술자 힙을 생성하기 위해 개수들을 정해준다. 지금은 임의로 하지만 나중에는
 	m_nProps는 LevelData에서 읽어오고, 나머지는 Defines.h에서 가져올 것.
 	*********************************************************************/
 	CImporter importer(m_pd3dDevice, m_pd3dCommandList);
-	//m_nProps		= 10;
-	//m_nPlayers		= 4;
-	//m_nProjectiles	= m_nPlayers * g_NumProjectilePerPlayer;
-	//m_nObjects		= m_nProps + m_nPlayers + m_nProjectiles;
-	m_nProps		= g_NumProps;
-	m_nPlayers		= g_NumPlayers;
-	m_nProjectiles	= g_NumProjectiles;
-	m_nObjects		= g_NumObjects;
 
 	CreateDescriptorHeap();
 	/*********************************************************************
@@ -706,19 +693,18 @@ void CObjectManager::CreateObjectData()
 	텍스처도 여기서 넣어야 할 것 같음. 텍스처를 먼저 만들어둔다.
 	텍스처는 서술자 힙 만들고 나서 해야 되는거 아냐?
 	*********************************************************************/
-	int nTexture = 3;
-	wstring fileNames[3];
+	wstring fileNames[g_NumTextures];
 	fileNames[0] = LASSETPATH;
 	fileNames[0] += L"0615_Box_diff.dds";
 	fileNames[1] = LASSETPATH;
 	fileNames[1] += L"character_2_diff_test3.dds";
 	fileNames[2] = LASSETPATH;
 	fileNames[2] += L"0618_LevelTest_diff.dds";
-	for (int i = 0; i < nTexture; ++i) {
+	for (int i = 0; i < g_NumTextures; ++i) {
 		CTexture* texture = new CTexture(RESOURCE_TEXTURE2D);
 		texture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, fileNames[i].c_str());
 		CreateTextureResourceView(texture);
-		m_TextureList.push_back(texture);
+		m_pTexture[i] = texture;
 	}
 
 	/*********************************************************************
@@ -741,15 +727,15 @@ void CObjectManager::CreateObjectData()
 	*********************************************************************/
 	for (int i = g_IdxProps; i < g_IdxPlayers; ++i) {
 		CObject* obj = new CObject();
-		importer.ImportModel("0615_Box", m_TextureList[0], obj);
+		importer.ImportModel("0615_Box", m_pTexture[0], obj);
 		obj->SetPosition(0, 0, i * 64.0f);
-		obj->AddCollider(BoundingOrientedBox(obj->GetPosition(), XMFLOAT3(9.69 / 2, 6.689 / 2, 5.122 / 2), XMFLOAT4(0, 0, 0, 1)));
+		obj->AddCollider(BoundingOrientedBox(obj->GetPosition(), XMFLOAT3(9.69f / 2, 6.689f / 2, 5.122f / 2), XMFLOAT4(0, 0, 0, 1)));
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
 		m_pObjects[i] = obj;
 	}
 	for (int i = g_IdxPlayers; i < g_IdxProjectiles; ++i) {
 		CPlayer* obj = new CPlayer();
-		importer.ImportModel("0603_CharacterIdle", m_TextureList[1], obj);
+		importer.ImportModel("0603_CharacterIdle", m_pTexture[1], obj);
 		importer.ImportAnimClip("0603_CharacterIdle", obj);
 		importer.ImportAnimClip("0603_CharacterRun", obj);
 		importer.ImportAnimClip("0603_CharacterFire", obj);
@@ -759,11 +745,11 @@ void CObjectManager::CreateObjectData()
 		obj->SetPosition(100, 0, (i - g_IdxPlayers) * g_DefaultUnitStandard * 3);
 		obj->SetSpawnPoint(obj->GetPosition());
 		XMFLOAT3 pos = obj->GetPosition();
-		pos.y += 2.577;
-		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(16 / 2, 16 / 2, 5.122 / 2), XMFLOAT4(0, 0, 0, 1)));
+		pos.y += 2.577f;
+		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(16 / 2, 16 / 2, 5.122f / 2), XMFLOAT4(0, 0, 0, 1)));
 		pos = obj->GetPosition();
-		pos.y += 18.404;
-		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(11.766 / 2, 13.198 / 2, 36.807 / 2), XMFLOAT4(0, 0, 0, 1)));
+		pos.y += 18.404f;
+		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(11.766f / 2, 13.198f / 2, 36.807f / 2), XMFLOAT4(0, 0, 0, 1)));
 		obj->SetTeam(((i - g_IdxPlayers) % 2) + 1);
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
 		obj->SetCameraTargetOffset(XMFLOAT3(0, 47, -21));
@@ -775,7 +761,7 @@ void CObjectManager::CreateObjectData()
 		2019-06-17
 		투사체는 전부 미리 만들어두고 IsAlive를 false로 해둔다.
 		*********************************************************************/
-		importer.ImportModel("0615_Box", m_TextureList[0], obj);
+		importer.ImportModel("0615_Box", m_pTexture[0], obj);
 		obj->SetAlive(false);
 		obj->AddCollider(BoundingSphere(XMFLOAT3(0, 0, 0), 10.0f));
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
