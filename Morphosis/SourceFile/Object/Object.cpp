@@ -501,14 +501,7 @@ CObjectManager
 *********************************************************************/
 CObjectManager::~CObjectManager()
 {
-	for (int i = 0; i < m_Props.size(); ++i) delete m_Props[i];
-	m_Props.erase(m_Props.begin(), m_Props.end());
-
-	for (int i = 0; i < m_Projectiles.size(); ++i) delete m_Projectiles[i];
-	m_Projectiles.erase(m_Projectiles.begin(), m_Projectiles.end());
-
-	for (int i = 0; i < m_Players.size(); ++i) delete m_Players[i];
-	m_Players.erase(m_Players.begin(), m_Players.end());
+	delete[] m_pObjects;
 
 	for (int i = 0; i < m_TextureList.size(); ++i) delete m_TextureList[i];
 	m_TextureList.erase(m_TextureList.begin(), m_TextureList.end());
@@ -528,41 +521,41 @@ void CObjectManager::Render()
 	각 객체의 Render와 Update 함수에서 IsAlive를 체크하고 있기 때문에 hlsl의
 	정보를 업데이트 하는 부분에만 IsAlive를 체크하게 추가하였다.
 	*********************************************************************/
-	for (unsigned int i = 0; i < m_nProps; i++) {
-		if (!m_Props[i]->IsAlive()) continue;
+	/*********************************************************************
+	2019-06-29
+	포인터 배열로 변경함
+	*********************************************************************/
+	for (int i = g_IdxProps; i < g_IdxPlayers; ++i) {
+		if (!m_pObjects[i]->IsAlive()) continue;
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedPropObjects + (i * ncbElementBytes));
-		memset(pbMappedcbObject, NULL, ncbElementBytes);
-		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Props[i]->m_xmf4x4World)));
+		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_pObjects[i]->m_xmf4x4World)));
 	}
-	for (unsigned int i = 0; i < m_nPlayers; i++) {
-		if (!m_Players[i]->IsAlive()) continue;
+	for (int i = g_IdxPlayers; i < g_IdxProjectiles; ++i) {
+		if (!m_pObjects[i]->IsAlive()) continue;
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedPlayers + (i * ncbElementBytes));
-		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Players[i]->m_xmf4x4World)));
+		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_pObjects[i]->m_xmf4x4World)));
 	}
-	for (unsigned int i = 0; i < m_nProjectiles; i++) {
-		if (!m_Projectiles[i]->IsAlive()) continue;
+	for (int i = g_IdxProjectiles; i < g_NumObjects; ++i) {
+		if (!m_pObjects[i]->IsAlive()) continue;
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedProjectiles + (i * ncbElementBytes));
-		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Projectiles[i]->m_xmf4x4World)));
+		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_pObjects[i]->m_xmf4x4World)));
 	}
 
 	m_pd3dCommandList->SetPipelineState(m_PSO[1]);
-	//for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Render(m_pd3dCommandList);
-	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->Render(m_pd3dCommandList);
-
+	for (int i = g_IdxPlayers; i < g_IdxProjectiles; ++i)	m_pObjects[i]->Render(m_pd3dCommandList);
+	for (int i = g_IdxProjectiles; i < g_NumObjects; ++i)	m_pObjects[i]->Render(m_pd3dCommandList);
 	m_pd3dCommandList->SetPipelineState(m_PSO[0]);
-	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->Render(m_pd3dCommandList);
+	for (int i = g_IdxProps; i < g_IdxPlayers; ++i)			m_pObjects[i]->Render(m_pd3dCommandList);
 }
 void CObjectManager::Update(float fTime)
 {
-	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Update(fTime);
-	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->Update(fTime);
-	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->Update(fTime);
+	for (int i = g_IdxPlayers; i < g_NumObjects; ++i) m_pObjects[i]->Update(fTime);
 
 	LateUpdate(fTime);
 }
 void CObjectManager::ProcessInput(UCHAR * pKeysBuffer)
 {
-	if (m_Players[0]->IsAlive()) m_Players[0]->ProcessInput(pKeysBuffer);
+	if (m_pObjects[g_IdxPlayers]->IsAlive()) m_pObjects[g_IdxPlayers]->ProcessInput(pKeysBuffer);
 
 	if (pKeysBuffer[VK_LBUTTON] & 0xF0) {
 		/*********************************************************************
@@ -575,12 +568,14 @@ void CObjectManager::ProcessInput(UCHAR * pKeysBuffer)
 
 		Render와 Update는 IsAlive가 true 일 때만 되게 해야 한다.
 		*********************************************************************/
-		if (dynamic_cast<CPlayer*>(m_Players[0])->IsShootable()) {
-			dynamic_cast<CPlayer*>(m_Players[0])->Shoot();
-			auto iter = find_if(m_Projectiles.begin(), m_Projectiles.end(), [](CObject* p) {return !(p->IsAlive()); });
-			if (iter != m_Projectiles.end()) {
-				dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[0]);
-				(*iter)->SetAlive(true);
+		if (dynamic_cast<CPlayer*>(m_pObjects[g_IdxPlayers])->IsShootable()) {
+			dynamic_cast<CPlayer*>(m_pObjects[g_IdxPlayers])->Shoot();
+
+			for (int i = g_IdxProjectiles; i < g_NumObjects; ++i) {
+				if (m_pObjects[i]->IsAlive()) {
+					dynamic_cast<CProjectile*>(m_pObjects[i])->Initialize(m_pObjects[g_IdxPlayers]);
+					m_pObjects[i]->SetAlive(true);
+				}
 			}
 		}
 	}
@@ -589,9 +584,7 @@ void CObjectManager::LateUpdate(float fTime)
 {
 	CollisionCheck();
 
-	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->LateUpdate(fTime);
-	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->LateUpdate(fTime);
-	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->LateUpdate(fTime);
+	for (int i = g_IdxPlayers; i < g_NumObjects; ++i) m_pObjects[i]->LateUpdate(fTime);
 }
 void CObjectManager::CreateDescriptorHeap()
 {
@@ -698,10 +691,14 @@ void CObjectManager::CreateObjectData()
 	m_nProps는 LevelData에서 읽어오고, 나머지는 Defines.h에서 가져올 것.
 	*********************************************************************/
 	CImporter importer(m_pd3dDevice, m_pd3dCommandList);
-	m_nProps = 10;
-	m_nPlayers = 4;
-	m_nProjectiles = m_nPlayers * g_NumProjectilePerPlayer;
-	m_nObjects = m_nProps + m_nPlayers + m_nProjectiles;
+	//m_nProps		= 10;
+	//m_nPlayers		= 4;
+	//m_nProjectiles	= m_nPlayers * g_NumProjectilePerPlayer;
+	//m_nObjects		= m_nProps + m_nPlayers + m_nProjectiles;
+	m_nProps		= g_NumProps;
+	m_nPlayers		= g_NumPlayers;
+	m_nProjectiles	= g_NumProjectiles;
+	m_nObjects		= g_NumObjects;
 
 	CreateDescriptorHeap();
 	/*********************************************************************
@@ -732,27 +729,26 @@ void CObjectManager::CreateObjectData()
 	CreateConstantBufferResorce();
 	CreateConstantBufferView();
 
-	int count = 0;
-	for (unsigned int i = 0; i < m_nProps; i++) {
+
+	/*********************************************************************
+	2019-06-29
+	오브젝트 풀을 미리 만들어 놔야 한다.
+	되나 그게? 일단 전부 생성하고 초기화하고 하여간.
+
+	처음부터 프롭 개수만큼							g_IdxProps ~ g_IdxPlayers
+	프롭 개수(==플레이어 시작 수)부터 플레이어 개수만큼 g_IdxPlayers ~ g_IdxProjectiles
+	투사체 시작 수부터 투사체 개수만큼					g_IdxProjectiles ~ g_NumObjects
+	*********************************************************************/
+	for (int i = g_IdxProps; i < g_IdxPlayers; ++i) {
 		CObject* obj = new CObject();
-		//if (count == 9) {
-		//	importer.ImportModel("0618_LevelTest", m_TextureList[2], obj);
-		//	obj->SetPosition(0, 0, 0);
-		//}
-		//else {
-		//	importer.ImportModel("0615_Box", m_TextureList[0], obj);
-		//	obj->SetPosition(0, 0, i * 64.0f);
-		//	obj->AddCollider(BoundingOrientedBox(obj->GetPosition(), XMFLOAT3(9.69 / 2, 6.689 / 2, 5.122 / 2), XMFLOAT4(0, 0, 0, 1)));
-		//}
 		importer.ImportModel("0615_Box", m_TextureList[0], obj);
 		obj->SetPosition(0, 0, i * 64.0f);
 		obj->AddCollider(BoundingOrientedBox(obj->GetPosition(), XMFLOAT3(9.69 / 2, 6.689 / 2, 5.122 / 2), XMFLOAT4(0, 0, 0, 1)));
-		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
-		m_Props.push_back(obj);
+		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
+		m_pObjects[i] = obj;
 	}
-	for (unsigned int i = 0; i < m_nPlayers; i++) {
+	for (int i = g_IdxPlayers; i < g_IdxProjectiles; ++i) {
 		CPlayer* obj = new CPlayer();
-
 		importer.ImportModel("0603_CharacterIdle", m_TextureList[1], obj);
 		importer.ImportAnimClip("0603_CharacterIdle", obj);
 		importer.ImportAnimClip("0603_CharacterRun", obj);
@@ -760,32 +756,31 @@ void CObjectManager::CreateObjectData()
 		importer.ImportAnimClip("0603_CharacterStartJump", obj);
 		importer.ImportAnimClip("0603_CharacterEndJump", obj);
 		importer.ImportAnimClip("0603_CharacterDied", obj);
-		obj->SetPosition(100, 0, i * g_DefaultUnitStandard * 3);
+		obj->SetPosition(100, 0, (i - g_IdxPlayers) * g_DefaultUnitStandard * 3);
 		obj->SetSpawnPoint(obj->GetPosition());
 		XMFLOAT3 pos = obj->GetPosition();
 		pos.y += 2.577;
-		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(16/2, 16/2, 5.122/2), XMFLOAT4(0, 0, 0, 1)));
+		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(16 / 2, 16 / 2, 5.122 / 2), XMFLOAT4(0, 0, 0, 1)));
 		pos = obj->GetPosition();
 		pos.y += 18.404;
-		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(11.766/2, 13.198/2, 36.807/2), XMFLOAT4(0, 0, 0, 1)));
-
-		obj->SetTeam((i % 2) + 1);
-		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
+		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(11.766 / 2, 13.198 / 2, 36.807 / 2), XMFLOAT4(0, 0, 0, 1)));
+		obj->SetTeam(((i - g_IdxPlayers) % 2) + 1);
+		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
 		obj->SetCameraTargetOffset(XMFLOAT3(0, 47, -21));
-		m_Players.push_back(obj);
+		m_pObjects[i] = obj;
 	}
-	for (unsigned int i = 0; i < m_nProjectiles; i++) {
+	for (int i = g_IdxProjectiles; i < g_NumObjects; ++i) {
 		CProjectile* obj = new CProjectile();
-
 		/*********************************************************************
 		2019-06-17
 		투사체는 전부 미리 만들어두고 IsAlive를 false로 해둔다.
 		*********************************************************************/
 		importer.ImportModel("0615_Box", m_TextureList[0], obj);
 		obj->SetAlive(false);
-		obj->AddCollider(BoundingSphere(XMFLOAT3(0,0,0), 10.0f));
-		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
-		m_Projectiles.push_back(obj);
+		obj->AddCollider(BoundingSphere(XMFLOAT3(0, 0, 0), 10.0f));
+		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * i);
+		m_pObjects[i] = obj;
+
 	}
 }
 void CObjectManager::CollisionCheck()
@@ -819,39 +814,48 @@ void CObjectManager::CollisionCheck()
 	LateUpdate()를 하게 하기.
 	누구랑 충돌했는지 그냥 전달해주기로 함.
 	*********************************************************************/
-	for (auto player = m_Players.begin(); player != m_Players.end(); ++player) {
-		// 활성화된 애만 처리할 것.
-		if ((*player)->IsAlive()) {
+	/*********************************************************************
+	2019-06-29
+	포인터 배열로 바꾸고 다시 작성함.
+	*********************************************************************/
+	for (int i = g_IdxPlayers; i < g_IdxProjectiles; ++i) {
+		if (m_pObjects[i]->IsAlive()) {
+			for (int j = g_IdxProps; j < g_IdxPlayers; ++j) {
+				if (IsCollidable(m_pObjects[i], m_pObjects[j])) {
+					if (m_pObjects[i]->IsCollide(m_pObjects[j]))
+						m_pObjects[i]->AddCollideInfo(m_pObjects[j]);
+				}
+			}
 
-			for (auto prop = m_Props.begin(); prop != m_Props.end(); ++prop)
-				if (IsCollidable((*player), (*prop)))
-					if ((*player)->IsCollide((*prop)))
-						(*player)->AddCollideInfo((*prop));
+			for (int j = g_IdxPlayers; j < g_IdxProjectiles; ++j) {
+				if (IsCollidable(m_pObjects[i], m_pObjects[j])) {
+					if (m_pObjects[i]->IsCollide(m_pObjects[j])) {
+						m_pObjects[i]->AddCollideInfo(m_pObjects[j]);
+						m_pObjects[j]->AddCollideInfo(m_pObjects[i]);
+					}
+				}
+			}
 
-			for (auto otherPlayer = m_Players.begin(); otherPlayer != m_Players.end(); ++otherPlayer)
-				if (IsCollidable((*player), (*otherPlayer)))
-					if ((*player)->IsCollide((*otherPlayer))) {
-						(*player)->AddCollideInfo((*otherPlayer));
-						(*otherPlayer)->AddCollideInfo((*player));
+			for (int j = g_IdxProjectiles; j < g_NumObjects; ++j) {
+				if (IsCollidable(m_pObjects[i], m_pObjects[j])) {
+					if (m_pObjects[i]->IsCollide(m_pObjects[j])) {
+						m_pObjects[i]->AddCollideInfo(m_pObjects[j]);
+						m_pObjects[j]->Disable();
 					}
-			for (auto projectile = m_Projectiles.begin(); projectile != m_Projectiles.end(); ++projectile)
-				if (IsCollidable((*player), (*projectile)))
-					if ((*player)->IsCollide((*projectile))) {
-						(*player)->AddCollideInfo((*projectile));
-						(*projectile)->Disable();
-					}
+				}
+			}
 		}
 	}
-	for (auto projectile = m_Projectiles.begin(); projectile != m_Projectiles.end(); ++projectile) {
-		// 활성화된 애만 처리할 것.
-		if ((*projectile)->IsAlive()) {
-			for (auto prop = m_Props.begin(); prop != m_Props.end(); ++prop)
-				if (IsCollidable((*projectile), (*prop)))
-					if ((*projectile)->IsCollide((*prop))) {
-						(*projectile)->Disable();
-						break;
-					}
 
+	for (int i = g_IdxProjectiles; i < g_NumObjects; ++i) {
+		if (m_pObjects[i]->IsAlive()) {
+			for (int j = g_IdxProps; j < g_IdxPlayers; ++j) {
+				if (IsCollidable(m_pObjects[i], m_pObjects[j])) {
+					if (m_pObjects[i]->IsCollide(m_pObjects[j]))
+						m_pObjects[i]->Disable();
+					break;
+				}
+			}
 		}
 	}
 }

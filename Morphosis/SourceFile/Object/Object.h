@@ -271,7 +271,7 @@ public:
 	void Update(float fTime);
 
 	CObject* GetTarget(int i) {
-		return m_Players[i];
+		return m_pObjects[g_IdxPlayers + i];
 		//return m_Objects[m_nProps + i];
 	}
 	ID3D12DescriptorHeap* GetDescriptorHeap() {
@@ -335,16 +335,30 @@ private:
 	/*********************************************************************
 	2019-06-15
 	생성한 객체들을 관리할 벡터.
+
+	2019-06-29
+	포인터는 풀로 관리하고 벡터로는 인덱스를 관리하는게 좋다고 하셨다.
+	어짜피 미리 풀링을 해둘거라면 고정 배열을 써도 문제 없을거 같은데
+	그럼 진짜 문제 없는거 아냐? 시작하는 인덱스만 알고 있어도 될 것 같은데
+
+	C를 배운지 너무 오래되서 가장 기초적인 부분부터 무너진 느낌이다.
+	포인터를 쓰는 이유가 무엇인지, 어떤 상황에서 포인터를 써야 하는지 이해하기.
+	다형성 써야 하니까 포인터는 써야 함. 끝.
+
 	*********************************************************************/
-	vector<CObject*>	m_Props;
-	vector<CObject*>	m_Players;
-	vector<CObject*>	m_Projectiles;
+	CObject* m_pObjects[g_NumObjects];
+
+
+	//vector<CObject*>	m_Props;
+	//vector<CObject*>	m_Players;
+	//vector<CObject*>	m_Projectiles;
 	vector<CTexture*>	m_TextureList;
 
 
 	/*********************************************************************
 	2019-06-16
 	PSO 관리를 해야 Render()에서 그릴 수 있을 듯.
+
 	*********************************************************************/
 	vector<ID3D12PipelineState*> m_PSO;
 };
