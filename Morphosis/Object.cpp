@@ -538,11 +538,11 @@ void CObjectManager::Render()
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedProjectiles + (i * ncbElementBytes));
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_pObjects[i]->m_xmf4x4World)));
 	}
-
+	 
 	m_pd3dCommandList->SetPipelineState(g_PipelineStates[0]);
-	for (int i = g_IdxPlayers; i < g_IdxProjectiles; ++i)	m_pObjects[i]->Render(m_pd3dCommandList);
-	for (int i = g_IdxProjectiles; i < g_NumObjects; ++i)	m_pObjects[i]->Render(m_pd3dCommandList);
+	for (int i = g_IdxPlayers; i < g_IdxProjectiles; ++i)	dynamic_cast<CPlayer*>(m_pObjects[i])->Render(m_pd3dCommandList);
 	m_pd3dCommandList->SetPipelineState(g_PipelineStates[1]);
+	for (int i = g_IdxProjectiles; i < g_NumObjects; ++i)	m_pObjects[i]->Render(m_pd3dCommandList);
 	for (int i = g_IdxProps; i < g_IdxPlayers; ++i)			m_pObjects[i]->Render(m_pd3dCommandList);
 }
 void CObjectManager::Update(float fTime)
@@ -633,7 +633,7 @@ void CObjectManager::CreateConstantBufferView()
 	*********************************************************************/
 	if (nullptr != m_pd3dCBPropResource) {
 		d3dGpuVirtualAddress = m_pd3dCBPropResource->GetGPUVirtualAddress();
-		for (unsigned int i = 0; i < g_NumProps; i++) {
+		for (unsigned int i = g_IdxProps; i < g_NumProps; i++) {
 			d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * i);
 			D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
 			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * i);
@@ -642,19 +642,19 @@ void CObjectManager::CreateConstantBufferView()
 	}
 	if (nullptr != m_pd3dCBPlayersResource) {
 		d3dGpuVirtualAddress = m_pd3dCBPlayersResource->GetGPUVirtualAddress();
-		for (unsigned int i = 0; i < g_NumPlayers; i++) {
+		for (unsigned int i = g_IdxPlayers; i < g_NumPlayers; i++) {
 			d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * i);
 			D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
-			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (i + g_IdxPlayers));
+			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * i);
 			m_pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
 		}
 	}
 	if (nullptr != m_pd3dCBProjectilesResource) {
 		d3dGpuVirtualAddress = m_pd3dCBProjectilesResource->GetGPUVirtualAddress();
-		for (unsigned int i = 0; i < g_NumProjectiles; i++) {
+		for (unsigned int i = g_IdxProjectiles; i < g_NumProjectiles; i++) {
 			d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * i);
 			D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
-			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (i + g_IdxProjectiles));
+			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * i);
 			m_pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
 		}
 	}

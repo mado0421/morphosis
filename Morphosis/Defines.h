@@ -58,7 +58,7 @@ extern unsigned int	gnCbvSrvDescriptorIncrementSize;
 constexpr float		g_DefaultUnitStandard		= 20.0f;
 
 constexpr int		g_NumProjectilePerPlayer	= 30;
-constexpr int		g_NumProps					= 512;
+constexpr int		g_NumProps					= 4;
 constexpr int		g_NumPlayers				= 4;
 constexpr int		g_NumProjectiles			= g_NumPlayers * g_NumProjectilePerPlayer;
 constexpr int		g_NumObjects				= g_NumProps + g_NumPlayers + g_NumProjectiles;

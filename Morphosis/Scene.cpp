@@ -155,7 +155,9 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 
 	m_pCamera = new CFollowCamera();
 	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	m_pCamera->SetOffset(XMFLOAT3(0, 15.0f, 55.0f));
+	//m_pCamera->SetOffset(XMFLOAT3(0, 15.0f, 55.0f));
+	//m_pCamera->SetOffset(XMFLOAT3(0, 0.0f, 10.0f)); 
+	m_pCamera->SetOffset(XMFLOAT3(0, 30.0f, 50.0f));
 
 
 	m_ObjMng = new CObjectManager(m_pd3dDevice, m_pd3dCommandList);
