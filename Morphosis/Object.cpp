@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "Object.h"
-#include "Animation/AnimationController.h"
-#include "Mesh/Mesh.h"
-#include "Importer/Importer.h"
+#include "AnimationController.h"
+#include "Mesh.h"
+#include "Importer.h"
 
 /*********************************************************************
 2019-06-17
@@ -539,10 +539,10 @@ void CObjectManager::Render()
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_pObjects[i]->m_xmf4x4World)));
 	}
 
-	m_pd3dCommandList->SetPipelineState(g_PipelineStates[1]);
+	m_pd3dCommandList->SetPipelineState(g_PipelineStates[0]);
 	for (int i = g_IdxPlayers; i < g_IdxProjectiles; ++i)	m_pObjects[i]->Render(m_pd3dCommandList);
 	for (int i = g_IdxProjectiles; i < g_NumObjects; ++i)	m_pObjects[i]->Render(m_pd3dCommandList);
-	m_pd3dCommandList->SetPipelineState(g_PipelineStates[0]);
+	m_pd3dCommandList->SetPipelineState(g_PipelineStates[1]);
 	for (int i = g_IdxProps; i < g_IdxPlayers; ++i)			m_pObjects[i]->Render(m_pd3dCommandList);
 }
 void CObjectManager::Update(float fTime)

@@ -1,6 +1,6 @@
 #pragma once
-#include "../Scene/Scene.h"
-#include "../Timer/Timer.h"
+#include "Scene.h"
+#include "Timer.h"
 
 #define NUMSWAPCHAINBUFFER 2
 #define NUMDEFAULTSTRINGCHAR 64

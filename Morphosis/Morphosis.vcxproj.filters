@@ -44,50 +44,47 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SourceFile\Scene\Scene.cpp">
-      <Filter>소스 파일\Scene</Filter>
+    <ClCompile Include="Morphosis.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SourceFile\Mesh\Mesh.cpp">
-      <Filter>소스 파일\Mesh</Filter>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SourceFile\Mesh\Model.cpp">
-      <Filter>소스 파일\Mesh</Filter>
+    <ClCompile Include="AnimationController.cpp">
+      <Filter>소스 파일\Animation</Filter>
     </ClCompile>
-    <ClCompile Include="SourceFile\Material\Material.cpp">
-      <Filter>소스 파일\Mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceFile\Framework\Framework.cpp">
-      <Filter>소스 파일\Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceFile\DDSTextureLoader12.cpp">
-      <Filter>소스 파일\DDSTextureLoader12</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceFile\Camera\Camera.cpp">
+    <ClCompile Include="Camera.cpp">
       <Filter>소스 파일\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="SourceFile\Importer\Importer.cpp">
+    <ClCompile Include="DDSTextureLoader12.cpp">
+      <Filter>소스 파일\DDSTextureLoader12</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework.cpp">
+      <Filter>소스 파일\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Importer.cpp">
       <Filter>소스 파일\Importer</Filter>
     </ClCompile>
-    <ClCompile Include="SourceFile\Object\Object.cpp">
-      <Filter>소스 파일\Object</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceFile\PSO.cpp">
-      <Filter>소스 파일\PSO</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceFile\Timer\Timer.cpp">
-      <Filter>소스 파일\Timer</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceFile\Morphosis.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceFile\stdafx.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceFile\Material\Texture.cpp">
+    <ClCompile Include="Mesh.cpp">
       <Filter>소스 파일\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="SourceFile\Animation\AnimationController.cpp">
-      <Filter>소스 파일\Animation</Filter>
+    <ClCompile Include="Model.cpp">
+      <Filter>소스 파일\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>소스 파일\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="PSO.cpp">
+      <Filter>소스 파일\PSO</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>소스 파일\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>소스 파일\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>소스 파일\Timer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -104,56 +101,50 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SourceFile\Scene\Scene.h">
-      <Filter>소스 파일\Scene</Filter>
+    <ClInclude Include="AnimationController.h">
+      <Filter>소스 파일\Animation</Filter>
     </ClInclude>
-    <ClInclude Include="SourceFile\Mesh\Mesh.h">
-      <Filter>소스 파일\Mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceFile\Mesh\Model.h">
-      <Filter>소스 파일\Mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceFile\Material\Material.h">
-      <Filter>소스 파일\Mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceFile\Framework\Framework.h">
-      <Filter>소스 파일\Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceFile\DDSTextureLoader12.h">
-      <Filter>소스 파일\DDSTextureLoader12</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceFile\Camera\Camera.h">
+    <ClInclude Include="Camera.h">
       <Filter>소스 파일\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="SourceFile\Importer\Importer.h">
+    <ClInclude Include="DDSTextureLoader12.h">
+      <Filter>소스 파일\DDSTextureLoader12</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework.h">
+      <Filter>소스 파일\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Importer.h">
       <Filter>소스 파일\Importer</Filter>
     </ClInclude>
-    <ClInclude Include="SourceFile\Object\Object.h">
-      <Filter>소스 파일\Object</Filter>
+    <ClInclude Include="Texture.h">
+      <Filter>소스 파일\Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="SourceFile\PSO.h">
+    <ClInclude Include="Model.h">
+      <Filter>소스 파일\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>소스 파일\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="PSO.h">
       <Filter>소스 파일\PSO</Filter>
     </ClInclude>
-    <ClInclude Include="SourceFile\Timer\Timer.h">
+    <ClInclude Include="Object.h">
+      <Filter>소스 파일\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>소스 파일\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
       <Filter>소스 파일\Timer</Filter>
     </ClInclude>
-    <ClInclude Include="SourceFile\d3dx12.h">
+    <ClInclude Include="targetver.h">
       <Filter>소스 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SourceFile\Morphosis.h">
+    <ClInclude Include="stdafx.h">
       <Filter>소스 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SourceFile\stdafx.h">
+    <ClInclude Include="Morphosis.h">
       <Filter>소스 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceFile\targetver.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceFile\Resource.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SourceFile\Material\Texture.h">
-      <Filter>소스 파일\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="MathHelper.h">
       <Filter>소스 파일</Filter>
@@ -161,15 +152,12 @@
     <ClInclude Include="Defines.h">
       <Filter>소스 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SourceFile\Animation\AnimationController.h">
-      <Filter>소스 파일\Animation</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Hlsl\Header.hlsli" />
+    <None Include="Header.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Hlsl\VertexShader.hlsl" />
-    <FxCompile Include="Hlsl\PixelShader.hlsl" />
+    <FxCompile Include="PixelShader.hlsl" />
+    <FxCompile Include="VertexShader.hlsl" />
   </ItemGroup>
 </Project>

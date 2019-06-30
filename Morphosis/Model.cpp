@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "Model.h"
-#include "Mesh/Mesh.h"
-#include "Material/Texture.h"
-#include "Material/Material.h"
-#include "Animation/AnimationController.h"
-#include "Importer/Importer.h"
+#include "Mesh.h"
+#include "Texture.h"
+#include "Material.h"
+#include "AnimationController.h"
+#include "Importer.h"
 
 void CModel::Render(ID3D12GraphicsCommandList *pd3dCommandList, bool isDebug)
 {

@@ -1,12 +1,12 @@
 #include "stdafx.h"
-#include "Framework/Framework.h"
+#include "Framework.h"
 #include "Scene.h"
-#include "Importer/Importer.h"
-#include "Object/Object.h"
-#include "Camera/Camera.h"
+#include "Importer.h"
+#include "Object.h"
+#include "Camera.h"
 #include "LevelData.h"
 #include "PSO.h"
-#include "Material/Texture.h"
+#include "Texture.h"
 
 #define MOUSE_XSPEED 10
 #define MOVE_SPEED 0.15f
