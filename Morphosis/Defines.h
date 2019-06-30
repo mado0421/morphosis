@@ -25,10 +25,6 @@ extern int g_RootParameterObject;
 extern int g_RootParameterTexture;
 extern int g_RootParameterAnimation;
 
-constexpr int g_NumPipelineStates = 2;
-extern ID3D12PipelineState* g_PipelineStates[g_NumPipelineStates];
-
-
 
 /*********************************************************************
 2019-06-16
@@ -53,28 +49,13 @@ extern ID3D12PipelineState* g_PipelineStates[g_NumPipelineStates];
 2019-06-16
 오브젝트 관련 상수
 *********************************************************************/
-extern unsigned int	gnCbvSrvDescriptorIncrementSize;
-
 constexpr float		g_DefaultUnitStandard		= 20.0f;
 
-constexpr int		g_NumProjectilePerPlayer	= 30;
-constexpr int		g_NumProps					= 4;
-constexpr int		g_NumPlayers				= 4;
-constexpr int		g_NumProjectiles			= g_NumPlayers * g_NumProjectilePerPlayer;
-constexpr int		g_NumObjects				= g_NumProps + g_NumPlayers + g_NumProjectiles;
-
-constexpr int		g_IdxProps					= 0;
-constexpr int		g_IdxPlayers				= g_IdxProps + g_NumProps;
-constexpr int		g_IdxProjectiles			= g_IdxPlayers + g_NumPlayers;
-
-constexpr int		g_NumTextures				= 3;
-
-
-
+extern unsigned int	gnCbvSrvDescriptorIncrementSize;
 constexpr float		g_PlayerDefaultSpeed		= g_DefaultUnitStandard * 10;
 constexpr float		g_ProjectileDefaultSpeed	= g_PlayerDefaultSpeed * 3.0f;
-
 constexpr int		g_NumAnimationBone			= 64;
+constexpr int		g_NumProjectilePerPlayer	= 30;
 constexpr float		g_Gravity					= 9.8f;
 constexpr float		TIMER_ATT					= 0.05f;
 constexpr float		TIMER_RESPANW				= 5.0f;
