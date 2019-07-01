@@ -551,6 +551,10 @@ void CObjectManager::Render()
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Projectiles[i]->m_xmf4x4World)));
 	}
 
+	//if (g_DebugCamera == 0) {
+
+	//}
+
 	m_pd3dCommandList->SetPipelineState(m_PSO[1]);
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Render(m_pd3dCommandList);
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->Render(m_pd3dCommandList);
@@ -694,8 +698,13 @@ void CObjectManager::CreateObjectData()
 	2019-06-14
 	프롭을 생성해야 한다. 레벨 데이터에서 프롭의 종류와 위치 등을 빼와야 함.
 	지금은 없으니까 대충 만들자.
-	*********************************************************************/
 
+	2019-07-01
+	이젠 레벨 데이터가 있다. 충돌맵을 만들자.
+	*********************************************************************/
+	CImporter importer(m_pd3dDevice, m_pd3dCommandList);
+
+	importer.ImportLevel("LevelData_TestMap", m_LevelDataDesc);
 
 
 	/*********************************************************************
@@ -703,9 +712,8 @@ void CObjectManager::CreateObjectData()
 	서술자 힙을 생성하기 위해 개수들을 정해준다. 지금은 임의로 하지만 나중에는
 	m_nProps는 LevelData에서 읽어오고, 나머지는 Defines.h에서 가져올 것.
 	*********************************************************************/
-	CImporter importer(m_pd3dDevice, m_pd3dCommandList);
-	m_nProps = 10;
-	m_nPlayers = 4;
+	m_nProps = 1;
+	m_nPlayers = 1;
 	m_nProjectiles = m_nPlayers * g_NumProjectilePerPlayer;
 	m_nObjects = m_nProps + m_nPlayers + m_nProjectiles;
 
@@ -741,15 +749,47 @@ void CObjectManager::CreateObjectData()
 	int count = 0;
 	for (unsigned int i = 0; i < m_nProps; i++) {
 		CObject* obj = new CObject();
-		if (count == 9) {
-			importer.ImportModel("0618_LevelTest", m_TextureList[2], obj);
-			obj->SetPosition(0, 0, 0);
+		importer.ImportModel("0618_LevelTest", m_TextureList[2], obj);
+		for (int j = 0; j < m_LevelDataDesc.nCollisionMaps; ++j) {
+			obj->AddCollider(BoundingOrientedBox(
+				m_LevelDataDesc.CollisionPosition[j],
+				m_LevelDataDesc.CollisionScale[j],
+				m_LevelDataDesc.CollisionRotation[j]
+			));
+			//CModel * DebugMesh = new CModel();
+			//CTestMesh* tempMesh = new CTestMesh(
+			//	m_pd3dDevice,
+			//	m_pd3dCommandList,
+			//	m_LevelDataDesc.CollisionPosition[j],
+			//	m_LevelDataDesc.CollisionScale[j]
+			//);
+			//DebugMesh->SetMesh(tempMesh);
+			//DebugMesh->SetTexture(m_TextureList[0]);
+			//obj->AddModel(DebugMesh);
 		}
-		else {
-			importer.ImportModel("0615_Box", m_TextureList[0], obj);
-			obj->SetPosition(0, 0, i * 64.0f);
-			obj->AddCollider(BoundingOrientedBox(obj->GetPosition(), XMFLOAT3(9.69 / 2, 6.689 / 2, 5.122 / 2), XMFLOAT4(0, 0, 0, 1)));
-		}
+		obj->SetPosition(0, 0, 0);
+		//if (count == 9) {
+		//	importer.ImportModel("0618_LevelTest", m_TextureList[2], obj);
+		//	for (int j = 0; j < m_LevelDataDesc.nCollisionMaps; ++j) {
+		//		//XMFLOAT3 tmp = Vector3::Multiply(0.5f, m_LevelDataDesc.CollisionScale[j]);
+		//		//obj->AddCollider(BoundingOrientedBox(
+		//		//	m_LevelDataDesc.CollisionPosition[j],
+		//		//	tmp,
+		//		//	m_LevelDataDesc.CollisionRotation[j])
+		//		//);
+		//		obj->AddCollider(BoundingOrientedBox(
+		//			m_LevelDataDesc.CollisionPosition[j],
+		//			m_LevelDataDesc.CollisionScale[j],
+		//			m_LevelDataDesc.CollisionRotation[j])
+		//		);
+		//	}
+		//	obj->SetPosition(0, 0, 0);
+		//}
+		//else {
+		//	importer.ImportModel("0615_Box", m_TextureList[0], obj);
+		//	obj->SetPosition(0, 0, i * 64.0f);
+		//	obj->AddCollider(BoundingOrientedBox(obj->GetPosition(), XMFLOAT3(9.69 / 2, 6.689 / 2, 5.122 / 2), XMFLOAT4(0, 0, 0, 1)));
+		//}
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 		m_Props.push_back(obj);
 	}
@@ -763,14 +803,14 @@ void CObjectManager::CreateObjectData()
 		importer.ImportAnimClip("0603_CharacterStartJump", obj);
 		importer.ImportAnimClip("0603_CharacterEndJump", obj);
 		importer.ImportAnimClip("0603_CharacterDied", obj);
-		obj->SetPosition(100, 0, i * g_DefaultUnitStandard * 3);
+		obj->SetPosition(0, 10, i * g_DefaultUnitStandard * 3);
 		obj->SetSpawnPoint(obj->GetPosition());
 		XMFLOAT3 pos = obj->GetPosition();
-		pos.y += 2.577;
+		pos.y += 12.577;
 		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(16/2, 16/2, 5.122/2), XMFLOAT4(0, 0, 0, 1)));
 		pos = obj->GetPosition();
-		pos.y += 18.404;
-		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(11.766/2, 13.198/2, 36.807/2), XMFLOAT4(0, 0, 0, 1)));
+		pos.y += 28.404;
+		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(11.766/2, 13.198/2, 16.807/2), XMFLOAT4(0, 0, 0, 1)));
 
 		obj->SetTeam((i % 2) + 1);
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);

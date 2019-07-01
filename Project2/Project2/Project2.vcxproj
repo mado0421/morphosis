@@ -69,11 +69,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\FBX\FBX SDK\2019.0\samples\Common;C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\FBX\FBX SDK\2019.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
-    <SourcePath>$(SourcePath)</SourcePath>
-  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -91,10 +87,10 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\FBX\FBX SDK\2019.0\include;C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\FBX\FBX SDK\2019.0\samples\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\FBX\FBX SDK\2019.0\lib\vs2015\x64\debug;C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\FBX\FBX SDK\2019.0\lib\vs2015;C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\FBX\FBX SDK\2019.0\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>

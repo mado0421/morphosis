@@ -176,6 +176,7 @@ private:
 
 class CObject;
 class CTexture;
+struct LEVELDATA_DESC;
 
 class CImporter {
 
@@ -203,6 +204,7 @@ public:
 	//void ImportModel(const char* fileName, CObject* obj);
 	void ImportModel(const char* fileName, CTexture* texture ,CObject* obj);
 	void ImportAnimClip(const char* fileName, CObject* obj);
+	void ImportLevel(const char* fileName, LEVELDATA_DESC& desc);
 	
 private:
 	ID3D12Device*				m_pd3dDevice		= NULL;

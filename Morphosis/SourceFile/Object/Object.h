@@ -6,6 +6,31 @@ struct CB_OBJECT_INFO {
 	XMFLOAT4X4	m_xmf4x4World;
 	UINT		m_nMaterialIndex;
 };
+struct LEVELDATA_DESC {
+	std::string levelName = "";
+	int nCollisionMaps = 0;
+	int nTeam1SpawnPoint = 0;
+	int nTeam2SpawnPoint = 0;
+	bool isCapturePointExist = false;
+
+	XMFLOAT3 BoundaryBoxPosition;
+	XMFLOAT3 BoundaryBoxScale;
+	XMFLOAT4 BoundaryBoxRotation;
+
+	std::vector<XMFLOAT3> CollisionPosition;
+	std::vector<XMFLOAT3> CollisionScale;
+	std::vector<XMFLOAT4> CollisionRotation;
+
+	std::vector<XMFLOAT3> Team1SpawnPointPosition;
+	std::vector<XMFLOAT4> Team1SpawnPointRotation;
+
+	std::vector<XMFLOAT3> Team2SpawnPointPosition;
+	std::vector<XMFLOAT4> Team2SpawnPointRotation;
+
+	XMFLOAT3 CapturePointPosition;
+	XMFLOAT3 CapturePointScale;
+	XMFLOAT4 CapturePointRotation;
+};
 
 class CAnimationController;
 class CTexture;
@@ -347,5 +372,12 @@ private:
 	PSO 관리를 해야 Render()에서 그릴 수 있을 듯.
 	*********************************************************************/
 	vector<ID3D12PipelineState*> m_PSO;
+
+
+	/*********************************************************************
+	2019-07-01
+	LevelData 관리를 위한 설명 구조체
+	*********************************************************************/
+	LEVELDATA_DESC m_LevelDataDesc;
 };
 

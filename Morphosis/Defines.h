@@ -43,6 +43,7 @@ extern int g_RootParameterAnimation;
 *********************************************************************/
 #define ASSETPATH "Assets/"
 #define LASSETPATH L"Assets/"
+constexpr float		g_LevelSize		= 40.0f;
 
 
 /*********************************************************************
@@ -82,3 +83,5 @@ enum class Tag {
 카메라 관련 상수
 *********************************************************************/
 #define CAM_Y_DISTANCE 0
+
+extern int g_DebugCamera;

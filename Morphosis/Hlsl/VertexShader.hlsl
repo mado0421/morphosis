@@ -28,6 +28,8 @@ ILLUM_TEX_OUTPUT VSDefaultShader(ILLUM_TEX_INPUT input)
 {
 	ILLUM_TEX_OUTPUT output;
 
+	input.position.x *= -1;
+
 	output.normalW = mul(input.normal, (float3x3)gmtxGameObject);
 	output.positionW = (float3)mul(float4(input.position, 1.0f), gmtxGameObject);
 	output.position = mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection);

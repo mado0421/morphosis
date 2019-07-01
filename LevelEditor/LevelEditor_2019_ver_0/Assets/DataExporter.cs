@@ -82,34 +82,65 @@ public class DataExporter : MonoBehaviour
         w.WriteLine(Team2RespawnPoints.Length);
         w.WriteLine(IsCapturePointExist);
 
-        w.WriteLine(BoundaryBox.transform.position);
-        w.WriteLine(BoundaryBox.transform.localScale);
-        w.WriteLine(BoundaryBox.transform.rotation);
+        w.WriteLine((float)BoundaryBox.transform.position.x);
+        w.WriteLine((float)BoundaryBox.transform.position.y);
+        w.WriteLine((float)BoundaryBox.transform.position.z);
+        w.WriteLine((float)BoundaryBox.transform.localScale.x);
+        w.WriteLine((float)BoundaryBox.transform.localScale.y);
+        w.WriteLine((float)BoundaryBox.transform.localScale.z);
+        w.WriteLine((float)BoundaryBox.transform.rotation.x);
+        w.WriteLine((float)BoundaryBox.transform.rotation.y);
+        w.WriteLine((float)BoundaryBox.transform.rotation.z);
+        w.WriteLine((float)BoundaryBox.transform.rotation.w);
 
         foreach (GameObject c in CollisionMaps)
         {
-            w.WriteLine(c.transform.position);
-            w.WriteLine(c.transform.localScale);
-            w.WriteLine(c.transform.rotation);
+            w.WriteLine((float)c.transform.position.x);
+            w.WriteLine((float)c.transform.position.y);
+            w.WriteLine((float)c.transform.position.z);
+            w.WriteLine((float)c.transform.localScale.x);
+            w.WriteLine((float)c.transform.localScale.y);
+            w.WriteLine((float)c.transform.localScale.z);
+            w.WriteLine((float)c.transform.rotation.x);
+            w.WriteLine((float)c.transform.rotation.y);
+            w.WriteLine((float)c.transform.rotation.z);
+            w.WriteLine((float)c.transform.rotation.w);
         }
         foreach (GameObject c in Team1RespawnPoints)
         {
-            w.WriteLine(c.transform.position);
-            w.WriteLine(c.transform.rotation);
+            w.WriteLine((float)c.transform.position.x);
+            w.WriteLine((float)c.transform.position.y);
+            w.WriteLine((float)c.transform.position.z);
+            w.WriteLine((float)c.transform.rotation.x);
+            w.WriteLine((float)c.transform.rotation.y);
+            w.WriteLine((float)c.transform.rotation.z);
+            w.WriteLine((float)c.transform.rotation.w);
         }
         foreach (GameObject c in Team2RespawnPoints)
         {
-            w.WriteLine(c.transform.position);
-            w.WriteLine(c.transform.rotation);
+            w.WriteLine((float)c.transform.position.x);
+            w.WriteLine((float)c.transform.position.y);
+            w.WriteLine((float)c.transform.position.z);
+            w.WriteLine((float)c.transform.rotation.x);
+            w.WriteLine((float)c.transform.rotation.y);
+            w.WriteLine((float)c.transform.rotation.z);
+            w.WriteLine((float)c.transform.rotation.w);
         }
         if (IsCapturePointExist)
         {
-            w.WriteLine(CapturePoint.transform.position);
-            w.WriteLine(CapturePoint.transform.localScale);
-            w.WriteLine(CapturePoint.transform.rotation);
-        }
-
-        w.Close();
-        
+            w.WriteLine((float)CapturePoint.transform.position.x);
+            w.WriteLine((float)CapturePoint.transform.position.y);
+            w.WriteLine((float)CapturePoint.transform.position.z);
+            w.WriteLine((float)CapturePoint.transform.localScale.x);
+            w.WriteLine((float)CapturePoint.transform.localScale.y);
+            w.WriteLine((float)CapturePoint.transform.localScale.z);
+            w.WriteLine((float)CapturePoint.transform.rotation.x);
+            w.WriteLine((float)CapturePoint.transform.rotation.y);
+            w.WriteLine((float)CapturePoint.transform.rotation.z);
+            w.WriteLine((float)CapturePoint.transform.rotation.w);
+        }               
+                        
+        w.Close();      
+                        
     }
 }

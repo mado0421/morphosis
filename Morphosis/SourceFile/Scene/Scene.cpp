@@ -18,6 +18,7 @@ int g_RootParameterObject;
 int g_RootParameterTexture;
 int g_RootParameterAnimation;
 
+extern int g_DebugCamera = 0;
 
 CScene::CScene()
 {
@@ -195,6 +196,9 @@ void CTestGroundScene::ProcessInput(UCHAR * pKeysBuffer)
 
 	if (pKeysBuffer[KEY::_1] & 0xF0) { if (m_pCamera->GetTarget() != m_ObjMng->GetTarget(0)) { m_pCamera->SetOffset(XMFLOAT3(0, 30.0f, 50.0f)); m_pCamera->SetTarget(m_ObjMng->GetTarget(0)); } }
 	if (pKeysBuffer[KEY::_2] & 0xF0) { if (m_pCamera->GetTarget() != m_ObjMng->GetTarget(1)) { m_pCamera->SetOffset(XMFLOAT3(0, 30.0f, 50.0f)); m_pCamera->SetTarget(m_ObjMng->GetTarget(1)); } }
+
+	if (pKeysBuffer[KEY::_3] & 0xF0) { g_DebugCamera = 0; }
+	if (pKeysBuffer[KEY::_4] & 0xF0) { g_DebugCamera = 1; }
 }
 
 void CTestGroundScene::OnProcessingMouseMessage()
