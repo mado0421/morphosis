@@ -101,6 +101,7 @@ public:
 	const bool IsCollide(CObject* other);
 	const bool IsAlive() const { return m_IsAlive; }
 	virtual void ProcessInput(UCHAR* pKeysBuffer);
+	virtual void ProcessInput(UCHAR* pKeysBuffer, float mouse);
 
 	void AddCollideInfo(CObject* obj);
 
@@ -152,6 +153,8 @@ public:
 	virtual void	Update(float fTimeElapsed);
 	virtual void	LateUpdate(float fTimeElapsed);
 	virtual void	ProcessInput(UCHAR* pKeysBuffer);
+	virtual void	ProcessInput(UCHAR* pKeysBuffer, float mouse);
+
 
 	/*********************************************************************
 	2019-06-18
@@ -181,7 +184,7 @@ protected:
 		return false;
 	}
 	XMFLOAT3		Move(float fTimeElapsed);
-	float			Rotate(float fTimeElapsed);
+	float			Rotate(float fTimeElapsed, bool isUseMouse = false);
 
 	/*********************************************************************
 	2019-06-18
@@ -220,6 +223,7 @@ protected:
 	XMFLOAT3		m_xmf3Move;
 	float			m_fSpeed;
 	bool			m_trigInput[static_cast<int>(Move::count)];
+	float			m_rotationInput;
 
 	/*********************************************************************
 	2019-06-18
@@ -306,6 +310,8 @@ public:
 		m_PSO.push_back(pso);
 	}
 	void ProcessInput(UCHAR * pKeysBuffer);
+	void ProcessInput(UCHAR* pKeysBuffer, float mouse);
+
 
 private:
 	void LateUpdate(float fTime);

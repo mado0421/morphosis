@@ -192,13 +192,34 @@ void CTestGroundScene::Update(float fTimeElapsed)
 
 void CTestGroundScene::ProcessInput(UCHAR * pKeysBuffer)
 {
-	m_ObjMng->ProcessInput(pKeysBuffer);
-
-	if (pKeysBuffer[KEY::_1] & 0xF0) { if (m_pCamera->GetTarget() != m_ObjMng->GetTarget(0)) { m_pCamera->SetOffset(XMFLOAT3(0, 30.0f, 50.0f)); m_pCamera->SetTarget(m_ObjMng->GetTarget(0)); } }
-	if (pKeysBuffer[KEY::_2] & 0xF0) { if (m_pCamera->GetTarget() != m_ObjMng->GetTarget(1)) { m_pCamera->SetOffset(XMFLOAT3(0, 30.0f, 50.0f)); m_pCamera->SetTarget(m_ObjMng->GetTarget(1)); } }
+	float cxDelta = 0.0f, cyDelta = 0.0f;
+	POINT ptCursorPos;
 
 	if (pKeysBuffer[KEY::_3] & 0xF0) { g_DebugCamera = 0; }
 	if (pKeysBuffer[KEY::_4] & 0xF0) { g_DebugCamera = 1; }
+
+	if (g_DebugCamera) {
+		GetCursorPos(&ptCursorPos);
+		cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
+		cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
+		SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
+
+		if (cxDelta) m_ObjMng->ProcessInput(pKeysBuffer, cxDelta);
+	}
+	else {
+		m_ObjMng->ProcessInput(pKeysBuffer);
+
+	}
+
+
+
+
+	/*if (pKeysBuffer[KEY::_1] & 0xF0) { if (m_pCamera->GetTarget() != m_ObjMng->GetTarget(0)) { m_pCamera->SetOffset(XMFLOAT3(0, 30.0f, 50.0f)); m_pCamera->SetTarget(m_ObjMng->GetTarget(0)); } }
+	if (pKeysBuffer[KEY::_2] & 0xF0) { if (m_pCamera->GetTarget() != m_ObjMng->GetTarget(1)) { m_pCamera->SetOffset(XMFLOAT3(0, 30.0f, 50.0f)); m_pCamera->SetTarget(m_ObjMng->GetTarget(1)); } }
+
+
+*/
+
 }
 
 void CTestGroundScene::OnProcessingMouseMessage()

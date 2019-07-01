@@ -170,6 +170,10 @@ void CObject::ProcessInput(UCHAR * pKeysBuffer)
 {
 }
 
+void CObject::ProcessInput(UCHAR * pKeysBuffer, float mouse)
+{
+}
+
 void CObject::AddCollideInfo(CObject * obj)
 {
 	m_CollideInfo.push(obj);
@@ -218,7 +222,7 @@ void CPlayer::Update(float fTimeElapsed)
 	XMFLOAT3 xmf3Look = XMFLOAT3(m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33);
 	m_xmf3Move = Move(fTimeElapsed);
 
-	float rotationAngle = Rotate(fTimeElapsed);
+	float rotationAngle = Rotate(fTimeElapsed, g_DebugCamera);
 	XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(rotationAngle));
 	xmf3Look = Vector3::TransformNormal(xmf3Look, xmmtxRotate);
 	xmf3Right = Vector3::TransformNormal(xmf3Right, xmmtxRotate);
@@ -334,6 +338,14 @@ void CPlayer::ProcessInput(UCHAR * pKeysBuffer)
 	if (pKeysBuffer[KEY::Q] & 0xF0) m_trigInput[static_cast<int>(Move::Q)] = true;
 	if (pKeysBuffer[KEY::E] & 0xF0) m_trigInput[static_cast<int>(Move::E)] = true;
 }
+void CPlayer::ProcessInput(UCHAR * pKeysBuffer, float mouse)
+{
+	if (pKeysBuffer[KEY::W] & 0xF0) m_trigInput[static_cast<int>(Move::W)] = true;
+	if (pKeysBuffer[KEY::A] & 0xF0) m_trigInput[static_cast<int>(Move::A)] = true;
+	if (pKeysBuffer[KEY::S] & 0xF0) m_trigInput[static_cast<int>(Move::S)] = true;
+	if (pKeysBuffer[KEY::D] & 0xF0) m_trigInput[static_cast<int>(Move::D)] = true;
+	m_rotationInput = mouse;
+}
 void CPlayer::Enable()
 {
 	m_HealthPoint = g_DefaultHealthPoint;
@@ -366,6 +378,7 @@ XMFLOAT4X4 CPlayer::GetHandMatrix()
 void CPlayer::TriggerOff()
 {
 	for (int i = 0; i < static_cast<int>(Move::count); i++) m_trigInput[i] = false;
+	m_rotationInput = 0;
 }
 XMFLOAT3 CPlayer::Move(float fTimeElapsed)
 {
@@ -377,11 +390,16 @@ XMFLOAT3 CPlayer::Move(float fTimeElapsed)
 	temp = Vector3::Normalize(temp);
 	return Vector3::Multiply(fTimeElapsed * m_fSpeed, temp);
 }
-float CPlayer::Rotate(float fTimeElapsed)
+float CPlayer::Rotate(float fTimeElapsed, bool isUseMouse)
 {
 	float temp = 0;
-	if (m_trigInput[static_cast<int>(Move::Q)]) temp += fTimeElapsed * m_fSpeed * -1;
-	if (m_trigInput[static_cast<int>(Move::E)]) temp += fTimeElapsed * m_fSpeed;
+	if (isUseMouse) {
+		temp += m_rotationInput * fTimeElapsed * m_fSpeed;
+	}
+	else {
+		if (m_trigInput[static_cast<int>(Move::Q)]) temp += fTimeElapsed * m_fSpeed * -1;
+		if (m_trigInput[static_cast<int>(Move::E)]) temp += fTimeElapsed * m_fSpeed;
+	}
 
 	return temp;
 }
@@ -573,6 +591,31 @@ void CObjectManager::Update(float fTime)
 void CObjectManager::ProcessInput(UCHAR * pKeysBuffer)
 {
 	if (m_Players[0]->IsAlive()) m_Players[0]->ProcessInput(pKeysBuffer);
+
+	if (pKeysBuffer[VK_LBUTTON] & 0xF0) {
+		/*********************************************************************
+		2019-06-17
+		마우스를 클릭하면 해줘야 하는 것들.
+
+		먼저, IsAlive == false인 투사체를 찾는다.
+		찾았으면 그 객체를 초기화하고(위치 변경, 방향 변경 등등)
+		IsAlive = true로 변경한다.
+
+		Render와 Update는 IsAlive가 true 일 때만 되게 해야 한다.
+		*********************************************************************/
+		if (dynamic_cast<CPlayer*>(m_Players[0])->IsShootable()) {
+			dynamic_cast<CPlayer*>(m_Players[0])->Shoot();
+			auto iter = find_if(m_Projectiles.begin(), m_Projectiles.end(), [](CObject* p) {return !(p->IsAlive()); });
+			if (iter != m_Projectiles.end()) {
+				dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[0]);
+				(*iter)->SetAlive(true);
+			}
+		}
+	}
+}
+void CObjectManager::ProcessInput(UCHAR * pKeysBuffer, float mouse)
+{
+	if (m_Players[0]->IsAlive()) m_Players[0]->ProcessInput(pKeysBuffer, mouse);
 
 	if (pKeysBuffer[VK_LBUTTON] & 0xF0) {
 		/*********************************************************************
