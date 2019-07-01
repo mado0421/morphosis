@@ -481,3 +481,43 @@
    * https://post.naver.com/viewer/postView.nhn?volumeNo=14962388&memberNo=559061 를 보고 디버깅 해보도록.
  - 7월 1일 오후 4시 30분
  - 맵 충돌 처리, 사망 애니메이션, 마우스로 시선 변경
+
+2019-07-01
+------------
+1. 진행상황
+ - 맵표시 (충돌 검사 함)
+ - 마우스로 방향 잡기 할 때 WASD이동이 안됨
+ - 유니티에서 맵 Export
+
+2. 최종발표 (8월 12일)
+  (할 일) NPC 제작, 맵 이동 (경사로 이동, 계단 이동, Jump 구현)
+  (할 일) Light 넣기(Shading), 그림자, 애니메이션 (NPC 애니메이션, JUMP, 사망, SKILL )
+  (할 일) NPC와의 전투, 스킬 구현, Sound Effect, UI (HP, SKILL ICON, 남은 탄수), 타이틀 화면/캐릭터 선택 화면/게임 종료화면
+ ~ 7월 15일 : 맵 이동 (경사로 이동, 계단 이동, Jump 구현), Light 넣기(Shading), 애니메이션 (NPC 애니메이션, JUMP, 사망, SKILL ), 시간이 남으면 그림자도 해보기
+ ~ 7월 22일 : (작품 소개서 작성), NPC 제작, 스킬 구현, 그림자
+ ~ 8월 5 일 : NPC와의 전투, Sound Effect, UI (HP, SKILL ICON, 남은 탄수), 타이틀 화면/캐릭터 선택 화면/게임 종료화면
+ ~ 8월 12일 : 데모준비, 디버깅
+
+3. ToDo
+ - 다음 미팅 : 7월 15일 월요일 오후 4:30
+ - 마우스 방향전환 버그 수정
+ - 버그 잡기 : 모든 포인터를 삭제하고 Resource Pool형태로 변환
+  (ANIMATION, MODEL, TEXTURE들을 vector에 넣고, 다른 곳에서는 포인터 대신 해당 벡터의 index만 가지고 access하도록 한다.) 이렇게 해도 안되면 아래의 것들도 변환
+ (    m_pd3dDepthStencilBuffer, m_pd3dDsvDescriptorHeap, m_ppd3dSwapChainBackBuffers, m_pd3dRtvDescriptorHeap, m_pd3dCommandAllocator, m_pd3dCommandQueue, m_pd3dCommandList, m_pd3dFence, m_pdxgiSwapChain, m_pdxgiFactory 들도 전부 벡터화)
+
+  -- 예 --
+	//작성한 서술자대로 팩토리에 만들어주기
+	vector < IDXGISwapChain * > g_swap_chain;
+	IDXGISwapChain * sc = nullptr;
+	HRESULT hResult = m_pdxgiFactory->CreateSwapChain(m_pd3dCommandQueue, &dxgiSwapChainDesc, &sc);
+	if (S_OK != hResult)
+	{
+		MessageBox(NULL, L"Swap Chain Cannot be Created.", L"Error", MB_OK);
+		::PostQuitMessage(0);
+		return;
+	}
+	g_swap_chain.push_back(sc);
+	m_pdxgiSwapChain = g_swap_chain.size() - 1;    // m_pdxgiSwapChain는 int임 -1로 초기화 해서 에러 검출
+
+	m_nSwapChainBufferIndex = g_swap_chain[m_pdxgiSwapChain]->GetCurrentBackBufferIndex();
+---
