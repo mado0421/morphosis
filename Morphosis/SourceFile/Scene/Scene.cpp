@@ -204,7 +204,7 @@ void CTestGroundScene::ProcessInput(UCHAR * pKeysBuffer)
 		cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
 		SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 
-		if (cxDelta) m_ObjMng->ProcessInput(pKeysBuffer, cxDelta);
+		m_ObjMng->ProcessInput(pKeysBuffer, cxDelta);
 	}
 	else {
 		m_ObjMng->ProcessInput(pKeysBuffer);
