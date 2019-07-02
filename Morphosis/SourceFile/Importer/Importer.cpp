@@ -72,37 +72,37 @@ void CImporter::ImportLevel(const char * fileName, LEVELDATA_DESC & levelDataDes
 	if (strcmp(line, "true"))	levelDataDesc.isCapturePointExist = true;
 	else						levelDataDesc.isCapturePointExist = false;
 
-	in.getline(line, 256); levelDataDesc.BoundaryBoxPosition.x	= atof(line)* g_LevelSize;
-	in.getline(line, 256); levelDataDesc.BoundaryBoxPosition.y	= atof(line)* g_LevelSize;
-	in.getline(line, 256); levelDataDesc.BoundaryBoxPosition.z	= atof(line)* g_LevelSize;
-	in.getline(line, 256); levelDataDesc.BoundaryBoxScale.x		= atof(line)* g_LevelSize * 0.5;
-	in.getline(line, 256); levelDataDesc.BoundaryBoxScale.y		= atof(line)* g_LevelSize * 0.5;
-	in.getline(line, 256); levelDataDesc.BoundaryBoxScale.z		= atof(line)* g_LevelSize * 0.5;
-	in.getline(line, 256); levelDataDesc.BoundaryBoxRotation.x	= atof(line);
-	in.getline(line, 256); levelDataDesc.BoundaryBoxRotation.y	= atof(line);
-	in.getline(line, 256); levelDataDesc.BoundaryBoxRotation.z	= atof(line);
-	in.getline(line, 256); levelDataDesc.BoundaryBoxRotation.w	= atof(line);
+	in.getline(line, 256); levelDataDesc.BoundaryBoxPosition.x	= (float)atof(line)* g_LevelSize;
+	in.getline(line, 256); levelDataDesc.BoundaryBoxPosition.y	= (float)atof(line)* g_LevelSize;
+	in.getline(line, 256); levelDataDesc.BoundaryBoxPosition.z	= (float)atof(line)* g_LevelSize;
+	in.getline(line, 256); levelDataDesc.BoundaryBoxScale.x		= (float)atof(line)* g_LevelSize * 0.5f;
+	in.getline(line, 256); levelDataDesc.BoundaryBoxScale.y		= (float)atof(line)* g_LevelSize * 0.5f;
+	in.getline(line, 256); levelDataDesc.BoundaryBoxScale.z		= (float)atof(line)* g_LevelSize * 0.5f;
+	in.getline(line, 256); levelDataDesc.BoundaryBoxRotation.x	= (float)atof(line);
+	in.getline(line, 256); levelDataDesc.BoundaryBoxRotation.y	= (float)atof(line);
+	in.getline(line, 256); levelDataDesc.BoundaryBoxRotation.z	= (float)atof(line);
+	in.getline(line, 256); levelDataDesc.BoundaryBoxRotation.w	= (float)atof(line);
 
 	for (int i = 0; i < levelDataDesc.nCollisionMaps; ++i) {
 		XMFLOAT3 temp3;
 		XMFLOAT4 temp4 = XMFLOAT4(0,0,0,1);
 
-		in.getline(line, 256); temp3.x = atof(line)* g_LevelSize;
-		in.getline(line, 256); temp3.y = atof(line)* g_LevelSize;
-		in.getline(line, 256); temp3.z = atof(line)* g_LevelSize;
+		in.getline(line, 256); temp3.x = (float)atof(line)* g_LevelSize;
+		in.getline(line, 256); temp3.y = (float)atof(line)* g_LevelSize;
+		in.getline(line, 256); temp3.z = (float)atof(line)* g_LevelSize;
 
 		levelDataDesc.CollisionPosition.push_back(temp3);
 
-		in.getline(line, 256); temp3.x = atof(line)* g_LevelSize* 0.5;
-		in.getline(line, 256); temp3.y = atof(line)* g_LevelSize* 0.5;
-		in.getline(line, 256); temp3.z = atof(line)* g_LevelSize* 0.5;
+		in.getline(line, 256); temp3.x = (float)atof(line)* g_LevelSize* 0.5f;
+		in.getline(line, 256); temp3.y = (float)atof(line)* g_LevelSize* 0.5f;
+		in.getline(line, 256); temp3.z = (float)atof(line)* g_LevelSize* 0.5f;
 
 		levelDataDesc.CollisionScale.push_back(temp3);
 
-		in.getline(line, 256); temp4.x = atof(line);
-		in.getline(line, 256); temp4.y = atof(line);
-		in.getline(line, 256); temp4.z = atof(line);
-		in.getline(line, 256); temp4.w = atof(line);
+		in.getline(line, 256); temp4.x = (float)atof(line);
+		in.getline(line, 256); temp4.y = (float)atof(line);
+		in.getline(line, 256); temp4.z = (float)atof(line);
+		in.getline(line, 256); temp4.w = (float)atof(line);
 		//in.getline(line, 256);
 		//in.getline(line, 256);
 		//in.getline(line, 256);
@@ -115,16 +115,16 @@ void CImporter::ImportLevel(const char * fileName, LEVELDATA_DESC & levelDataDes
 		XMFLOAT3 temp3;
 		XMFLOAT4 temp4;
 
-		in.getline(line, 256); temp3.x = atof(line)* g_LevelSize;
-		in.getline(line, 256); temp3.y = atof(line)* g_LevelSize;
-		in.getline(line, 256); temp3.z = atof(line)* g_LevelSize;
+		in.getline(line, 256); temp3.x = (float)atof(line)* g_LevelSize;
+		in.getline(line, 256); temp3.y = (float)atof(line)* g_LevelSize;
+		in.getline(line, 256); temp3.z = (float)atof(line)* g_LevelSize;
 
 		levelDataDesc.Team1SpawnPointPosition.push_back(temp3);
 
-		in.getline(line, 256); temp4.x = atof(line);
-		in.getline(line, 256); temp4.y = atof(line);
-		in.getline(line, 256); temp4.z = atof(line);
-		in.getline(line, 256); temp4.w = atof(line);
+		in.getline(line, 256); temp4.x = (float)atof(line);
+		in.getline(line, 256); temp4.y = (float)atof(line);
+		in.getline(line, 256); temp4.z = (float)atof(line);
+		in.getline(line, 256); temp4.w = (float)atof(line);
 
 		levelDataDesc.Team1SpawnPointRotation.push_back(temp4);
 	}
@@ -133,30 +133,30 @@ void CImporter::ImportLevel(const char * fileName, LEVELDATA_DESC & levelDataDes
 		XMFLOAT3 temp3;
 		XMFLOAT4 temp4;
 
-		in.getline(line, 256); temp3.x = atof(line)* g_LevelSize;
-		in.getline(line, 256); temp3.y = atof(line)* g_LevelSize;
-		in.getline(line, 256); temp3.z = atof(line)* g_LevelSize;
+		in.getline(line, 256); temp3.x = (float)atof(line)* g_LevelSize;
+		in.getline(line, 256); temp3.y = (float)atof(line)* g_LevelSize;
+		in.getline(line, 256); temp3.z = (float)atof(line)* g_LevelSize;
 
 		levelDataDesc.Team2SpawnPointPosition.push_back(temp3);
 
-		in.getline(line, 256); temp4.x = atof(line);
-		in.getline(line, 256); temp4.y = atof(line);
-		in.getline(line, 256); temp4.z = atof(line);
-		in.getline(line, 256); temp4.w = atof(line);
+		in.getline(line, 256); temp4.x = (float)atof(line);
+		in.getline(line, 256); temp4.y = (float)atof(line);
+		in.getline(line, 256); temp4.z = (float)atof(line);
+		in.getline(line, 256); temp4.w = (float)atof(line);
 
 		levelDataDesc.Team2SpawnPointRotation.push_back(temp4);
 	}
 
-	in.getline(line, 256); levelDataDesc.CapturePointPosition.x = atof(line)* g_LevelSize;
-	in.getline(line, 256); levelDataDesc.CapturePointPosition.y = atof(line)* g_LevelSize;
-	in.getline(line, 256); levelDataDesc.CapturePointPosition.z = atof(line)* g_LevelSize;
-	in.getline(line, 256); levelDataDesc.CapturePointScale.x	= atof(line)* g_LevelSize* 0.5;
-	in.getline(line, 256); levelDataDesc.CapturePointScale.y	= atof(line)* g_LevelSize* 0.5;
-	in.getline(line, 256); levelDataDesc.CapturePointScale.z	= atof(line)* g_LevelSize* 0.5;
-	in.getline(line, 256); levelDataDesc.CapturePointRotation.x = atof(line);
-	in.getline(line, 256); levelDataDesc.CapturePointRotation.y = atof(line);
-	in.getline(line, 256); levelDataDesc.CapturePointRotation.z = atof(line);
-	in.getline(line, 256); levelDataDesc.CapturePointRotation.w = atof(line);
+	in.getline(line, 256); levelDataDesc.CapturePointPosition.x = (float)atof(line)* g_LevelSize;
+	in.getline(line, 256); levelDataDesc.CapturePointPosition.y = (float)atof(line)* g_LevelSize;
+	in.getline(line, 256); levelDataDesc.CapturePointPosition.z = (float)atof(line)* g_LevelSize;
+	in.getline(line, 256); levelDataDesc.CapturePointScale.x	= (float)atof(line)* g_LevelSize* 0.5f;
+	in.getline(line, 256); levelDataDesc.CapturePointScale.y	= (float)atof(line)* g_LevelSize* 0.5f;
+	in.getline(line, 256); levelDataDesc.CapturePointScale.z	= (float)atof(line)* g_LevelSize* 0.5f;
+	in.getline(line, 256); levelDataDesc.CapturePointRotation.x = (float)atof(line);
+	in.getline(line, 256); levelDataDesc.CapturePointRotation.y = (float)atof(line);
+	in.getline(line, 256); levelDataDesc.CapturePointRotation.z = (float)atof(line);
+	in.getline(line, 256); levelDataDesc.CapturePointRotation.w = (float)atof(line);
 
 
 	in.close();

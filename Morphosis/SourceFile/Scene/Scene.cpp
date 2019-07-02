@@ -18,7 +18,7 @@ int g_RootParameterObject;
 int g_RootParameterTexture;
 int g_RootParameterAnimation;
 
-extern int g_DebugCamera = 0;
+extern bool g_IsMouseMode = false;
 
 CScene::CScene()
 {
@@ -195,31 +195,17 @@ void CTestGroundScene::ProcessInput(UCHAR * pKeysBuffer)
 	float cxDelta = 0.0f, cyDelta = 0.0f;
 	POINT ptCursorPos;
 
-	if (pKeysBuffer[KEY::_3] & 0xF0) { g_DebugCamera = 0; }
-	if (pKeysBuffer[KEY::_4] & 0xF0) { g_DebugCamera = 1; }
+	if (pKeysBuffer[KEY::_1] & 0xF0) { g_IsMouseMode = false; }
+	if (pKeysBuffer[KEY::_2] & 0xF0) { g_IsMouseMode = true; }
 
-	if (g_DebugCamera) {
+	if (g_IsMouseMode) {
 		GetCursorPos(&ptCursorPos);
 		cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
 		cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
 		SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
-
-		m_ObjMng->ProcessInput(pKeysBuffer, cxDelta);
-	}
-	else {
-		m_ObjMng->ProcessInput(pKeysBuffer);
-
 	}
 
-
-
-
-	/*if (pKeysBuffer[KEY::_1] & 0xF0) { if (m_pCamera->GetTarget() != m_ObjMng->GetTarget(0)) { m_pCamera->SetOffset(XMFLOAT3(0, 30.0f, 50.0f)); m_pCamera->SetTarget(m_ObjMng->GetTarget(0)); } }
-	if (pKeysBuffer[KEY::_2] & 0xF0) { if (m_pCamera->GetTarget() != m_ObjMng->GetTarget(1)) { m_pCamera->SetOffset(XMFLOAT3(0, 30.0f, 50.0f)); m_pCamera->SetTarget(m_ObjMng->GetTarget(1)); } }
-
-
-*/
-
+	m_ObjMng->ProcessInput(pKeysBuffer, cxDelta);
 }
 
 void CTestGroundScene::OnProcessingMouseMessage()

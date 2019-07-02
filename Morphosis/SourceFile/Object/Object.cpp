@@ -18,6 +18,8 @@ CObject::CObject()
 	m_AnimationState		= static_cast<int>(0);
 	m_Team					= TEAM_DEFAULT;
 	m_Tag					= Tag::Prop;
+	m_fHeightVelocity		= 0.0f;
+	m_IsGround				= false;
 }
 CObject::~CObject()
 {
@@ -166,14 +168,9 @@ const bool CObject::IsCollide(CObject* other)
 
 	return false;
 }
-void CObject::ProcessInput(UCHAR * pKeysBuffer)
-{
-}
-
 void CObject::ProcessInput(UCHAR * pKeysBuffer, float mouse)
 {
 }
-
 void CObject::AddCollideInfo(CObject * obj)
 {
 	m_CollideInfo.push(obj);
@@ -206,6 +203,8 @@ void CPlayer::Update(float fTimeElapsed)
 	}
 	
 
+
+
 	/*********************************************************************
 	2019-06-18
 	공격 타이머 파트
@@ -217,12 +216,16 @@ void CPlayer::Update(float fTimeElapsed)
 	2019-06-17
 	이동 파트
 	*********************************************************************/
+	if (m_IsGround) m_fHeightVelocity = 0.0f;
+	else m_fHeightVelocity -= fTimeElapsed /** g_Gravity*/;
+
+
 	XMFLOAT3 xmf3Right = XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
 	XMFLOAT3 xmf3Up = XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
 	XMFLOAT3 xmf3Look = XMFLOAT3(m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33);
 	m_xmf3Move = Move(fTimeElapsed);
 
-	float rotationAngle = Rotate(fTimeElapsed, g_DebugCamera);
+	float rotationAngle = Rotate(fTimeElapsed);
 	XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(rotationAngle));
 	xmf3Look = Vector3::TransformNormal(xmf3Look, xmmtxRotate);
 	xmf3Right = Vector3::TransformNormal(xmf3Right, xmmtxRotate);
@@ -292,6 +295,7 @@ void CPlayer::Update(float fTimeElapsed)
 	//}
 
 	TriggerOff();
+
 }
 void CPlayer::LateUpdate(float fTimeElapsed)
 {
@@ -329,22 +333,20 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 	if (m_HealthPoint <= 0) CPlayer::Disable();
 
 }
-void CPlayer::ProcessInput(UCHAR * pKeysBuffer)
-{
-	if (pKeysBuffer[KEY::W] & 0xF0) m_trigInput[static_cast<int>(Move::W)] = true;
-	if (pKeysBuffer[KEY::A] & 0xF0) m_trigInput[static_cast<int>(Move::A)] = true;
-	if (pKeysBuffer[KEY::S] & 0xF0) m_trigInput[static_cast<int>(Move::S)] = true;
-	if (pKeysBuffer[KEY::D] & 0xF0) m_trigInput[static_cast<int>(Move::D)] = true;
-	if (pKeysBuffer[KEY::Q] & 0xF0) m_trigInput[static_cast<int>(Move::Q)] = true;
-	if (pKeysBuffer[KEY::E] & 0xF0) m_trigInput[static_cast<int>(Move::E)] = true;
-}
 void CPlayer::ProcessInput(UCHAR * pKeysBuffer, float mouse)
 {
 	if (pKeysBuffer[KEY::W] & 0xF0) m_trigInput[static_cast<int>(Move::W)] = true;
 	if (pKeysBuffer[KEY::A] & 0xF0) m_trigInput[static_cast<int>(Move::A)] = true;
 	if (pKeysBuffer[KEY::S] & 0xF0) m_trigInput[static_cast<int>(Move::S)] = true;
 	if (pKeysBuffer[KEY::D] & 0xF0) m_trigInput[static_cast<int>(Move::D)] = true;
-	m_rotationInput = mouse;
+
+	if (g_IsMouseMode) {
+		m_rotationInput = mouse;
+	}
+	else {
+		if (pKeysBuffer[KEY::Q] & 0xF0) m_trigInput[static_cast<int>(Move::Q)] = true;
+		if (pKeysBuffer[KEY::E] & 0xF0) m_trigInput[static_cast<int>(Move::E)] = true;
+	}
 }
 void CPlayer::Enable()
 {
@@ -388,13 +390,16 @@ XMFLOAT3 CPlayer::Move(float fTimeElapsed)
 	if (m_trigInput[static_cast<int>(Move::S)]) { temp = Vector3::Add(temp, Vector3::Normalize(Vector3::Multiply(-1, GetLook()))); }
 	if (m_trigInput[static_cast<int>(Move::D)]) { temp = Vector3::Add(temp, Vector3::Normalize(GetRight())); }
 	temp = Vector3::Normalize(temp);
+
+	temp.y += m_fHeightVelocity;
+
 	return Vector3::Multiply(fTimeElapsed * m_fSpeed, temp);
 }
-float CPlayer::Rotate(float fTimeElapsed, bool isUseMouse)
+float CPlayer::Rotate(float fTimeElapsed)
 {
 	float temp = 0;
-	if (isUseMouse) {
-		temp += m_rotationInput * fTimeElapsed * m_fSpeed;
+	if (g_IsMouseMode) {
+		temp += m_rotationInput * fTimeElapsed * g_MouseInputSensitivity;
 	}
 	else {
 		if (m_trigInput[static_cast<int>(Move::Q)]) temp += fTimeElapsed * m_fSpeed * -1;
@@ -403,7 +408,6 @@ float CPlayer::Rotate(float fTimeElapsed, bool isUseMouse)
 
 	return temp;
 }
-
 void CPlayer::SetHandMatrix()
 {
 	m_xmf4x4Hand = m_AnimationController->GetPositionOfBone("Bip001 L Hand");
@@ -422,7 +426,6 @@ CProjectile::CProjectile() : CObject()
 	m_Tag			= Tag::Projectile;
 	m_BaseDamage	= g_DefaultDamage;
 }
-
 void CProjectile::Initialize(CObject * obj)
 {
 	/*********************************************************************
@@ -477,7 +480,6 @@ void CProjectile::Initialize(CObject * obj)
 	//SetUp(xmf3Up);
 	//SetRight(xmf3Right);
 }
-
 void CProjectile::Update(float fTimeElapsed)
 {
 	if (!m_IsAlive) return;
@@ -507,13 +509,11 @@ void CProjectile::Update(float fTimeElapsed)
 	for (auto mys = m_CollisionSphere.begin(); mys != m_CollisionSphere.end(); ++mys)
 		mys->collisionSphere.Center = Vector3::Add(mys->collisionSphere.Center, xmf3Move);
 }
-
 void CProjectile::LateUpdate(float fTimeElapsed)
 {
 	if (!m_IsAlive) return;
 
 }
-
 void CProjectile::Damage(CObject* obj)
 {
 	dynamic_cast<CPlayer*>(obj)->TakeDamage(static_cast<int>(m_BaseDamage));
@@ -569,7 +569,7 @@ void CObjectManager::Render()
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Projectiles[i]->m_xmf4x4World)));
 	}
 
-	//if (g_DebugCamera == 0) {
+	//if (g_IsMouseMode == 0) {
 
 	//}
 
@@ -587,31 +587,6 @@ void CObjectManager::Update(float fTime)
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->Update(fTime);
 
 	LateUpdate(fTime);
-}
-void CObjectManager::ProcessInput(UCHAR * pKeysBuffer)
-{
-	if (m_Players[0]->IsAlive()) m_Players[0]->ProcessInput(pKeysBuffer);
-
-	if (pKeysBuffer[VK_LBUTTON] & 0xF0) {
-		/*********************************************************************
-		2019-06-17
-		마우스를 클릭하면 해줘야 하는 것들.
-
-		먼저, IsAlive == false인 투사체를 찾는다.
-		찾았으면 그 객체를 초기화하고(위치 변경, 방향 변경 등등)
-		IsAlive = true로 변경한다.
-
-		Render와 Update는 IsAlive가 true 일 때만 되게 해야 한다.
-		*********************************************************************/
-		if (dynamic_cast<CPlayer*>(m_Players[0])->IsShootable()) {
-			dynamic_cast<CPlayer*>(m_Players[0])->Shoot();
-			auto iter = find_if(m_Projectiles.begin(), m_Projectiles.end(), [](CObject* p) {return !(p->IsAlive()); });
-			if (iter != m_Projectiles.end()) {
-				dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[0]);
-				(*iter)->SetAlive(true);
-			}
-		}
-	}
 }
 void CObjectManager::ProcessInput(UCHAR * pKeysBuffer, float mouse)
 {
@@ -799,16 +774,6 @@ void CObjectManager::CreateObjectData()
 				m_LevelDataDesc.CollisionScale[j],
 				m_LevelDataDesc.CollisionRotation[j]
 			));
-			//CModel * DebugMesh = new CModel();
-			//CTestMesh* tempMesh = new CTestMesh(
-			//	m_pd3dDevice,
-			//	m_pd3dCommandList,
-			//	m_LevelDataDesc.CollisionPosition[j],
-			//	m_LevelDataDesc.CollisionScale[j]
-			//);
-			//DebugMesh->SetMesh(tempMesh);
-			//DebugMesh->SetTexture(m_TextureList[0]);
-			//obj->AddModel(DebugMesh);
 		}
 		obj->SetPosition(0, 0, 0);
 		//if (count == 9) {
@@ -846,14 +811,14 @@ void CObjectManager::CreateObjectData()
 		importer.ImportAnimClip("0603_CharacterStartJump", obj);
 		importer.ImportAnimClip("0603_CharacterEndJump", obj);
 		importer.ImportAnimClip("0603_CharacterDied", obj);
-		obj->SetPosition(0, 10, i * g_DefaultUnitStandard * 3);
+		obj->SetPosition(0, 1000, i * g_DefaultUnitStandard * 3);
 		obj->SetSpawnPoint(obj->GetPosition());
 		XMFLOAT3 pos = obj->GetPosition();
-		pos.y += 12.577;
-		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(16/2, 16/2, 5.122/2), XMFLOAT4(0, 0, 0, 1)));
+		pos.y += 4;
+		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(8, 2.577f, 8), XMFLOAT4(0, 0, 0, 1)));
 		pos = obj->GetPosition();
-		pos.y += 28.404;
-		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(11.766/2, 13.198/2, 16.807/2), XMFLOAT4(0, 0, 0, 1)));
+		pos.y += 16.807f;
+		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(11.766f / 2, 16.807f / 2, 13.198f / 2), XMFLOAT4(0, 0, 0, 1)));
 
 		obj->SetTeam((i % 2) + 1);
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
@@ -874,7 +839,6 @@ void CObjectManager::CreateObjectData()
 		m_Projectiles.push_back(obj);
 	}
 }
-
 void CObjectManager::CollisionCheck()
 {
 	/*********************************************************************

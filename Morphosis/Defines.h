@@ -57,7 +57,6 @@ constexpr float		g_PlayerDefaultSpeed		= g_DefaultUnitStandard * 10;
 constexpr float		g_ProjectileDefaultSpeed	= g_PlayerDefaultSpeed * 3.0f;
 constexpr int		g_NumAnimationBone			= 64;
 constexpr int		g_NumProjectilePerPlayer	= 30;
-constexpr float		g_Gravity					= 9.8f;
 constexpr float		TIMER_ATT					= 0.05f;
 constexpr float		TIMER_RESPANW				= 5.0f;
 
@@ -84,4 +83,13 @@ enum class Tag {
 *********************************************************************/
 #define CAM_Y_DISTANCE 0
 
-extern int g_DebugCamera;
+
+/*********************************************************************
+2019-07-02
+플레이어 입력과 게임에서 사용하는 여러 가지 수치
+*********************************************************************/
+constexpr float		g_Gravity				= 9.8f;
+
+
+constexpr float		g_MouseInputSensitivity = 50.0f;
+extern bool			g_IsMouseMode;

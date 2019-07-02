@@ -100,7 +100,6 @@ public:
 
 	const bool IsCollide(CObject* other);
 	const bool IsAlive() const { return m_IsAlive; }
-	virtual void ProcessInput(UCHAR* pKeysBuffer);
 	virtual void ProcessInput(UCHAR* pKeysBuffer, float mouse);
 
 	void AddCollideInfo(CObject* obj);
@@ -128,6 +127,8 @@ protected:
 	이동 관련 부분
 	*********************************************************************/
 	XMFLOAT3						m_xmf3CollisionOffset;
+	float							m_fHeightVelocity;
+	bool							m_IsGround;
 
 	/*********************************************************************
 	2019-06-15
@@ -150,12 +151,6 @@ public:
 	CPlayer();
 
 public:
-	virtual void	Update(float fTimeElapsed);
-	virtual void	LateUpdate(float fTimeElapsed);
-	virtual void	ProcessInput(UCHAR* pKeysBuffer);
-	virtual void	ProcessInput(UCHAR* pKeysBuffer, float mouse);
-
-
 	/*********************************************************************
 	2019-06-18
 	플레이어가 처음 생성되거나, 리스폰 될 때 처리
@@ -166,17 +161,24 @@ public:
 	플레이어가 죽을 때 처리
 	- 리스폰 타이머 시작
 	*********************************************************************/
+	virtual void	Update(float fTimeElapsed);
+	virtual void	LateUpdate(float fTimeElapsed);
+	virtual void	ProcessInput(UCHAR* pKeysBuffer, float mouse);
+
 	virtual void	Enable();
 	virtual void	Disable();
-
 	void			Shoot();
 	void			SetSpawnPoint(const XMFLOAT3& pos) { m_xmf3SpawnPoint = pos; }
 	bool			IsShootable();
-
 	void			TakeDamage(int val) { m_HealthPoint -= val; }
-
 	XMFLOAT4X4		GetHandMatrix();
+
 protected:
+	/*********************************************************************
+	2019-06-18
+	적어도 탄이 손 위치에선 나가야 하지 않을까요?
+	AnimationController에서 그 본의 위치를 받아올 수 있지 않을까요?
+	*********************************************************************/
 	void			TriggerOff();
 	bool			IsMoving() {
 		for (int i = 0; i < static_cast<int>(Move::count); ++i)
@@ -184,13 +186,8 @@ protected:
 		return false;
 	}
 	XMFLOAT3		Move(float fTimeElapsed);
-	float			Rotate(float fTimeElapsed, bool isUseMouse = false);
+	float			Rotate(float fTimeElapsed);
 
-	/*********************************************************************
-	2019-06-18
-	적어도 탄이 손 위치에선 나가야 하지 않을까요?
-	AnimationController에서 그 본의 위치를 받아올 수 있지 않을까요?
-	*********************************************************************/
 	void			SetHandMatrix();
 
 	enum class		Move {
@@ -215,7 +212,6 @@ protected:
 	};
 
 protected:
-
 	/*********************************************************************
 	2019-06-18
 	이동과 이동 무효
@@ -309,7 +305,6 @@ public:
 	void AddPSO(ID3D12PipelineState* pso) {
 		m_PSO.push_back(pso);
 	}
-	void ProcessInput(UCHAR * pKeysBuffer);
 	void ProcessInput(UCHAR* pKeysBuffer, float mouse);
 
 
