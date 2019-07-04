@@ -3,6 +3,9 @@
 
 
 CTimer::CTimer()
+	: m_fTimeElapsed(0)
+	, m_nCurrentPerformanceCounter(0)
+	, m_bStopped(false)
 {
 	::QueryPerformanceFrequency((LARGE_INTEGER *)&m_nPerformanceFrequencyPerSec);
 	::QueryPerformanceCounter((LARGE_INTEGER *)&m_nLastPerformanceCounter);

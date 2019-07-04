@@ -150,6 +150,12 @@ void CIlluminatedMesh::CalculateTriangleListVertexNormals(XMFLOAT3 *pxmf3Normals
 	UINT nPrimitives = (pnIndices) ? (nIndices / 3) : (nVertices / 3);
 	XMFLOAT3 xmf3SumOfNormal, xmf3Edge01, xmf3Edge02, xmf3Normal;
 	UINT nIndex0, nIndex1, nIndex2;
+
+	if (NULL == pnIndices) {
+		cout << "NULL\n";
+		exit(1);
+	}
+
 	for (UINT j = 0; j < nVertices; j++)
 	{
 		xmf3SumOfNormal = XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -814,6 +820,40 @@ CTestMesh::~CTestMesh()
 	CMesh::~CMesh();
 	if (m_pVertices) delete[] m_pVertices;
 	if (m_pnIndices) delete[] m_pnIndices;
+}
+
+CAnimatedMesh::CAnimatedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, UINT nVertices, XMFLOAT3 * pxmf3Positions, UINT nIndices, UINT * pnIndices)
+	:CMesh(pd3dDevice, pd3dCommandList)
+{
+	CreateConstantBufferResource(pd3dDevice, pd3dCommandList);
+	for (int i = 0; i < g_NumAnimationBone; ++i) m_a[i] = XMMatrixIdentity();
+	UINT nStride = sizeof(CAnimVertex);
+	this->nVertices = nVertices;
+
+	CAnimVertex *pVertices = new CAnimVertex[nVertices];
+	for (UINT i = 0; i < nVertices; i++) pVertices[i] = CAnimVertex(pxmf3Positions[i]);
+
+	pVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
+		pVertices, nStride * nVertices,
+		D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+		&pVertexUploadBuffer);
+
+	vertexBufferView.BufferLocation = pVertexBuffer->GetGPUVirtualAddress();
+	vertexBufferView.StrideInBytes = nStride;
+	vertexBufferView.SizeInBytes = nStride * nVertices;
+
+	if (nIndices > 0)
+	{
+		this->nIndices = nIndices;
+
+		pIndexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pnIndices, sizeof(UINT) * nIndices,
+			D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_INDEX_BUFFER,
+			&pIndexUploadBuffer);
+
+		indexBufferView.BufferLocation = pIndexBuffer->GetGPUVirtualAddress();
+		indexBufferView.Format = DXGI_FORMAT_R32_UINT;
+		indexBufferView.SizeInBytes = sizeof(UINT) * nIndices;
+	}
 }
 
 CAnimatedMesh::CAnimatedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ImportMeshData & m) : CMesh(pd3dDevice, pd3dCommandList)

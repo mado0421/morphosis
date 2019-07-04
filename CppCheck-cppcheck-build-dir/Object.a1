@@ -1,0 +1,623 @@
+<?xml version="1.0"?>
+<analyzerinfo checksum="881626788">
+        <error id="operatorEqToSelf" severity="warning" msg="&apos;operator=&apos; should check for assignment to self to avoid problems with dynamic memory." verbose="&apos;operator=&apos; should check for assignment to self to ensure that each block of dynamically allocated memory is owned and managed by only one instance of the class." cwe="398">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Importer\Importer.h" line="21"/>
+        </error>
+        <error id="useInitializationList" severity="performance" msg="Variable &apos;m_xmf3Move&apos; is assigned in constructor body. Consider performing initialization in initialization list." verbose="When an object of a class is created, the constructors of all member variables are called consecutively in the order the variables are declared, even if you don&apos;t explicitly write them to the initialization list. You could avoid assigning &apos;m_xmf3Move&apos; a value by passing the value to the constructor in the initialization list." cwe="398">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" line="189"/>
+            <symbol>m_xmf3Move</symbol>
+        </error>
+        <error id="useInitializationList" severity="performance" msg="Variable &apos;m_xmf3Direction&apos; is assigned in constructor body. Consider performing initialization in initialization list." verbose="When an object of a class is created, the constructors of all member variables are called consecutively in the order the variables are declared, even if you don&apos;t explicitly write them to the initialization list. You could avoid assigning &apos;m_xmf3Direction&apos; a value by passing the value to the constructor in the initialization list." cwe="398">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" line="433"/>
+            <symbol>m_xmf3Direction</symbol>
+        </error>
+        <error id="noExplicitConstructor" severity="style" msg="Class &apos;CVertex&apos; has a constructor with 1 argument that is not explicit." verbose="Class &apos;CVertex&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="17"/>
+            <symbol>CVertex</symbol>
+        </error>
+        <error id="noExplicitConstructor" severity="style" msg="Class &apos;CTexturedVertex&apos; has a constructor with 1 argument that is not explicit." verbose="Class &apos;CTexturedVertex&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="36"/>
+            <symbol>CTexturedVertex</symbol>
+        </error>
+        <error id="noExplicitConstructor" severity="style" msg="Class &apos;CIlluminatedVertex&apos; has a constructor with 1 argument that is not explicit." verbose="Class &apos;CIlluminatedVertex&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="56"/>
+            <symbol>CIlluminatedVertex</symbol>
+        </error>
+        <error id="noExplicitConstructor" severity="style" msg="Class &apos;CIlluminatedTexturedVertex&apos; has a constructor with 1 argument that is not explicit." verbose="Class &apos;CIlluminatedTexturedVertex&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="76"/>
+            <symbol>CIlluminatedTexturedVertex</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;Render&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;Render&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="200" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="153" info="Virtual function in base class"/>
+            <symbol>Render</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;SetAnimatedMatrix&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;SetAnimatedMatrix&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="217" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="157" info="Virtual function in base class"/>
+            <symbol>SetAnimatedMatrix</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreateConstantBufferResource&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreateConstantBufferResource&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="218" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="158" info="Virtual function in base class"/>
+            <symbol>CreateConstantBufferResource</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;UpdateConstantBuffer&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;UpdateConstantBuffer&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="219" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="159" info="Virtual function in base class"/>
+            <symbol>UpdateConstantBuffer</symbol>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &apos;result&apos; is assigned a value that is never used." verbose="Variable &apos;result&apos; is assigned a value that is never used." cwe="563">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" line="642"/>
+            <symbol>result</symbol>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &apos;reason&apos; is assigned a value that is never used." verbose="Variable &apos;reason&apos; is assigned a value that is never used." cwe="563">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" line="643"/>
+            <symbol>reason</symbol>
+        </error>
+  <FileInfo check="ctu">
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:99:7" call-funcname="SetAlive" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h" linenr="98" call-argexpr="false" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:284:14" call-funcname="ToTransform" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="293" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:291:14" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:325:7" call-funcname="IsAnotherTeam" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h" linenr="322" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:320:7" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Mesh/Mesh.h:219:15" call-funcname="UpdateConstantBuffer" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Mesh/Mesh.h" linenr="202" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Mesh/Mesh.h:200:15" my-argnr="1"/>
+  </FileInfo>
+  <FileInfo check="Null pointer">
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:8:13" my-argnr="1" my-argname="pfS" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="8" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:8:13" my-argnr="2" my-argname="pfT" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="8" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:298:14" my-argnr="1" my-argname="pOutputMtx" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="306" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:72:7" my-argnr="1" my-argname="model" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h" linenr="73" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:101:13" my-argnr="1" my-argname="other" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.cpp" linenr="160" value="0"/>
+  </FileInfo>
+  <FileInfo check="Uninitialized variables">
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:8:13" my-argnr="1" my-argname="pfS" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="8" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:8:13" my-argnr="2" my-argname="pfT" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="8" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:72:7" my-argnr="1" my-argname="model" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h" linenr="73" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:320:7" my-argnr="2" my-argname="dst" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h" linenr="321" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:325:7" my-argnr="1" my-argname="src" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h" linenr="325" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:325:7" my-argnr="2" my-argname="dst" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h" linenr="325" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:66:15" my-argnr="1" my-argname="pd3dCommandList" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.cpp" linenr="29" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:166:15" my-argnr="1" my-argname="pKeysBuffer" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.cpp" linenr="340" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:247:9" my-argnr="1" my-argname="obj" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.cpp" linenr="450" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:317:7" my-argnr="1" my-argname="pTexture" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.cpp" linenr="713" value="0"/>
+  </FileInfo>
+  <FileInfo check="CheckUnusedFunctions">
+    <functiondecl functionName="SetRootParameter" lineNumber="27"/>
+    <functiondecl functionName="Render" lineNumber="31"/>
+    <functiondecl functionName="Update" lineNumber="42"/>
+    <functiondecl functionName="LateUpdate" lineNumber="58"/>
+    <functiondecl functionName="AddAnimClip" lineNumber="62"/>
+    <functiondecl functionName="AddCollider" lineNumber="72"/>
+    <functiondecl functionName="AddCollider" lineNumber="76"/>
+    <functiondecl functionName="ChangeAnimClip" lineNumber="80"/>
+    <functiondecl functionName="SetPosition" lineNumber="84"/>
+    <functiondecl functionName="SetPosition" lineNumber="90"/>
+    <functiondecl functionName="GetPosition" lineNumber="94"/>
+    <functiondecl functionName="GetLook" lineNumber="99"/>
+    <functiondecl functionName="GetUp" lineNumber="104"/>
+    <functiondecl functionName="GetRight" lineNumber="109"/>
+    <functiondecl functionName="GetAnimationMatrix" lineNumber="114"/>
+    <functiondecl functionName="GetNumAnimationBone" lineNumber="119"/>
+    <functiondecl functionName="SetLook" lineNumber="127"/>
+    <functiondecl functionName="SetUp" lineNumber="133"/>
+    <functiondecl functionName="SetRight" lineNumber="139"/>
+    <functiondecl functionName="SetCameraTargetOffset" lineNumber="145"/>
+    <functiondecl functionName="GetCameraTargetPos" lineNumber="149"/>
+    <functiondecl functionName="IsCollide" lineNumber="154"/>
+    <functiondecl functionName="ProcessInput" lineNumber="171"/>
+    <functiondecl functionName="AddCollideInfo" lineNumber="174"/>
+    <functiondecl functionName="Update" lineNumber="197"/>
+    <functiondecl functionName="LateUpdate" lineNumber="302"/>
+    <functiondecl functionName="ProcessInput" lineNumber="338"/>
+    <functiondecl functionName="Enable" lineNumber="353"/>
+    <functiondecl functionName="Disable" lineNumber="371"/>
+    <functiondecl functionName="Shoot" lineNumber="376"/>
+    <functiondecl functionName="IsShootable" lineNumber="382"/>
+    <functiondecl functionName="GetHandMatrix" lineNumber="386"/>
+    <functiondecl functionName="TriggerOff" lineNumber="390"/>
+    <functiondecl functionName="Move" lineNumber="395"/>
+    <functiondecl functionName="Rotate" lineNumber="408"/>
+    <functiondecl functionName="SetHandMatrix" lineNumber="421"/>
+    <functiondecl functionName="Initialize" lineNumber="439"/>
+    <functiondecl functionName="Update" lineNumber="493"/>
+    <functiondecl functionName="LateUpdate" lineNumber="522"/>
+    <functiondecl functionName="Damage" lineNumber="527"/>
+    <functiondecl functionName="Render" lineNumber="550"/>
+    <functiondecl functionName="Update" lineNumber="593"/>
+    <functiondecl functionName="ProcessInput" lineNumber="601"/>
+    <functiondecl functionName="LateUpdate" lineNumber="626"/>
+    <functiondecl functionName="CreateDescriptorHeap" lineNumber="634"/>
+    <functiondecl functionName="CreateConstantBufferResorce" lineNumber="650"/>
+    <functiondecl functionName="CreateConstantBufferView" lineNumber="667"/>
+    <functiondecl functionName="CreateTextureResourceView" lineNumber="709"/>
+    <functiondecl functionName="CreateObjectData" lineNumber="723"/>
+    <functiondecl functionName="CollisionCheck" lineNumber="852"/>
+    <functioncall functionName="A"/>
+    <functioncall functionName="Add"/>
+    <functioncall functionName="AddAnimData"/>
+    <functioncall functionName="AddCollideInfo"/>
+    <functioncall functionName="AddCollider"/>
+    <functioncall functionName="Angle"/>
+    <functioncall functionName="AngleFromQuat"/>
+    <functioncall functionName="AnimName"/>
+    <functioncall functionName="AnimationClip"/>
+    <functioncall functionName="AspectRatio"/>
+    <functioncall functionName="B"/>
+    <functioncall functionName="BoundingOrientedBox"/>
+    <functioncall functionName="BoundingSphere"/>
+    <functioncall functionName="C"/>
+    <functioncall functionName="CAnimVertex"/>
+    <functioncall functionName="CAnimatedMesh"/>
+    <functioncall functionName="CAnimationController"/>
+    <functioncall functionName="CB_OBJECT_INFO"/>
+    <functioncall functionName="CIlluminatedMesh"/>
+    <functioncall functionName="CIlluminatedTexturedMesh"/>
+    <functioncall functionName="CIlluminatedTexturedVertex"/>
+    <functioncall functionName="CIlluminatedVertex"/>
+    <functioncall functionName="CImporter"/>
+    <functioncall functionName="CMesh"/>
+    <functioncall functionName="CObject"/>
+    <functioncall functionName="CObjectManager"/>
+    <functioncall functionName="CPlayer"/>
+    <functioncall functionName="CProjectile"/>
+    <functioncall functionName="CTestMesh"/>
+    <functioncall functionName="CTexture"/>
+    <functioncall functionName="CTexturedMesh"/>
+    <functioncall functionName="CTexturedVertex"/>
+    <functioncall functionName="CVertex"/>
+    <functioncall functionName="Center"/>
+    <functioncall functionName="ChangeAnimClip"/>
+    <functioncall functionName="ChangeZSign"/>
+    <functioncall functionName="CollisionBox"/>
+    <functioncall functionName="CollisionCheck"/>
+    <functioncall functionName="CollisionSphere"/>
+    <functioncall functionName="CreateBufferResource"/>
+    <functioncall functionName="CreateConstantBufferResorce"/>
+    <functioncall functionName="CreateConstantBufferView"/>
+    <functioncall functionName="CreateDescriptorHeap"/>
+    <functioncall functionName="CreateObjectData"/>
+    <functioncall functionName="CreateShaderResourceView"/>
+    <functioncall functionName="CreateTextureResourceView"/>
+    <functioncall functionName="CrossProduct"/>
+    <functioncall functionName="D"/>
+    <functioncall functionName="D3D12_BUFFER_SRV_FLAG_NONE"/>
+    <functioncall functionName="D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING"/>
+    <functioncall functionName="D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE"/>
+    <functioncall functionName="D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV"/>
+    <functioncall functionName="D3D12_HEAP_TYPE_UPLOAD"/>
+    <functioncall functionName="D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE"/>
+    <functioncall functionName="D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER"/>
+    <functioncall functionName="D3D12_SRV_DIMENSION_BUFFER"/>
+    <functioncall functionName="D3D12_SRV_DIMENSION_TEXTURE2D"/>
+    <functioncall functionName="D3D12_SRV_DIMENSION_TEXTURE2DARRAY"/>
+    <functioncall functionName="D3D12_SRV_DIMENSION_TEXTURECUBE"/>
+    <functioncall functionName="D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST"/>
+    <functioncall functionName="DIE"/>
+    <functioncall functionName="Damage"/>
+    <functioncall functionName="DepthOrArraySize"/>
+    <functioncall functionName="Disable"/>
+    <functioncall functionName="DrawIndexedInstanced"/>
+    <functioncall functionName="DrawInstanced"/>
+    <functioncall functionName="E"/>
+    <functioncall functionName="ENDJUMP"/>
+    <functioncall functionName="Enable"/>
+    <functioncall functionName="F"/>
+    <functioncall functionName="FIRE"/>
+    <functioncall functionName="FLT_EPSILON"/>
+    <functioncall functionName="FarZ"/>
+    <functioncall functionName="Format"/>
+    <functioncall functionName="FovAngleY"/>
+    <functioncall functionName="G"/>
+    <functioncall functionName="GetCPUDescriptorHandleForHeapStart"/>
+    <functioncall functionName="GetDesc"/>
+    <functioncall functionName="GetDeviceRemovedReason"/>
+    <functioncall functionName="GetFinalMatrix"/>
+    <functioncall functionName="GetGPUDescriptorHandleForHeapStart"/>
+    <functioncall functionName="GetGPUVirtualAddress"/>
+    <functioncall functionName="GetLook"/>
+    <functioncall functionName="GetPosition"/>
+    <functioncall functionName="GetPositionOfBone"/>
+    <functioncall functionName="GetRight"/>
+    <functioncall functionName="GetShaderResourceViewDesc"/>
+    <functioncall functionName="GetTeam"/>
+    <functioncall functionName="GetTexture"/>
+    <functioncall functionName="GetTextureType"/>
+    <functioncall functionName="GetUp"/>
+    <functioncall functionName="H"/>
+    <functioncall functionName="I"/>
+    <functioncall functionName="IASetIndexBuffer"/>
+    <functioncall functionName="IASetPrimitiveTopology"/>
+    <functioncall functionName="IASetVertexBuffers"/>
+    <functioncall functionName="ID3D12DescriptorHeap"/>
+    <functioncall functionName="IDLE"/>
+    <functioncall functionName="Identity"/>
+    <functioncall functionName="ImportAnimClip"/>
+    <functioncall functionName="ImportBone"/>
+    <functioncall functionName="ImportCtrlPoint"/>
+    <functioncall functionName="ImportLevel"/>
+    <functioncall functionName="ImportModel"/>
+    <functioncall functionName="ImportVertex"/>
+    <functioncall functionName="Initialize"/>
+    <functioncall functionName="InterpolateMtx"/>
+    <functioncall functionName="Intersects"/>
+    <functioncall functionName="IsAlive"/>
+    <functioncall functionName="IsAnotherTeam"/>
+    <functioncall functionName="IsClipEnd"/>
+    <functioncall functionName="IsCollidable"/>
+    <functioncall functionName="IsCollide"/>
+    <functioncall functionName="IsExpired"/>
+    <functioncall functionName="IsMoving"/>
+    <functioncall functionName="IsShootable"/>
+    <functioncall functionName="IsZero"/>
+    <functioncall functionName="J"/>
+    <functioncall functionName="K"/>
+    <functioncall functionName="L"/>
+    <functioncall functionName="LateUpdate"/>
+    <functioncall functionName="Lerp"/>
+    <functioncall functionName="LoadTextureFromFile"/>
+    <functioncall functionName="M"/>
+    <functioncall functionName="Map"/>
+    <functioncall functionName="ModelName"/>
+    <functioncall functionName="Move"/>
+    <functioncall functionName="Multiply"/>
+    <functioncall functionName="N"/>
+    <functioncall functionName="NULL"/>
+    <functioncall functionName="NearZ"/>
+    <functioncall functionName="Normalize"/>
+    <functioncall functionName="O"/>
+    <functioncall functionName="Offset"/>
+    <functioncall functionName="P"/>
+    <functioncall functionName="Player"/>
+    <functioncall functionName="PosFromMtx"/>
+    <functioncall functionName="ProcessInput"/>
+    <functioncall functionName="Projectile"/>
+    <functioncall functionName="Prop"/>
+    <functioncall functionName="Q"/>
+    <functioncall functionName="QuatFromMtx"/>
+    <functioncall functionName="QuatSlerp"/>
+    <functioncall functionName="R"/>
+    <functioncall functionName="RUN"/>
+    <functioncall functionName="Release"/>
+    <functioncall functionName="Render"/>
+    <functioncall functionName="Rotate"/>
+    <functioncall functionName="S"/>
+    <functioncall functionName="STARTJUMP"/>
+    <functioncall functionName="SetAlive"/>
+    <functioncall functionName="SetAnimatedMatrix"/>
+    <functioncall functionName="SetCameraTargetOffset"/>
+    <functioncall functionName="SetCbvGPUDescriptorHandlePtr"/>
+    <functioncall functionName="SetGraphicsRootDescriptorTable"/>
+    <functioncall functionName="SetHandMatrix"/>
+    <functioncall functionName="SetLook"/>
+    <functioncall functionName="SetPipelineState"/>
+    <functioncall functionName="SetPosition"/>
+    <functioncall functionName="SetRight"/>
+    <functioncall functionName="SetRootArgument"/>
+    <functioncall functionName="SetSpawnPoint"/>
+    <functioncall functionName="SetTeam"/>
+    <functioncall functionName="SetUp"/>
+    <functioncall functionName="Shoot"/>
+    <functioncall functionName="Subtract"/>
+    <functioncall functionName="T"/>
+    <functioncall functionName="TEAM_DEFAULT"/>
+    <functioncall functionName="TEST"/>
+    <functioncall functionName="TakeDamage"/>
+    <functioncall functionName="TextureType"/>
+    <functioncall functionName="ToTransform"/>
+    <functioncall functionName="TransformCoord"/>
+    <functioncall functionName="TransformNormal"/>
+    <functioncall functionName="TriggerOff"/>
+    <functioncall functionName="U"/>
+    <functioncall functionName="Update"/>
+    <functioncall functionName="UpdateConstantBuffer"/>
+    <functioncall functionName="V"/>
+    <functioncall functionName="VK_LBUTTON"/>
+    <functioncall functionName="ViewHeight"/>
+    <functioncall functionName="ViewWidth"/>
+    <functioncall functionName="W"/>
+    <functioncall functionName="X"/>
+    <functioncall functionName="XMConvertToDegrees"/>
+    <functioncall functionName="XMConvertToRadians"/>
+    <functioncall functionName="XMFLOAT2"/>
+    <functioncall functionName="XMFLOAT3"/>
+    <functioncall functionName="XMFLOAT4"/>
+    <functioncall functionName="XMFLOAT4X4"/>
+    <functioncall functionName="XMINT4"/>
+    <functioncall functionName="XMLoadFloat2"/>
+    <functioncall functionName="XMLoadFloat3"/>
+    <functioncall functionName="XMLoadFloat4"/>
+    <functioncall functionName="XMLoadFloat4x4"/>
+    <functioncall functionName="XMMATRIX"/>
+    <functioncall functionName="XMMatrixIdentity"/>
+    <functioncall functionName="XMMatrixInverse"/>
+    <functioncall functionName="XMMatrixLookAtLH"/>
+    <functioncall functionName="XMMatrixOrthographicLH"/>
+    <functioncall functionName="XMMatrixPerspectiveFovLH"/>
+    <functioncall functionName="XMMatrixRotationAxis"/>
+    <functioncall functionName="XMMatrixRotationQuaternion"/>
+    <functioncall functionName="XMMatrixRotationRollPitchYaw"/>
+    <functioncall functionName="XMMatrixTranspose"/>
+    <functioncall functionName="XMQuaternionIdentity"/>
+    <functioncall functionName="XMQuaternionRotationAxis"/>
+    <functioncall functionName="XMQuaternionRotationMatrix"/>
+    <functioncall functionName="XMQuaternionRotationRollPitchYaw"/>
+    <functioncall functionName="XMQuaternionSlerp"/>
+    <functioncall functionName="XMStoreFloat2"/>
+    <functioncall functionName="XMStoreFloat3"/>
+    <functioncall functionName="XMStoreFloat4"/>
+    <functioncall functionName="XMStoreFloat4x4"/>
+    <functioncall functionName="XMVector3AngleBetweenNormals"/>
+    <functioncall functionName="XMVector3Cross"/>
+    <functioncall functionName="XMVector3Dot"/>
+    <functioncall functionName="XMVector3Length"/>
+    <functioncall functionName="XMVector3NearEqual"/>
+    <functioncall functionName="XMVector3Normalize"/>
+    <functioncall functionName="XMVector3Rotate"/>
+    <functioncall functionName="XMVector3TransformCoord"/>
+    <functioncall functionName="XMVector3TransformNormal"/>
+    <functioncall functionName="XMVectorGetX"/>
+    <functioncall functionName="Y"/>
+    <functioncall functionName="Z"/>
+    <functioncall functionName="_1"/>
+    <functioncall functionName="_11"/>
+    <functioncall functionName="_12"/>
+    <functioncall functionName="_13"/>
+    <functioncall functionName="_2"/>
+    <functioncall functionName="_21"/>
+    <functioncall functionName="_22"/>
+    <functioncall functionName="_23"/>
+    <functioncall functionName="_3"/>
+    <functioncall functionName="_31"/>
+    <functioncall functionName="_32"/>
+    <functioncall functionName="_33"/>
+    <functioncall functionName="_4"/>
+    <functioncall functionName="_41"/>
+    <functioncall functionName="_42"/>
+    <functioncall functionName="_43"/>
+    <functioncall functionName="_5"/>
+    <functioncall functionName="_6"/>
+    <functioncall functionName="_7"/>
+    <functioncall functionName="_8"/>
+    <functioncall functionName="_9"/>
+    <functioncall functionName="__uuidof"/>
+    <functioncall functionName="animClip"/>
+    <functioncall functionName="animClipName"/>
+    <functioncall functionName="asinf"/>
+    <functioncall functionName="atan2f"/>
+    <functioncall functionName="b"/>
+    <functioncall functionName="bNormalize"/>
+    <functioncall functionName="begin"/>
+    <functioncall functionName="binary"/>
+    <functioncall functionName="boneIdx"/>
+    <functioncall functionName="box"/>
+    <functioncall functionName="break"/>
+    <functioncall functionName="c_str"/>
+    <functioncall functionName="cbegin"/>
+    <functioncall functionName="cend"/>
+    <functioncall functionName="close"/>
+    <functioncall functionName="collisionBox"/>
+    <functioncall functionName="collisionSphere"/>
+    <functioncall functionName="continue"/>
+    <functioncall functionName="copy_n"/>
+    <functioncall functionName="count"/>
+    <functioncall functionName="d3dCBVDesc"/>
+    <functioncall functionName="d3dCbvCPUDescriptorHandle"/>
+    <functioncall functionName="d3dCbvGPUDescriptorHandle"/>
+    <functioncall functionName="d3dDescriptorHeapDesc"/>
+    <functioncall functionName="d3dResourceDesc"/>
+    <functioncall functionName="d3dShaderResourceViewDesc"/>
+    <functioncall functionName="d3dSrvCPUDescriptorHandle"/>
+    <functioncall functionName="d3dSrvGPUDescriptorHandle"/>
+    <functioncall functionName="default"/>
+    <functioncall functionName="delete"/>
+    <functioncall functionName="double"/>
+    <functioncall functionName="dst"/>
+    <functioncall functionName="dynamic_cast"/>
+    <functioncall functionName="empty"/>
+    <functioncall functionName="end"/>
+    <functioncall functionName="erase"/>
+    <functioncall functionName="fB"/>
+    <functioncall functionName="fTemp"/>
+    <functioncall functionName="fTime"/>
+    <functioncall functionName="fTimeElapsed"/>
+    <functioncall functionName="fTimeLag"/>
+    <functioncall functionName="fValue"/>
+    <functioncall functionName="fYaw"/>
+    <functioncall functionName="fabsf"/>
+    <functioncall functionName="false"/>
+    <functioncall functionName="fileName"/>
+    <functioncall functionName="find_if"/>
+    <functioncall functionName="for"/>
+    <functioncall functionName="front"/>
+    <functioncall functionName="g_DefaultDamage"/>
+    <functioncall functionName="g_DefaultHealthPoint"/>
+    <functioncall functionName="g_DefaultProjectileLifeTime"/>
+    <functioncall functionName="g_DefaultRPM"/>
+    <functioncall functionName="g_IsMouseMode"/>
+    <functioncall functionName="g_NumAnimationBone"/>
+    <functioncall functionName="g_PlayerDefaultSpeed"/>
+    <functioncall functionName="g_ProjectileDefaultSpeed"/>
+    <functioncall functionName="g_RespawnDelay"/>
+    <functioncall functionName="g_RootParameterObject"/>
+    <functioncall functionName="g_RootParameterTexture"/>
+    <functioncall functionName="gnCbvSrvDescriptorIncrementSize"/>
+    <functioncall functionName="i"/>
+    <functioncall functionName="if"/>
+    <functioncall functionName="importer"/>
+    <functioncall functionName="indexBufferView"/>
+    <functioncall functionName="int"/>
+    <functioncall functionName="isDebug"/>
+    <functioncall functionName="j"/>
+    <functioncall functionName="lhs"/>
+    <functioncall functionName="m_AnimName"/>
+    <functioncall functionName="m_AnimationController"/>
+    <functioncall functionName="m_BaseDamage"/>
+    <functioncall functionName="m_BoneList"/>
+    <functioncall functionName="m_CtrlPointList"/>
+    <functioncall functionName="m_GlobalTransform"/>
+    <functioncall functionName="m_IsAlive"/>
+    <functioncall functionName="m_IsGround"/>
+    <functioncall functionName="m_KeyTime"/>
+    <functioncall functionName="m_LevelDataDesc"/>
+    <functioncall functionName="m_MeshList"/>
+    <functioncall functionName="m_ModelName"/>
+    <functioncall functionName="m_Name"/>
+    <functioncall functionName="m_Tag"/>
+    <functioncall functionName="m_VertexList"/>
+    <functioncall functionName="m_d3dCbvGPUDescriptorHandle"/>
+    <functioncall functionName="m_d3dScissorRect"/>
+    <functioncall functionName="m_d3dSrvCPUDescriptorStartHandle"/>
+    <functioncall functionName="m_d3dSrvGPUDescriptorStartHandle"/>
+    <functioncall functionName="m_d3dViewport"/>
+    <functioncall functionName="m_fRPM"/>
+    <functioncall functionName="m_fSpeed"/>
+    <functioncall functionName="m_fTimeLag"/>
+    <functioncall functionName="m_nBoneList"/>
+    <functioncall functionName="m_nCtrlPointList"/>
+    <functioncall functionName="m_nKeyTime"/>
+    <functioncall functionName="m_nKeyframe"/>
+    <functioncall functionName="m_nMeshList"/>
+    <functioncall functionName="m_nObjects"/>
+    <functioncall functionName="m_nPlayers"/>
+    <functioncall functionName="m_nProjectiles"/>
+    <functioncall functionName="m_nProps"/>
+    <functioncall functionName="m_nVertexList"/>
+    <functioncall functionName="m_pCBMappedPlayers"/>
+    <functioncall functionName="m_pCBMappedProjectiles"/>
+    <functioncall functionName="m_pCBMappedPropObjects"/>
+    <functioncall functionName="m_pToRootTransforms"/>
+    <functioncall functionName="m_pd3dCbvSrvDescriptorHeap"/>
+    <functioncall functionName="m_pd3dCommandList"/>
+    <functioncall functionName="m_pd3dDevice"/>
+    <functioncall functionName="m_xmf2TexCoord"/>
+    <functioncall functionName="m_xmf2UV"/>
+    <functioncall functionName="m_xmf3CameraTargetOffset"/>
+    <functioncall functionName="m_xmf3Direction"/>
+    <functioncall functionName="m_xmf3Look"/>
+    <functioncall functionName="m_xmf3LookAtWorld"/>
+    <functioncall functionName="m_xmf3Move"/>
+    <functioncall functionName="m_xmf3Normal"/>
+    <functioncall functionName="m_xmf3Offset"/>
+    <functioncall functionName="m_xmf3Position"/>
+    <functioncall functionName="m_xmf3Right"/>
+    <functioncall functionName="m_xmf3SpawnPoint"/>
+    <functioncall functionName="m_xmf3Up"/>
+    <functioncall functionName="m_xmf4Weight"/>
+    <functioncall functionName="m_xmf4x4Projection"/>
+    <functioncall functionName="m_xmf4x4View"/>
+    <functioncall functionName="m_xmf4x4World"/>
+    <functioncall functionName="m_xmi4BoneIdx"/>
+    <functioncall functionName="memcpy"/>
+    <functioncall functionName="memset"/>
+    <functioncall functionName="mesh"/>
+    <functioncall functionName="mouse"/>
+    <functioncall functionName="mtx"/>
+    <functioncall functionName="mtx0"/>
+    <functioncall functionName="mtx1"/>
+    <functioncall functionName="nCbvGPUDescriptorHandlePtr"/>
+    <functioncall functionName="nCollisionMaps"/>
+    <functioncall functionName="nIndices"/>
+    <functioncall functionName="nReflection"/>
+    <functioncall functionName="nTextureType"/>
+    <functioncall functionName="nVertices"/>
+    <functioncall functionName="name"/>
+    <functioncall functionName="ncbElementBytes"/>
+    <functioncall functionName="new_pToRootTransforms"/>
+    <functioncall functionName="obj"/>
+    <functioncall functionName="objPos"/>
+    <functioncall functionName="open"/>
+    <functioncall functionName="override"/>
+    <functioncall functionName="p"/>
+    <functioncall functionName="pIndexBuffer"/>
+    <functioncall functionName="pIndexUploadBuffer"/>
+    <functioncall functionName="pKeysBuffer"/>
+    <functioncall functionName="pOutputMtx"/>
+    <functioncall functionName="pShaderResource"/>
+    <functioncall functionName="pVertexBuffer"/>
+    <functioncall functionName="pVertexUploadBuffer"/>
+    <functioncall functionName="pbMappedcbObject"/>
+    <functioncall functionName="pd3dCommandList"/>
+    <functioncall functionName="pd3dDevice"/>
+    <functioncall functionName="pop"/>
+    <functioncall functionName="pos"/>
+    <functioncall functionName="primitiveTopology"/>
+    <functioncall functionName="pso"/>
+    <functioncall functionName="public:"/>
+    <functioncall functionName="push"/>
+    <functioncall functionName="push_back"/>
+    <functioncall functionName="q0"/>
+    <functioncall functionName="q1"/>
+    <functioncall functionName="quat"/>
+    <functioncall functionName="quat_2_euler_d3d"/>
+    <functioncall functionName="read"/>
+    <functioncall functionName="return"/>
+    <functioncall functionName="rhs"/>
+    <functioncall functionName="rotationAngle"/>
+    <functioncall functionName="size"/>
+    <functioncall functionName="sizeof"/>
+    <functioncall functionName="sphere"/>
+    <functioncall functionName="sqrtf"/>
+    <functioncall functionName="sqw"/>
+    <functioncall functionName="src"/>
+    <functioncall functionName="state"/>
+    <functioncall functionName="static_cast"/>
+    <functioncall functionName="switch"/>
+    <functioncall functionName="t"/>
+    <functioncall functionName="team"/>
+    <functioncall functionName="temp"/>
+    <functioncall functionName="texture"/>
+    <functioncall functionName="this"/>
+    <functioncall functionName="tmp"/>
+    <functioncall functionName="true"/>
+    <functioncall functionName="u"/>
+    <functioncall functionName="uv"/>
+    <functioncall functionName="v0"/>
+    <functioncall functionName="v1"/>
+    <functioncall functionName="vector"/>
+    <functioncall functionName="vector2Epsilon"/>
+    <functioncall functionName="vector3Epsilon"/>
+    <functioncall functionName="vertexBufferView"/>
+    <functioncall functionName="w"/>
+    <functioncall functionName="weights"/>
+    <functioncall functionName="while"/>
+    <functioncall functionName="x"/>
+    <functioncall functionName="xmf2Result"/>
+    <functioncall functionName="xmf2TexCoord"/>
+    <functioncall functionName="xmf2Vector1"/>
+    <functioncall functionName="xmf2Vector2"/>
+    <functioncall functionName="xmf3EyePosition"/>
+    <functioncall functionName="xmf3Look"/>
+    <functioncall functionName="xmf3LookAtPosition"/>
+    <functioncall functionName="xmf3LookAtWorld"/>
+    <functioncall functionName="xmf3Move"/>
+    <functioncall functionName="xmf3Normal"/>
+    <functioncall functionName="xmf3Offset"/>
+    <functioncall functionName="xmf3Position"/>
+    <functioncall functionName="xmf3Result"/>
+    <functioncall functionName="xmf3Right"/>
+    <functioncall functionName="xmf3Up"/>
+    <functioncall functionName="xmf3UpDirection"/>
+    <functioncall functionName="xmf3Vector"/>
+    <functioncall functionName="xmf3Vector1"/>
+    <functioncall functionName="xmf3Vector2"/>
+    <functioncall functionName="xmf4Albedo"/>
+    <functioncall functionName="xmf4BoneWeight"/>
+    <functioncall functionName="xmf4Result"/>
+    <functioncall functionName="xmf4Vector"/>
+    <functioncall functionName="xmf4Vector1"/>
+    <functioncall functionName="xmf4Vector2"/>
+    <functioncall functionName="xmf4x4Mtx0"/>
+    <functioncall functionName="xmf4x4Mtx1"/>
+    <functioncall functionName="xmf4x4OutputMtx"/>
+    <functioncall functionName="xmi4BoneIdx"/>
+    <functioncall functionName="xmmtx4x4Matrix"/>
+    <functioncall functionName="xmmtx4x4Matrix1"/>
+    <functioncall functionName="xmmtx4x4Matrix2"/>
+    <functioncall functionName="xmmtx4x4Result"/>
+    <functioncall functionName="xmmtxRotate"/>
+    <functioncall functionName="xmmtxTransform"/>
+    <functioncall functionName="xmvAngle"/>
+    <functioncall functionName="xmvVector1"/>
+    <functioncall functionName="xmvVector2"/>
+    <functioncall functionName="y"/>
+    <functioncall functionName="z"/>
+  </FileInfo>
+</analyzerinfo>

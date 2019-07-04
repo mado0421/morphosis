@@ -10,6 +10,7 @@ struct SRVROOTARGUMENTINFO
 class CTexture
 {
 public:
+	CTexture() = delete;
 	CTexture(UINT nResourceType = RESOURCE_TEXTURE2D);
 	virtual ~CTexture();
 

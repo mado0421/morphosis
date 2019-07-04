@@ -1,0 +1,348 @@
+<?xml version="1.0"?>
+<analyzerinfo checksum="188445573">
+  <FileInfo check="ctu">
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:99:7" call-funcname="SetAlive" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h" linenr="98" call-argexpr="false" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Camera/Camera.h:46:7" call-funcname="SetViewport" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Camera/Camera.cpp" linenr="119" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Camera/Camera.h:46:7" call-funcname="SetViewport" call-argnr="2" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Camera/Camera.cpp" linenr="119" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Camera/Camera.h:47:7" call-funcname="SetScissorRect" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Camera/Camera.cpp" linenr="120" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Camera/Camera.h:47:7" call-funcname="SetScissorRect" call-argnr="2" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Camera/Camera.cpp" linenr="120" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Camera/Camera.h:46:7" call-funcname="SetViewport" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Camera/Camera.cpp" linenr="248" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Camera/Camera.h:46:7" call-funcname="SetViewport" call-argnr="2" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Camera/Camera.cpp" linenr="248" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Camera/Camera.h:47:7" call-funcname="SetScissorRect" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Camera/Camera.cpp" linenr="249" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Camera/Camera.h:47:7" call-funcname="SetScissorRect" call-argnr="2" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Camera/Camera.cpp" linenr="249" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:284:14" call-funcname="ToTransform" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="293" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:291:14" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:325:7" call-funcname="IsAnotherTeam" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h" linenr="322" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:320:7" my-argnr="1"/>
+  </FileInfo>
+  <FileInfo check="Null pointer">
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:8:13" my-argnr="1" my-argname="pfS" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="8" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:8:13" my-argnr="2" my-argname="pfT" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="8" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:298:14" my-argnr="1" my-argname="pOutputMtx" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="306" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:72:7" my-argnr="1" my-argname="model" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h" linenr="73" value="0"/>
+  </FileInfo>
+  <FileInfo check="Uninitialized variables">
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:8:13" my-argnr="1" my-argname="pfS" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="8" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:8:13" my-argnr="2" my-argname="pfT" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="8" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:72:7" my-argnr="1" my-argname="model" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h" linenr="73" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:320:7" my-argnr="2" my-argname="dst" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h" linenr="321" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:325:7" my-argnr="1" my-argname="src" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h" linenr="325" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:325:7" my-argnr="2" my-argname="dst" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h" linenr="325" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Camera/Camera.h:43:15" my-argnr="1" my-argname="pd3dCommandList" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Camera/Camera.cpp" linenr="94" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Camera/Camera.h:45:15" my-argnr="1" my-argname="pd3dCommandList" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Camera/Camera.cpp" linenr="108" value="0"/>
+  </FileInfo>
+  <FileInfo check="CheckUnusedFunctions">
+    <functiondecl functionName="SetViewport" lineNumber="24"/>
+    <functiondecl functionName="SetScissorRect" lineNumber="34"/>
+    <functiondecl functionName="GenerateProjectionMatrix" lineNumber="42"/>
+    <functiondecl functionName="GenerateViewMatrix" lineNumber="49"/>
+    <functiondecl functionName="GenerateViewMatrix" lineNumber="58"/>
+    <functiondecl functionName="RegenerateViewMatrix" lineNumber="63"/>
+    <functiondecl functionName="CreateShaderVariables" lineNumber="77"/>
+    <functiondecl functionName="UpdateShaderVariables" lineNumber="85"/>
+    <functiondecl functionName="ReleaseShaderVariables" lineNumber="97"/>
+    <functiondecl functionName="SetViewportsAndScissorRects" lineNumber="106"/>
+    <functiondecl functionName="SetTarget" lineNumber="126"/>
+    <functiondecl functionName="GetTarget" lineNumber="136"/>
+    <functiondecl functionName="Update" lineNumber="141"/>
+    <functiondecl functionName="SetLookAt" lineNumber="228"/>
+    <functiondecl functionName="GenerateProjectionMatrix" lineNumber="256"/>
+    <functioncall functionName="A"/>
+    <functioncall functionName="AA"/>
+    <functioncall functionName="Add"/>
+    <functioncall functionName="Angle"/>
+    <functioncall functionName="AngleFromQuat"/>
+    <functioncall functionName="AspectRatio"/>
+    <functioncall functionName="B"/>
+    <functioncall functionName="BB"/>
+    <functioncall functionName="C"/>
+    <functioncall functionName="CBoardCamera"/>
+    <functioncall functionName="CCamera"/>
+    <functioncall functionName="CFollowCamera"/>
+    <functioncall functionName="CObjectManager"/>
+    <functioncall functionName="CollisionBox"/>
+    <functioncall functionName="CollisionSphere"/>
+    <functioncall functionName="CreateBufferResource"/>
+    <functioncall functionName="CreateObjectData"/>
+    <functioncall functionName="CrossProduct"/>
+    <functioncall functionName="D"/>
+    <functioncall functionName="D3D12_BUFFER_SRV_FLAG_NONE"/>
+    <functioncall functionName="D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING"/>
+    <functioncall functionName="D3D12_HEAP_TYPE_UPLOAD"/>
+    <functioncall functionName="D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE"/>
+    <functioncall functionName="D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER"/>
+    <functioncall functionName="D3D12_SRV_DIMENSION_BUFFER"/>
+    <functioncall functionName="D3D12_SRV_DIMENSION_TEXTURE2D"/>
+    <functioncall functionName="D3D12_SRV_DIMENSION_TEXTURE2DARRAY"/>
+    <functioncall functionName="D3D12_SRV_DIMENSION_TEXTURECUBE"/>
+    <functioncall functionName="DIE"/>
+    <functioncall functionName="DepthOrArraySize"/>
+    <functioncall functionName="DotProduct"/>
+    <functioncall functionName="E"/>
+    <functioncall functionName="ENDJUMP"/>
+    <functioncall functionName="F"/>
+    <functioncall functionName="FIRE"/>
+    <functioncall functionName="FLT_EPSILON"/>
+    <functioncall functionName="FarZ"/>
+    <functioncall functionName="Format"/>
+    <functioncall functionName="FovAngleY"/>
+    <functioncall functionName="G"/>
+    <functioncall functionName="GenerateProjectionMatrix"/>
+    <functioncall functionName="GenerateViewMatrix"/>
+    <functioncall functionName="GetCameraTargetPos"/>
+    <functioncall functionName="GetGPUVirtualAddress"/>
+    <functioncall functionName="GetLook"/>
+    <functioncall functionName="GetRight"/>
+    <functioncall functionName="GetTeam"/>
+    <functioncall functionName="GetUp"/>
+    <functioncall functionName="H"/>
+    <functioncall functionName="I"/>
+    <functioncall functionName="IDLE"/>
+    <functioncall functionName="Identity"/>
+    <functioncall functionName="InterpolateMtx"/>
+    <functioncall functionName="IsAlive"/>
+    <functioncall functionName="IsAnotherTeam"/>
+    <functioncall functionName="IsZero"/>
+    <functioncall functionName="J"/>
+    <functioncall functionName="K"/>
+    <functioncall functionName="L"/>
+    <functioncall functionName="Lerp"/>
+    <functioncall functionName="LookAtLH"/>
+    <functioncall functionName="M"/>
+    <functioncall functionName="Map"/>
+    <functioncall functionName="N"/>
+    <functioncall functionName="NULL"/>
+    <functioncall functionName="NearZ"/>
+    <functioncall functionName="Normalize"/>
+    <functioncall functionName="O"/>
+    <functioncall functionName="Offset"/>
+    <functioncall functionName="P"/>
+    <functioncall functionName="PerspectiveFovLH"/>
+    <functioncall functionName="Player"/>
+    <functioncall functionName="PosFromMtx"/>
+    <functioncall functionName="Projectile"/>
+    <functioncall functionName="Prop"/>
+    <functioncall functionName="Q"/>
+    <functioncall functionName="QuatFromMtx"/>
+    <functioncall functionName="QuatSlerp"/>
+    <functioncall functionName="R"/>
+    <functioncall functionName="RSSetScissorRects"/>
+    <functioncall functionName="RSSetViewports"/>
+    <functioncall functionName="RUN"/>
+    <functioncall functionName="RegenerateViewMatrix"/>
+    <functioncall functionName="Release"/>
+    <functioncall functionName="S"/>
+    <functioncall functionName="STARTJUMP"/>
+    <functioncall functionName="ScalarProduct"/>
+    <functioncall functionName="SetAlive"/>
+    <functioncall functionName="SetGraphicsRootConstantBufferView"/>
+    <functioncall functionName="SetLookAt"/>
+    <functioncall functionName="SetOffset"/>
+    <functioncall functionName="SetScissorRect"/>
+    <functioncall functionName="SetTimeLag"/>
+    <functioncall functionName="SetViewport"/>
+    <functioncall functionName="Subtract"/>
+    <functioncall functionName="T"/>
+    <functioncall functionName="TEST"/>
+    <functioncall functionName="ToTransform"/>
+    <functioncall functionName="TransformCoord"/>
+    <functioncall functionName="TransformNormal"/>
+    <functioncall functionName="U"/>
+    <functioncall functionName="Unmap"/>
+    <functioncall functionName="V"/>
+    <functioncall functionName="VS_CB_CAMERA_INFO"/>
+    <functioncall functionName="ViewHeight"/>
+    <functioncall functionName="ViewWidth"/>
+    <functioncall functionName="W"/>
+    <functioncall functionName="X"/>
+    <functioncall functionName="XMConvertToDegrees"/>
+    <functioncall functionName="XMConvertToRadians"/>
+    <functioncall functionName="XMFLOAT2"/>
+    <functioncall functionName="XMFLOAT3"/>
+    <functioncall functionName="XMLoadFloat2"/>
+    <functioncall functionName="XMLoadFloat3"/>
+    <functioncall functionName="XMLoadFloat4"/>
+    <functioncall functionName="XMLoadFloat4x4"/>
+    <functioncall functionName="XMMATRIX"/>
+    <functioncall functionName="XMMatrixIdentity"/>
+    <functioncall functionName="XMMatrixInverse"/>
+    <functioncall functionName="XMMatrixLookAtLH"/>
+    <functioncall functionName="XMMatrixOrthographicLH"/>
+    <functioncall functionName="XMMatrixPerspectiveFovLH"/>
+    <functioncall functionName="XMMatrixRotationAxis"/>
+    <functioncall functionName="XMMatrixRotationQuaternion"/>
+    <functioncall functionName="XMMatrixRotationRollPitchYaw"/>
+    <functioncall functionName="XMMatrixTranspose"/>
+    <functioncall functionName="XMQuaternionIdentity"/>
+    <functioncall functionName="XMQuaternionRotationMatrix"/>
+    <functioncall functionName="XMQuaternionRotationRollPitchYaw"/>
+    <functioncall functionName="XMQuaternionSlerp"/>
+    <functioncall functionName="XMStoreFloat2"/>
+    <functioncall functionName="XMStoreFloat3"/>
+    <functioncall functionName="XMStoreFloat4"/>
+    <functioncall functionName="XMStoreFloat4x4"/>
+    <functioncall functionName="XMVector3AngleBetweenNormals"/>
+    <functioncall functionName="XMVector3Cross"/>
+    <functioncall functionName="XMVector3Dot"/>
+    <functioncall functionName="XMVector3Length"/>
+    <functioncall functionName="XMVector3NearEqual"/>
+    <functioncall functionName="XMVector3Normalize"/>
+    <functioncall functionName="XMVector3TransformCoord"/>
+    <functioncall functionName="XMVector3TransformNormal"/>
+    <functioncall functionName="XMVectorGetX"/>
+    <functioncall functionName="Y"/>
+    <functioncall functionName="Z"/>
+    <functioncall functionName="_1"/>
+    <functioncall functionName="_11"/>
+    <functioncall functionName="_12"/>
+    <functioncall functionName="_13"/>
+    <functioncall functionName="_2"/>
+    <functioncall functionName="_21"/>
+    <functioncall functionName="_22"/>
+    <functioncall functionName="_23"/>
+    <functioncall functionName="_3"/>
+    <functioncall functionName="_31"/>
+    <functioncall functionName="_32"/>
+    <functioncall functionName="_33"/>
+    <functioncall functionName="_4"/>
+    <functioncall functionName="_41"/>
+    <functioncall functionName="_42"/>
+    <functioncall functionName="_43"/>
+    <functioncall functionName="_5"/>
+    <functioncall functionName="_6"/>
+    <functioncall functionName="_7"/>
+    <functioncall functionName="_8"/>
+    <functioncall functionName="_9"/>
+    <functioncall functionName="a"/>
+    <functioncall functionName="asinf"/>
+    <functioncall functionName="atan2f"/>
+    <functioncall functionName="b"/>
+    <functioncall functionName="bNormalize"/>
+    <functioncall functionName="break"/>
+    <functioncall functionName="collisionBox"/>
+    <functioncall functionName="collisionSphere"/>
+    <functioncall functionName="count"/>
+    <functioncall functionName="d3dCbvGPUDescriptorHandle"/>
+    <functioncall functionName="d3dGpuVirtualAddress"/>
+    <functioncall functionName="d3dShaderResourceViewDesc"/>
+    <functioncall functionName="delete"/>
+    <functioncall functionName="dst"/>
+    <functioncall functionName="fAspectRatio"/>
+    <functioncall functionName="fB"/>
+    <functioncall functionName="fFOVAngle"/>
+    <functioncall functionName="fFarPlaneDistance"/>
+    <functioncall functionName="fInnerAngle"/>
+    <functioncall functionName="fMaxZ"/>
+    <functioncall functionName="fMinZ"/>
+    <functioncall functionName="fNearPlaneDistance"/>
+    <functioncall functionName="fTemp"/>
+    <functioncall functionName="fTimeLag"/>
+    <functioncall functionName="fValue"/>
+    <functioncall functionName="fYaw"/>
+    <functioncall functionName="fabs"/>
+    <functioncall functionName="fabsf"/>
+    <functioncall functionName="false"/>
+    <functioncall functionName="float"/>
+    <functioncall functionName="for"/>
+    <functioncall functionName="g_RootParameterCamera"/>
+    <functioncall functionName="i"/>
+    <functioncall functionName="if"/>
+    <functioncall functionName="lhs"/>
+    <functioncall functionName="m_d3dCbvGPUDescriptorHandle"/>
+    <functioncall functionName="m_d3dScissorRect"/>
+    <functioncall functionName="m_d3dViewport"/>
+    <functioncall functionName="m_fTimeLag"/>
+    <functioncall functionName="m_pTarget"/>
+    <functioncall functionName="m_pcbMappedCamera"/>
+    <functioncall functionName="m_pd3dCommandList"/>
+    <functioncall functionName="m_pd3dDevice"/>
+    <functioncall functionName="m_pd3dcbCamera"/>
+    <functioncall functionName="m_xmf3Look"/>
+    <functioncall functionName="m_xmf3LookAtWorld"/>
+    <functioncall functionName="m_xmf3Normal"/>
+    <functioncall functionName="m_xmf3Offset"/>
+    <functioncall functionName="m_xmf3Position"/>
+    <functioncall functionName="m_xmf3Right"/>
+    <functioncall functionName="m_xmf3Up"/>
+    <functioncall functionName="m_xmf4x4Projection"/>
+    <functioncall functionName="m_xmf4x4View"/>
+    <functioncall functionName="memcpy"/>
+    <functioncall functionName="mesh"/>
+    <functioncall functionName="mtx"/>
+    <functioncall functionName="mtx0"/>
+    <functioncall functionName="mtx1"/>
+    <functioncall functionName="nCbvGPUDescriptorHandlePtr"/>
+    <functioncall functionName="nHeight"/>
+    <functioncall functionName="nTextureType"/>
+    <functioncall functionName="nWidth"/>
+    <functioncall functionName="ncbElementBytes"/>
+    <functioncall functionName="objPos"/>
+    <functioncall functionName="override"/>
+    <functioncall functionName="pOutputMtx"/>
+    <functioncall functionName="pd3dCommandList"/>
+    <functioncall functionName="pd3dDevice"/>
+    <functioncall functionName="pos"/>
+    <functioncall functionName="pso"/>
+    <functioncall functionName="push_back"/>
+    <functioncall functionName="q0"/>
+    <functioncall functionName="q1"/>
+    <functioncall functionName="quat"/>
+    <functioncall functionName="quat_2_euler_d3d"/>
+    <functioncall functionName="return"/>
+    <functioncall functionName="rhs"/>
+    <functioncall functionName="sizeof"/>
+    <functioncall functionName="sqrtf"/>
+    <functioncall functionName="sqw"/>
+    <functioncall functionName="src"/>
+    <functioncall functionName="state"/>
+    <functioncall functionName="static_cast"/>
+    <functioncall functionName="switch"/>
+    <functioncall functionName="t"/>
+    <functioncall functionName="target"/>
+    <functioncall functionName="targetLook"/>
+    <functioncall functionName="targetPos"/>
+    <functioncall functionName="targetRight"/>
+    <functioncall functionName="targetUp"/>
+    <functioncall functionName="team"/>
+    <functioncall functionName="temp"/>
+    <functioncall functionName="tempTargetLook"/>
+    <functioncall functionName="texture"/>
+    <functioncall functionName="tmp"/>
+    <functioncall functionName="true"/>
+    <functioncall functionName="up"/>
+    <functioncall functionName="v0"/>
+    <functioncall functionName="v1"/>
+    <functioncall functionName="vector2Epsilon"/>
+    <functioncall functionName="vector3Epsilon"/>
+    <functioncall functionName="w"/>
+    <functioncall functionName="x"/>
+    <functioncall functionName="xLeft"/>
+    <functioncall functionName="xRight"/>
+    <functioncall functionName="xTopLeft"/>
+    <functioncall functionName="xmf2Result"/>
+    <functioncall functionName="xmf2Vector1"/>
+    <functioncall functionName="xmf2Vector2"/>
+    <functioncall functionName="xmf3EyePosition"/>
+    <functioncall functionName="xmf3LookAt"/>
+    <functioncall functionName="xmf3LookAtPosition"/>
+    <functioncall functionName="xmf3LookAtWorld"/>
+    <functioncall functionName="xmf3Offset"/>
+    <functioncall functionName="xmf3Position"/>
+    <functioncall functionName="xmf3Result"/>
+    <functioncall functionName="xmf3Up"/>
+    <functioncall functionName="xmf3UpDirection"/>
+    <functioncall functionName="xmf3Vector"/>
+    <functioncall functionName="xmf3Vector1"/>
+    <functioncall functionName="xmf3Vector2"/>
+    <functioncall functionName="xmf4Result"/>
+    <functioncall functionName="xmf4Vector"/>
+    <functioncall functionName="xmf4Vector1"/>
+    <functioncall functionName="xmf4Vector2"/>
+    <functioncall functionName="xmf4x4Mtx0"/>
+    <functioncall functionName="xmf4x4Mtx1"/>
+    <functioncall functionName="xmf4x4OutputMtx"/>
+    <functioncall functionName="xmmtx4x4Matrix"/>
+    <functioncall functionName="xmmtx4x4Matrix1"/>
+    <functioncall functionName="xmmtx4x4Matrix2"/>
+    <functioncall functionName="xmmtx4x4Result"/>
+    <functioncall functionName="xmmtxRotate"/>
+    <functioncall functionName="xmmtxTransform"/>
+    <functioncall functionName="xmvAngle"/>
+    <functioncall functionName="xmvVector1"/>
+    <functioncall functionName="xmvVector2"/>
+    <functioncall functionName="y"/>
+    <functioncall functionName="yBottom"/>
+    <functioncall functionName="yTop"/>
+    <functioncall functionName="yTopLeft"/>
+    <functioncall functionName="z"/>
+  </FileInfo>
+</analyzerinfo>

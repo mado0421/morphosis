@@ -69,13 +69,13 @@ void CObject::AddAnimClip(AnimationClip * animClip)
 		m_AnimationController = new CAnimationController();
 	m_AnimationController->AddAnimData(animClip);
 }
-void CObject::AddCollider(BoundingOrientedBox box)
+void CObject::AddCollider(BoundingOrientedBox box, const XMFLOAT3& Offset)
 {
-	m_CollisionBox.push_back(CollisionBox(box, box.Center));
+	m_CollisionBox.push_back(CollisionBox(box, Offset));
 }
-void CObject::AddCollider(BoundingSphere sphere)
+void CObject::AddCollider(BoundingSphere sphere, const XMFLOAT3& Offset)
 {
-	m_CollisionSphere.push_back(CollisionSphere(sphere, sphere.Center));
+	m_CollisionSphere.push_back(CollisionSphere(sphere, Offset));
 }
 void CObject::ChangeAnimClip(const char * animClipName)
 {
@@ -191,6 +191,8 @@ CPlayer::CPlayer() : CObject()
 	m_HealthPoint				= g_DefaultHealthPoint;
 	m_fRemainingTimeOfRespawn	= 0.0f;
 	m_xmf4x4Hand				= Matrix4x4::Identity();
+	m_rotationInput				= 0.0f;
+	for (int i = 0; i < static_cast<int>(Move::count); ++i) m_trigInput[i] = false;
 }
 void CPlayer::Update(float fTimeElapsed)
 {
@@ -352,10 +354,18 @@ void CPlayer::Enable()
 {
 	m_HealthPoint = g_DefaultHealthPoint;
 	SetPosition(m_xmf3SpawnPoint);
+
+
+	/*********************************************************************
+	2019-07-03
+	위치를 초기화시킬 때, 플레이어의 위치에 오프셋만큼 더해서(상대좌표 개념) 옮겨준다.
+
+	*********************************************************************/
+
 	for (auto myb = m_CollisionBox.begin(); myb != m_CollisionBox.end(); ++myb)
-		myb->collisionBox.Center = myb->InitPosition;
+		myb->collisionBox.Center = Vector3::Add( GetPosition(), myb->Offset );
 	for (auto mys = m_CollisionSphere.begin(); mys != m_CollisionSphere.end(); ++mys)
-		mys->collisionSphere.Center = mys->InitPosition;
+		mys->collisionSphere.Center = Vector3::Add(GetPosition(), mys->Offset);
 	CObject::Enable();
 }
 void CPlayer::Disable()
@@ -773,7 +783,7 @@ void CObjectManager::CreateObjectData()
 				m_LevelDataDesc.CollisionPosition[j],
 				m_LevelDataDesc.CollisionScale[j],
 				m_LevelDataDesc.CollisionRotation[j]
-			));
+			), XMFLOAT3(0, 0, 0));
 		}
 		obj->SetPosition(0, 0, 0);
 		//if (count == 9) {
@@ -815,10 +825,10 @@ void CObjectManager::CreateObjectData()
 		obj->SetSpawnPoint(obj->GetPosition());
 		XMFLOAT3 pos = obj->GetPosition();
 		pos.y += 4;
-		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(8, 2.577f, 8), XMFLOAT4(0, 0, 0, 1)));
+		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(8, 2.577f, 8), XMFLOAT4(0, 0, 0, 1)), XMFLOAT3(0,0,0));
 		pos = obj->GetPosition();
 		pos.y += 16.807f;
-		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(11.766f / 2, 16.807f / 2, 13.198f / 2), XMFLOAT4(0, 0, 0, 1)));
+		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(11.766f / 2, 16.807f / 2, 13.198f / 2), XMFLOAT4(0, 0, 0, 1)), XMFLOAT3(0, 0, 0));
 
 		obj->SetTeam((i % 2) + 1);
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
@@ -834,7 +844,7 @@ void CObjectManager::CreateObjectData()
 		*********************************************************************/
 		importer.ImportModel("0615_Box", m_TextureList[0], obj);
 		obj->SetAlive(false);
-		obj->AddCollider(BoundingSphere(XMFLOAT3(0,0,0), 10.0f));
+		obj->AddCollider(BoundingSphere(XMFLOAT3(0,0,0), 10.0f), XMFLOAT3(0, 0, 0));
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 		m_Projectiles.push_back(obj);
 	}

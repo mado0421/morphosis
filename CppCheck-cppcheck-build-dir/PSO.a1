@@ -1,0 +1,446 @@
+<?xml version="1.0"?>
+<analyzerinfo checksum="1070449820">
+        <error id="missingOverride" severity="style" msg="The function &apos;CreateInputLayout&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreateInputLayout&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="54" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="35" info="Virtual function in base class"/>
+            <symbol>CreateInputLayout</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreateVertexShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreateVertexShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="56" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="41" info="Virtual function in base class"/>
+            <symbol>CreateVertexShader</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreatePixelShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreatePixelShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="57" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="42" info="Virtual function in base class"/>
+            <symbol>CreatePixelShader</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreateInputLayout&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreateInputLayout&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="63" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="35" info="Virtual function in base class"/>
+            <symbol>CreateInputLayout</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreateVertexShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreateVertexShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="65" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="41" info="Virtual function in base class"/>
+            <symbol>CreateVertexShader</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreatePixelShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreatePixelShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="66" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="42" info="Virtual function in base class"/>
+            <symbol>CreatePixelShader</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreateInputLayout&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreateInputLayout&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="72" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="35" info="Virtual function in base class"/>
+            <symbol>CreateInputLayout</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreateVertexShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreateVertexShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="74" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="41" info="Virtual function in base class"/>
+            <symbol>CreateVertexShader</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreatePixelShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreatePixelShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="75" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="42" info="Virtual function in base class"/>
+            <symbol>CreatePixelShader</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreateInputLayout&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreateInputLayout&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="82" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="35" info="Virtual function in base class"/>
+            <symbol>CreateInputLayout</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreateRasterizerState&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreateRasterizerState&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="83" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="36" info="Virtual function in base class"/>
+            <symbol>CreateRasterizerState</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreateVertexShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreateVertexShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="85" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="41" info="Virtual function in base class"/>
+            <symbol>CreateVertexShader</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreatePixelShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreatePixelShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="86" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="42" info="Virtual function in base class"/>
+            <symbol>CreatePixelShader</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreateInputLayout&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreateInputLayout&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="92" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="35" info="Virtual function in base class"/>
+            <symbol>CreateInputLayout</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreateBlendState&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreateBlendState&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="93" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="37" info="Virtual function in base class"/>
+            <symbol>CreateBlendState</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreateRasterizerState&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreateRasterizerState&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="94" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="36" info="Virtual function in base class"/>
+            <symbol>CreateRasterizerState</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreateVertexShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreateVertexShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="96" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="41" info="Virtual function in base class"/>
+            <symbol>CreateVertexShader</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreatePixelShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreatePixelShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="97" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="42" info="Virtual function in base class"/>
+            <symbol>CreatePixelShader</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreateInputLayout&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreateInputLayout&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="103" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="35" info="Virtual function in base class"/>
+            <symbol>CreateInputLayout</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreateVertexShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreateVertexShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="106" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="41" info="Virtual function in base class"/>
+            <symbol>CreateVertexShader</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreatePixelShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreatePixelShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="107" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="42" info="Virtual function in base class"/>
+            <symbol>CreatePixelShader</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreateInputLayout&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreateInputLayout&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="113" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="35" info="Virtual function in base class"/>
+            <symbol>CreateInputLayout</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreateVertexShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreateVertexShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="115" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="41" info="Virtual function in base class"/>
+            <symbol>CreateVertexShader</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;CreatePixelShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreatePixelShader&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="116" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.h" line="42" info="Virtual function in base class"/>
+            <symbol>CreatePixelShader</symbol>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &apos;hResult&apos; is assigned a value that is never used." verbose="Variable &apos;hResult&apos; is assigned a value that is never used." cwe="563">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" line="24"/>
+            <symbol>hResult</symbol>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &apos;result&apos; is assigned a value that is never used." verbose="Variable &apos;result&apos; is assigned a value that is never used." cwe="563">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" line="127"/>
+            <symbol>result</symbol>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &apos;pErrorString&apos; is assigned a value that is never used." verbose="Variable &apos;pErrorString&apos; is assigned a value that is never used." cwe="563">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\PSO.cpp" line="130"/>
+            <symbol>pErrorString</symbol>
+        </error>
+  <FileInfo check="ctu">
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:41:33" call-funcname="CreateVertexShader" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.cpp" linenr="11" call-argexpr="&pd3dVertexShaderBlob" call-argvaluetype="7" call-argvalue="0"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:42:33" call-funcname="CreatePixelShader" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.cpp" linenr="12" call-argexpr="&pd3dPixelShaderBlob" call-argvaluetype="7" call-argvalue="0"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:284:14" call-funcname="ToTransform" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="293" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:291:14" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:34:20" call-funcname="CreatePipelineStateDesc" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.cpp" linenr="154" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:31:15" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:34:20" call-funcname="CreatePipelineStateDesc" call-argnr="2" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.cpp" linenr="154" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:31:15" my-argnr="2"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:43:27" call-funcname="CompileShaderFromFile" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.cpp" linenr="174" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:56:33" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:43:27" call-funcname="CompileShaderFromFile" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.cpp" linenr="179" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:57:33" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:43:27" call-funcname="CompileShaderFromFile" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.cpp" linenr="200" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:65:33" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:43:27" call-funcname="CompileShaderFromFile" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.cpp" linenr="205" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:66:33" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:43:27" call-funcname="CompileShaderFromFile" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.cpp" linenr="229" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:74:33" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:43:27" call-funcname="CompileShaderFromFile" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.cpp" linenr="234" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:75:33" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:43:27" call-funcname="CompileShaderFromFile" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.cpp" linenr="274" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:85:33" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:43:27" call-funcname="CompileShaderFromFile" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.cpp" linenr="279" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:86:33" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:43:27" call-funcname="CompileShaderFromFile" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.cpp" linenr="338" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:96:33" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:43:27" call-funcname="CompileShaderFromFile" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.cpp" linenr="343" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:97:33" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:43:27" call-funcname="CompileShaderFromFile" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.cpp" linenr="385" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:106:33" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:43:27" call-funcname="CompileShaderFromFile" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.cpp" linenr="390" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:107:33" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:43:27" call-funcname="CompileShaderFromFile" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.cpp" linenr="412" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:115:33" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:43:27" call-funcname="CompileShaderFromFile" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.cpp" linenr="418" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:116:33" my-argnr="1"/>
+  </FileInfo>
+  <FileInfo check="Null pointer">
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:8:13" my-argnr="1" my-argname="pfS" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="8" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:8:13" my-argnr="2" my-argname="pfT" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="8" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:298:14" my-argnr="1" my-argname="pOutputMtx" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="306" value="0"/>
+  </FileInfo>
+  <FileInfo check="Uninitialized variables">
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:8:13" my-argnr="1" my-argname="pfS" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="8" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:8:13" my-argnr="2" my-argname="pfT" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="8" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.h:34:20" my-argnr="1" my-argname="pd3dDevice" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.cpp" linenr="24" value="0"/>
+  </FileInfo>
+  <FileInfo check="CheckUnusedFunctions">
+    <functiondecl functionName="CreatePipelineStateDesc" lineNumber="4"/>
+    <functiondecl functionName="CreateInputLayout" lineNumber="34"/>
+    <functiondecl functionName="CreateRasterizerState" lineNumber="43"/>
+    <functiondecl functionName="CreateBlendState" lineNumber="62"/>
+    <functiondecl functionName="CreateDepthStencilState" lineNumber="82"/>
+    <functiondecl functionName="CreateVertexShader" lineNumber="104"/>
+    <functiondecl functionName="CreatePixelShader" lineNumber="113"/>
+    <functiondecl functionName="CompileShaderFromFile" lineNumber="122"/>
+    <functiondecl functionName="GetPipelineState" lineNumber="139"/>
+    <functiondecl functionName="Initialize" lineNumber="152"/>
+    <functiondecl functionName="CreateInputLayout" lineNumber="157"/>
+    <functiondecl functionName="CreateVertexShader" lineNumber="172"/>
+    <functiondecl functionName="CreatePixelShader" lineNumber="177"/>
+    <functiondecl functionName="CreateInputLayout" lineNumber="182"/>
+    <functiondecl functionName="CreateVertexShader" lineNumber="198"/>
+    <functiondecl functionName="CreatePixelShader" lineNumber="203"/>
+    <functiondecl functionName="CreateInputLayout" lineNumber="209"/>
+    <functiondecl functionName="CreateVertexShader" lineNumber="227"/>
+    <functiondecl functionName="CreatePixelShader" lineNumber="232"/>
+    <functiondecl functionName="CreateInputLayout" lineNumber="238"/>
+    <functiondecl functionName="CreateRasterizerState" lineNumber="252"/>
+    <functiondecl functionName="CreateVertexShader" lineNumber="272"/>
+    <functiondecl functionName="CreatePixelShader" lineNumber="277"/>
+    <functiondecl functionName="CreateInputLayout" lineNumber="282"/>
+    <functiondecl functionName="CreateBlendState" lineNumber="297"/>
+    <functiondecl functionName="CreateRasterizerState" lineNumber="317"/>
+    <functiondecl functionName="CreateVertexShader" lineNumber="336"/>
+    <functiondecl functionName="CreatePixelShader" lineNumber="341"/>
+    <functiondecl functionName="CreateInputLayout" lineNumber="347"/>
+    <functiondecl functionName="CreateVertexShader" lineNumber="383"/>
+    <functiondecl functionName="CreatePixelShader" lineNumber="388"/>
+    <functiondecl functionName="CreateInputLayout" lineNumber="394"/>
+    <functiondecl functionName="CreateVertexShader" lineNumber="410"/>
+    <functiondecl functionName="CreatePixelShader" lineNumber="416"/>
+    <functioncall functionName="Add"/>
+    <functioncall functionName="Angle"/>
+    <functioncall functionName="AngleFromQuat"/>
+    <functioncall functionName="AspectRatio"/>
+    <functioncall functionName="B"/>
+    <functioncall functionName="C"/>
+    <functioncall functionName="CPSO"/>
+    <functioncall functionName="CompileShaderFromFile"/>
+    <functioncall functionName="CreateBlendState"/>
+    <functioncall functionName="CreateDepthStencilState"/>
+    <functioncall functionName="CreateGraphicsPipelineState"/>
+    <functioncall functionName="CreateInputLayout"/>
+    <functioncall functionName="CreatePipelineStateDesc"/>
+    <functioncall functionName="CreatePixelShader"/>
+    <functioncall functionName="CreateRasterizerState"/>
+    <functioncall functionName="CreateVertexShader"/>
+    <functioncall functionName="D"/>
+    <functioncall functionName="D3D12_BLEND_DESC"/>
+    <functioncall functionName="D3D12_BLEND_INV_SRC_ALPHA"/>
+    <functioncall functionName="D3D12_BLEND_ONE"/>
+    <functioncall functionName="D3D12_BLEND_OP_ADD"/>
+    <functioncall functionName="D3D12_BLEND_SRC_ALPHA"/>
+    <functioncall functionName="D3D12_BLEND_ZERO"/>
+    <functioncall functionName="D3D12_BUFFER_SRV_FLAG_NONE"/>
+    <functioncall functionName="D3D12_COLOR_WRITE_ENABLE_ALL"/>
+    <functioncall functionName="D3D12_COMPARISON_FUNC_LESS"/>
+    <functioncall functionName="D3D12_COMPARISON_FUNC_NEVER"/>
+    <functioncall functionName="D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF"/>
+    <functioncall functionName="D3D12_CULL_MODE_NONE"/>
+    <functioncall functionName="D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING"/>
+    <functioncall functionName="D3D12_DEPTH_STENCIL_DESC"/>
+    <functioncall functionName="D3D12_DEPTH_WRITE_MASK_ALL"/>
+    <functioncall functionName="D3D12_FILL_MODE_SOLID"/>
+    <functioncall functionName="D3D12_FILL_MODE_WIREFRAME"/>
+    <functioncall functionName="D3D12_GRAPHICS_PIPELINE_STATE_DESC"/>
+    <functioncall functionName="D3D12_HEAP_TYPE_UPLOAD"/>
+    <functioncall functionName="D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA"/>
+    <functioncall functionName="D3D12_LOGIC_OP_NOOP"/>
+    <functioncall functionName="D3D12_PIPELINE_STATE_FLAG_NONE"/>
+    <functioncall functionName="D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE"/>
+    <functioncall functionName="D3D12_RASTERIZER_DESC"/>
+    <functioncall functionName="D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE"/>
+    <functioncall functionName="D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER"/>
+    <functioncall functionName="D3D12_SRV_DIMENSION_BUFFER"/>
+    <functioncall functionName="D3D12_SRV_DIMENSION_TEXTURE2D"/>
+    <functioncall functionName="D3D12_SRV_DIMENSION_TEXTURE2DARRAY"/>
+    <functioncall functionName="D3D12_SRV_DIMENSION_TEXTURECUBE"/>
+    <functioncall functionName="D3D12_STENCIL_OP_KEEP"/>
+    <functioncall functionName="D3DCompileFromFile"/>
+    <functioncall functionName="D3D_COMPILE_STANDARD_FILE_INCLUDE"/>
+    <functioncall functionName="DEBUG"/>
+    <functioncall functionName="DXGI_FORMAT_D24_UNORM_S8_UINT"/>
+    <functioncall functionName="DXGI_FORMAT_R32G32B32A32_FLOAT"/>
+    <functioncall functionName="DXGI_FORMAT_R32G32B32A32_UINT"/>
+    <functioncall functionName="DXGI_FORMAT_R32G32B32_FLOAT"/>
+    <functioncall functionName="DXGI_FORMAT_R32G32_FLOAT"/>
+    <functioncall functionName="DXGI_FORMAT_R32_SINT"/>
+    <functioncall functionName="DXGI_FORMAT_R8G8B8A8_UNORM"/>
+    <functioncall functionName="DepthOrArraySize"/>
+    <functioncall functionName="E"/>
+    <functioncall functionName="F"/>
+    <functioncall functionName="FALSE"/>
+    <functioncall functionName="FLT_EPSILON"/>
+    <functioncall functionName="FarZ"/>
+    <functioncall functionName="Format"/>
+    <functioncall functionName="FovAngleY"/>
+    <functioncall functionName="G"/>
+    <functioncall functionName="GetBufferPointer"/>
+    <functioncall functionName="GetBufferSize"/>
+    <functioncall functionName="H"/>
+    <functioncall functionName="I"/>
+    <functioncall functionName="ID3D12PipelineState"/>
+    <functioncall functionName="ILLUMINATEDTEXTURE"/>
+    <functioncall functionName="InterpolateMtx"/>
+    <functioncall functionName="IsZero"/>
+    <functioncall functionName="J"/>
+    <functioncall functionName="K"/>
+    <functioncall functionName="L"/>
+    <functioncall functionName="Lerp"/>
+    <functioncall functionName="M"/>
+    <functioncall functionName="MODEL"/>
+    <functioncall functionName="N"/>
+    <functioncall functionName="NULL"/>
+    <functioncall functionName="NearZ"/>
+    <functioncall functionName="O"/>
+    <functioncall functionName="P"/>
+    <functioncall functionName="Player"/>
+    <functioncall functionName="PosFromMtx"/>
+    <functioncall functionName="Projectile"/>
+    <functioncall functionName="Prop"/>
+    <functioncall functionName="Q"/>
+    <functioncall functionName="QuatFromMtx"/>
+    <functioncall functionName="QuatSlerp"/>
+    <functioncall functionName="R"/>
+    <functioncall functionName="Release"/>
+    <functioncall functionName="S"/>
+    <functioncall functionName="Subtract"/>
+    <functioncall functionName="T"/>
+    <functioncall functionName="TEST"/>
+    <functioncall functionName="TRUE"/>
+    <functioncall functionName="ToTransform"/>
+    <functioncall functionName="TransformCoord"/>
+    <functioncall functionName="U"/>
+    <functioncall functionName="UI"/>
+    <functioncall functionName="UINT_MAX"/>
+    <functioncall functionName="V"/>
+    <functioncall functionName="ViewHeight"/>
+    <functioncall functionName="ViewWidth"/>
+    <functioncall functionName="W"/>
+    <functioncall functionName="X"/>
+    <functioncall functionName="XMConvertToDegrees"/>
+    <functioncall functionName="XMConvertToRadians"/>
+    <functioncall functionName="XMFLOAT2"/>
+    <functioncall functionName="XMFLOAT3"/>
+    <functioncall functionName="XMLoadFloat2"/>
+    <functioncall functionName="XMLoadFloat3"/>
+    <functioncall functionName="XMLoadFloat4"/>
+    <functioncall functionName="XMLoadFloat4x4"/>
+    <functioncall functionName="XMMATRIX"/>
+    <functioncall functionName="XMMatrixIdentity"/>
+    <functioncall functionName="XMMatrixInverse"/>
+    <functioncall functionName="XMMatrixLookAtLH"/>
+    <functioncall functionName="XMMatrixOrthographicLH"/>
+    <functioncall functionName="XMMatrixPerspectiveFovLH"/>
+    <functioncall functionName="XMMatrixRotationQuaternion"/>
+    <functioncall functionName="XMMatrixRotationRollPitchYaw"/>
+    <functioncall functionName="XMMatrixTranspose"/>
+    <functioncall functionName="XMQuaternionIdentity"/>
+    <functioncall functionName="XMQuaternionRotationMatrix"/>
+    <functioncall functionName="XMQuaternionRotationRollPitchYaw"/>
+    <functioncall functionName="XMQuaternionSlerp"/>
+    <functioncall functionName="XMStoreFloat2"/>
+    <functioncall functionName="XMStoreFloat3"/>
+    <functioncall functionName="XMStoreFloat4"/>
+    <functioncall functionName="XMStoreFloat4x4"/>
+    <functioncall functionName="XMVector3AngleBetweenNormals"/>
+    <functioncall functionName="XMVector3Cross"/>
+    <functioncall functionName="XMVector3Dot"/>
+    <functioncall functionName="XMVector3Length"/>
+    <functioncall functionName="XMVector3NearEqual"/>
+    <functioncall functionName="XMVector3Normalize"/>
+    <functioncall functionName="XMVector3TransformCoord"/>
+    <functioncall functionName="XMVector3TransformNormal"/>
+    <functioncall functionName="XMVectorGetX"/>
+    <functioncall functionName="Y"/>
+    <functioncall functionName="Z"/>
+    <functioncall functionName="_1"/>
+    <functioncall functionName="_2"/>
+    <functioncall functionName="_3"/>
+    <functioncall functionName="_4"/>
+    <functioncall functionName="_41"/>
+    <functioncall functionName="_42"/>
+    <functioncall functionName="_43"/>
+    <functioncall functionName="_5"/>
+    <functioncall functionName="_6"/>
+    <functioncall functionName="_7"/>
+    <functioncall functionName="_8"/>
+    <functioncall functionName="_9"/>
+    <functioncall functionName="__uuidof"/>
+    <functioncall functionName="asinf"/>
+    <functioncall functionName="atan2f"/>
+    <functioncall functionName="bNormalize"/>
+    <functioncall functionName="break"/>
+    <functioncall functionName="count"/>
+    <functioncall functionName="d3dBlendDesc"/>
+    <functioncall functionName="d3dDepthStencilDesc"/>
+    <functioncall functionName="d3dInputLayoutDesc"/>
+    <functioncall functionName="d3dPipelineStateDesc"/>
+    <functioncall functionName="d3dRasterizerDesc"/>
+    <functioncall functionName="d3dShaderByteCode"/>
+    <functioncall functionName="d3dShaderResourceViewDesc"/>
+    <functioncall functionName="fB"/>
+    <functioncall functionName="fTemp"/>
+    <functioncall functionName="fValue"/>
+    <functioncall functionName="fabsf"/>
+    <functioncall functionName="false"/>
+    <functioncall functionName="if"/>
+    <functioncall functionName="lhs"/>
+    <functioncall functionName="m_pd3dPipelineState"/>
+    <functioncall functionName="m_xmf3Normal"/>
+    <functioncall functionName="memcpy"/>
+    <functioncall functionName="memset"/>
+    <functioncall functionName="mtx"/>
+    <functioncall functionName="mtx0"/>
+    <functioncall functionName="mtx1"/>
+    <functioncall functionName="nCompileFlags"/>
+    <functioncall functionName="nInputElementDescs"/>
+    <functioncall functionName="nTextureType"/>
+    <functioncall functionName="pInputElementDescs"/>
+    <functioncall functionName="pOutputMtx"/>
+    <functioncall functionName="pd3dDevice"/>
+    <functioncall functionName="pd3dErrorBlob"/>
+    <functioncall functionName="pd3dGraphicsRootSignature"/>
+    <functioncall functionName="pd3dInputElementDescs"/>
+    <functioncall functionName="pd3dPixelShaderBlob"/>
+    <functioncall functionName="pd3dVertexShaderBlob"/>
+    <functioncall functionName="ppd3dShaderBlob"/>
+    <functioncall functionName="pszFileName"/>
+    <functioncall functionName="pszShaderName"/>
+    <functioncall functionName="pszShaderProfile"/>
+    <functioncall functionName="q0"/>
+    <functioncall functionName="q1"/>
+    <functioncall functionName="quat"/>
+    <functioncall functionName="quat_2_euler_d3d"/>
+    <functioncall functionName="return"/>
+    <functioncall functionName="rhs"/>
+    <functioncall functionName="sizeof"/>
+    <functioncall functionName="sqrtf"/>
+    <functioncall functionName="sqw"/>
+    <functioncall functionName="switch"/>
+    <functioncall functionName="t"/>
+    <functioncall functionName="tmp"/>
+    <functioncall functionName="true"/>
+    <functioncall functionName="v0"/>
+    <functioncall functionName="v1"/>
+    <functioncall functionName="vector2Epsilon"/>
+    <functioncall functionName="vector3Epsilon"/>
+    <functioncall functionName="w"/>
+    <functioncall functionName="x"/>
+    <functioncall functionName="xmf2Result"/>
+    <functioncall functionName="xmf2Vector1"/>
+    <functioncall functionName="xmf2Vector2"/>
+    <functioncall functionName="xmf3EyePosition"/>
+    <functioncall functionName="xmf3LookAtPosition"/>
+    <functioncall functionName="xmf3Result"/>
+    <functioncall functionName="xmf3UpDirection"/>
+    <functioncall functionName="xmf3Vector"/>
+    <functioncall functionName="xmf3Vector1"/>
+    <functioncall functionName="xmf3Vector2"/>
+    <functioncall functionName="xmf4Result"/>
+    <functioncall functionName="xmf4Vector"/>
+    <functioncall functionName="xmf4Vector1"/>
+    <functioncall functionName="xmf4Vector2"/>
+    <functioncall functionName="xmf4x4Mtx0"/>
+    <functioncall functionName="xmf4x4Mtx1"/>
+    <functioncall functionName="xmf4x4OutputMtx"/>
+    <functioncall functionName="xmmtx4x4Matrix"/>
+    <functioncall functionName="xmmtx4x4Matrix1"/>
+    <functioncall functionName="xmmtx4x4Matrix2"/>
+    <functioncall functionName="xmmtx4x4Result"/>
+    <functioncall functionName="xmmtxTransform"/>
+    <functioncall functionName="xmvAngle"/>
+    <functioncall functionName="xmvVector1"/>
+    <functioncall functionName="xmvVector2"/>
+    <functioncall functionName="y"/>
+    <functioncall functionName="z"/>
+  </FileInfo>
+</analyzerinfo>

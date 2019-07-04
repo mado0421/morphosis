@@ -7,8 +7,6 @@ CTexture::CTexture( UINT nTextureType)
 	TextureType = nTextureType;
 
 	rootArgumentInfo = new SRVROOTARGUMENTINFO();
-	//uploadBuffer		= new ID3D12Resource;
-	//texture				= new ID3D12Resource();
 	SamplerGpuDescriptorHandles = new D3D12_GPU_DESCRIPTOR_HANDLE();
 }
 

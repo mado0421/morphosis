@@ -8,9 +8,15 @@ public:
 	XMFLOAT3						m_xmf3Position;
 
 public:
-	CVertex() { m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f); }
-	CVertex(float x, float y, float z) { m_xmf3Position = XMFLOAT3(x, y, z); }
-	CVertex(XMFLOAT3 xmf3Position) { m_xmf3Position = xmf3Position; }
+	CVertex()
+		:m_xmf3Position(XMFLOAT3(0.0f, 0.0f, 0.0f))
+	{}
+	CVertex(float x, float y, float z) 
+		:m_xmf3Position(XMFLOAT3(x, y, z))
+	{}
+	CVertex(XMFLOAT3 xmf3Position)
+		:m_xmf3Position(xmf3Position)
+	{}
 	~CVertex() { }
 };
 class CTexturedVertex : public CVertex
@@ -19,9 +25,18 @@ public:
 	XMFLOAT2						m_xmf2TexCoord;
 
 public:
-	CTexturedVertex() { m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f); m_xmf2TexCoord = XMFLOAT2(0.0f, 0.0f); }
-	CTexturedVertex(float x, float y, float z, XMFLOAT2 xmf2TexCoord) { m_xmf3Position = XMFLOAT3(x, y, z); m_xmf2TexCoord = xmf2TexCoord; }
-	CTexturedVertex(XMFLOAT3 xmf3Position, XMFLOAT2 xmf2TexCoord = XMFLOAT2(0.0f, 0.0f)) { m_xmf3Position = xmf3Position; m_xmf2TexCoord = xmf2TexCoord; }
+	CTexturedVertex() 
+		: CVertex()
+		, m_xmf2TexCoord(XMFLOAT2(0.0f, 0.0f))
+	{}
+	CTexturedVertex(float x, float y, float z, XMFLOAT2 xmf2TexCoord) 
+		: CVertex(x,y,z)
+		, m_xmf2TexCoord(xmf2TexCoord)
+	{}
+	CTexturedVertex(XMFLOAT3 xmf3Position, XMFLOAT2 xmf2TexCoord = XMFLOAT2(0.0f, 0.0f)) 
+		: CVertex(xmf3Position)
+		, m_xmf2TexCoord(xmf2TexCoord)
+	{}
 	~CTexturedVertex() { }
 };
 class CIlluminatedVertex : public CVertex
@@ -30,9 +45,18 @@ protected:
 	XMFLOAT3						m_xmf3Normal;
 
 public:
-	CIlluminatedVertex() { m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f); m_xmf3Normal = XMFLOAT3(0.0f, 0.0f, 0.0f); }
-	CIlluminatedVertex(float x, float y, float z, XMFLOAT3 xmf3Normal = XMFLOAT3(0.0f, 0.0f, 0.0f)) { m_xmf3Position = XMFLOAT3(x, y, z); m_xmf3Normal = xmf3Normal; }
-	CIlluminatedVertex(XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Normal = XMFLOAT3(0.0f, 0.0f, 0.0f)) { m_xmf3Position = xmf3Position; m_xmf3Normal = xmf3Normal; }
+	CIlluminatedVertex() 
+		: CVertex()
+		, m_xmf3Normal(XMFLOAT3(0.0f, 0.0f, 0.0f))
+	{}
+	CIlluminatedVertex(float x, float y, float z, XMFLOAT3 xmf3Normal = XMFLOAT3(0.0f, 0.0f, 0.0f)) 
+		: CVertex(x, y, z)
+		, m_xmf3Normal(xmf3Normal)
+	{}
+	CIlluminatedVertex(XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Normal = XMFLOAT3(0.0f, 0.0f, 0.0f)) 
+		: CVertex(xmf3Position)
+		, m_xmf3Normal(xmf3Normal)
+	{}
 	~CIlluminatedVertex() { }
 };
 class CIlluminatedTexturedVertex : public CIlluminatedVertex
@@ -41,9 +65,18 @@ protected:
 	XMFLOAT2						m_xmf2TexCoord;
 
 public:
-	CIlluminatedTexturedVertex() { m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f); m_xmf2TexCoord = XMFLOAT2(0.0f, 0.0f); m_xmf3Normal = XMFLOAT3(0.0f, 0.0f, 0.0f); }
-	CIlluminatedTexturedVertex(float x, float y, float z, XMFLOAT2 xmf2TexCoord, XMFLOAT3 xmf3Normal = XMFLOAT3(0.0f, 0.0f, 0.0f)) { m_xmf3Position = XMFLOAT3(x, y, z); m_xmf3Normal = xmf3Normal; m_xmf2TexCoord = xmf2TexCoord; }
-	CIlluminatedTexturedVertex(XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Normal = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT2 xmf2TexCoord = XMFLOAT2(0.0f, 0.0f)) { m_xmf3Position = xmf3Position; m_xmf3Normal = xmf3Normal; m_xmf2TexCoord = xmf2TexCoord; }
+	CIlluminatedTexturedVertex() 
+		: CIlluminatedVertex()
+		, m_xmf2TexCoord(XMFLOAT2(0.0f, 0.0f))
+	{}
+	CIlluminatedTexturedVertex(float x, float y, float z, XMFLOAT2 xmf2TexCoord, XMFLOAT3 xmf3Normal = XMFLOAT3(0.0f, 0.0f, 0.0f))
+		: CIlluminatedVertex(x, y, z, xmf3Normal)
+		, m_xmf2TexCoord(xmf2TexCoord)
+	{}
+	CIlluminatedTexturedVertex(XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Normal = XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT2 xmf2TexCoord = XMFLOAT2(0.0f, 0.0f)) 
+		: CIlluminatedVertex(xmf3Position, xmf3Normal)
+		, m_xmf2TexCoord(xmf2TexCoord)
+	{}
 	~CIlluminatedTexturedVertex() { }
 };
 class CAnimVertex {
@@ -54,37 +87,35 @@ public:
 		XMFLOAT4	weights = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f),
 		XMINT4		boneIdx = XMINT4(0, 0, 0, 0)
 	)
-	{
-		this->pos = pos;
-		this->uv = uv;
-		this->weights = weights;
-		this->boneIdx = boneIdx;
-	}
+		: m_xmf3Position(pos)
+		, m_xmf2UV(uv)
+		, m_xmf4Weight(weights)
+		, m_xmi4BoneIdx (boneIdx)
+	{}
 	CAnimVertex(
 		float x, float y, float z,
 		XMFLOAT2	uv = XMFLOAT2(0.0f, 0.0f),
 		XMFLOAT4	weights = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f),
 		XMINT4		boneIdx = XMINT4(0, 0, 0, 0)
 	)
-	{
-		this->pos = XMFLOAT3(x, y, z);
-		this->uv = uv;
-		this->weights = weights;
-		this->boneIdx = boneIdx;
-	}
+		: m_xmf3Position(XMFLOAT3(x,y,z))
+		, m_xmf2UV(uv)
+		, m_xmf4Weight(weights)
+		, m_xmi4BoneIdx(boneIdx)
+	{}
 	~CAnimVertex() {}
 
 	void Init(XMFLOAT3 p, XMFLOAT2 u, XMFLOAT4 w, XMINT4 b) {
-		pos = p;
-		uv = u;
-		weights = w;
-		boneIdx = b;
+		m_xmf3Position	= p;
+		m_xmf2UV		= u;
+		m_xmf4Weight	= w;
+		m_xmi4BoneIdx	= b;
 	}
 private:
-	XMFLOAT3	pos;
-	XMFLOAT2	uv;
-	XMFLOAT4	weights;
-	XMINT4		boneIdx;
+	XMFLOAT3	m_xmf3Position;
+	XMFLOAT2	m_xmf2UV;
+	XMFLOAT4	m_xmf4Weight;
+	XMINT4		m_xmi4BoneIdx;
 };
 
 class AnimationMesh;
@@ -156,38 +187,8 @@ public:
 };
 class CAnimatedMesh : public CMesh {
 public:
-	CAnimatedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nVertices, XMFLOAT3 *pxmf3Positions, UINT nIndices, UINT *pnIndices) : CMesh(pd3dDevice, pd3dCommandList)
-	{
-		CreateConstantBufferResource(pd3dDevice, pd3dCommandList);
-		for (int i = 0; i < g_NumAnimationBone; ++i) m_a[i] = XMMatrixIdentity();
-		UINT nStride = sizeof(CAnimVertex);
-		this->nVertices = nVertices;
-
-		CAnimVertex *pVertices = new CAnimVertex[nVertices];
-		for (UINT i = 0; i < nVertices; i++) pVertices[i] = CAnimVertex(pxmf3Positions[i]);
-
-		pVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
-			pVertices, nStride * nVertices,
-			D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
-			&pVertexUploadBuffer);
-
-		vertexBufferView.BufferLocation = pVertexBuffer->GetGPUVirtualAddress();
-		vertexBufferView.StrideInBytes = nStride;
-		vertexBufferView.SizeInBytes = nStride * nVertices;
-
-		if (nIndices > 0)
-		{
-			this->nIndices = nIndices;
-
-			pIndexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pnIndices, sizeof(UINT) * nIndices,
-				D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_INDEX_BUFFER,
-				&pIndexUploadBuffer);
-
-			indexBufferView.BufferLocation = pIndexBuffer->GetGPUVirtualAddress();
-			indexBufferView.Format = DXGI_FORMAT_R32_UINT;
-			indexBufferView.SizeInBytes = sizeof(UINT) * nIndices;
-		}
-	}
+	CAnimatedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nVertices, XMFLOAT3 *pxmf3Positions, UINT nIndices, UINT *pnIndices);
+	CAnimatedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ImportMeshData& m);
 	~CAnimatedMesh()
 	{
 		if (pVertexBuffer)			pVertexBuffer->Release();
@@ -196,7 +197,6 @@ public:
 		if (pIndexUploadBuffer)		pIndexUploadBuffer->Release();
 	}
 
-	CAnimatedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ImportMeshData& m);
 	virtual void Render(ID3D12GraphicsCommandList * pd3dCommandList)
 	{
 		UpdateConstantBuffer(pd3dCommandList);

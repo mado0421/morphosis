@@ -39,16 +39,16 @@ struct AnimationClip;
 struct CollisionBox {
 	CollisionBox(BoundingOrientedBox b, XMFLOAT3 pos)
 		: collisionBox(b)
-		, InitPosition(pos) {}
+		, Offset(pos) {}
 	BoundingOrientedBox collisionBox;
-	XMFLOAT3			InitPosition = XMFLOAT3(0, 0, 0);
+	XMFLOAT3			Offset			= XMFLOAT3(0, 0, 0);
 };
 struct CollisionSphere {
 	CollisionSphere(BoundingSphere b, XMFLOAT3 pos)
 		: collisionSphere(b)
-		, InitPosition(pos) {}
+		, Offset(pos) {}
 	BoundingSphere		collisionSphere;
-	XMFLOAT3			InitPosition = XMFLOAT3(0, 0, 0);
+	XMFLOAT3			Offset			= XMFLOAT3(0, 0, 0);
 };
 
 
@@ -73,8 +73,8 @@ public:
 		m_ModelList.push_back(*model);
 	}
 	void AddAnimClip(AnimationClip* animClip);
-	void AddCollider(BoundingOrientedBox box);
-	void AddCollider(BoundingSphere sphere);
+	void AddCollider(BoundingOrientedBox box, const XMFLOAT3& Offset);
+	void AddCollider(BoundingSphere sphere, const XMFLOAT3& Offset);
 	void ChangeAnimClip(const char* animClipName);
 	void SetPosition(float x, float y, float z);
 	void SetPosition(const XMFLOAT3 xmf3Position);
@@ -161,12 +161,12 @@ public:
 	플레이어가 죽을 때 처리
 	- 리스폰 타이머 시작
 	*********************************************************************/
-	virtual void	Update(float fTimeElapsed);
-	virtual void	LateUpdate(float fTimeElapsed);
-	virtual void	ProcessInput(UCHAR* pKeysBuffer, float mouse);
+	virtual void	Update(float fTimeElapsed) override;
+	virtual void	LateUpdate(float fTimeElapsed) override;
+	virtual void	ProcessInput(UCHAR* pKeysBuffer, float mouse) override;
 
-	virtual void	Enable();
-	virtual void	Disable();
+	virtual void	Enable()override;
+	virtual void	Disable()override;
 	void			Shoot();
 	void			SetSpawnPoint(const XMFLOAT3& pos) { m_xmf3SpawnPoint = pos; }
 	bool			IsShootable();
@@ -245,8 +245,8 @@ public:
 
 public:
 	void			Initialize(CObject* obj);
-	virtual void	Update(float fTimeElapsed);
-	virtual void	LateUpdate(float fTimeElapsed);
+	virtual void	Update(float fTimeElapsed) override;
+	virtual void	LateUpdate(float fTimeElapsed) override;
 	void			Damage(CObject* obj);
 
 private:

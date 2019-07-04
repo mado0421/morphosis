@@ -3,41 +3,67 @@
 
 struct ImportBone {
 	std::string	m_Name;
-	XMFLOAT4X4	m_GlobalTransform = Matrix4x4::Identity();
-	XMFLOAT4X4* m_pToRootTransforms = NULL;
-	int			m_nKeyframe = 0;
+	XMFLOAT4X4	m_GlobalTransform;
+	XMFLOAT4X4	*m_pToRootTransforms;
+	int			m_nKeyframe;
 
-	ImportBone& operator=(const ImportBone& b) {
-		m_Name = b.m_Name;
-		m_GlobalTransform = b.m_GlobalTransform;
-		m_nKeyframe = b.m_nKeyframe;
+	ImportBone()
+		: m_Name("")
+		, m_GlobalTransform(Matrix4x4::Identity())
+		, m_pToRootTransforms(NULL)
+		, m_nKeyframe(0)
+	{}
 
-		m_pToRootTransforms = new XMFLOAT4X4[m_nKeyframe];
+	~ImportBone() {
+		if (NULL != m_pToRootTransforms) delete[] m_pToRootTransforms;
+	}
 
-		for (int i = 0; i < m_nKeyframe; ++i) {
-			m_pToRootTransforms[i] = b.m_pToRootTransforms[i];
-		}
+	ImportBone& operator=(const ImportBone& b)
+	{
+		m_Name				= b.m_Name;
+		m_GlobalTransform	= b.m_GlobalTransform;
+		m_nKeyframe			= b.m_nKeyframe;
+
+		XMFLOAT4X4* new_pToRootTransforms = new XMFLOAT4X4[m_nKeyframe];
+		std::copy_n(b.m_pToRootTransforms, m_nKeyframe, new_pToRootTransforms);
+
+		delete[] m_pToRootTransforms;
+
+		m_pToRootTransforms = new_pToRootTransforms;
 
 		return *this;
 	}
 };
 struct AnimationClip {
 public:
-	AnimationClip() = default;
-	AnimationClip(const AnimationClip& a) {
-		m_AnimName = a.m_AnimName;
-		m_nBoneList = a.m_nBoneList;
-		m_nKeyTime = a.m_nKeyTime;
-
+	AnimationClip()
+		: m_AnimName("")
+		, m_nBoneList(0)
+		, m_nKeyTime(0)
+		, m_BoneList(NULL)
+		, m_KeyTime(NULL)
+	{}
+	AnimationClip(const AnimationClip& a) 
+		: m_AnimName(a.m_AnimName)
+		, m_nBoneList(a.m_nBoneList)
+		, m_nKeyTime(a.m_nKeyTime)
+		, m_BoneList(NULL)
+		, m_KeyTime(NULL)
+	{
 		m_BoneList = new ImportBone[m_nBoneList];
-		for (int i = 0; i < m_nBoneList; ++i) {
+		for (int i = 0; i < m_nBoneList; ++i) 
 			m_BoneList[i] = a.m_BoneList[i];
-		}
+		
 
 		m_KeyTime = new double[m_nKeyTime];
-		for (int i = 0; i < m_nKeyTime; ++i) {
+		for (int i = 0; i < m_nKeyTime; ++i) 
 			m_KeyTime[i] = a.m_KeyTime[i];
-		}
+		
+	}
+
+	~AnimationClip() {
+		if (NULL != m_BoneList) delete[] m_BoneList;
+		if (NULL != m_KeyTime) delete[] m_KeyTime;
 	}
 
 public:
@@ -85,12 +111,13 @@ public:
 
 public:
 	std::string m_AnimName;
-	int			m_nBoneList = 0;
-	int			m_nKeyTime = 0;
+	int			m_nBoneList;
+	int			m_nKeyTime;
 
-	ImportBone*	m_BoneList = NULL;
-	double*		m_KeyTime = 0;
+	ImportBone*	m_BoneList;
+	double*		m_KeyTime;
 };
+
 struct ImportCtrlPoint {
 	XMFLOAT3	xmf3Position = XMFLOAT3(0,0,0);
 	XMINT4		xmi4BoneIdx;
@@ -118,6 +145,16 @@ struct ImportMeshData {
 };
 struct ImportModelData {
 public:
+	ImportModelData() 
+		: m_ModelName("")
+		, m_MeshList(NULL)
+		, m_nMeshList(0)
+	{}
+
+	~ImportModelData() {
+		if (NULL != m_MeshList) delete[] m_MeshList;
+	}
+
 	void ImportFile(const char* fileName) {
 		std::ifstream in;
 
@@ -168,10 +205,10 @@ public:
 	ImportMeshData& GetMeshData(int i) { return m_MeshList[i]; }
 
 private:
-	std::string m_ModelName;
+	std::string		m_ModelName;
 
-	ImportMeshData*	m_MeshList = NULL;
-	int			m_nMeshList;
+	ImportMeshData	*m_MeshList;
+	int				m_nMeshList;
 };
 
 class CObject;

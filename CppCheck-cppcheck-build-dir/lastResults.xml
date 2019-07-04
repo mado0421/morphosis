@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<results version="2">
+    <cppcheck version="1.88"/>
+    <errors>
+        <error id="operatorEqToSelf" severity="warning" msg="&amp;#039;operator=&amp;#039; should check for assignment to self to avoid problems with dynamic memory." verbose="&amp;#039;operator=&amp;#039; should check for assignment to self to ensure that each block of dynamically allocated memory is owned and managed by only one instance of the class." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Importer\Importer.h" line="21"/>
+        </error>
+        <error id="uninitMemberVar" severity="warning" msg="Member variable &amp;#039;CFramework::m_hInstance&amp;#039; is not initialized in the constructor." verbose="Member variable &amp;#039;CFramework::m_hInstance&amp;#039; is not initialized in the constructor." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="5"/>
+        </error>
+        <error id="uninitMemberVar" severity="warning" msg="Member variable &amp;#039;CFramework::m_hWnd&amp;#039; is not initialized in the constructor." verbose="Member variable &amp;#039;CFramework::m_hWnd&amp;#039; is not initialized in the constructor." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="5"/>
+        </error>
+        <error id="uninitMemberVar" severity="warning" msg="Member variable &amp;#039;CFramework::m_nWndClientWidth&amp;#039; is not initialized in the constructor." verbose="Member variable &amp;#039;CFramework::m_nWndClientWidth&amp;#039; is not initialized in the constructor." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="5"/>
+        </error>
+        <error id="uninitMemberVar" severity="warning" msg="Member variable &amp;#039;CFramework::m_nWndClientHeight&amp;#039; is not initialized in the constructor." verbose="Member variable &amp;#039;CFramework::m_nWndClientHeight&amp;#039; is not initialized in the constructor." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="5"/>
+        </error>
+        <error id="uninitMemberVar" severity="warning" msg="Member variable &amp;#039;CFramework::m_pszFrameRate&amp;#039; is not initialized in the constructor." verbose="Member variable &amp;#039;CFramework::m_pszFrameRate&amp;#039; is not initialized in the constructor." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="5"/>
+        </error>
+        <error id="uninitMemberVar" severity="warning" msg="Member variable &amp;#039;CFramework::m_nSwapChainBufferIndex&amp;#039; is not initialized in the constructor." verbose="Member variable &amp;#039;CFramework::m_nSwapChainBufferIndex&amp;#039; is not initialized in the constructor." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="5"/>
+        </error>
+        <error id="uninitMemberVar" severity="warning" msg="Member variable &amp;#039;CFramework::m_ppd3dSwapChainBackBuffers&amp;#039; is not initialized in the constructor." verbose="Member variable &amp;#039;CFramework::m_ppd3dSwapChainBackBuffers&amp;#039; is not initialized in the constructor." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="5"/>
+        </error>
+        <error id="uninitMemberVar" severity="warning" msg="Member variable &amp;#039;CFramework::m_nRtvDescriptorIncrementSize&amp;#039; is not initialized in the constructor." verbose="Member variable &amp;#039;CFramework::m_nRtvDescriptorIncrementSize&amp;#039; is not initialized in the constructor." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="5"/>
+        </error>
+        <error id="uninitMemberVar" severity="warning" msg="Member variable &amp;#039;CFramework::m_nDsvDescriptorIncrementSize&amp;#039; is not initialized in the constructor." verbose="Member variable &amp;#039;CFramework::m_nDsvDescriptorIncrementSize&amp;#039; is not initialized in the constructor." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="5"/>
+        </error>
+        <error id="uninitMemberVar" severity="warning" msg="Member variable &amp;#039;CFramework::m_nFenceValues&amp;#039; is not initialized in the constructor." verbose="Member variable &amp;#039;CFramework::m_nFenceValues&amp;#039; is not initialized in the constructor." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="5"/>
+        </error>
+        <error id="uninitMemberVar" severity="warning" msg="Member variable &amp;#039;CFramework::m_hFenceEvent&amp;#039; is not initialized in the constructor." verbose="Member variable &amp;#039;CFramework::m_hFenceEvent&amp;#039; is not initialized in the constructor." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="5"/>
+        </error>
+        <error id="redundantAssignment" severity="style" msg="Variable &amp;#039;hResult&amp;#039; is reassigned a value before the old one has been used." verbose="Variable &amp;#039;hResult&amp;#039; is reassigned a value before the old one has been used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="36" info=""/>
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="37" info=""/>
+        </error>
+        <error id="redundantAssignment" severity="style" msg="Variable &amp;#039;hResult&amp;#039; is reassigned a value before the old one has been used." verbose="Variable &amp;#039;hResult&amp;#039; is reassigned a value before the old one has been used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="37" info=""/>
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="75" info=""/>
+        </error>
+        <error id="redundantAssignment" severity="style" msg="Variable &amp;#039;hResult&amp;#039; is reassigned a value before the old one has been used." verbose="Variable &amp;#039;hResult&amp;#039; is reassigned a value before the old one has been used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="153" info=""/>
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="164" info=""/>
+        </error>
+        <error id="redundantAssignment" severity="style" msg="Variable &amp;#039;hResult&amp;#039; is reassigned a value before the old one has been used." verbose="Variable &amp;#039;hResult&amp;#039; is reassigned a value before the old one has been used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="188" info=""/>
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="189" info=""/>
+        </error>
+        <error id="redundantAssignment" severity="style" msg="Variable &amp;#039;hResult&amp;#039; is reassigned a value before the old one has been used." verbose="Variable &amp;#039;hResult&amp;#039; is reassigned a value before the old one has been used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="189" info=""/>
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="204" info=""/>
+        </error>
+        <error id="redundantAssignment" severity="style" msg="Variable &amp;#039;hResult&amp;#039; is reassigned a value before the old one has been used." verbose="Variable &amp;#039;hResult&amp;#039; is reassigned a value before the old one has been used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="204" info=""/>
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="208" info=""/>
+        </error>
+        <error id="redundantAssignment" severity="style" msg="Variable &amp;#039;hResult&amp;#039; is reassigned a value before the old one has been used." verbose="Variable &amp;#039;hResult&amp;#039; is reassigned a value before the old one has been used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="225" info=""/>
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="230" info=""/>
+        </error>
+        <error id="redundantAssignment" severity="style" msg="Variable &amp;#039;hResult&amp;#039; is reassigned a value before the old one has been used." verbose="Variable &amp;#039;hResult&amp;#039; is reassigned a value before the old one has been used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="294" info=""/>
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="296" info=""/>
+        </error>
+        <error id="redundantAssignment" severity="style" msg="Variable &amp;#039;hResult&amp;#039; is reassigned a value before the old one has been used." verbose="Variable &amp;#039;hResult&amp;#039; is reassigned a value before the old one has been used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="296" info=""/>
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="298" info=""/>
+        </error>
+        <error id="redundantAssignment" severity="style" msg="Variable &amp;#039;hResult&amp;#039; is reassigned a value before the old one has been used." verbose="Variable &amp;#039;hResult&amp;#039; is reassigned a value before the old one has been used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="298" info=""/>
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="299" info=""/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;hResult&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;hResult&amp;#039; is assigned a value that is never used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="75"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;hResult&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;hResult&amp;#039; is assigned a value that is never used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="164"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;hResult&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;hResult&amp;#039; is assigned a value that is never used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="208"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;hResult&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;hResult&amp;#039; is assigned a value that is never used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="230"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;hResult&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;hResult&amp;#039; is assigned a value that is never used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="299"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;bProcessedByScene&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;bProcessedByScene&amp;#039; is assigned a value that is never used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="381"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;hResult&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;hResult&amp;#039; is assigned a value that is never used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="473"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;hResult&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;hResult&amp;#039; is assigned a value that is never used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="477"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;hResult&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;hResult&amp;#039; is assigned a value that is never used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="487"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;hResult&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;hResult&amp;#039; is assigned a value that is never used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Framework\Framework.cpp" line="491"/>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &amp;#039;CreateRootSignature&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." verbose="The function &amp;#039;CreateRootSignature&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Scene\Scene.h" line="59" info="Virtual function in base class"/>
+            <location file="Morphosis\SourceFile\Scene\Scene.h" line="64" info="Function in derived class"/>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &amp;#039;Initialize&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." verbose="The function &amp;#039;Initialize&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Scene\Scene.h" line="44" info="Virtual function in base class"/>
+            <location file="Morphosis\SourceFile\Scene\Scene.h" line="66" info="Function in derived class"/>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &amp;#039;Render&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." verbose="The function &amp;#039;Render&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Scene\Scene.h" line="45" info="Virtual function in base class"/>
+            <location file="Morphosis\SourceFile\Scene\Scene.h" line="67" info="Function in derived class"/>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &amp;#039;Update&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." verbose="The function &amp;#039;Update&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Scene\Scene.h" line="46" info="Virtual function in base class"/>
+            <location file="Morphosis\SourceFile\Scene\Scene.h" line="68" info="Function in derived class"/>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &amp;#039;ProcessInput&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." verbose="The function &amp;#039;ProcessInput&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Scene\Scene.h" line="49" info="Virtual function in base class"/>
+            <location file="Morphosis\SourceFile\Scene\Scene.h" line="70" info="Function in derived class"/>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &amp;#039;OnProcessingMouseMessage&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." verbose="The function &amp;#039;OnProcessingMouseMessage&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Scene\Scene.h" line="50" info="Virtual function in base class"/>
+            <location file="Morphosis\SourceFile\Scene\Scene.h" line="71" info="Function in derived class"/>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &amp;#039;OnProcessingKeyboardMessage&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." verbose="The function &amp;#039;OnProcessingKeyboardMessage&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Scene\Scene.h" line="51" info="Virtual function in base class"/>
+            <location file="Morphosis\SourceFile\Scene\Scene.h" line="72" info="Function in derived class"/>
+        </error>
+        <error id="noExplicitConstructor" severity="style" msg="Class &amp;#039;CVertex&amp;#039; has a constructor with 1 argument that is not explicit." verbose="Class &amp;#039;CVertex&amp;#039; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Mesh\Mesh.h" line="17"/>
+        </error>
+        <error id="noExplicitConstructor" severity="style" msg="Class &amp;#039;CTexturedVertex&amp;#039; has a constructor with 1 argument that is not explicit." verbose="Class &amp;#039;CTexturedVertex&amp;#039; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Mesh\Mesh.h" line="36"/>
+        </error>
+        <error id="noExplicitConstructor" severity="style" msg="Class &amp;#039;CIlluminatedVertex&amp;#039; has a constructor with 1 argument that is not explicit." verbose="Class &amp;#039;CIlluminatedVertex&amp;#039; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Mesh\Mesh.h" line="56"/>
+        </error>
+        <error id="noExplicitConstructor" severity="style" msg="Class &amp;#039;CIlluminatedTexturedVertex&amp;#039; has a constructor with 1 argument that is not explicit." verbose="Class &amp;#039;CIlluminatedTexturedVertex&amp;#039; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Mesh\Mesh.h" line="76"/>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &amp;#039;Render&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." verbose="The function &amp;#039;Render&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Mesh\Mesh.h" line="153" info="Virtual function in base class"/>
+            <location file="Morphosis\SourceFile\Mesh\Mesh.h" line="200" info="Function in derived class"/>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &amp;#039;SetAnimatedMatrix&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." verbose="The function &amp;#039;SetAnimatedMatrix&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Mesh\Mesh.h" line="157" info="Virtual function in base class"/>
+            <location file="Morphosis\SourceFile\Mesh\Mesh.h" line="217" info="Function in derived class"/>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &amp;#039;CreateConstantBufferResource&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." verbose="The function &amp;#039;CreateConstantBufferResource&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Mesh\Mesh.h" line="158" info="Virtual function in base class"/>
+            <location file="Morphosis\SourceFile\Mesh\Mesh.h" line="218" info="Function in derived class"/>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &amp;#039;UpdateConstantBuffer&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." verbose="The function &amp;#039;UpdateConstantBuffer&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Mesh\Mesh.h" line="159" info="Virtual function in base class"/>
+            <location file="Morphosis\SourceFile\Mesh\Mesh.h" line="219" info="Function in derived class"/>
+        </error>
+        <error id="noCopyConstructor" severity="warning" msg="Class &amp;#039;CTexture&amp;#039; does not have a copy constructor which is recommended since it has dynamic memory/resource allocation(s)." verbose="Class &amp;#039;CTexture&amp;#039; does not have a copy constructor which is recommended since it has dynamic memory/resource allocation(s)." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Material\Texture.cpp" line="9"/>
+        </error>
+        <error id="noOperatorEq" severity="warning" msg="Class &amp;#039;CTexture&amp;#039; does not have a operator= which is recommended since it has dynamic memory/resource allocation(s)." verbose="Class &amp;#039;CTexture&amp;#039; does not have a operator= which is recommended since it has dynamic memory/resource allocation(s)." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Material\Texture.cpp" line="9"/>
+        </error>
+        <error id="noCopyConstructor" severity="warning" msg="Class &amp;#039;CTestMesh&amp;#039; does not have a copy constructor which is recommended since it has dynamic memory/resource allocation(s)." verbose="Class &amp;#039;CTestMesh&amp;#039; does not have a copy constructor which is recommended since it has dynamic memory/resource allocation(s)." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Mesh\Mesh.cpp" line="804"/>
+        </error>
+        <error id="noOperatorEq" severity="warning" msg="Class &amp;#039;CTestMesh&amp;#039; does not have a operator= which is recommended since it has dynamic memory/resource allocation(s)." verbose="Class &amp;#039;CTestMesh&amp;#039; does not have a operator= which is recommended since it has dynamic memory/resource allocation(s)." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Mesh\Mesh.cpp" line="804"/>
+        </error>
+        <error id="virtualCallInConstructor" severity="warning" msg="Virtual function &amp;#039;CreateConstantBufferResource&amp;#039; is called from constructor &amp;#039;CAnimatedMesh(ID3D12Device*pd3dDevice,ID3D12GraphicsCommandList*pd3dCommandList,int nVertices,XMFLOAT3*pxmf3Positions,int nIndices,int*pnIndices)&amp;#039; at line 828. Dynamic binding is not used." verbose="Virtual function &amp;#039;CreateConstantBufferResource&amp;#039; is called from constructor &amp;#039;CAnimatedMesh(ID3D12Device*pd3dDevice,ID3D12GraphicsCommandList*pd3dCommandList,int nVertices,XMFLOAT3*pxmf3Positions,int nIndices,int*pnIndices)&amp;#039; at line 828. Dynamic binding is not used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Mesh\Mesh.cpp" line="828" info="Calling CreateConstantBufferResource"/>
+            <location file="Morphosis\SourceFile\Mesh\Mesh.h" line="218" info="CreateConstantBufferResource is a virtual function"/>
+        </error>
+        <error id="virtualCallInConstructor" severity="warning" msg="Virtual function &amp;#039;CreateConstantBufferResource&amp;#039; is called from constructor &amp;#039;CAnimatedMesh(ID3D12Device*pd3dDevice,ID3D12GraphicsCommandList*pd3dCommandList,ImportMeshData&amp;amp;m)&amp;#039; at line 861. Dynamic binding is not used." verbose="Virtual function &amp;#039;CreateConstantBufferResource&amp;#039; is called from constructor &amp;#039;CAnimatedMesh(ID3D12Device*pd3dDevice,ID3D12GraphicsCommandList*pd3dCommandList,ImportMeshData&amp;amp;m)&amp;#039; at line 861. Dynamic binding is not used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Mesh\Mesh.cpp" line="861" info="Calling CreateConstantBufferResource"/>
+            <location file="Morphosis\SourceFile\Mesh\Mesh.h" line="218" info="CreateConstantBufferResource is a virtual function"/>
+        </error>
+        <error id="nullPointerRedundantCheck" severity="warning" msg="Either the condition &amp;#039;if(pnIndices&amp;amp;&amp;amp;((nIndex0==j)||(nIndex1==j)||(nIndex2==j)))&amp;#039; is redundant or there is possible null pointer dereference: pnIndices." verbose="Either the condition &amp;#039;if(pnIndices&amp;amp;&amp;amp;((nIndex0==j)||(nIndex1==j)||(nIndex2==j)))&amp;#039; is redundant or there is possible null pointer dereference: pnIndices." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Mesh\Mesh.cpp" line="167" info="Assuming that condition &amp;#039;if(pnIndices&amp;amp;&amp;amp;((nIndex0==j)||(nIndex1==j)||(nIndex2==j)))&amp;#039; is not redundant"/>
+            <location file="Morphosis\SourceFile\Mesh\Mesh.cpp" line="164" info="Null pointer dereference"/>
+        </error>
+        <error id="variableScope" severity="style" msg="The scope of the variable &amp;#039;nIndex0&amp;#039; can be reduced." verbose="The scope of the variable &amp;#039;nIndex0&amp;#039; can be reduced. Warning: Be careful when fixing this message, especially when there are inner loops. Here is an example where cppcheck will write that the scope for &amp;#039;i&amp;#039; can be reduced:\012void f(int x)\012{\012    int i = 0;\012    if (x) {\012        // it&amp;#039;s safe to move &amp;#039;int i = 0;&amp;#039; here\012        for (int n = 0; n &amp;lt; 10; ++n) {\012            // it is possible but not safe to move &amp;#039;int i = 0;&amp;#039; here\012            do_something(&amp;amp;i);\012        }\012    }\012}\012When you see this message it is always safe to reduce the variable scope 1 level." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Mesh\Mesh.cpp" line="136"/>
+        </error>
+        <error id="variableScope" severity="style" msg="The scope of the variable &amp;#039;nIndex1&amp;#039; can be reduced." verbose="The scope of the variable &amp;#039;nIndex1&amp;#039; can be reduced. Warning: Be careful when fixing this message, especially when there are inner loops. Here is an example where cppcheck will write that the scope for &amp;#039;i&amp;#039; can be reduced:\012void f(int x)\012{\012    int i = 0;\012    if (x) {\012        // it&amp;#039;s safe to move &amp;#039;int i = 0;&amp;#039; here\012        for (int n = 0; n &amp;lt; 10; ++n) {\012            // it is possible but not safe to move &amp;#039;int i = 0;&amp;#039; here\012            do_something(&amp;amp;i);\012        }\012    }\012}\012When you see this message it is always safe to reduce the variable scope 1 level." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Mesh\Mesh.cpp" line="136"/>
+        </error>
+        <error id="variableScope" severity="style" msg="The scope of the variable &amp;#039;nIndex2&amp;#039; can be reduced." verbose="The scope of the variable &amp;#039;nIndex2&amp;#039; can be reduced. Warning: Be careful when fixing this message, especially when there are inner loops. Here is an example where cppcheck will write that the scope for &amp;#039;i&amp;#039; can be reduced:\012void f(int x)\012{\012    int i = 0;\012    if (x) {\012        // it&amp;#039;s safe to move &amp;#039;int i = 0;&amp;#039; here\012        for (int n = 0; n &amp;lt; 10; ++n) {\012            // it is possible but not safe to move &amp;#039;int i = 0;&amp;#039; here\012            do_something(&amp;amp;i);\012        }\012    }\012}\012When you see this message it is always safe to reduce the variable scope 1 level." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Mesh\Mesh.cpp" line="136"/>
+        </error>
+        <error id="shadowVar" severity="style" msg="Local variable &amp;#039;i&amp;#039; shadows outer variable" verbose="Local variable &amp;#039;i&amp;#039; shadows outer variable" sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Mesh\Mesh.cpp" line="308" info="Shadowed declaration"/>
+            <location file="Morphosis\SourceFile\Mesh\Mesh.cpp" line="413" info="Shadow variable"/>
+        </error>
+        <error id="shadowVar" severity="style" msg="Local variable &amp;#039;i&amp;#039; shadows outer variable" verbose="Local variable &amp;#039;i&amp;#039; shadows outer variable" sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Mesh\Mesh.cpp" line="438" info="Shadowed declaration"/>
+            <location file="Morphosis\SourceFile\Mesh\Mesh.cpp" line="543" info="Shadow variable"/>
+        </error>
+        <error id="shadowVar" severity="style" msg="Local variable &amp;#039;i&amp;#039; shadows outer variable" verbose="Local variable &amp;#039;i&amp;#039; shadows outer variable" sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Mesh\Mesh.cpp" line="567" info="Shadowed declaration"/>
+            <location file="Morphosis\SourceFile\Mesh\Mesh.cpp" line="672" info="Shadow variable"/>
+        </error>
+        <error id="shadowVar" severity="style" msg="Local variable &amp;#039;i&amp;#039; shadows outer variable" verbose="Local variable &amp;#039;i&amp;#039; shadows outer variable" sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Mesh\Mesh.cpp" line="695" info="Shadowed declaration"/>
+            <location file="Morphosis\SourceFile\Mesh\Mesh.cpp" line="744" info="Shadow variable"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;a&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;a&amp;#039; is assigned a value that is never used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Morphosis.cpp" line="110"/>
+        </error>
+        <error id="useInitializationList" severity="performance" msg="Variable &amp;#039;m_xmf3Move&amp;#039; is assigned in constructor body. Consider performing initialization in initialization list." verbose="When an object of a class is created, the constructors of all member variables are called consecutively in the order the variables are declared, even if you don&amp;#039;t explicitly write them to the initialization list. You could avoid assigning &amp;#039;m_xmf3Move&amp;#039; a value by passing the value to the constructor in the initialization list." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Object\Object.cpp" line="189"/>
+        </error>
+        <error id="useInitializationList" severity="performance" msg="Variable &amp;#039;m_xmf3Direction&amp;#039; is assigned in constructor body. Consider performing initialization in initialization list." verbose="When an object of a class is created, the constructors of all member variables are called consecutively in the order the variables are declared, even if you don&amp;#039;t explicitly write them to the initialization list. You could avoid assigning &amp;#039;m_xmf3Direction&amp;#039; a value by passing the value to the constructor in the initialization list." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Object\Object.cpp" line="433"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;result&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;result&amp;#039; is assigned a value that is never used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Object\Object.cpp" line="642"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;reason&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;reason&amp;#039; is assigned a value that is never used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\Object\Object.cpp" line="643"/>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &amp;#039;CreateInputLayout&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." verbose="The function &amp;#039;CreateInputLayout&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\PSO.h" line="35" info="Virtual function in base class"/>
+            <location file="Morphosis\SourceFile\PSO.h" line="54" info="Function in derived class"/>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &amp;#039;CreateVertexShader&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." verbose="The function &amp;#039;CreateVertexShader&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\PSO.h" line="41" info="Virtual function in base class"/>
+            <location file="Morphosis\SourceFile\PSO.h" line="56" info="Function in derived class"/>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &amp;#039;CreatePixelShader&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." verbose="The function &amp;#039;CreatePixelShader&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\PSO.h" line="42" info="Virtual function in base class"/>
+            <location file="Morphosis\SourceFile\PSO.h" line="57" info="Function in derived class"/>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &amp;#039;CreateRasterizerState&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." verbose="The function &amp;#039;CreateRasterizerState&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\PSO.h" line="36" info="Virtual function in base class"/>
+            <location file="Morphosis\SourceFile\PSO.h" line="83" info="Function in derived class"/>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &amp;#039;CreateBlendState&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." verbose="The function &amp;#039;CreateBlendState&amp;#039; overrides a function in a base class but is not marked with a &amp;#039;override&amp;#039; specifier." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\PSO.h" line="37" info="Virtual function in base class"/>
+            <location file="Morphosis\SourceFile\PSO.h" line="93" info="Function in derived class"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;hResult&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;hResult&amp;#039; is assigned a value that is never used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\PSO.cpp" line="24"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;result&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;result&amp;#039; is assigned a value that is never used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\PSO.cpp" line="127"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;pErrorString&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;pErrorString&amp;#039; is assigned a value that is never used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\PSO.cpp" line="130"/>
+        </error>
+        <error id="redundantAssignment" severity="style" msg="Variable &amp;#039;hResult&amp;#039; is reassigned a value before the old one has been used." verbose="Variable &amp;#039;hResult&amp;#039; is reassigned a value before the old one has been used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\stdafx.cpp" line="100" info=""/>
+            <location file="Morphosis\SourceFile\stdafx.cpp" line="132" info=""/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;d3dTextureResourceDesc&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;d3dTextureResourceDesc&amp;#039; is assigned a value that is never used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\stdafx.cpp" line="111"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;hResult&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;hResult&amp;#039; is assigned a value that is never used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\stdafx.cpp" line="132"/>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &amp;#039;nBytesUpdated&amp;#039; is assigned a value that is never used." verbose="Variable &amp;#039;nBytesUpdated&amp;#039; is assigned a value that is never used." sinceDate="2019-07-04">
+            <location file="Morphosis\SourceFile\stdafx.cpp" line="139"/>
+        </error>
+    </errors>
+</results>

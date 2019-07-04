@@ -121,8 +121,8 @@ public:
 	~CFollowCamera();
 
 public:
-	virtual void SetTarget(void *target);
-	virtual CObject* GetTarget();
-	virtual void Update(float fTimeElapsed);
-	virtual void SetLookAt(XMFLOAT3& xmf3LookAt);
+	virtual void SetTarget(void *target) override;
+	virtual CObject* GetTarget() override;
+	virtual void Update(float fTimeElapsed) override;
+	virtual void SetLookAt(XMFLOAT3& xmf3LookAt) override;
 };

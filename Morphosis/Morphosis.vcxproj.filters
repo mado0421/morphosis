@@ -137,9 +137,6 @@
     <ClInclude Include="SourceFile\Timer\Timer.h">
       <Filter>소스 파일\Timer</Filter>
     </ClInclude>
-    <ClInclude Include="SourceFile\d3dx12.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
     <ClInclude Include="SourceFile\Morphosis.h">
       <Filter>소스 파일</Filter>
     </ClInclude>
@@ -164,6 +161,7 @@
     <ClInclude Include="SourceFile\Animation\AnimationController.h">
       <Filter>소스 파일\Animation</Filter>
     </ClInclude>
+    <ClInclude Include="SourceFile\d3dx12.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Hlsl\Header.hlsli" />

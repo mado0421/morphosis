@@ -1,0 +1,267 @@
+<?xml version="1.0"?>
+<analyzerinfo checksum="181162694">
+        <error id="redundantAssignment" severity="style" msg="Variable &apos;hResult&apos; is reassigned a value before the old one has been used." verbose="Variable &apos;hResult&apos; is reassigned a value before the old one has been used." cwe="563">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\stdafx.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\stdafx.cpp" line="132"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\stdafx.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\stdafx.cpp" line="100"/>
+            <symbol>hResult</symbol>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &apos;d3dTextureResourceDesc&apos; is assigned a value that is never used." verbose="Variable &apos;d3dTextureResourceDesc&apos; is assigned a value that is never used." cwe="563">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\stdafx.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\stdafx.cpp" line="111"/>
+            <symbol>d3dTextureResourceDesc</symbol>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &apos;hResult&apos; is assigned a value that is never used." verbose="Variable &apos;hResult&apos; is assigned a value that is never used." cwe="563">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\stdafx.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\stdafx.cpp" line="132"/>
+            <symbol>hResult</symbol>
+        </error>
+        <error id="unreadVariable" severity="style" msg="Variable &apos;nBytesUpdated&apos; is assigned a value that is never used." verbose="Variable &apos;nBytesUpdated&apos; is assigned a value that is never used." cwe="563">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\stdafx.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\stdafx.cpp" line="139"/>
+            <symbol>nBytesUpdated</symbol>
+        </error>
+  <FileInfo check="ctu">
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:284:14" call-funcname="ToTransform" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="293" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:291:14" my-argnr="1"/>
+  </FileInfo>
+  <FileInfo check="Null pointer">
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:8:13" my-argnr="1" my-argname="pfS" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="8" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:8:13" my-argnr="2" my-argname="pfT" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="8" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:298:14" my-argnr="1" my-argname="pOutputMtx" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="306" value="0"/>
+  </FileInfo>
+  <FileInfo check="Uninitialized variables">
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:8:13" my-argnr="1" my-argname="pfS" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="8" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:8:13" my-argnr="2" my-argname="pfT" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="8" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/stdafx.h:103:24" my-argnr="1" my-argname="pd3dDevice" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/stdafx.cpp" linenr="36" value="0"/>
+  </FileInfo>
+  <FileInfo check="CheckUnusedFunctions">
+    <functiondecl functionName="CreateBufferResource" lineNumber="6"/>
+    <functiondecl functionName="CreateTextureResourceFromFile" lineNumber="92"/>
+    <functioncall functionName="Add"/>
+    <functioncall functionName="Angle"/>
+    <functioncall functionName="AngleFromQuat"/>
+    <functioncall functionName="AspectRatio"/>
+    <functioncall functionName="B"/>
+    <functioncall functionName="C"/>
+    <functioncall functionName="CreateCommittedResource"/>
+    <functioncall functionName="D"/>
+    <functioncall functionName="D3D12_BUFFER_SRV_FLAG_NONE"/>
+    <functioncall functionName="D3D12_CPU_PAGE_PROPERTY_UNKNOWN"/>
+    <functioncall functionName="D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING"/>
+    <functioncall functionName="D3D12_HEAP_FLAG_NONE"/>
+    <functioncall functionName="D3D12_HEAP_PROPERTIES"/>
+    <functioncall functionName="D3D12_HEAP_TYPE_UPLOAD"/>
+    <functioncall functionName="D3D12_MEMORY_POOL_UNKNOWN"/>
+    <functioncall functionName="D3D12_RESOURCE_BARRIER"/>
+    <functioncall functionName="D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES"/>
+    <functioncall functionName="D3D12_RESOURCE_BARRIER_FLAG_NONE"/>
+    <functioncall functionName="D3D12_RESOURCE_BARRIER_TYPE_TRANSITION"/>
+    <functioncall functionName="D3D12_RESOURCE_DESC"/>
+    <functioncall functionName="D3D12_RESOURCE_DIMENSION_BUFFER"/>
+    <functioncall functionName="D3D12_RESOURCE_FLAG_NONE"/>
+    <functioncall functionName="D3D12_RESOURCE_STATE_COPY_DEST"/>
+    <functioncall functionName="D3D12_RESOURCE_STATE_GENERIC_READ"/>
+    <functioncall functionName="D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE"/>
+    <functioncall functionName="D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER"/>
+    <functioncall functionName="D3D12_SRV_DIMENSION_BUFFER"/>
+    <functioncall functionName="D3D12_SRV_DIMENSION_TEXTURE2D"/>
+    <functioncall functionName="D3D12_SRV_DIMENSION_TEXTURE2DARRAY"/>
+    <functioncall functionName="D3D12_SRV_DIMENSION_TEXTURECUBE"/>
+    <functioncall functionName="D3D12_SUBRESOURCE_DATA"/>
+    <functioncall functionName="D3D12_TEXTURE_LAYOUT_ROW_MAJOR"/>
+    <functioncall functionName="DDS_ALPHA_MODE_UNKNOWN"/>
+    <functioncall functionName="DDS_LOADER_DEFAULT"/>
+    <functioncall functionName="DXGI_FORMAT_UNKNOWN"/>
+    <functioncall functionName="DepthOrArraySize"/>
+    <functioncall functionName="E"/>
+    <functioncall functionName="F"/>
+    <functioncall functionName="FLT_EPSILON"/>
+    <functioncall functionName="FarZ"/>
+    <functioncall functionName="Format"/>
+    <functioncall functionName="FovAngleY"/>
+    <functioncall functionName="G"/>
+    <functioncall functionName="GetDesc"/>
+    <functioncall functionName="GetRequiredIntermediateSize"/>
+    <functioncall functionName="H"/>
+    <functioncall functionName="I"/>
+    <functioncall functionName="ID3D12Resource"/>
+    <functioncall functionName="InterpolateMtx"/>
+    <functioncall functionName="IsZero"/>
+    <functioncall functionName="J"/>
+    <functioncall functionName="K"/>
+    <functioncall functionName="L"/>
+    <functioncall functionName="Lerp"/>
+    <functioncall functionName="LoadDDSTextureFromFileEx"/>
+    <functioncall functionName="M"/>
+    <functioncall functionName="Map"/>
+    <functioncall functionName="N"/>
+    <functioncall functionName="NULL"/>
+    <functioncall functionName="NearZ"/>
+    <functioncall functionName="O"/>
+    <functioncall functionName="P"/>
+    <functioncall functionName="Player"/>
+    <functioncall functionName="PosFromMtx"/>
+    <functioncall functionName="Projectile"/>
+    <functioncall functionName="Prop"/>
+    <functioncall functionName="Q"/>
+    <functioncall functionName="QuatFromMtx"/>
+    <functioncall functionName="QuatSlerp"/>
+    <functioncall functionName="R"/>
+    <functioncall functionName="ResourceBarrier"/>
+    <functioncall functionName="S"/>
+    <functioncall functionName="Subtract"/>
+    <functioncall functionName="T"/>
+    <functioncall functionName="TEST"/>
+    <functioncall functionName="ToTransform"/>
+    <functioncall functionName="TransformCoord"/>
+    <functioncall functionName="U"/>
+    <functioncall functionName="Unmap"/>
+    <functioncall functionName="UpdateSubresources"/>
+    <functioncall functionName="V"/>
+    <functioncall functionName="ViewHeight"/>
+    <functioncall functionName="ViewWidth"/>
+    <functioncall functionName="W"/>
+    <functioncall functionName="X"/>
+    <functioncall functionName="XMConvertToDegrees"/>
+    <functioncall functionName="XMConvertToRadians"/>
+    <functioncall functionName="XMFLOAT2"/>
+    <functioncall functionName="XMFLOAT3"/>
+    <functioncall functionName="XMLoadFloat2"/>
+    <functioncall functionName="XMLoadFloat3"/>
+    <functioncall functionName="XMLoadFloat4"/>
+    <functioncall functionName="XMLoadFloat4x4"/>
+    <functioncall functionName="XMMATRIX"/>
+    <functioncall functionName="XMMatrixIdentity"/>
+    <functioncall functionName="XMMatrixInverse"/>
+    <functioncall functionName="XMMatrixLookAtLH"/>
+    <functioncall functionName="XMMatrixOrthographicLH"/>
+    <functioncall functionName="XMMatrixPerspectiveFovLH"/>
+    <functioncall functionName="XMMatrixRotationQuaternion"/>
+    <functioncall functionName="XMMatrixRotationRollPitchYaw"/>
+    <functioncall functionName="XMMatrixTranspose"/>
+    <functioncall functionName="XMQuaternionIdentity"/>
+    <functioncall functionName="XMQuaternionRotationMatrix"/>
+    <functioncall functionName="XMQuaternionRotationRollPitchYaw"/>
+    <functioncall functionName="XMQuaternionSlerp"/>
+    <functioncall functionName="XMStoreFloat2"/>
+    <functioncall functionName="XMStoreFloat3"/>
+    <functioncall functionName="XMStoreFloat4"/>
+    <functioncall functionName="XMStoreFloat4x4"/>
+    <functioncall functionName="XMVector3AngleBetweenNormals"/>
+    <functioncall functionName="XMVector3Cross"/>
+    <functioncall functionName="XMVector3Dot"/>
+    <functioncall functionName="XMVector3Length"/>
+    <functioncall functionName="XMVector3NearEqual"/>
+    <functioncall functionName="XMVector3Normalize"/>
+    <functioncall functionName="XMVector3TransformCoord"/>
+    <functioncall functionName="XMVector3TransformNormal"/>
+    <functioncall functionName="XMVectorGetX"/>
+    <functioncall functionName="Y"/>
+    <functioncall functionName="Z"/>
+    <functioncall functionName="_1"/>
+    <functioncall functionName="_2"/>
+    <functioncall functionName="_3"/>
+    <functioncall functionName="_4"/>
+    <functioncall functionName="_41"/>
+    <functioncall functionName="_42"/>
+    <functioncall functionName="_43"/>
+    <functioncall functionName="_5"/>
+    <functioncall functionName="_6"/>
+    <functioncall functionName="_7"/>
+    <functioncall functionName="_8"/>
+    <functioncall functionName="_9"/>
+    <functioncall functionName="_In_reads_bytes_"/>
+    <functioncall functionName="__uuidof"/>
+    <functioncall functionName="asinf"/>
+    <functioncall functionName="assert"/>
+    <functioncall functionName="atan2f"/>
+    <functioncall functionName="bIsCubeMap"/>
+    <functioncall functionName="bNormalize"/>
+    <functioncall functionName="break"/>
+    <functioncall functionName="count"/>
+    <functioncall functionName="d3dBufferResourceDesc"/>
+    <functioncall functionName="d3dHeapPropertiesDesc"/>
+    <functioncall functionName="d3dHeapType"/>
+    <functioncall functionName="d3dReadRange"/>
+    <functioncall functionName="d3dResourceBarrier"/>
+    <functioncall functionName="d3dResourceDesc"/>
+    <functioncall functionName="d3dResourceInitialStates"/>
+    <functioncall functionName="d3dResourceStates"/>
+    <functioncall functionName="d3dShaderResourceViewDesc"/>
+    <functioncall functionName="d3dSubResourceData"/>
+    <functioncall functionName="ddsAlphaMode"/>
+    <functioncall functionName="ddsData"/>
+    <functioncall functionName="ddsDataSize"/>
+    <functioncall functionName="fB"/>
+    <functioncall functionName="fTemp"/>
+    <functioncall functionName="fValue"/>
+    <functioncall functionName="fabsf"/>
+    <functioncall functionName="false"/>
+    <functioncall functionName="if"/>
+    <functioncall functionName="int"/>
+    <functioncall functionName="lhs"/>
+    <functioncall functionName="m_xmf3Normal"/>
+    <functioncall functionName="memcpy"/>
+    <functioncall functionName="memset"/>
+    <functioncall functionName="mtx"/>
+    <functioncall functionName="mtx0"/>
+    <functioncall functionName="mtx1"/>
+    <functioncall functionName="nBytes"/>
+    <functioncall functionName="nSubResources"/>
+    <functioncall functionName="nTextureType"/>
+    <functioncall functionName="nullptr"/>
+    <functioncall functionName="pBufferDataBegin"/>
+    <functioncall functionName="pData"/>
+    <functioncall functionName="pOutputMtx"/>
+    <functioncall functionName="pd3dBuffer"/>
+    <functioncall functionName="pd3dCommandList"/>
+    <functioncall functionName="pd3dDevice"/>
+    <functioncall functionName="pd3dTexture"/>
+    <functioncall functionName="ppd3dUploadBuffer"/>
+    <functioncall functionName="pszFileName"/>
+    <functioncall functionName="q0"/>
+    <functioncall functionName="q1"/>
+    <functioncall functionName="quat"/>
+    <functioncall functionName="quat_2_euler_d3d"/>
+    <functioncall functionName="return"/>
+    <functioncall functionName="rhs"/>
+    <functioncall functionName="size"/>
+    <functioncall functionName="sizeof"/>
+    <functioncall functionName="sqrtf"/>
+    <functioncall functionName="sqw"/>
+    <functioncall functionName="switch"/>
+    <functioncall functionName="t"/>
+    <functioncall functionName="tmp"/>
+    <functioncall functionName="true"/>
+    <functioncall functionName="v0"/>
+    <functioncall functionName="v1"/>
+    <functioncall functionName="vSubresources"/>
+    <functioncall functionName="vector2Epsilon"/>
+    <functioncall functionName="vector3Epsilon"/>
+    <functioncall functionName="w"/>
+    <functioncall functionName="x"/>
+    <functioncall functionName="xmf2Result"/>
+    <functioncall functionName="xmf2Vector1"/>
+    <functioncall functionName="xmf2Vector2"/>
+    <functioncall functionName="xmf3EyePosition"/>
+    <functioncall functionName="xmf3LookAtPosition"/>
+    <functioncall functionName="xmf3Result"/>
+    <functioncall functionName="xmf3UpDirection"/>
+    <functioncall functionName="xmf3Vector"/>
+    <functioncall functionName="xmf3Vector1"/>
+    <functioncall functionName="xmf3Vector2"/>
+    <functioncall functionName="xmf4Result"/>
+    <functioncall functionName="xmf4Vector"/>
+    <functioncall functionName="xmf4Vector1"/>
+    <functioncall functionName="xmf4Vector2"/>
+    <functioncall functionName="xmf4x4Mtx0"/>
+    <functioncall functionName="xmf4x4Mtx1"/>
+    <functioncall functionName="xmf4x4OutputMtx"/>
+    <functioncall functionName="xmmtx4x4Matrix"/>
+    <functioncall functionName="xmmtx4x4Matrix1"/>
+    <functioncall functionName="xmmtx4x4Matrix2"/>
+    <functioncall functionName="xmmtx4x4Result"/>
+    <functioncall functionName="xmmtxTransform"/>
+    <functioncall functionName="xmvAngle"/>
+    <functioncall functionName="xmvVector1"/>
+    <functioncall functionName="xmvVector2"/>
+    <functioncall functionName="y"/>
+    <functioncall functionName="z"/>
+  </FileInfo>
+</analyzerinfo>

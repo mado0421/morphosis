@@ -1,0 +1,15 @@
+AnimationController.a1:Debug|Win32:C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Animation/AnimationController.cpp
+Camera.a1:Debug|Win32:C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Camera/Camera.cpp
+DDSTextureLoader12.a1:Debug|Win32:C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/DDSTextureLoader12.cpp
+Framework.a1:Debug|Win32:C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Framework/Framework.cpp
+Importer.a1:Debug|Win32:C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Importer/Importer.cpp
+Material.a1:Debug|Win32:C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Material/Material.cpp
+Texture.a1:Debug|Win32:C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Material/Texture.cpp
+Mesh.a1:Debug|Win32:C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Mesh/Mesh.cpp
+Model.a1:Debug|Win32:C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Mesh/Model.cpp
+Morphosis.a1:Debug|Win32:C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Morphosis.cpp
+Object.a1:Debug|Win32:C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.cpp
+PSO.a1:Debug|Win32:C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/PSO.cpp
+Scene.a1:Debug|Win32:C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Scene/Scene.cpp
+stdafx.a1:Debug|Win32:C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/stdafx.cpp
+Timer.a1:Debug|Win32:C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Timer/Timer.cpp
