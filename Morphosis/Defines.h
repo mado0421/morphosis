@@ -53,7 +53,7 @@ constexpr float		g_LevelSize		= 40.0f;
 constexpr float		g_DefaultUnitStandard		= 20.0f;
 
 extern unsigned int	gnCbvSrvDescriptorIncrementSize;
-constexpr float		g_PlayerDefaultSpeed		= g_DefaultUnitStandard * 10;
+constexpr float		g_PlayerDefaultSpeed		= g_DefaultUnitStandard * 1;
 constexpr float		g_ProjectileDefaultSpeed	= g_PlayerDefaultSpeed * 3.0f;
 constexpr int		g_NumAnimationBone			= 64;
 constexpr int		g_NumProjectilePerPlayer	= 30;
@@ -71,12 +71,6 @@ constexpr int		g_DefaultDamage				= 10;
 constexpr int		g_DefaultRPM				= 550;
 constexpr float		g_DefaultProjectileLifeTime = 5.0f;
 
-enum class Tag {
-	Prop,
-	Player,
-	Projectile
-};
-
 /*********************************************************************
 2019-06-16
 카메라 관련 상수
@@ -91,5 +85,23 @@ enum class Tag {
 constexpr float		g_Gravity				= 9.8f;
 
 
+
 constexpr float		g_MouseInputSensitivity = 50.0f;
 extern bool			g_IsMouseMode;
+
+enum class ColliderTag {
+	DEFAULT,
+	GROUNDCHECK,
+	HEIGHTCHECK,
+	HITBOX
+};
+enum class ColliderType
+{
+	BOX = 0,
+	SPHERE
+};
+enum class ObjectTag {
+	Prop,
+	Player,
+	Projectile
+};

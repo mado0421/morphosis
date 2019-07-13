@@ -432,7 +432,7 @@ CTestMesh::CTestMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3d
 	m_nSlot = 0;
 	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
-	float fx = size, fy = size, fz = size;
+	float fx = size/2, fy = size/2, fz = size/2;
 
 	XMFLOAT3 pxmf3Positions[36];
 	int i = 0;

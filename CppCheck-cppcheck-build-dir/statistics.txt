@@ -159,3 +159,10 @@ cppcheck-warning:18
 cppcheck-style:56
 cppcheck-performance:1
 cppcheck-portability:0
+[06.07.2019]
+1562421289352
+cppcheck-error:2
+cppcheck-warning:23
+cppcheck-style:102
+cppcheck-performance:1
+cppcheck-portability:0

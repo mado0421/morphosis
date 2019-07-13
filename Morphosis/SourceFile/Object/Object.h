@@ -36,21 +36,30 @@ class CAnimationController;
 class CTexture;
 struct AnimationClip;
 
-struct CollisionBox {
-	CollisionBox(BoundingOrientedBox b, XMFLOAT3 pos)
-		: collisionBox(b)
-		, Offset(pos) {}
-	BoundingOrientedBox collisionBox;
-	XMFLOAT3			Offset			= XMFLOAT3(0, 0, 0);
-};
-struct CollisionSphere {
-	CollisionSphere(BoundingSphere b, XMFLOAT3 pos)
-		: collisionSphere(b)
-		, Offset(pos) {}
-	BoundingSphere		collisionSphere;
-	XMFLOAT3			Offset			= XMFLOAT3(0, 0, 0);
-};
+class Collider {
+public:
+	Collider() = delete;
+	Collider(XMFLOAT3 center, XMFLOAT3 extents, XMFLOAT4 quaternion, XMFLOAT3 offset = XMFLOAT3(0, 0, 0), ColliderTag tag = ColliderTag::DEFAULT);
+	Collider(XMFLOAT3 center, float radius, XMFLOAT3 offset = XMFLOAT3(0, 0, 0), ColliderTag tag = ColliderTag::DEFAULT);
+	void Update(XMFLOAT3 position, XMFLOAT4 rotation);
+	bool IsCollide(const Collider& other);
+	void SetTag(const string tag);
 
+private:
+	XMFLOAT3 GetRotatedOffset(XMFLOAT4 rotation);
+	void SetPosition(XMFLOAT3 position, XMFLOAT3 rotatedOffset);
+	void SetRotation(XMFLOAT4 rotation);
+
+
+
+private:
+	BoundingOrientedBox m_Box;
+	BoundingSphere		m_Sphere;
+	XMFLOAT3			m_xmf3Offset;
+	ColliderType		m_Type;
+	ColliderTag					m_Tag;
+
+};
 
 class CObject
 {
@@ -73,8 +82,8 @@ public:
 		m_ModelList.push_back(*model);
 	}
 	void AddAnimClip(AnimationClip* animClip);
-	void AddCollider(BoundingOrientedBox box, const XMFLOAT3& Offset);
-	void AddCollider(BoundingSphere sphere, const XMFLOAT3& Offset);
+	void AddCollider(XMFLOAT3 center, XMFLOAT3 extents, XMFLOAT4 quaternion, XMFLOAT3 offset = XMFLOAT3(0, 0, 0), ColliderTag tag = ColliderTag::DEFAULT);
+	void AddCollider(XMFLOAT3 center, float radius, XMFLOAT3 offset = XMFLOAT3(0, 0, 0), ColliderTag tag = ColliderTag::DEFAULT);
 	void ChangeAnimClip(const char* animClipName);
 	void SetPosition(float x, float y, float z);
 	void SetPosition(const XMFLOAT3 xmf3Position);
@@ -85,6 +94,7 @@ public:
 	const XMFLOAT3	GetRight();
 	const XMMATRIX	GetAnimationMatrix(int boneIdx);
 	const XMFLOAT3	GetCameraTargetPos();
+	const XMFLOAT4	GetQuaternion();
 	const int		GetNumAnimationBone();
 	const int		GetTeam() const { return m_Team; }
 
@@ -93,6 +103,7 @@ public:
 	void SetRight(XMFLOAT3 right);
 	void SetCameraTargetOffset(XMFLOAT3 pos);
 	void SetTeam(int team) { m_Team = team; }
+	void SetRotation(const XMFLOAT3& angle);
 
 	virtual void Enable() { SetAlive(true); }
 	virtual void Disable() { SetAlive(false); }
@@ -104,9 +115,11 @@ public:
 
 	void AddCollideInfo(CObject* obj);
 
+
+
 public:
 	XMFLOAT4X4						m_xmf4x4World;
-	Tag								m_Tag;
+	ObjectTag						m_Tag;
 
 protected:
 	bool							m_IsAlive;
@@ -141,8 +154,9 @@ protected:
 	2019-06-18
 	충돌체 관련 부분
 	*********************************************************************/
-	std::vector<CollisionBox>		m_CollisionBox;
-	std::vector<CollisionSphere>	m_CollisionSphere;
+	//std::vector<CollisionBox>		m_CollisionBox;
+	//std::vector<CollisionSphere>	m_CollisionSphere;
+	std::vector<Collider>			m_Collider;
 	std::queue<CObject*>			m_CollideInfo;
 };
 
@@ -210,6 +224,8 @@ protected:
 
 		count
 	};
+
+	bool			RestorePosition();
 
 protected:
 	/*********************************************************************

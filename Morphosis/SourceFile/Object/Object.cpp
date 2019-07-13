@@ -17,7 +17,7 @@ CObject::CObject()
 	m_xmf3CameraTargetOffset= XMFLOAT3(0, 0, 0);
 	m_AnimationState		= static_cast<int>(0);
 	m_Team					= TEAM_DEFAULT;
-	m_Tag					= Tag::Prop;
+	m_Tag					= ObjectTag::Prop;
 	m_fHeightVelocity		= 0.0f;
 	m_IsGround				= false;
 }
@@ -69,13 +69,15 @@ void CObject::AddAnimClip(AnimationClip * animClip)
 		m_AnimationController = new CAnimationController();
 	m_AnimationController->AddAnimData(animClip);
 }
-void CObject::AddCollider(BoundingOrientedBox box, const XMFLOAT3& Offset)
+void CObject::AddCollider(XMFLOAT3 center, XMFLOAT3 extents, XMFLOAT4 quaternion, XMFLOAT3 offset, ColliderTag tag)
 {
-	m_CollisionBox.push_back(CollisionBox(box, Offset));
+	m_Collider.emplace_back(center, extents, quaternion, offset, tag);
+	m_Collider[m_Collider.size()-1].Update(GetPosition(), GetQuaternion());
 }
-void CObject::AddCollider(BoundingSphere sphere, const XMFLOAT3& Offset)
+void CObject::AddCollider(XMFLOAT3 center, float radius, XMFLOAT3 offset, ColliderTag tag)
 {
-	m_CollisionSphere.push_back(CollisionSphere(sphere, Offset));
+	m_Collider.emplace_back(center, radius, offset, tag);
+	m_Collider[m_Collider.size() - 1].Update(GetPosition(), GetQuaternion());
 }
 void CObject::ChangeAnimClip(const char * animClipName)
 {
@@ -146,10 +148,35 @@ void CObject::SetCameraTargetOffset(XMFLOAT3 pos)
 {
 	m_xmf3CameraTargetOffset = pos;
 }
+void CObject::SetRotation(const XMFLOAT3& angle)
+{
+	XMMATRIX xmmtxRotate = XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(XMConvertToRadians(angle.x), XMConvertToRadians(angle.y), XMConvertToRadians(angle.z)));
+	XMFLOAT3 xmf3Right	= XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
+	XMFLOAT3 xmf3Up		= XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
+	XMFLOAT3 xmf3Look	= XMFLOAT3(m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33);
+
+	xmf3Look	= Vector3::TransformNormal(xmf3Look, xmmtxRotate);
+	xmf3Right	= Vector3::TransformNormal(xmf3Right, xmmtxRotate);
+
+	xmf3Look	= Vector3::Normalize(xmf3Look);
+	xmf3Right	= Vector3::CrossProduct(xmf3Up, xmf3Look, true);
+	xmf3Up		= Vector3::CrossProduct(xmf3Look, xmf3Right, true);
+
+	m_xmf4x4World._11 = xmf3Right.x;	m_xmf4x4World._12 = xmf3Right.y;	m_xmf4x4World._13 = xmf3Right.z;
+	m_xmf4x4World._21 = xmf3Up.x;		m_xmf4x4World._22 = xmf3Up.y;		m_xmf4x4World._23 = xmf3Up.z;
+	m_xmf4x4World._31 = xmf3Look.x;		m_xmf4x4World._32 = xmf3Look.y;		m_xmf4x4World._33 = xmf3Look.z;
+
+	for (int i = 0; i < m_Collider.size(); ++i) m_Collider[i].Update(GetPosition(), GetQuaternion());
+
+}
 XMFLOAT3 const CObject::GetCameraTargetPos()
 {
 	return Vector3::Add(GetPosition(), m_xmf3CameraTargetOffset);
 	//return m_xmf3CameraTargetOffset;
+}
+const XMFLOAT4 CObject::GetQuaternion()
+{
+	return Vector4::QuatFromMtx(m_xmf4x4World);
 }
 const bool CObject::IsCollide(CObject* other)
 {
@@ -157,14 +184,8 @@ const bool CObject::IsCollide(CObject* other)
 	2019-06-18
 	other의 충돌체들과 내 충돌체들을 전부 비교해야 함.
 	*********************************************************************/
-	for (auto otb = other->m_CollisionBox.cbegin(); otb != other->m_CollisionBox.cend(); ++otb) {
-		for (auto myb = m_CollisionBox.cbegin(); myb != m_CollisionBox.cend(); ++myb)		if (otb->collisionBox.Intersects(myb->collisionBox)) return true;
-		for (auto mys = m_CollisionSphere.cbegin(); mys != m_CollisionSphere.cend(); ++mys) if (otb->collisionBox.Intersects(mys->collisionSphere)) return true;
-	}
-	for (auto ots = other->m_CollisionSphere.cbegin(); ots != other->m_CollisionSphere.cend(); ++ots) {
-		for (auto myb = m_CollisionBox.cbegin(); myb != m_CollisionBox.cend(); ++myb)		if (ots->collisionSphere.Intersects(myb->collisionBox)) return true;
-		for (auto mys = m_CollisionSphere.cbegin(); mys != m_CollisionSphere.cend(); ++mys) if (ots->collisionSphere.Intersects(mys->collisionSphere)) return true;
-	}
+	for (int i = 0; i < m_Collider.size(); ++i) 
+		for (int j = 0; j < other->m_Collider.size(); ++j) if (m_Collider[i].IsCollide(other->m_Collider[j])) return true;
 
 	return false;
 }
@@ -185,7 +206,7 @@ CPlayer::CPlayer() : CObject()
 	m_fSpeed					= g_PlayerDefaultSpeed;
 	m_fRemainingTimeOfFire		= 0.0f;
 	m_fRPM						= (1 / static_cast<float>(g_DefaultRPM)) * 60.0f;
-	m_Tag						= Tag::Player;
+	m_Tag						= ObjectTag::Player;
 	m_xmf3Move					= XMFLOAT3(0, 0, 0);
 	m_xmf3SpawnPoint			= GetPosition();
 	m_HealthPoint				= g_DefaultHealthPoint;
@@ -222,9 +243,9 @@ void CPlayer::Update(float fTimeElapsed)
 	else m_fHeightVelocity -= fTimeElapsed /** g_Gravity*/;
 
 
-	XMFLOAT3 xmf3Right = XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
-	XMFLOAT3 xmf3Up = XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
-	XMFLOAT3 xmf3Look = XMFLOAT3(m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33);
+	XMFLOAT3 xmf3Right	= XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
+	XMFLOAT3 xmf3Up		= XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
+	XMFLOAT3 xmf3Look	= XMFLOAT3(m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33);
 	m_xmf3Move = Move(fTimeElapsed);
 
 	float rotationAngle = Rotate(fTimeElapsed);
@@ -249,52 +270,40 @@ void CPlayer::Update(float fTimeElapsed)
 	/*********************************************************************
 	2019-06-18
 	충돌체 파트
+
+	2019-07-06
+	충돌체를 통합해서 관리하며 업데이트 부분 변경
+
+	아니 저걸 그냥 LateUpdate()에서 해주자.
 	*********************************************************************/
-	for (auto myb = m_CollisionBox.begin(); myb != m_CollisionBox.end(); ++myb)
-		myb->collisionBox.Center = Vector3::Add(myb->collisionBox.Center, m_xmf3Move);
-	for (auto mys = m_CollisionSphere.begin(); mys != m_CollisionSphere.end(); ++mys)
-		mys->collisionSphere.Center = Vector3::Add(mys->collisionSphere.Center, m_xmf3Move);
+
 
 	/*********************************************************************
 	2019-06-17
 	애니메이션 파트
 	*********************************************************************/
-	if (m_AnimationController) m_AnimationController->Update(fTimeElapsed);
+	if (m_AnimationController) {
+		m_AnimationController->Update(fTimeElapsed);
 
-	if (static_cast<int>(AnimationState::IDLE) == m_AnimationState) {
-		if (IsMoving()) {
-			m_AnimationState = static_cast<int>(AnimationState::RUN);
-			m_AnimationController->ChangeAnimClip("PlayerRun");
+		if (static_cast<int>(AnimationState::IDLE) == m_AnimationState) {
+			if (IsMoving()) {
+				m_AnimationState = static_cast<int>(AnimationState::RUN);
+				m_AnimationController->ChangeAnimClip("PlayerRun");
+			}
+		}
+		else if (static_cast<int>(AnimationState::RUN) == m_AnimationState) {
+			if (!IsMoving()) {
+				m_AnimationState = static_cast<int>(AnimationState::IDLE);
+				m_AnimationController->ChangeAnimClip("PlayerIdle");
+			}
+		}
+		else if (static_cast<int>(AnimationState::FIRE) == m_AnimationState) {
+			if (m_AnimationController->IsClipEnd()) {
+				m_AnimationState = static_cast<int>(AnimationState::RUN);
+				m_AnimationController->ChangeAnimClip("PlayerRun");
+			}
 		}
 	}
-	else if (static_cast<int>(AnimationState::RUN) == m_AnimationState) {
-		if (!IsMoving()) {
-			m_AnimationState = static_cast<int>(AnimationState::IDLE);
-			m_AnimationController->ChangeAnimClip("PlayerIdle");
-		}
-	}
-	else if (static_cast<int>(AnimationState::FIRE) == m_AnimationState) {
-		if (m_AnimationController->IsClipEnd()) {
-			m_AnimationState = static_cast<int>(AnimationState::RUN);
-			m_AnimationController->ChangeAnimClip("PlayerRun");
-		}
-	}
-
-
-
-
-	//if (static_cast<int>(AnimationState::IDLE) == m_AnimationState) {
-	//	if (IsMoving()) {
-	//		m_AnimationState = static_cast<int>(AnimationState::RUN);
-	//		m_AnimationController->ChangeAnimClip("PlayerRun");
-	//	}
-	//}
-	//else {
-	//	if (!IsMoving()) {
-	//		m_AnimationState = static_cast<int>(AnimationState::IDLE);
-	//		m_AnimationController->ChangeAnimClip("PlayerIdle");
-	//	}
-	//}
 
 	TriggerOff();
 
@@ -305,35 +314,28 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 
 	bool alreadyRestore = false;	// 이동을 무효 처리 했는지 여부
 	while (!m_CollideInfo.empty()) {
-		if (!alreadyRestore && Tag::Prop == m_CollideInfo.front()->m_Tag) {
-			alreadyRestore = true;
-			m_xmf4x4World._41 -= m_xmf3Move.x;
-			m_xmf4x4World._42 -= m_xmf3Move.y;
-			m_xmf4x4World._43 -= m_xmf3Move.z;
-			for (auto myb = m_CollisionBox.begin(); myb != m_CollisionBox.end(); ++myb)
-				myb->collisionBox.Center = Vector3::Subtract(myb->collisionBox.Center, m_xmf3Move);
-			for (auto mys = m_CollisionSphere.begin(); mys != m_CollisionSphere.end(); ++mys)
-				mys->collisionSphere.Center = Vector3::Subtract(mys->collisionSphere.Center, m_xmf3Move);
-		}
-		if (!alreadyRestore && Tag::Player == m_CollideInfo.front()->m_Tag) {
-			alreadyRestore = true;
-			m_xmf4x4World._41 -= m_xmf3Move.x;
-			m_xmf4x4World._42 -= m_xmf3Move.y;
-			m_xmf4x4World._43 -= m_xmf3Move.z;
-			for (auto myb = m_CollisionBox.begin(); myb != m_CollisionBox.end(); ++myb)
-				myb->collisionBox.Center = Vector3::Subtract(myb->collisionBox.Center, m_xmf3Move);
-			for (auto mys = m_CollisionSphere.begin(); mys != m_CollisionSphere.end(); ++mys)
-				mys->collisionSphere.Center = Vector3::Subtract(mys->collisionSphere.Center, m_xmf3Move);
-		}
-		if (Tag::Projectile == m_CollideInfo.front()->m_Tag) {
-			dynamic_cast<CProjectile*>(m_CollideInfo.front())->Damage(this);
-		}
-
+		if (!alreadyRestore && ObjectTag::Prop == m_CollideInfo.front()->m_Tag) alreadyRestore = RestorePosition();
+		if (!alreadyRestore && ObjectTag::Player == m_CollideInfo.front()->m_Tag) alreadyRestore = RestorePosition();	
+		if (ObjectTag::Projectile == m_CollideInfo.front()->m_Tag) dynamic_cast<CProjectile*>(m_CollideInfo.front())->Damage(this);
+		
 		m_CollideInfo.pop();
 	}
 
-	if (m_HealthPoint <= 0) CPlayer::Disable();
+	/*********************************************************************
+	2019-06-18
+	충돌체 파트
+	
+	2019-07-06
+	충돌체를 통합해서 관리하며 업데이트 부분 변경
+	
+	아니 저걸 그냥 LateUpdate()에서 해주자.
 
+	-> 해서 여기로 옮겨옴.
+	*********************************************************************/
+	for (int i = 0; i < m_Collider.size(); ++i) m_Collider[i].Update(GetPosition(), GetQuaternion());
+
+
+	if (m_HealthPoint <= 0) CPlayer::Disable();
 }
 void CPlayer::ProcessInput(UCHAR * pKeysBuffer, float mouse)
 {
@@ -360,12 +362,10 @@ void CPlayer::Enable()
 	2019-07-03
 	위치를 초기화시킬 때, 플레이어의 위치에 오프셋만큼 더해서(상대좌표 개념) 옮겨준다.
 
-	*********************************************************************/
+	2019-07-06
+	충돌체 위치 원래 변경 해줬었는데 이제 Update()에서 자동으로 변경할 예정이므로 삭제함.
 
-	for (auto myb = m_CollisionBox.begin(); myb != m_CollisionBox.end(); ++myb)
-		myb->collisionBox.Center = Vector3::Add( GetPosition(), myb->Offset );
-	for (auto mys = m_CollisionSphere.begin(); mys != m_CollisionSphere.end(); ++mys)
-		mys->collisionSphere.Center = Vector3::Add(GetPosition(), mys->Offset);
+	*********************************************************************/
 	CObject::Enable();
 }
 void CPlayer::Disable()
@@ -376,7 +376,7 @@ void CPlayer::Disable()
 void CPlayer::Shoot()
 {
 	m_AnimationState = static_cast<int>(AnimationState::FIRE);
-	m_AnimationController->ChangeAnimClip("PlayerFire");
+	if(m_AnimationController) m_AnimationController->ChangeAnimClip("PlayerFire");
 	m_fRemainingTimeOfFire = m_fRPM;
 }
 bool CPlayer::IsShootable()
@@ -420,7 +420,15 @@ float CPlayer::Rotate(float fTimeElapsed)
 }
 void CPlayer::SetHandMatrix()
 {
-	m_xmf4x4Hand = m_AnimationController->GetPositionOfBone("Bip001 L Hand");
+	if(m_AnimationController) m_xmf4x4Hand = m_AnimationController->GetPositionOfBone("Bip001 L Hand");
+}
+
+bool CPlayer::RestorePosition()
+{
+	m_xmf4x4World._41 -= m_xmf3Move.x;
+	m_xmf4x4World._42 -= m_xmf3Move.y;
+	m_xmf4x4World._43 -= m_xmf3Move.z;
+	return true;
 }
 
 /*********************************************************************
@@ -433,7 +441,7 @@ CProjectile::CProjectile() : CObject()
 	m_xmf3Direction = XMFLOAT3(0, 0, 0);
 	m_fSpeed		= g_ProjectileDefaultSpeed;
 	m_fLifeTime		= g_DefaultProjectileLifeTime;
-	m_Tag			= Tag::Projectile;
+	m_Tag			= ObjectTag::Projectile;
 	m_BaseDamage	= g_DefaultDamage;
 }
 void CProjectile::Initialize(CObject * obj)
@@ -450,10 +458,8 @@ void CProjectile::Initialize(CObject * obj)
 	XMFLOAT3 pos = obj->GetPosition();
 	pos.y += 20;
 	SetPosition(pos);
-	for (auto myb = m_CollisionBox.begin(); myb != m_CollisionBox.end(); ++myb)
-		myb->collisionBox.Center = pos;
-	for (auto mys = m_CollisionSphere.begin(); mys != m_CollisionSphere.end(); ++mys)
-		mys->collisionSphere.Center = pos;
+	for (int i = 0; i < m_Collider.size(); ++i) m_Collider[i].Update(GetPosition(), GetQuaternion());
+
 
 	/*********************************************************************
 	2019-06-17
@@ -514,10 +520,8 @@ void CProjectile::Update(float fTimeElapsed)
 	2019-06-18
 	충돌체 파트
 	*********************************************************************/
-	for (auto myb = m_CollisionBox.begin(); myb != m_CollisionBox.end(); ++myb)
-		myb->collisionBox.Center = Vector3::Add(myb->collisionBox.Center, xmf3Move);
-	for (auto mys = m_CollisionSphere.begin(); mys != m_CollisionSphere.end(); ++mys)
-		mys->collisionSphere.Center = Vector3::Add(mys->collisionSphere.Center, xmf3Move);
+	for (int i = 0; i < m_Collider.size(); ++i) m_Collider[i].Update(GetPosition(), GetQuaternion());
+
 }
 void CProjectile::LateUpdate(float fTimeElapsed)
 {
@@ -583,12 +587,19 @@ void CObjectManager::Render()
 
 	//}
 
+	//m_pd3dCommandList->SetPipelineState(m_PSO[1]);
+	//for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Render(m_pd3dCommandList);
+	//for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->Render(m_pd3dCommandList);
+
+	//m_pd3dCommandList->SetPipelineState(m_PSO[0]);
+	//for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->Render(m_pd3dCommandList);
+
 	m_pd3dCommandList->SetPipelineState(m_PSO[1]);
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Render(m_pd3dCommandList);
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->Render(m_pd3dCommandList);
-
-	m_pd3dCommandList->SetPipelineState(m_PSO[0]);
 	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->Render(m_pd3dCommandList);
+
+	//m_pd3dCommandList->SetPipelineState(m_PSO[0]);
 }
 void CObjectManager::Update(float fTime)
 {
@@ -751,14 +762,16 @@ void CObjectManager::CreateObjectData()
 	텍스처도 여기서 넣어야 할 것 같음. 텍스처를 먼저 만들어둔다.
 	텍스처는 서술자 힙 만들고 나서 해야 되는거 아냐?
 	*********************************************************************/
-	int nTexture = 3;
-	wstring fileNames[3];
+	int nTexture = 4;
+	wstring fileNames[4];
 	fileNames[0] = LASSETPATH;
 	fileNames[0] += L"0615_Box_diff.dds";
 	fileNames[1] = LASSETPATH;
 	fileNames[1] += L"character_2_diff_test3.dds";
 	fileNames[2] = LASSETPATH;
 	fileNames[2] += L"0618_LevelTest_diff.dds";
+	fileNames[3] = LASSETPATH;
+	fileNames[3] += L"box_diff.dds";
 	for (int i = 0; i < nTexture; ++i) {
 		CTexture* texture = new CTexture(RESOURCE_TEXTURE2D);
 		texture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, fileNames[i].c_str());
@@ -775,67 +788,74 @@ void CObjectManager::CreateObjectData()
 	CreateConstantBufferView();
 
 	int count = 0;
-	for (unsigned int i = 0; i < m_nProps; i++) {
+	for (int i = 0; i < m_nProps; i++) {
 		CObject* obj = new CObject();
-		importer.ImportModel("0618_LevelTest", m_TextureList[2], obj);
-		for (int j = 0; j < m_LevelDataDesc.nCollisionMaps; ++j) {
-			obj->AddCollider(BoundingOrientedBox(
-				m_LevelDataDesc.CollisionPosition[j],
-				m_LevelDataDesc.CollisionScale[j],
-				m_LevelDataDesc.CollisionRotation[j]
-			), XMFLOAT3(0, 0, 0));
-		}
-		obj->SetPosition(0, 0, 0);
-		//if (count == 9) {
-		//	importer.ImportModel("0618_LevelTest", m_TextureList[2], obj);
-		//	for (int j = 0; j < m_LevelDataDesc.nCollisionMaps; ++j) {
-		//		//XMFLOAT3 tmp = Vector3::Multiply(0.5f, m_LevelDataDesc.CollisionScale[j]);
-		//		//obj->AddCollider(BoundingOrientedBox(
-		//		//	m_LevelDataDesc.CollisionPosition[j],
-		//		//	tmp,
-		//		//	m_LevelDataDesc.CollisionRotation[j])
-		//		//);
-		//		obj->AddCollider(BoundingOrientedBox(
-		//			m_LevelDataDesc.CollisionPosition[j],
-		//			m_LevelDataDesc.CollisionScale[j],
-		//			m_LevelDataDesc.CollisionRotation[j])
-		//		);
-		//	}
-		//	obj->SetPosition(0, 0, 0);
+		//importer.ImportModel("0618_LevelTest", m_TextureList[2], obj);
+		//for (int j = 0; j < m_LevelDataDesc.nCollisionMaps; ++j) {
+		//	/*********************************************************************
+		//	2019-07-06
+		//	인자로 이렇게 전해주는데 안에서 생성하고 그걸 삭제하는데서 문제가 생기나 봄
+		//	복사생성 등의 문제?
+		//	*********************************************************************/
+		//	obj->AddCollider(
+		//		m_LevelDataDesc.CollisionPosition[j],
+		//		m_LevelDataDesc.CollisionScale[j],
+		//		m_LevelDataDesc.CollisionRotation[j], 
+		//		XMFLOAT3(0, 0, 0));
 		//}
-		//else {
-		//	importer.ImportModel("0615_Box", m_TextureList[0], obj);
-		//	obj->SetPosition(0, 0, i * 64.0f);
-		//	obj->AddCollider(BoundingOrientedBox(obj->GetPosition(), XMFLOAT3(9.69 / 2, 6.689 / 2, 5.122 / 2), XMFLOAT4(0, 0, 0, 1)));
-		//}
+
+		CModel *model = new CModel();
+		CTestMesh *mesh = new CTestMesh(m_pd3dDevice, m_pd3dCommandList, 100);
+		model->SetMesh(mesh);
+		model->SetTexture(m_TextureList[3]);
+		obj->AddModel(model);
+		obj->SetPosition(50 * i, 0, 0);
+		obj->AddCollider(
+			XMFLOAT3(0, 0, 0),
+			XMFLOAT3(50, 50, 50),
+			XMFLOAT4(0, 0, 0, 1)
+		);
+		obj->SetRotation(XMFLOAT3(-30, 0, 0));
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 		m_Props.push_back(obj);
 	}
-	for (unsigned int i = 0; i < m_nPlayers; i++) {
+	for (int i = 0; i < m_nPlayers; i++) {
 		CPlayer* obj = new CPlayer();
 
-		importer.ImportModel("0603_CharacterIdle", m_TextureList[1], obj);
-		importer.ImportAnimClip("0603_CharacterIdle", obj);
-		importer.ImportAnimClip("0603_CharacterRun", obj);
-		importer.ImportAnimClip("0603_CharacterFire", obj);
-		importer.ImportAnimClip("0603_CharacterStartJump", obj);
-		importer.ImportAnimClip("0603_CharacterEndJump", obj);
-		importer.ImportAnimClip("0603_CharacterDied", obj);
-		obj->SetPosition(0, 1000, i * g_DefaultUnitStandard * 3);
-		obj->SetSpawnPoint(obj->GetPosition());
-		XMFLOAT3 pos = obj->GetPosition();
-		pos.y += 4;
-		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(8, 2.577f, 8), XMFLOAT4(0, 0, 0, 1)), XMFLOAT3(0,0,0));
-		pos = obj->GetPosition();
-		pos.y += 16.807f;
-		obj->AddCollider(BoundingOrientedBox(pos, XMFLOAT3(11.766f / 2, 16.807f / 2, 13.198f / 2), XMFLOAT4(0, 0, 0, 1)), XMFLOAT3(0, 0, 0));
+		//importer.ImportModel("0603_CharacterIdle", m_TextureList[1], obj);
+		//importer.ImportAnimClip("0603_CharacterIdle", obj);
+		//importer.ImportAnimClip("0603_CharacterRun", obj);
+		//importer.ImportAnimClip("0603_CharacterFire", obj);
+		//importer.ImportAnimClip("0603_CharacterStartJump", obj);
+		//importer.ImportAnimClip("0603_CharacterEndJump", obj);
+		//importer.ImportAnimClip("0603_CharacterDied", obj);
+		//obj->SetPosition(0, 0, i * g_DefaultUnitStandard * 3);
+		//obj->SetSpawnPoint(obj->GetPosition());
+		//XMFLOAT3 pos = obj->GetPosition();
+		//pos.y += 4;
+		//obj->AddCollider(pos, XMFLOAT3(8, 2.577f, 8), XMFLOAT4(0, 0, 0, 1), XMFLOAT3(0,0,0), ColliderTag::GROUNDCHECK);
+		//pos = obj->GetPosition();
+		//pos.y += 16.807f;
+		//obj->AddCollider(pos, XMFLOAT3(11.766f / 2, 16.807f / 2, 13.198f / 2), XMFLOAT4(0, 0, 0, 1), XMFLOAT3(0, 0, 0));
+		//obj->SetCameraTargetOffset(XMFLOAT3(0, 47, -21));
+		CModel *model = new CModel();
+		CTestMesh *mesh = new CTestMesh(m_pd3dDevice, m_pd3dCommandList, 10);
+		model->SetMesh(mesh);
+		model->SetTexture(m_TextureList[3]);
+		obj->AddModel(model);
+		obj->SetPosition(0, 100, 0);
+		obj->AddCollider(
+			XMFLOAT3(0, 0, 0),
+			XMFLOAT3(5, 5, 5),
+			XMFLOAT4(0, 0, 0, 1)
+		);
 
 		obj->SetTeam((i % 2) + 1);
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
-		obj->SetCameraTargetOffset(XMFLOAT3(0, 47, -21));
+		obj->SetCameraTargetOffset(XMFLOAT3(0, 0, 0));
 		m_Players.push_back(obj);
 	}
-	for (unsigned int i = 0; i < m_nProjectiles; i++) {
+	for (int i = 0; i < m_nProjectiles; i++) {
 		CProjectile* obj = new CProjectile();
 
 		/*********************************************************************
@@ -844,7 +864,7 @@ void CObjectManager::CreateObjectData()
 		*********************************************************************/
 		importer.ImportModel("0615_Box", m_TextureList[0], obj);
 		obj->SetAlive(false);
-		obj->AddCollider(BoundingSphere(XMFLOAT3(0,0,0), 10.0f), XMFLOAT3(0, 0, 0));
+		obj->AddCollider(XMFLOAT3(0,0,0), 10.0f, XMFLOAT3(0, 0, 0));
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 		m_Projectiles.push_back(obj);
 	}
@@ -915,4 +935,90 @@ void CObjectManager::CollisionCheck()
 
 		}
 	}
+}
+
+//Collider::Collider(XMFLOAT3 offset)
+//	:m_xmf3Offset(offset)
+//	, m_pBox(NULL)
+//	, m_pSphere(NULL)
+//{
+//}
+
+
+/*********************************************************************
+2019-07-05
+충돌체 자체의 쿼터니언은 정해져야 함.
+자체의 회전각과 주인 객체의 회전각이 더해져야 하는데 이건 어떻게 만들거?
+Quaternion 더하는 함수가 있나?
+*********************************************************************/
+Collider::Collider(XMFLOAT3 center, XMFLOAT3 extents, XMFLOAT4 quaternion, XMFLOAT3 offset, ColliderTag tag)
+	: m_xmf3Offset(offset)
+	, m_Box(BoundingOrientedBox(center, extents, quaternion))
+	, m_Type(ColliderType::BOX)
+	, m_Tag(tag)
+{
+	
+}
+
+Collider::Collider(XMFLOAT3 center, float radius, XMFLOAT3 offset, ColliderTag tag)
+	: m_xmf3Offset(offset)
+	, m_Type(ColliderType::SPHERE)
+	, m_Sphere(BoundingSphere(center, radius))
+	, m_Tag(tag)
+{
+
+}
+
+void Collider::Update(XMFLOAT3 position, XMFLOAT4 rotation)
+{
+	SetPosition(position, GetRotatedOffset(rotation));
+	SetRotation(rotation);
+}
+
+bool Collider::IsCollide(const Collider & other)
+{
+	/*********************************************************************
+	2019-07-05
+	조기리턴문을 쓰고 싶다!
+
+	if문 왼쪽부터 검사하고 아니면 패스할테니까 저렇게 해도 괜찮겠지???
+	*********************************************************************/
+	if (m_Type == ColliderType::BOX) {
+		if (other.m_Type == ColliderType::BOX)  return m_Box.Intersects(other.m_Box);
+		else									return m_Box.Intersects(other.m_Sphere);
+	}
+	else {
+		if (other.m_Type == ColliderType::BOX)  return m_Sphere.Intersects(other.m_Box);
+		else									return m_Sphere.Intersects(other.m_Sphere);
+	}
+	return false;
+}
+
+void Collider::SetTag(const string tag)
+{
+	if ("Default" == tag)		{ m_Tag = ColliderTag::DEFAULT;		 return; }
+	if ("GroundCheck" == tag)	{ m_Tag = ColliderTag::GROUNDCHECK;	 return; }
+	if ("HeightCheck" == tag)	{ m_Tag = ColliderTag::HEIGHTCHECK;	 return; }
+	if ("Hitbox" == tag)		{ m_Tag = ColliderTag::HITBOX;		 return; }
+}
+
+XMFLOAT3 Collider::GetRotatedOffset(XMFLOAT4 rotation)
+{
+	XMFLOAT3 result;
+	XMStoreFloat3(&result, XMVector3Rotate(XMLoadFloat3(&m_xmf3Offset), XMLoadFloat4(&rotation)));
+	return result;
+}
+
+void Collider::SetPosition(XMFLOAT3 position, XMFLOAT3 rotatedOffset)
+{
+	if (m_Type == ColliderType::BOX)	m_Box.Center	= Vector3::Add(position, rotatedOffset);
+	else								m_Sphere.Center = Vector3::Add(position, rotatedOffset);
+	
+}
+
+void Collider::SetRotation(XMFLOAT4 rotation)
+{
+	if (m_Type == ColliderType::BOX) 
+		m_Box.Orientation = rotation;
+	
 }

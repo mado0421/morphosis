@@ -91,6 +91,7 @@ public:
 		, m_xmf2UV(uv)
 		, m_xmf4Weight(weights)
 		, m_xmi4BoneIdx (boneIdx)
+		, m_xmf3Normal(0, 0, 0)
 	{}
 	CAnimVertex(
 		float x, float y, float z,
@@ -102,6 +103,7 @@ public:
 		, m_xmf2UV(uv)
 		, m_xmf4Weight(weights)
 		, m_xmi4BoneIdx(boneIdx)
+		, m_xmf3Normal(0,0,0)
 	{}
 	~CAnimVertex() {}
 
@@ -113,6 +115,7 @@ public:
 	}
 private:
 	XMFLOAT3	m_xmf3Position;
+	XMFLOAT3	m_xmf3Normal;
 	XMFLOAT2	m_xmf2UV;
 	XMFLOAT4	m_xmf4Weight;
 	XMINT4		m_xmi4BoneIdx;

@@ -150,11 +150,13 @@ void CTestGroundScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsComma
 	m_pd3dCommandList	= pd3dCommandList;
 	GetCursorPos(&m_ptOldCursorPos);
 
+
 	m_pd3dGraphicsRootSignature = CreateRootSignature(pd3dDevice);
 
 	m_pCamera = new CFollowCamera();
 	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	m_pCamera->SetOffset(XMFLOAT3(0, 15.0f, 55.0f));
+	//m_pCamera->SetOffset(XMFLOAT3(0, 15.0f, 55.0f));
+	m_pCamera->SetOffset(XMFLOAT3(0, 100.0f, 100.0f));
 
 
 	m_ObjMng = new CObjectManager(m_pd3dDevice, m_pd3dCommandList);
