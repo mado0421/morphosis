@@ -24,6 +24,10 @@ CObject::CObject()
 CObject::~CObject()
 {
 }
+void CObject::SetMng(CObjectManager * mng)
+{
+	m_pObjMng = mng;
+}
 void CObject::SetRootParameter(ID3D12GraphicsCommandList * pd3dCommandList)
 {
 	pd3dCommandList->SetGraphicsRootDescriptorTable(g_RootParameterObject, m_d3dCbvGPUDescriptorHandle);
@@ -178,24 +182,39 @@ const XMFLOAT4 CObject::GetQuaternion()
 {
 	return Vector4::QuatFromMtx(m_xmf4x4World);
 }
-const bool CObject::IsCollide(CObject* other)
+const bool CObject::IsCollide(const CObject& other)
 {
 	/*********************************************************************
 	2019-06-18
 	other의 충돌체들과 내 충돌체들을 전부 비교해야 함.
 	*********************************************************************/
 	for (int i = 0; i < m_Collider.size(); ++i) 
-		for (int j = 0; j < other->m_Collider.size(); ++j) if (m_Collider[i].IsCollide(other->m_Collider[j])) return true;
+		for (int j = 0; j < other.m_Collider.size(); ++j) if (m_Collider[i].IsCollide(other.m_Collider[j])) return true;
 
 	return false;
+}
+const bool CObject::IsCollide(const Collider & other)
+{
+	for (int i = 0; i < m_Collider.size(); ++i)
+		if (m_Collider[i].IsCollide(other)) return true;
+
+	return false;
+}
+Collider * CObject::GetCollisionCollider(const Collider & other)
+{
+	for (int i = 0; i < m_Collider.size(); ++i)
+		if (m_Collider[i].IsCollide(other)) return &m_Collider[i];
+
+
+	return NULL;
 }
 void CObject::ProcessInput(UCHAR * pKeysBuffer, float mouse)
 {
 }
-void CObject::AddCollideInfo(CObject * obj)
-{
-	m_CollideInfo.push(obj);
-}
+//void CObject::AddCollideInfo(CObject * obj)
+//{
+//	m_CollideInfo.push(obj);
+//}
 
 /*********************************************************************
 2019-06-17
@@ -203,6 +222,8 @@ CPlayer
 *********************************************************************/
 CPlayer::CPlayer() : CObject()
 {
+	//m_ComprehensiveGroundCollider	= Collider(XMFLOAT3(0, 0, 0), g_DefaultUnitStandard / 2.0f, XMFLOAT3(0, 0, 0), ColliderTag::GROUNDCHECK);
+	//m_DetailedGroundCollider		= Collider(XMFLOAT3(0, 0, 0), g_DefaultUnitStandard / 4.0f, XMFLOAT3(0, 0, 0), ColliderTag::GROUNDCHECK);
 	m_fSpeed					= g_PlayerDefaultSpeed;
 	m_fRemainingTimeOfFire		= 0.0f;
 	m_fRPM						= (1 / static_cast<float>(g_DefaultRPM)) * 60.0f;
@@ -224,59 +245,13 @@ void CPlayer::Update(float fTimeElapsed)
 		}
 		return;
 	}
-	
-
-
 
 	/*********************************************************************
 	2019-06-18
 	공격 타이머 파트
 	*********************************************************************/
 	m_fRemainingTimeOfFire -= fTimeElapsed;
-	SetHandMatrix();
-
-	/*********************************************************************
-	2019-06-17
-	이동 파트
-	*********************************************************************/
-	if (m_IsGround) m_fHeightVelocity = 0.0f;
-	else m_fHeightVelocity -= fTimeElapsed /** g_Gravity*/;
-
-
-	XMFLOAT3 xmf3Right	= XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
-	XMFLOAT3 xmf3Up		= XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
-	XMFLOAT3 xmf3Look	= XMFLOAT3(m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33);
-	m_xmf3Move = Move(fTimeElapsed);
-
-	float rotationAngle = Rotate(fTimeElapsed);
-	XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(rotationAngle));
-	xmf3Look = Vector3::TransformNormal(xmf3Look, xmmtxRotate);
-	xmf3Right = Vector3::TransformNormal(xmf3Right, xmmtxRotate);
-
-	xmf3Look = Vector3::Normalize(xmf3Look);
-	xmf3Right = Vector3::CrossProduct(xmf3Up, xmf3Look, true);
-	xmf3Up = Vector3::CrossProduct(xmf3Look, xmf3Right, true);
-
-	m_xmf4x4World._11 = xmf3Right.x;	m_xmf4x4World._12 = xmf3Right.y;	m_xmf4x4World._13 = xmf3Right.z;
-	m_xmf4x4World._21 = xmf3Up.x;		m_xmf4x4World._22 = xmf3Up.y;		m_xmf4x4World._23 = xmf3Up.z;
-	m_xmf4x4World._31 = xmf3Look.x;		m_xmf4x4World._32 = xmf3Look.y;		m_xmf4x4World._33 = xmf3Look.z;
-	m_xmf4x4World._41 += m_xmf3Move.x;
-	m_xmf4x4World._42 += m_xmf3Move.y;
-	m_xmf4x4World._43 += m_xmf3Move.z;
-
-	
-	XMStoreFloat3(&m_xmf3CameraTargetOffset, XMVector3Rotate(XMLoadFloat3(&m_xmf3CameraTargetOffset), XMQuaternionRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(rotationAngle))));
-
-	/*********************************************************************
-	2019-06-18
-	충돌체 파트
-
-	2019-07-06
-	충돌체를 통합해서 관리하며 업데이트 부분 변경
-
-	아니 저걸 그냥 LateUpdate()에서 해주자.
-	*********************************************************************/
-
+	//SetHandMatrix();
 
 	/*********************************************************************
 	2019-06-17
@@ -304,22 +279,156 @@ void CPlayer::Update(float fTimeElapsed)
 			}
 		}
 	}
-
-	TriggerOff();
-
 }
 void CPlayer::LateUpdate(float fTimeElapsed)
 {
 	if (!m_IsAlive) return;
 
-	bool alreadyRestore = false;	// 이동을 무효 처리 했는지 여부
-	while (!m_CollideInfo.empty()) {
-		if (!alreadyRestore && ObjectTag::Prop == m_CollideInfo.front()->m_Tag) alreadyRestore = RestorePosition();
-		if (!alreadyRestore && ObjectTag::Player == m_CollideInfo.front()->m_Tag) alreadyRestore = RestorePosition();	
-		if (ObjectTag::Projectile == m_CollideInfo.front()->m_Tag) dynamic_cast<CProjectile*>(m_CollideInfo.front())->Damage(this);
-		
-		m_CollideInfo.pop();
+
+
+	/*********************************************************************
+	2019-06-17
+	이동 파트
+
+	2019-07-13
+	이관되었습니다.
+	*********************************************************************/
+	// 중력 가속도 적용
+	//if (m_IsGround) m_fHeightVelocity = 0.0f;
+	//else m_fHeightVelocity -= fTimeElapsed /** g_Gravity*/;
+	m_fHeightVelocity -= fTimeElapsed * g_Gravity;
+
+	/*********************************************************************
+	2019-07-15
+	1. 이동 방향을 구하고 그 곳에 포괄적 충돌체와 정밀 충돌체 생성
+	2. 포괄적 충돌체를 가지고 주변에 충돌하는 애들을 전부 찾음.
+	3. 걔네들을 대상으로 디테일 충돌체로 검사
+
+	//m_ComprehensiveGroundCollider	= Collider(XMFLOAT3(0, 0, 0), g_DefaultUnitStandard / 2.0f, XMFLOAT3(0, 0, 0), ColliderTag::GROUNDCHECK);
+	//m_DetailedGroundCollider		= Collider(XMFLOAT3(0, 0, 0), g_DefaultUnitStandard / 4.0f, XMFLOAT3(0, 0, 0), ColliderTag::GROUNDCHECK);
+	*********************************************************************/
+
+	// Queue Clear
+	std::queue<Collider*> empty;
+	std::swap(m_CollideInfo, empty);
+
+	// 진행 방향 구함
+	m_xmf3Move = Move(fTimeElapsed);
+
+	int s = 0;
+	while (true) {
+
+		Collider DetailedGroundCollider(Vector3::Add(GetPosition(), m_xmf3Move), g_DefaultUnitStandard / 2.0f, XMFLOAT3(0, 0, 0), ColliderTag::GROUNDCHECK);
+		Collider* collider = m_pObjMng->GetCollider(DetailedGroundCollider, ColliderTag::PROP);
+		if (NULL == collider || s > 3) break;
+
+		s++;
+
+		XMFLOAT3 look = collider->GetLook();
+		XMFLOAT3 up = collider->GetUp();
+		XMFLOAT3 right = Vector3::CrossProduct(up, look);
+
+		XMVECTOR planeXY = XMPlaneFromPointNormal(XMLoadFloat3(&collider->GetCenter()), XMLoadFloat3(&look));
+		XMVECTOR planeXZ = XMPlaneFromPointNormal(XMLoadFloat3(&collider->GetCenter()), XMLoadFloat3(&up));
+		XMVECTOR planeYZ = XMPlaneFromPointNormal(XMLoadFloat3(&collider->GetCenter()), XMLoadFloat3(&right));
+
+		XMVECTOR temp;
+		XMFLOAT3 xmf3Temp;
+		XMFLOAT3 xmf3MyExtents;
+
+		temp = XMPlaneDotCoord(planeYZ, XMLoadFloat3(&DetailedGroundCollider.GetCenter()));
+		XMStoreFloat3(&xmf3Temp, temp);
+		xmf3MyExtents.x = xmf3Temp.x;
+
+		temp = XMPlaneDotCoord(planeXY, XMLoadFloat3(&DetailedGroundCollider.GetCenter()));
+		XMStoreFloat3(&xmf3Temp, temp);
+		xmf3MyExtents.z = xmf3Temp.x;
+
+		temp = XMPlaneDotCoord(planeXZ, XMLoadFloat3(&DetailedGroundCollider.GetCenter()));
+		XMStoreFloat3(&xmf3Temp, temp);
+		xmf3MyExtents.y = xmf3Temp.x;
+		/*********************************************************************
+		2019-07-15
+		여기까지 잘 됨
+		- MyExtents와 Collider의 Extents를 비교
+		한 번에 한 면만 충돌하거나(빗면), 두 면이 충돌하거나(가장자리), 세 면이 충돌할 수 있음(모서리)
+		검사 6번을 하면
+		*********************************************************************/
+		XMFLOAT3 colliderExtents = collider->GetExtents();
+		XMFLOAT3 dir(0, 0, 0);
+		float restore = 0;
+
+		if (IsIn(xmf3MyExtents.x, colliderExtents.x, colliderExtents.x + g_DefaultUnitStandard / 2.0f))		dir = Vector3::Add(dir, right);	
+		if (IsIn(xmf3MyExtents.y, colliderExtents.y, colliderExtents.y + g_DefaultUnitStandard / 2.0f))		dir = Vector3::Add(dir, up);		
+		if (IsIn(xmf3MyExtents.z, colliderExtents.z, colliderExtents.z + g_DefaultUnitStandard / 2.0f))		dir = Vector3::Add(dir, look);	
+		if (IsIn(xmf3MyExtents.x, -colliderExtents.x - g_DefaultUnitStandard / 2.0f, -colliderExtents.x))	dir = Vector3::Add(dir, Vector3::Multiply(-1, right));
+		if (IsIn(xmf3MyExtents.y, -colliderExtents.y - g_DefaultUnitStandard / 2.0f, -colliderExtents.y))	dir = Vector3::Add(dir, Vector3::Multiply(-1, up));
+		if (IsIn(xmf3MyExtents.z, -colliderExtents.z - g_DefaultUnitStandard / 2.0f, -colliderExtents.z))	dir = Vector3::Add(dir, Vector3::Multiply(-1, look));
+		//if (IsIn(xmf3MyExtents.x, -colliderExtents.x - g_DefaultUnitStandard / 2.0f, -colliderExtents.x))	Vector3::Add(dir, Vector3::Multiply(-1, right));
+		//if (IsIn(xmf3MyExtents.y, -colliderExtents.y - g_DefaultUnitStandard / 2.0f, -colliderExtents.y))	Vector3::Add(dir, Vector3::Multiply(-1, up));
+		//if (IsIn(xmf3MyExtents.z, -colliderExtents.z - g_DefaultUnitStandard / 2.0f, -colliderExtents.z))	Vector3::Add(dir, Vector3::Multiply(-1, look));
+
+		dir = Vector3::Normalize(dir);
+
+		XMVECTOR parallel, perpendicular;
+
+		XMVector3ComponentsFromNormal(&parallel, &perpendicular, XMLoadFloat3(&m_xmf3Move), XMLoadFloat3(&dir));
+
+		XMStoreFloat3(&m_xmf3Move, perpendicular);
+
+		//m_xmf3Move = Vector3::Add(m_xmf3Move, Vector3::Multiply(restore, dir));
+
+
+		// 지면 판정
+		if (Vector3::DotProduct(dir, XMFLOAT3(0, 1, 0)) > 0.8) {
+			m_fHeightVelocity = fTimeElapsed * g_Gravity;
+		}
 	}
+
+	XMFLOAT3 xmf3Right	= XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
+	XMFLOAT3 xmf3Up		= XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
+	XMFLOAT3 xmf3Look	= XMFLOAT3(m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33);
+
+	float rotationAngle = Rotate(fTimeElapsed);
+	XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(rotationAngle));
+	xmf3Look = Vector3::TransformNormal(xmf3Look, xmmtxRotate);
+	xmf3Right = Vector3::TransformNormal(xmf3Right, xmmtxRotate);
+
+	xmf3Look = Vector3::Normalize(xmf3Look);
+	xmf3Right = Vector3::CrossProduct(xmf3Up, xmf3Look, true);
+	xmf3Up = Vector3::CrossProduct(xmf3Look, xmf3Right, true);
+
+	m_xmf4x4World._11 = xmf3Right.x;	m_xmf4x4World._12 = xmf3Right.y;	m_xmf4x4World._13 = xmf3Right.z;
+	m_xmf4x4World._21 = xmf3Up.x;		m_xmf4x4World._22 = xmf3Up.y;		m_xmf4x4World._23 = xmf3Up.z;
+	m_xmf4x4World._31 = xmf3Look.x;		m_xmf4x4World._32 = xmf3Look.y;		m_xmf4x4World._33 = xmf3Look.z;
+	m_xmf4x4World._41 += m_xmf3Move.x;
+	m_xmf4x4World._42 += m_xmf3Move.y;
+	m_xmf4x4World._43 += m_xmf3Move.z;
+
+	XMStoreFloat3(&m_xmf3CameraTargetOffset, XMVector3Rotate(XMLoadFloat3(&m_xmf3CameraTargetOffset), XMQuaternionRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(rotationAngle))));
+
+
+
+
+
+
+
+
+
+
+
+
+
+	//bool alreadyRestore = false;	// 이동을 무효 처리 했는지 여부
+	//while (!m_CollideInfo.empty()) {
+	//	if (!alreadyRestore && ObjectTag::Prop == m_CollideInfo.front()->m_Tag) alreadyRestore = RestorePosition();
+	//	if (!alreadyRestore && ObjectTag::Player == m_CollideInfo.front()->m_Tag) alreadyRestore = RestorePosition();	
+	//	if (ObjectTag::Projectile == m_CollideInfo.front()->m_Tag) dynamic_cast<CProjectile*>(m_CollideInfo.front())->Damage(this);
+	//	
+	//	m_CollideInfo.pop();
+	//}
+
+
 
 	/*********************************************************************
 	2019-06-18
@@ -329,12 +438,12 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 	충돌체를 통합해서 관리하며 업데이트 부분 변경
 	
 	아니 저걸 그냥 LateUpdate()에서 해주자.
-
-	-> 해서 여기로 옮겨옴.
 	*********************************************************************/
 	for (int i = 0; i < m_Collider.size(); ++i) m_Collider[i].Update(GetPosition(), GetQuaternion());
 
 
+
+	TriggerOff();
 	if (m_HealthPoint <= 0) CPlayer::Disable();
 }
 void CPlayer::ProcessInput(UCHAR * pKeysBuffer, float mouse)
@@ -386,6 +495,10 @@ bool CPlayer::IsShootable()
 XMFLOAT4X4 CPlayer::GetHandMatrix()
 {
 	return m_xmf4x4Hand;
+}
+void CPlayer::AddGroundCollider(XMFLOAT3 center, float radius, XMFLOAT3 offset)
+{
+	AddCollider(center, radius, offset, ColliderTag::GROUNDCHECK);
 }
 void CPlayer::TriggerOff()
 {
@@ -566,18 +679,18 @@ void CObjectManager::Render()
 	각 객체의 Render와 Update 함수에서 IsAlive를 체크하고 있기 때문에 hlsl의
 	정보를 업데이트 하는 부분에만 IsAlive를 체크하게 추가하였다.
 	*********************************************************************/
-	for (unsigned int i = 0; i < m_nProps; i++) {
+	for (int i = 0; i < m_nProps; i++) {
 		if (!m_Props[i]->IsAlive()) continue;
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedPropObjects + (i * ncbElementBytes));
 		memset(pbMappedcbObject, NULL, ncbElementBytes);
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Props[i]->m_xmf4x4World)));
 	}
-	for (unsigned int i = 0; i < m_nPlayers; i++) {
+	for (int i = 0; i < m_nPlayers; i++) {
 		if (!m_Players[i]->IsAlive()) continue;
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedPlayers + (i * ncbElementBytes));
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Players[i]->m_xmf4x4World)));
 	}
-	for (unsigned int i = 0; i < m_nProjectiles; i++) {
+	for (int i = 0; i < m_nProjectiles; i++) {
 		if (!m_Projectiles[i]->IsAlive()) continue;
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedProjectiles + (i * ncbElementBytes));
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Projectiles[i]->m_xmf4x4World)));
@@ -634,9 +747,68 @@ void CObjectManager::ProcessInput(UCHAR * pKeysBuffer, float mouse)
 		}
 	}
 }
+void CObjectManager::GetColliderList(const Collider & myCollider, std::queue<Collider*>& myColliderQueue, ColliderTag targetTag)
+{
+	Collider* temp = NULL;
+	switch (targetTag)
+	{
+	case ColliderTag::PROP: 
+		for (int i = 0; i < m_Props.size(); ++i) {
+			temp = m_Props[i]->GetCollisionCollider(myCollider);
+			if (temp != NULL) {
+				myColliderQueue.push(temp);
+			}
+		}
+		break;
+	case ColliderTag::PROJECTILE: 
+		for (int i = 0; i < m_Projectiles.size(); ++i) {
+			temp = m_Projectiles[i]->GetCollisionCollider(myCollider);
+			if (temp != NULL) {
+				myColliderQueue.push(temp);
+			}
+		}
+		break;
+	case ColliderTag::PLAYER:
+		for (int i = 0; i < m_Players.size(); ++i) {
+			temp = m_Players[i]->GetCollisionCollider(myCollider);
+			if (temp != NULL) {
+				myColliderQueue.push(temp);
+			}
+		}
+		break;
+	default:break;
+	}
+}
+Collider * CObjectManager::GetCollider(const Collider & myCollider, ColliderTag targetTag)
+{
+	Collider* temp = NULL;
+	switch (targetTag)
+	{
+	case ColliderTag::PROP:
+		for (int i = 0; i < m_Props.size(); ++i) {
+			temp = m_Props[i]->GetCollisionCollider(myCollider);
+			if (temp != NULL) return temp;
+		}
+		break;
+	case ColliderTag::PROJECTILE:
+		for (int i = 0; i < m_Projectiles.size(); ++i) {
+			temp = m_Projectiles[i]->GetCollisionCollider(myCollider);
+			if (temp != NULL) return temp;
+		}
+		break;
+	case ColliderTag::PLAYER:
+		for (int i = 0; i < m_Players.size(); ++i) {
+			temp = m_Players[i]->GetCollisionCollider(myCollider);
+			if (temp != NULL) return temp;
+		}
+		break;
+	default:break;
+	}
+	return NULL;
+}
 void CObjectManager::LateUpdate(float fTime)
 {
-	CollisionCheck();
+	//CollisionCheck();
 
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->LateUpdate(fTime);
 	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->LateUpdate(fTime);
@@ -691,7 +863,7 @@ void CObjectManager::CreateConstantBufferView()
 	*********************************************************************/
 	if (nullptr != m_pd3dCBPropResource) {
 		d3dGpuVirtualAddress = m_pd3dCBPropResource->GetGPUVirtualAddress();
-		for (unsigned int i = 0; i < m_nProps; i++) {
+		for (int i = 0; i < m_nProps; i++) {
 			d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * i);
 			D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
 			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * i);
@@ -700,7 +872,7 @@ void CObjectManager::CreateConstantBufferView()
 	}
 	if (nullptr != m_pd3dCBPlayersResource) {
 		d3dGpuVirtualAddress = m_pd3dCBPlayersResource->GetGPUVirtualAddress();
-		for (unsigned int i = 0; i < m_nPlayers; i++) {
+		for (int i = 0; i < m_nPlayers; i++) {
 			d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * i);
 			D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
 			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (i + m_nProps));
@@ -709,7 +881,7 @@ void CObjectManager::CreateConstantBufferView()
 	}
 	if (nullptr != m_pd3dCBProjectilesResource) {
 		d3dGpuVirtualAddress = m_pd3dCBProjectilesResource->GetGPUVirtualAddress();
-		for (unsigned int i = 0; i < m_nProjectiles; i++) {
+		for (int i = 0; i < m_nProjectiles; i++) {
 			d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * i);
 			D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
 			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (i + m_nProps + m_nPlayers));
@@ -751,7 +923,7 @@ void CObjectManager::CreateObjectData()
 	서술자 힙을 생성하기 위해 개수들을 정해준다. 지금은 임의로 하지만 나중에는
 	m_nProps는 LevelData에서 읽어오고, 나머지는 Defines.h에서 가져올 것.
 	*********************************************************************/
-	m_nProps = 1;
+	m_nProps = 2;
 	m_nPlayers = 1;
 	m_nProjectiles = m_nPlayers * g_NumProjectilePerPlayer;
 	m_nObjects = m_nProps + m_nPlayers + m_nProjectiles;
@@ -790,6 +962,7 @@ void CObjectManager::CreateObjectData()
 	int count = 0;
 	for (int i = 0; i < m_nProps; i++) {
 		CObject* obj = new CObject();
+		obj->SetMng(this);
 		//importer.ImportModel("0618_LevelTest", m_TextureList[2], obj);
 		//for (int j = 0; j < m_LevelDataDesc.nCollisionMaps; ++j) {
 		//	/*********************************************************************
@@ -809,18 +982,19 @@ void CObjectManager::CreateObjectData()
 		model->SetMesh(mesh);
 		model->SetTexture(m_TextureList[3]);
 		obj->AddModel(model);
-		obj->SetPosition(50 * i, 0, 0);
+		obj->SetPosition(0, -200.0f * i, -100.0f * i);
 		obj->AddCollider(
 			XMFLOAT3(0, 0, 0),
 			XMFLOAT3(50, 50, 50),
 			XMFLOAT4(0, 0, 0, 1)
 		);
-		obj->SetRotation(XMFLOAT3(-30, 0, 0));
+		if(i == 0)	obj->SetRotation(XMFLOAT3(-60, 0, 0));
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 		m_Props.push_back(obj);
 	}
 	for (int i = 0; i < m_nPlayers; i++) {
 		CPlayer* obj = new CPlayer();
+		obj->SetMng(this);
 
 		//importer.ImportModel("0603_CharacterIdle", m_TextureList[1], obj);
 		//importer.ImportAnimClip("0603_CharacterIdle", obj);
@@ -843,7 +1017,7 @@ void CObjectManager::CreateObjectData()
 		model->SetMesh(mesh);
 		model->SetTexture(m_TextureList[3]);
 		obj->AddModel(model);
-		obj->SetPosition(0, 100, 0);
+		obj->SetPosition(0, 300, -50);
 		obj->AddCollider(
 			XMFLOAT3(0, 0, 0),
 			XMFLOAT3(5, 5, 5),
@@ -857,6 +1031,7 @@ void CObjectManager::CreateObjectData()
 	}
 	for (int i = 0; i < m_nProjectiles; i++) {
 		CProjectile* obj = new CProjectile();
+		obj->SetMng(this);
 
 		/*********************************************************************
 		2019-06-17
@@ -869,81 +1044,81 @@ void CObjectManager::CreateObjectData()
 		m_Projectiles.push_back(obj);
 	}
 }
-void CObjectManager::CollisionCheck()
-{
-	/*********************************************************************
-	2019-06-18
-	충돌검사 표
-	┼──────────┼────────────┼────────────┼────────────┼
-	│		   │    Prop    │   Player   │ Projectile │
-	┼──────────┼────────────┼────────────┼────────────┼
-	│Prop	   │			│	  O		 │	   O	  │
-	┼──────────┼────────────┼────────────┼────────────┼
-	│Player	   │	 O	    │	  O		 │	   O	  │
-	┼──────────┼────────────┼────────────┼────────────┼
-	│Projectile│	 O	    │	  O		 │			  │
-	┼──────────┼────────────┼────────────┼────────────┼
-	디비전처럼 날아오는 수류탄을 총으로 쏴서 맞추고 할 거면 뭐...
-
-	플레이어로 다 돌리고 투사체로 프롭이랑 하면 될 것 같다.
-	충돌하면? 여기서 처리 다 해?
-
-	충돋했을 때 처리들:
-	- 플레이어가 프롭과 충돌하면 이동 무효. (슬라이드는 나중에 구현하기)
-	- 플레이어가 플레이어와 충돌하면 이동 무효. (서로 밀치기는 나중에 구현하기)
-	- 플레이어가 프로젝타일과 충돌하면 프로젝타일의 효과를 플레이어에게 적용.
-	- 프로젝타일이 프롭과 충돌하면 프로젝타일 비활성화.
-
-	이동 무효를 하려면 플레이어의 트리거를 꺼버리면 되나?
-	근데 충돌체크는 이동 후에 검사해야 하는데?
-	그럼 LateUpdate()를 만들자! 충돌검사를 하고 충돌했으면 각 객체에게 트리거를 켜주고
-	LateUpdate()를 하게 하기.
-	누구랑 충돌했는지 그냥 전달해주기로 함.
-	*********************************************************************/
-	for (auto player = m_Players.begin(); player != m_Players.end(); ++player) {
-		// 활성화된 애만 처리할 것.
-		if ((*player)->IsAlive()) {
-
-			for (auto prop = m_Props.begin(); prop != m_Props.end(); ++prop)
-				if (IsCollidable((*player), (*prop)))
-					if ((*player)->IsCollide((*prop)))
-						(*player)->AddCollideInfo((*prop));
-
-			for (auto otherPlayer = m_Players.begin(); otherPlayer != m_Players.end(); ++otherPlayer)
-				if (IsCollidable((*player), (*otherPlayer)))
-					if ((*player)->IsCollide((*otherPlayer))) {
-						(*player)->AddCollideInfo((*otherPlayer));
-						(*otherPlayer)->AddCollideInfo((*player));
-					}
-			for (auto projectile = m_Projectiles.begin(); projectile != m_Projectiles.end(); ++projectile)
-				if (IsCollidable((*player), (*projectile)))
-					if ((*player)->IsCollide((*projectile))) {
-						(*player)->AddCollideInfo((*projectile));
-						(*projectile)->Disable();
-					}
-		}
-	}
-	for (auto projectile = m_Projectiles.begin(); projectile != m_Projectiles.end(); ++projectile) {
-		// 활성화된 애만 처리할 것.
-		if ((*projectile)->IsAlive()) {
-			for (auto prop = m_Props.begin(); prop != m_Props.end(); ++prop)
-				if (IsCollidable((*projectile), (*prop)))
-					if ((*projectile)->IsCollide((*prop))) {
-						(*projectile)->Disable();
-						break;
-					}
-
-		}
-	}
-}
-
-//Collider::Collider(XMFLOAT3 offset)
-//	:m_xmf3Offset(offset)
-//	, m_pBox(NULL)
-//	, m_pSphere(NULL)
+//void CObjectManager::CollisionCheck()
 //{
+//	/*********************************************************************
+//	2019-06-18
+//	충돌검사 표
+//	┼──────────┼────────────┼────────────┼────────────┼
+//	│		   │    Prop    │   Player   │ Projectile │
+//	┼──────────┼────────────┼────────────┼────────────┼
+//	│Prop	   │			│	  O		 │	   O	  │
+//	┼──────────┼────────────┼────────────┼────────────┼
+//	│Player	   │	 O	    │	  O		 │	   O	  │
+//	┼──────────┼────────────┼────────────┼────────────┼
+//	│Projectile│	 O	    │	  O		 │			  │
+//	┼──────────┼────────────┼────────────┼────────────┼
+//	디비전처럼 날아오는 수류탄을 총으로 쏴서 맞추고 할 거면 뭐...
+//
+//	플레이어로 다 돌리고 투사체로 프롭이랑 하면 될 것 같다.
+//	충돌하면? 여기서 처리 다 해?
+//
+//	충돋했을 때 처리들:
+//	- 플레이어가 프롭과 충돌하면 이동 무효. (슬라이드는 나중에 구현하기)
+//	- 플레이어가 플레이어와 충돌하면 이동 무효. (서로 밀치기는 나중에 구현하기)
+//	- 플레이어가 프로젝타일과 충돌하면 프로젝타일의 효과를 플레이어에게 적용.
+//	- 프로젝타일이 프롭과 충돌하면 프로젝타일 비활성화.
+//
+//	이동 무효를 하려면 플레이어의 트리거를 꺼버리면 되나?
+//	근데 충돌체크는 이동 후에 검사해야 하는데?
+//	그럼 LateUpdate()를 만들자! 충돌검사를 하고 충돌했으면 각 객체에게 트리거를 켜주고
+//	LateUpdate()를 하게 하기.
+//	누구랑 충돌했는지 그냥 전달해주기로 함.
+//	*********************************************************************/
+//	/*
+//	for (auto player = m_Players.begin(); player != m_Players.end(); ++player) {
+//		// 활성화된 애만 처리할 것.
+//		if ((*player)->IsAlive()) {
+//
+//			for (auto prop = m_Props.begin(); prop != m_Props.end(); ++prop)
+//				if (IsCollidable((*player), (*prop)))
+//					if ((*player)->IsCollide((*prop)))
+//						(*player)->AddCollideInfo((*prop));
+//
+//			for (auto otherPlayer = m_Players.begin(); otherPlayer != m_Players.end(); ++otherPlayer)
+//				if (IsCollidable((*player), (*otherPlayer)))
+//					if ((*player)->IsCollide((*otherPlayer))) {
+//						(*player)->AddCollideInfo((*otherPlayer));
+//						(*otherPlayer)->AddCollideInfo((*player));
+//					}
+//			for (auto projectile = m_Projectiles.begin(); projectile != m_Projectiles.end(); ++projectile)
+//				if (IsCollidable((*player), (*projectile)))
+//					if ((*player)->IsCollide((*projectile))) {
+//						(*player)->AddCollideInfo((*projectile));
+//						(*projectile)->Disable();
+//					}
+//		}
+//	}
+//	for (auto projectile = m_Projectiles.begin(); projectile != m_Projectiles.end(); ++projectile) {
+//		// 활성화된 애만 처리할 것.
+//		if ((*projectile)->IsAlive()) {
+//			for (auto prop = m_Props.begin(); prop != m_Props.end(); ++prop)
+//				if (IsCollidable((*projectile), (*prop)))
+//					if ((*projectile)->IsCollide((*prop))) {
+//						(*projectile)->Disable();
+//						break;
+//					}
+//
+//		}
+//	}
+//	*/
+//
+//
 //}
 
+Collider::Collider()
+{
+}
 
 /*********************************************************************
 2019-07-05
@@ -1000,6 +1175,49 @@ void Collider::SetTag(const string tag)
 	if ("GroundCheck" == tag)	{ m_Tag = ColliderTag::GROUNDCHECK;	 return; }
 	if ("HeightCheck" == tag)	{ m_Tag = ColliderTag::HEIGHTCHECK;	 return; }
 	if ("Hitbox" == tag)		{ m_Tag = ColliderTag::HITBOX;		 return; }
+}
+
+XMFLOAT3 Collider::GetLook()
+{
+	XMFLOAT3 look(0, 0, 1);
+
+	if (m_Type == ColliderType::BOX)	XMStoreFloat3(&look, XMVector3Rotate(XMLoadFloat3(&look), XMLoadFloat4(&m_Box.Orientation)));
+
+	return look;
+}
+
+XMFLOAT3 Collider::GetUp()
+{
+	XMFLOAT3 up(0, 1, 0);
+
+	if (m_Type == ColliderType::BOX)	XMStoreFloat3(&up, XMVector3Rotate(XMLoadFloat3(&up), XMLoadFloat4(&m_Box.Orientation)));
+
+	return up;
+}
+
+XMFLOAT3 Collider::GetCenter()
+{
+	if (m_Type == ColliderType::BOX)	return m_Box.Center;
+	else								return m_Sphere.Center;
+}
+
+XMFLOAT3 Collider::GetExtents()
+{
+	if (m_Type == ColliderType::BOX)	return m_Box.Extents;
+	else return XMFLOAT3(0,0,0);
+}
+
+XMFLOAT3 GetBetweenVector(const Collider & A, const Collider & B)
+{
+	if (A.m_Type == ColliderType::BOX) {
+		if (B.m_Type == ColliderType::BOX)  return Vector3::Subtract(B.m_Box.Center,	A.m_Box.Center);
+		else								return Vector3::Subtract(B.m_Sphere.Center, A.m_Box.Center);
+	}
+	else {
+		if (B.m_Type == ColliderType::BOX)  return Vector3::Subtract(B.m_Box.Center,	A.m_Sphere.Center);
+		else								return Vector3::Subtract(B.m_Sphere.Center, A.m_Sphere.Center);
+	}
+	return XMFLOAT3(0, 0, 0);
 }
 
 XMFLOAT3 Collider::GetRotatedOffset(XMFLOAT4 rotation)

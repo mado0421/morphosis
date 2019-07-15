@@ -38,12 +38,22 @@ struct AnimationClip;
 
 class Collider {
 public:
-	Collider() = delete;
+	//Collider() = delete;
+	Collider();
 	Collider(XMFLOAT3 center, XMFLOAT3 extents, XMFLOAT4 quaternion, XMFLOAT3 offset = XMFLOAT3(0, 0, 0), ColliderTag tag = ColliderTag::DEFAULT);
 	Collider(XMFLOAT3 center, float radius, XMFLOAT3 offset = XMFLOAT3(0, 0, 0), ColliderTag tag = ColliderTag::DEFAULT);
 	void Update(XMFLOAT3 position, XMFLOAT4 rotation);
 	bool IsCollide(const Collider& other);
 	void SetTag(const string tag);
+
+	XMFLOAT3 GetLook();
+	XMFLOAT3 GetUp();
+	XMFLOAT3 GetCenter();
+	XMFLOAT3 GetExtents();
+
+	BoundingOrientedBox m_Box;
+	BoundingSphere		m_Sphere;
+	ColliderType		m_Type;
 
 private:
 	XMFLOAT3 GetRotatedOffset(XMFLOAT4 rotation);
@@ -53,13 +63,15 @@ private:
 
 
 private:
-	BoundingOrientedBox m_Box;
-	BoundingSphere		m_Sphere;
 	XMFLOAT3			m_xmf3Offset;
-	ColliderType		m_Type;
-	ColliderTag					m_Tag;
+	ColliderTag			m_Tag;
 
 };
+
+// AB 순서로 넣으면 A에서 B로 가는 벡터 반환
+XMFLOAT3 GetBetweenVector(const Collider& A, const Collider& B);
+
+class CObjectManager;
 
 class CObject
 {
@@ -68,6 +80,8 @@ public:
 	~CObject();
 
 public:
+	void SetMng(CObjectManager* mng);
+
 	void SetCbvGPUDescriptorHandle(D3D12_GPU_DESCRIPTOR_HANDLE d3dCbvGPUDescriptorHandle) { m_d3dCbvGPUDescriptorHandle = d3dCbvGPUDescriptorHandle; }
 	void SetCbvGPUDescriptorHandlePtr(UINT64 nCbvGPUDescriptorHandlePtr) { m_d3dCbvGPUDescriptorHandle.ptr = nCbvGPUDescriptorHandlePtr; }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetCbvGPUDescriptorHandle() { return(m_d3dCbvGPUDescriptorHandle); }
@@ -109,11 +123,13 @@ public:
 	virtual void Disable() { SetAlive(false); }
 	void SetAlive(bool state) { m_IsAlive = state; }
 
-	const bool IsCollide(CObject* other);
+	const bool IsCollide(const CObject& other);
+	const bool IsCollide(const Collider& other);
+	Collider* GetCollisionCollider(const Collider& other);
 	const bool IsAlive() const { return m_IsAlive; }
 	virtual void ProcessInput(UCHAR* pKeysBuffer, float mouse);
 
-	void AddCollideInfo(CObject* obj);
+	//void AddCollideInfo(CObject* obj);
 
 
 
@@ -157,7 +173,15 @@ protected:
 	//std::vector<CollisionBox>		m_CollisionBox;
 	//std::vector<CollisionSphere>	m_CollisionSphere;
 	std::vector<Collider>			m_Collider;
-	std::queue<CObject*>			m_CollideInfo;
+	//std::queue<CObject*>			m_CollideInfo;
+	std::queue<Collider*>			m_CollideInfo;
+
+
+	/*********************************************************************
+	2019-07-15
+	오브젝트 매니저를 아래서 접근하기 위한 포인터
+	*********************************************************************/
+	CObjectManager*					m_pObjMng = NULL;
 };
 
 class CPlayer : public CObject {
@@ -186,6 +210,9 @@ public:
 	bool			IsShootable();
 	void			TakeDamage(int val) { m_HealthPoint -= val; }
 	XMFLOAT4X4		GetHandMatrix();
+	
+
+	virtual void	AddGroundCollider(XMFLOAT3 center, float radius, XMFLOAT3 offset = XMFLOAT3(0, 0, 0));
 
 protected:
 	/*********************************************************************
@@ -236,6 +263,10 @@ protected:
 	float			m_fSpeed;
 	bool			m_trigInput[static_cast<int>(Move::count)];
 	float			m_rotationInput;
+
+	//Collider		m_ComprehensiveGroundCollider;
+	//Collider		m_DetailedGroundCollider;
+
 
 	/*********************************************************************
 	2019-06-18
@@ -323,6 +354,10 @@ public:
 	}
 	void ProcessInput(UCHAR* pKeysBuffer, float mouse);
 
+	void GetColliderList(const Collider& myCollider, std::queue<Collider*>& myColliderQueue, ColliderTag targetTag);
+	Collider* GetCollider(const Collider& myCollider, ColliderTag targetTag);
+
+
 
 private:
 	void LateUpdate(float fTime);
@@ -339,7 +374,7 @@ private:
 		return false;
 	}
 	bool IsAnotherTeam(CObject* src, CObject* dst) const { return src->GetTeam() != dst->GetTeam(); }
-	void CollisionCheck();
+	//void CollisionCheck();
 
 private:
 	ID3D12Device					*m_pd3dDevice				= NULL;
@@ -361,10 +396,10 @@ private:
 	m_nObjects는 프롭과 플레이어, 투사체의 개수를 합한 값.
 	m_nAnimationMatrix는 m_nObject * g_NumAnimationBone를 한 값.
 	*********************************************************************/
-	unsigned int		m_nObjects						= 0;
-	unsigned int		m_nProps						= 0;
-	unsigned int		m_nPlayers						= 0;
-	unsigned int		m_nProjectiles					= 0;
+	int		m_nObjects									= 0;
+	int		m_nProps									= 0;
+	int		m_nPlayers									= 0;
+	int		m_nProjectiles								= 0;
 	
 	ID3D12Resource*		m_pd3dCBPropResource			= NULL;
 	ID3D12Resource*		m_pd3dCBPlayersResource			= NULL;

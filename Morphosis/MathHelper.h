@@ -6,7 +6,11 @@ inline bool IsZero(float fValue) { return((fabsf(fValue) < FLT_EPSILON)); }
 inline bool IsEqual(float fA, float fB) { return(::IsZero(fA - fB)); }
 inline float InverseSqrt(float fValue) { return 1.0f / sqrtf(fValue); }
 inline void Swap(float *pfS, float *pfT) { float fTemp = *pfS; *pfS = *pfT; *pfT = fTemp; }
-
+inline bool IsIn(float target, float min, float max) {
+	if (target < min) return false;
+	if (target > max) return false;
+	return true;
+}
 
 const XMFLOAT2 vector2Epsilon{ XMFLOAT2(FLT_EPSILON, FLT_EPSILON) };
 const XMFLOAT3 vector3Epsilon{ XMFLOAT3(FLT_EPSILON, FLT_EPSILON, FLT_EPSILON) };

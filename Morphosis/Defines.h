@@ -53,7 +53,7 @@ constexpr float		g_LevelSize		= 40.0f;
 constexpr float		g_DefaultUnitStandard		= 20.0f;
 
 extern unsigned int	gnCbvSrvDescriptorIncrementSize;
-constexpr float		g_PlayerDefaultSpeed		= g_DefaultUnitStandard * 1;
+constexpr float		g_PlayerDefaultSpeed		= g_DefaultUnitStandard * 3;
 constexpr float		g_ProjectileDefaultSpeed	= g_PlayerDefaultSpeed * 3.0f;
 constexpr int		g_NumAnimationBone			= 64;
 constexpr int		g_NumProjectilePerPlayer	= 30;
@@ -93,7 +93,11 @@ enum class ColliderTag {
 	DEFAULT,
 	GROUNDCHECK,
 	HEIGHTCHECK,
-	HITBOX
+	HITBOX,
+
+	PROP,
+	PROJECTILE,
+	PLAYER,
 };
 enum class ColliderType
 {
