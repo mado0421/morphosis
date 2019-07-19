@@ -109,3 +109,8 @@ enum class ObjectTag {
 	Player,
 	Projectile
 };
+enum class ImportType {
+	DefaultMesh,
+	AnimatedMesh,
+	ETC
+};

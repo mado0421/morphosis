@@ -77,6 +77,12 @@ public:
 		, m_xmf2TexCoord(xmf2TexCoord)
 	{}
 	~CIlluminatedTexturedVertex() { }
+
+	void Init(XMFLOAT3 p, XMFLOAT2 uv, XMFLOAT3 normal) {
+		m_xmf3Position	= p;
+		m_xmf2TexCoord	= uv;
+		m_xmf3Normal	= normal;
+	}
 };
 class CAnimVertex {
 public:
@@ -185,6 +191,8 @@ class CIlluminatedTexturedMesh : public CIlluminatedMesh
 public:
 	CIlluminatedTexturedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
 	CIlluminatedTexturedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nVertices, XMFLOAT3 *pxmf3Positions, XMFLOAT3 *pxmf3Normals, XMFLOAT2 *pxmf2UVs, UINT nIndices, UINT *pnIndices);
+	CIlluminatedTexturedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ImportMeshData& m);
+
 	virtual ~CIlluminatedTexturedMesh();
 };
 class CAnimatedMesh : public CMesh {

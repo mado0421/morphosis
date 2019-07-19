@@ -757,9 +757,9 @@ void CObjectManager::Render()
 	m_pd3dCommandList->SetPipelineState(m_PSO[1]);
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Render(m_pd3dCommandList);
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->Render(m_pd3dCommandList);
-	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->Render(m_pd3dCommandList);
 
-	//m_pd3dCommandList->SetPipelineState(m_PSO[0]);
+	m_pd3dCommandList->SetPipelineState(m_PSO[0]);
+	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->Render(m_pd3dCommandList);
 }
 void CObjectManager::Update(float fTime)
 {
@@ -1011,7 +1011,7 @@ void CObjectManager::CreateObjectData()
 		CObject* obj = new CObject();
 		obj->SetMng(this);
 
-		importer.ImportModel("0618_LevelTest", m_TextureList[2], obj);
+		importer.ImportModel("0618_LevelTest", m_TextureList[2], obj, ImportType::DefaultMesh);
 		for (int j = 0; j < m_LevelDataDesc.nCollisionMaps; ++j) {
 			/*********************************************************************
 			2019-07-06
@@ -1046,40 +1046,45 @@ void CObjectManager::CreateObjectData()
 		CPlayer* obj = new CPlayer();
 		obj->SetMng(this);
 
-		//importer.ImportModel("0603_CharacterIdle", m_TextureList[1], obj);
-		//importer.ImportAnimClip("0603_CharacterIdle", obj);
-		//importer.ImportAnimClip("0603_CharacterRun", obj);
-		//importer.ImportAnimClip("0603_CharacterFire", obj);
-		//importer.ImportAnimClip("0603_CharacterStartJump", obj);
-		//importer.ImportAnimClip("0603_CharacterEndJump", obj);
-		//importer.ImportAnimClip("0603_CharacterDied", obj);
-		//obj->SetPosition(0, 0, i * g_DefaultUnitStandard * 3);
-		//obj->SetSpawnPoint(obj->GetPosition());
-		//XMFLOAT3 pos = obj->GetPosition();
-		//pos.y += 4;
-		//obj->AddCollider(pos, XMFLOAT3(8, 2.577f, 8), XMFLOAT4(0, 0, 0, 1), XMFLOAT3(0,0,0), ColliderTag::GROUNDCHECK);
-		//pos = obj->GetPosition();
-		//pos.y += 16.807f;
-		//obj->AddCollider(pos, XMFLOAT3(11.766f / 2, 16.807f / 2, 13.198f / 2), XMFLOAT4(0, 0, 0, 1), XMFLOAT3(0, 0, 0));
-		//obj->SetCameraTargetOffset(XMFLOAT3(0, 47, -21));
-
-		CModel *model = new CModel();
-		CTestMesh *mesh = new CTestMesh(m_pd3dDevice, m_pd3dCommandList, 10);
-		model->SetMesh(mesh);
-		model->SetTexture(m_TextureList[3]);
-		obj->AddModel(model);
-		obj->SetPosition(0, 100, 0);
+		importer.ImportModel("0603_CharacterIdle", m_TextureList[1], obj, ImportType::AnimatedMesh);
+		importer.ImportAnimClip("0603_CharacterIdle", obj);
+		importer.ImportAnimClip("0603_CharacterRun", obj);
+		importer.ImportAnimClip("0603_CharacterFire", obj);
+		importer.ImportAnimClip("0603_CharacterStartJump", obj);
+		importer.ImportAnimClip("0603_CharacterEndJump", obj);
+		importer.ImportAnimClip("0603_CharacterDied", obj);
+		obj->SetPosition(0, 100, i * g_DefaultUnitStandard * 3);
 		obj->SetSpawnPoint(obj->GetPosition());
 		obj->AddCollider(
 			XMFLOAT3(0, 0, 0),
 			XMFLOAT3(5, 5, 5),
 			XMFLOAT4(0, 0, 0, 1)
 		);
+		obj->SetCameraTargetOffset(XMFLOAT3(0, 47, -21));
+
+		//XMFLOAT3 pos = obj->GetPosition();
+		//obj->AddCollider(pos, XMFLOAT3(8, 2.577f, 8), XMFLOAT4(0, 0, 0, 1), XMFLOAT3(0,0,0), ColliderTag::GROUNDCHECK);
+		//pos = obj->GetPosition();
+		//pos.y += 16.807f;
+		//obj->AddCollider(pos, XMFLOAT3(11.766f / 2, 16.807f / 2, 13.198f / 2), XMFLOAT4(0, 0, 0, 1), XMFLOAT3(0, 0, 0));
+
+		//CModel *model = new CModel();
+		//CTestMesh *mesh = new CTestMesh(m_pd3dDevice, m_pd3dCommandList, 10);
+		//model->SetMesh(mesh);
+		//model->SetTexture(m_TextureList[3]);
+		//obj->AddModel(model);
+		//obj->SetPosition(0, 100, 0);
+		//obj->SetSpawnPoint(obj->GetPosition());
+		//obj->AddCollider(
+		//	XMFLOAT3(0, 0, 0),
+		//	XMFLOAT3(5, 5, 5),
+		//	XMFLOAT4(0, 0, 0, 1)
+		//);
+		//obj->SetCameraTargetOffset(XMFLOAT3(0, 0, 0));
 
 
 		obj->SetTeam((i % 2) + 1);
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
-		obj->SetCameraTargetOffset(XMFLOAT3(0, 0, 0));
 		m_Players.push_back(obj);
 	}
 	for (int i = 0; i < m_nProjectiles; i++) {
@@ -1090,7 +1095,7 @@ void CObjectManager::CreateObjectData()
 		2019-06-17
 		투사체는 전부 미리 만들어두고 IsAlive를 false로 해둔다.
 		*********************************************************************/
-		importer.ImportModel("0615_Box", m_TextureList[0], obj);
+		importer.ImportModel("0615_Box", m_TextureList[0], obj, ImportType::DefaultMesh);
 		obj->SetAlive(false);
 		obj->AddCollider(XMFLOAT3(0,0,0), 10.0f, XMFLOAT3(0, 0, 0));
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);

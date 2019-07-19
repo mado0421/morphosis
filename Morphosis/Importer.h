@@ -239,7 +239,8 @@ public:
 
 	//void ImportAnimClip(const char* fileName, CObject* obj);
 	//void ImportModel(const char* fileName, CObject* obj);
-	void ImportModel(const char* fileName, CTexture* texture ,CObject* obj);
+	//void ImportModel(const char* fileName, CTexture* texture, CObject* obj);
+	void ImportModel(const char* fileName, CTexture* texture ,CObject* obj, ImportType type);
 	void ImportAnimClip(const char* fileName, CObject* obj);
 	void ImportLevel(const char* fileName, LEVELDATA_DESC& desc);
 	
