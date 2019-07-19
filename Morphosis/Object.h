@@ -1,6 +1,6 @@
 #pragma once
-#include "Mesh/Model.h"
-#include "Camera/Camera.h"
+#include "Model.h"
+#include "Camera.h"
 
 struct CB_OBJECT_INFO {
 	XMFLOAT4X4	m_xmf4x4World;

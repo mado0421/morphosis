@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "Object.h"
-#include "Animation/AnimationController.h"
-#include "Mesh/Mesh.h"
-#include "Importer/Importer.h"
+#include "AnimationController.h"
+#include "Mesh.h"
+#include "Importer.h"
+#include "Texture.h"
 
 /*********************************************************************
 2019-06-17

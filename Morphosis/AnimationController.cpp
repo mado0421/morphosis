@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "AnimationController.h"
-#include "Importer/Importer.h"
+#include "Importer.h"
 
 void CAnimationController::Init(AnimationClip & animData)
 {

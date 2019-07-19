@@ -1,7 +1,7 @@
 ﻿#include "stdafx.h"
 #include "Mesh.h"
-#include "Animation/AnimationController.h"
-#include "Importer/Importer.h"
+#include "AnimationController.h"
+#include "Importer.h"
 
 
 CMesh::CMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList)

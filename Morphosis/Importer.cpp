@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "Importer.h"
-#include "Object/Object.h"
-#include "Animation/AnimationController.h"
-#include "Mesh/Mesh.h"
+#include "Object.h"
+#include "AnimationController.h"
+#include "Mesh.h"
 
 void CImporter::ImportModel(const char * fileName, CTexture * texture, CObject * obj)
 {

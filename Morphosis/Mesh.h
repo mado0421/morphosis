@@ -1,6 +1,5 @@
 #pragma once
 #include "stdafx.h"
-#include "Material/Material.h"
 
 class CVertex
 {

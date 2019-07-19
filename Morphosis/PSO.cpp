@@ -197,12 +197,12 @@ D3D12_INPUT_LAYOUT_DESC CTexturedIlluminatedPSO::CreateInputLayout()
 
 D3D12_SHADER_BYTECODE CTexturedIlluminatedPSO::CreateVertexShader(ID3DBlob ** ppd3dShaderBlob)
 {
-	return(CompileShaderFromFile(L"Hlsl/VertexShader.hlsl", "VSDefaultShader", "vs_5_1", ppd3dShaderBlob));
+	return(CompileShaderFromFile(L"VertexShader.hlsl", "VSDefaultShader", "vs_5_1", ppd3dShaderBlob));
 }
 
 D3D12_SHADER_BYTECODE CTexturedIlluminatedPSO::CreatePixelShader(ID3DBlob ** ppd3dShaderBlob)
 {
-	return(CompileShaderFromFile(L"Hlsl/PixelShader.hlsl", "PSDefaultShader", "ps_5_1", ppd3dShaderBlob));
+	return(CompileShaderFromFile(L"PixelShader.hlsl", "PSDefaultShader", "ps_5_1", ppd3dShaderBlob));
 
 }
 
@@ -271,12 +271,12 @@ D3D12_RASTERIZER_DESC CDebugPSO::CreateRasterizerState()
 
 D3D12_SHADER_BYTECODE CDebugPSO::CreateVertexShader(ID3DBlob ** ppd3dShaderBlob)
 {
-	return(CompileShaderFromFile(L"Hlsl/VertexShader.hlsl", "VSDebug", "vs_5_1", ppd3dShaderBlob));
+	return(CompileShaderFromFile(L"VertexShader.hlsl", "VSDebug", "vs_5_1", ppd3dShaderBlob));
 }
 
 D3D12_SHADER_BYTECODE CDebugPSO::CreatePixelShader(ID3DBlob ** ppd3dShaderBlob)
 {
-	return(CompileShaderFromFile(L"Hlsl/PixelShader.hlsl", "PSDebug", "ps_5_1", ppd3dShaderBlob));
+	return(CompileShaderFromFile(L"PixelShader.hlsl", "PSDebug", "ps_5_1", ppd3dShaderBlob));
 }
 
 D3D12_INPUT_LAYOUT_DESC CUIPSO::CreateInputLayout()
@@ -383,12 +383,12 @@ D3D12_INPUT_LAYOUT_DESC CAnimatedPSO::CreateInputLayout()
 
 D3D12_SHADER_BYTECODE CAnimatedPSO::CreateVertexShader(ID3DBlob ** ppd3dShaderBlob)
 {
-	return(CompileShaderFromFile(L"Hlsl/VertexShader.hlsl", "VSAnimated", "vs_5_1", ppd3dShaderBlob));
+	return(CompileShaderFromFile(L"VertexShader.hlsl", "VSAnimated", "vs_5_1", ppd3dShaderBlob));
 }
 
 D3D12_SHADER_BYTECODE CAnimatedPSO::CreatePixelShader(ID3DBlob ** ppd3dShaderBlob)
 {
-	return(CompileShaderFromFile(L"Hlsl/PixelShader.hlsl", "PSAnimated", "ps_5_1", ppd3dShaderBlob));
+	return(CompileShaderFromFile(L"PixelShader.hlsl", "PSAnimated", "ps_5_1", ppd3dShaderBlob));
 
 }
 
