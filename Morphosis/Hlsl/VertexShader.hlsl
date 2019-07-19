@@ -1,4 +1,5 @@
 #include "Header.hlsli"
+#include "Light.hlsli"
 
 VS_TEXTURED_ILLUMINATED_VERTEX_OUTPUT VSAnimated(VS_ANIMATED_VERTEX_INPUT input)
 {

@@ -316,14 +316,20 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 	m_xmf3Move = Move(fTimeElapsed);
 
 	int s = 0;
+	//vector<XMFLOAT3> test;
+	static queue<XMFLOAT3> test;
+	static queue<int> test2;
 	while (true) {
 
 		Collider DetailedGroundCollider(Vector3::Add(GetPosition(), m_xmf3Move), g_DefaultUnitStandard / 2.0f, XMFLOAT3(0, 0, 0), ColliderTag::GROUNDCHECK);
 		Collider* collider = m_pObjMng->GetCollider(DetailedGroundCollider, ColliderTag::PROP);
-		if (NULL == collider || s > 3) break;
+		if (NULL == collider) break;
 
 		s++;
-
+		test.push(m_xmf3Move);
+		test2.push(s);
+		if (test.size() > 100) test.pop();
+		if (test2.size() > 100) test2.pop();
 		XMFLOAT3 look = collider->GetLook();
 		XMFLOAT3 up = collider->GetUp();
 		XMFLOAT3 right = Vector3::CrossProduct(up, look);
@@ -336,15 +342,17 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 		XMFLOAT3 xmf3Temp;
 		XMFLOAT3 xmf3MyExtents;
 
-		temp = XMPlaneDotCoord(planeYZ, XMLoadFloat3(&DetailedGroundCollider.GetCenter()));
+
+
+		temp = XMPlaneDotCoord(planeYZ, XMLoadFloat3(&GetPosition()));
 		XMStoreFloat3(&xmf3Temp, temp);
 		xmf3MyExtents.x = xmf3Temp.x;
 
-		temp = XMPlaneDotCoord(planeXY, XMLoadFloat3(&DetailedGroundCollider.GetCenter()));
+		temp = XMPlaneDotCoord(planeXY, XMLoadFloat3(&GetPosition()));
 		XMStoreFloat3(&xmf3Temp, temp);
 		xmf3MyExtents.z = xmf3Temp.x;
 
-		temp = XMPlaneDotCoord(planeXZ, XMLoadFloat3(&DetailedGroundCollider.GetCenter()));
+		temp = XMPlaneDotCoord(planeXZ, XMLoadFloat3(&GetPosition()));
 		XMStoreFloat3(&xmf3Temp, temp);
 		xmf3MyExtents.y = xmf3Temp.x;
 		/*********************************************************************
@@ -353,26 +361,55 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 		- MyExtents와 Collider의 Extents를 비교
 		한 번에 한 면만 충돌하거나(빗면), 두 면이 충돌하거나(가장자리), 세 면이 충돌할 수 있음(모서리)
 		검사 6번을 하면
+
+		2019-07-18
+		현재 내 위치를 기준으로 구하게 변경하였습니다~
+
+		절대값을 구해서 MyExtents가 Extents보다 커야 함.
+		abs(MyExtent) - Extent 한 값이 가장 큰 면이 충돌면.
+		MyExtent의 부호에 따라 충돌면의 방향을 정함.
+
+		기적 같이 같을 수 있다. 그럼 뭐~걍 먼저 나온 면으로 해. 중요한 것도 아니고
+
 		*********************************************************************/
 		XMFLOAT3 colliderExtents = collider->GetExtents();
 		XMFLOAT3 dir(0, 0, 0);
-		float restore = 0;
 
-		if (IsIn(xmf3MyExtents.x, colliderExtents.x, colliderExtents.x + g_DefaultUnitStandard / 2.0f))		dir = Vector3::Add(dir, right);	
-		if (IsIn(xmf3MyExtents.y, colliderExtents.y, colliderExtents.y + g_DefaultUnitStandard / 2.0f))		dir = Vector3::Add(dir, up);		
-		if (IsIn(xmf3MyExtents.z, colliderExtents.z, colliderExtents.z + g_DefaultUnitStandard / 2.0f))		dir = Vector3::Add(dir, look);	
-		if (IsIn(xmf3MyExtents.x, -colliderExtents.x - g_DefaultUnitStandard / 2.0f, -colliderExtents.x))	dir = Vector3::Add(dir, Vector3::Multiply(-1, right));
-		if (IsIn(xmf3MyExtents.y, -colliderExtents.y - g_DefaultUnitStandard / 2.0f, -colliderExtents.y))	dir = Vector3::Add(dir, Vector3::Multiply(-1, up));
-		if (IsIn(xmf3MyExtents.z, -colliderExtents.z - g_DefaultUnitStandard / 2.0f, -colliderExtents.z))	dir = Vector3::Add(dir, Vector3::Multiply(-1, look));
+		float max = abs(xmf3MyExtents.x) - colliderExtents.x; int colliderDir = 0;
+		if (abs(xmf3MyExtents.y) - colliderExtents.y > max) { max = abs(xmf3MyExtents.y) - colliderExtents.y; colliderDir = 1; }
+		if (abs(xmf3MyExtents.z) - colliderExtents.z > max) { max = abs(xmf3MyExtents.z) - colliderExtents.z; colliderDir = 2; }
+
+		XMVECTOR parallel, perpendicular;
+		if(colliderDir == 0){ 
+			if(xmf3MyExtents.x >0)	dir = Vector3::Normalize(right);
+			else					dir = Vector3::Normalize(Vector3::Multiply(-1, right));
+		}
+		else if (colliderDir == 1) {
+			if (xmf3MyExtents.y > 0)	dir = Vector3::Normalize(up);
+			else						dir = Vector3::Normalize(Vector3::Multiply(-1, up));
+		}
+		else {
+			if (xmf3MyExtents.z > 0)	dir = Vector3::Normalize(look);
+			else						dir = Vector3::Normalize(Vector3::Multiply(-1, look));
+		}
+
+		XMVector3ComponentsFromNormal(&parallel, &perpendicular, XMLoadFloat3(&m_xmf3Move), XMLoadFloat3(&dir));
+
+
+		//if (IsIn(xmf3MyExtents.x, colliderExtents.x, colliderExtents.x + g_DefaultUnitStandard / 2.0f))		dir = Vector3::Add(dir, right);	
+		//if (IsIn(xmf3MyExtents.y, colliderExtents.y, colliderExtents.y + g_DefaultUnitStandard / 2.0f))		dir = Vector3::Add(dir, up);		
+		//if (IsIn(xmf3MyExtents.z, colliderExtents.z, colliderExtents.z + g_DefaultUnitStandard / 2.0f))		dir = Vector3::Add(dir, look);	
+		//if (IsIn(xmf3MyExtents.x, -colliderExtents.x - g_DefaultUnitStandard / 2.0f, -colliderExtents.x))	dir = Vector3::Add(dir, Vector3::Multiply(-1, right));
+		//if (IsIn(xmf3MyExtents.y, -colliderExtents.y - g_DefaultUnitStandard / 2.0f, -colliderExtents.y))	dir = Vector3::Add(dir, Vector3::Multiply(-1, up));
+		//if (IsIn(xmf3MyExtents.z, -colliderExtents.z - g_DefaultUnitStandard / 2.0f, -colliderExtents.z))	dir = Vector3::Add(dir, Vector3::Multiply(-1, look));
 		//if (IsIn(xmf3MyExtents.x, -colliderExtents.x - g_DefaultUnitStandard / 2.0f, -colliderExtents.x))	Vector3::Add(dir, Vector3::Multiply(-1, right));
 		//if (IsIn(xmf3MyExtents.y, -colliderExtents.y - g_DefaultUnitStandard / 2.0f, -colliderExtents.y))	Vector3::Add(dir, Vector3::Multiply(-1, up));
 		//if (IsIn(xmf3MyExtents.z, -colliderExtents.z - g_DefaultUnitStandard / 2.0f, -colliderExtents.z))	Vector3::Add(dir, Vector3::Multiply(-1, look));
 
-		dir = Vector3::Normalize(dir);
+		//dir = Vector3::Normalize(dir);
 
-		XMVECTOR parallel, perpendicular;
 
-		XMVector3ComponentsFromNormal(&parallel, &perpendicular, XMLoadFloat3(&m_xmf3Move), XMLoadFloat3(&dir));
+		//XMVector3ComponentsFromNormal(&parallel, &perpendicular, XMLoadFloat3(&m_xmf3Move), XMLoadFloat3(&dir));
 
 		XMStoreFloat3(&m_xmf3Move, perpendicular);
 
@@ -383,7 +420,16 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 		if (Vector3::DotProduct(dir, XMFLOAT3(0, 1, 0)) > 0.8) {
 			m_fHeightVelocity = fTimeElapsed * g_Gravity;
 		}
+
+		//system("cls");
+		//cout << "Collsion Time: " << s << "\nMovind Dir: (" << m_xmf3Move.x << ", " << m_xmf3Move.y << ", " << m_xmf3Move.z << ")\n";
+
 	}
+	s++;
+	test.push(m_xmf3Move);
+	test2.push(s);
+	if (test.size() > 100) test.pop();
+	if (test2.size() > 100) test2.pop();
 
 	XMFLOAT3 xmf3Right	= XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
 	XMFLOAT3 xmf3Up		= XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
@@ -465,7 +511,7 @@ void CPlayer::Enable()
 {
 	m_HealthPoint = g_DefaultHealthPoint;
 	SetPosition(m_xmf3SpawnPoint);
-
+	m_fHeightVelocity = 0;
 
 	/*********************************************************************
 	2019-07-03
@@ -963,32 +1009,35 @@ void CObjectManager::CreateObjectData()
 	for (int i = 0; i < m_nProps; i++) {
 		CObject* obj = new CObject();
 		obj->SetMng(this);
-		//importer.ImportModel("0618_LevelTest", m_TextureList[2], obj);
-		//for (int j = 0; j < m_LevelDataDesc.nCollisionMaps; ++j) {
-		//	/*********************************************************************
-		//	2019-07-06
-		//	인자로 이렇게 전해주는데 안에서 생성하고 그걸 삭제하는데서 문제가 생기나 봄
-		//	복사생성 등의 문제?
-		//	*********************************************************************/
-		//	obj->AddCollider(
-		//		m_LevelDataDesc.CollisionPosition[j],
-		//		m_LevelDataDesc.CollisionScale[j],
-		//		m_LevelDataDesc.CollisionRotation[j], 
-		//		XMFLOAT3(0, 0, 0));
-		//}
 
-		CModel *model = new CModel();
-		CTestMesh *mesh = new CTestMesh(m_pd3dDevice, m_pd3dCommandList, 100);
-		model->SetMesh(mesh);
-		model->SetTexture(m_TextureList[3]);
-		obj->AddModel(model);
-		obj->SetPosition(0, -200.0f * i, -100.0f * i);
-		obj->AddCollider(
-			XMFLOAT3(0, 0, 0),
-			XMFLOAT3(50, 50, 50),
-			XMFLOAT4(0, 0, 0, 1)
-		);
-		if(i == 0)	obj->SetRotation(XMFLOAT3(-60, 0, 0));
+		importer.ImportModel("0618_LevelTest", m_TextureList[2], obj);
+		for (int j = 0; j < m_LevelDataDesc.nCollisionMaps; ++j) {
+			/*********************************************************************
+			2019-07-06
+			인자로 이렇게 전해주는데 안에서 생성하고 그걸 삭제하는데서 문제가 생기나 봄
+			복사생성 등의 문제?
+			*********************************************************************/
+			obj->AddCollider(
+				XMFLOAT3(0, 0, 0),
+				m_LevelDataDesc.CollisionScale[j],
+				m_LevelDataDesc.CollisionRotation[j], 
+				m_LevelDataDesc.CollisionPosition[j],
+				ColliderTag::PROP);
+		}
+
+		//CModel *model = new CModel();
+		//CTestMesh *mesh = new CTestMesh(m_pd3dDevice, m_pd3dCommandList, 100);
+		//model->SetMesh(mesh);
+		//model->SetTexture(m_TextureList[3]);
+		//obj->AddModel(model);
+		//obj->SetPosition(0, -200.0f * i, -100.0f * i);
+		//obj->AddCollider(
+		//	XMFLOAT3(0, 0, 0),
+		//	XMFLOAT3(50, 50, 50),
+		//	XMFLOAT4(0, 0, 0, 1)
+		//);
+		//if(i == 0)	obj->SetRotation(XMFLOAT3(-60, 0, 0));
+
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 		m_Props.push_back(obj);
 	}
@@ -1012,17 +1061,20 @@ void CObjectManager::CreateObjectData()
 		//pos.y += 16.807f;
 		//obj->AddCollider(pos, XMFLOAT3(11.766f / 2, 16.807f / 2, 13.198f / 2), XMFLOAT4(0, 0, 0, 1), XMFLOAT3(0, 0, 0));
 		//obj->SetCameraTargetOffset(XMFLOAT3(0, 47, -21));
+
 		CModel *model = new CModel();
 		CTestMesh *mesh = new CTestMesh(m_pd3dDevice, m_pd3dCommandList, 10);
 		model->SetMesh(mesh);
 		model->SetTexture(m_TextureList[3]);
 		obj->AddModel(model);
-		obj->SetPosition(0, 300, -50);
+		obj->SetPosition(0, 100, 0);
+		obj->SetSpawnPoint(obj->GetPosition());
 		obj->AddCollider(
 			XMFLOAT3(0, 0, 0),
 			XMFLOAT3(5, 5, 5),
 			XMFLOAT4(0, 0, 0, 1)
 		);
+
 
 		obj->SetTeam((i % 2) + 1);
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);

@@ -200,6 +200,10 @@ void CTestGroundScene::ProcessInput(UCHAR * pKeysBuffer)
 	if (pKeysBuffer[KEY::_1] & 0xF0) { g_IsMouseMode = false; }
 	if (pKeysBuffer[KEY::_2] & 0xF0) { g_IsMouseMode = true; }
 
+	if (pKeysBuffer[KEY::_3] & 0xF0) { m_ObjMng->GetTarget(0)->Enable(); }
+
+
+
 	if (g_IsMouseMode) {
 		GetCursorPos(&ptCursorPos);
 		cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;

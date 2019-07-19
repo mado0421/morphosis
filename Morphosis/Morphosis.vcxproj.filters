@@ -165,6 +165,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Hlsl\Header.hlsli" />
+    <None Include="Hlsl\Light.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Hlsl\VertexShader.hlsl" />
