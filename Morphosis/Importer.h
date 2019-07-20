@@ -1,8 +1,6 @@
 #pragma once
 #include "stdafx.h"
 
-
-
 struct ImportBone {
 	std::string	m_Name;
 	XMFLOAT4X4	m_GlobalTransform;
@@ -44,6 +42,7 @@ public:
 		, m_nKeyTime(0)
 		, m_BoneList(NULL)
 		, m_KeyTime(NULL)
+		, m_IsLoop(false)
 	{}
 	AnimationClip(const AnimationClip& a) 
 		: m_AnimName(a.m_AnimName)
@@ -51,6 +50,7 @@ public:
 		, m_nKeyTime(a.m_nKeyTime)
 		, m_BoneList(NULL)
 		, m_KeyTime(NULL)
+		, m_IsLoop(false)
 	{
 		m_BoneList = new ImportBone[m_nBoneList];
 		for (int i = 0; i < m_nBoneList; ++i) 
@@ -110,6 +110,7 @@ public:
 			std::cout << m_BoneList[i].m_Name.c_str() << "\n\n";
 		}
 	}
+	void SetIsLoop(bool IsLoop) { m_IsLoop = IsLoop; }
 
 public:
 	std::string m_AnimName;
@@ -118,6 +119,8 @@ public:
 
 	ImportBone*	m_BoneList;
 	double*		m_KeyTime;
+
+	bool		m_IsLoop;
 };
 
 struct ImportCtrlPoint {
@@ -241,13 +244,15 @@ public:
 
 	}
 
-	CTexture* GetTextureByName(const char* name);
+	CTexture*				GetTextureByName(const char* name);
+	CModel*					GetModelByName(const char* name);
+	CAnimationController*	GetAnimCtrlByName(const char* name);
 
-	void ImportModel(const char* fileName, CTexture* texture, CObject* obj, ImportType type);
-	void ImportModel(const char* fileName, int textureIdx ,CObject* obj, ImportType type);
-	void ImportAnimClip(const char* fileName, CObject* obj);
-	void ImportLevel(const char* fileName, LEVELDATA_DESC& desc);
+	void ImportModel(const char* fileName, const char* textureName, ImportType type, const char* modelName = "");
 	void ImportTexture(const wchar_t* fileName, const char* textureName = "");
+	void ImportAnimController(const char* animCtrlName = "");
+	void ImportAnimClip(const char* fileName, const char* animCtrlName, bool IsLoop, const char* animClipName = "");
+	void ImportLevel(const char* fileName, LEVELDATA_DESC& desc);
 private:
 	ID3D12Device*				m_pd3dDevice		= NULL;
 	ID3D12GraphicsCommandList*	m_pd3dCommandList	= NULL;

@@ -93,7 +93,8 @@ public:
 	void AddModel(CModel* model) {
 		m_ModelList.push_back(*model);
 	}
-	void AddAnimClip(AnimationClip* animClip);
+	//void AddAnimClip(AnimationClip* animClip);
+	void SetAnimCtrl(CAnimationController* animCtrl);
 	void AddCollider(XMFLOAT3 center, XMFLOAT3 extents, XMFLOAT4 quaternion, XMFLOAT3 offset = XMFLOAT3(0, 0, 0), ColliderTag tag = ColliderTag::DEFAULT);
 	void AddCollider(XMFLOAT3 center, float radius, XMFLOAT3 offset = XMFLOAT3(0, 0, 0), ColliderTag tag = ColliderTag::DEFAULT);
 	void ChangeAnimClip(const char* animClipName);

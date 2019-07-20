@@ -64,16 +64,22 @@ void CObject::LateUpdate(float fTimeElapsed)
 {
 	if (!m_IsAlive) return;
 }
-void CObject::AddAnimClip(AnimationClip * animClip)
+
+void CObject::SetAnimCtrl(CAnimationController * animCtrl)
 {
-	/*********************************************************************
-	2019-06-16
-	애니메이션 컨트롤러가 없으면 생성하고 추가해준다.
-	*********************************************************************/
-	if (NULL == m_AnimationController)
-		m_AnimationController = new CAnimationController();
-	m_AnimationController->AddAnimData(animClip);
+	m_AnimationController = animCtrl;
 }
+
+//void CObject::AddAnimClip(AnimationClip * animClip)
+//{
+//	/*********************************************************************
+//	2019-06-16
+//	애니메이션 컨트롤러가 없으면 생성하고 추가해준다.
+//	*********************************************************************/
+//	if (NULL == m_AnimationController)
+//		m_AnimationController = new CAnimationController();
+//	m_AnimationController->AddAnimData(animClip);
+//}
 void CObject::AddCollider(XMFLOAT3 center, XMFLOAT3 extents, XMFLOAT4 quaternion, XMFLOAT3 offset, ColliderTag tag)
 {
 	m_Collider.emplace_back(center, extents, quaternion, offset, tag);
@@ -980,41 +986,31 @@ void CObjectManager::CreateObjectData()
 	2019-06-15
 	텍스처도 여기서 넣어야 할 것 같음. 텍스처를 먼저 만들어둔다.
 	텍스처는 서술자 힙 만들고 나서 해야 되는거 아냐?
+
+	2019-07-21
+	텍스처를 전역 벡터로 관리하기 시작.
 	*********************************************************************/
 
 	g_vecTexture.clear();
-
 	importer.ImportTexture(L"0615_Box_diff",			"Texture_PaperBox");
 	importer.ImportTexture(L"character_2_diff_test3",	"Texture_Character");
 	importer.ImportTexture(L"0618_LevelTest_diff",		"Texture_Level");
 	importer.ImportTexture(L"box_diff",					"Texture_StandardBox");
-	for (int i = 0; i < g_vecTexture.size(); ++i)
-	{
-		CreateTextureResourceView(g_vecTexture[i]);
-	}
+	for (int i = 0; i < g_vecTexture.size(); ++i) CreateTextureResourceView(g_vecTexture[i]);
+	
+	importer.ImportModel("0618_LevelTest",		"Texture_Level",		ImportType::DefaultMesh,	"Model_Level");
+	importer.ImportModel("0603_CharacterIdle",	"Texture_Character",	ImportType::AnimatedMesh,	"Model_Character");
+	importer.ImportModel("0615_Box",			"Texture_PaperBox",		ImportType::DefaultMesh,	"Model_PaperBox");
 
-	//int nTexture = 4;
-	//wstring fileNames[4];
-	//fileNames[0] = LASSETPATH;
-	//fileNames[0] += L"0615_Box_diff.dds";
-	//fileNames[1] = LASSETPATH;
-	//fileNames[1] += L"character_2_diff_test3.dds";
-	//fileNames[2] = LASSETPATH;
-	//fileNames[2] += L"0618_LevelTest_diff.dds";
-	//fileNames[3] = LASSETPATH;
-	//fileNames[3] += L"box_diff.dds";
-	//for (int i = 0; i < nTexture; ++i) {
-	//	CTexture* texture = new CTexture(RESOURCE_TEXTURE2D);
-	//	texture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, fileNames[i].c_str());
-	//	CreateTextureResourceView(texture);
-	//	m_TextureList.push_back(texture);
-	//}
+	importer.ImportAnimController("AnimCtrl_Character");
 
-	/*********************************************************************
-	2019-06-15
-	텍스처도 여기서 넣어야 할 것 같음. 텍스처를 먼저 만들어둔다.
-	텍스처는 서술자 힙 만들고 나서 해야 되는거 아냐?
-	*********************************************************************/
+	importer.ImportAnimClip("0603_CharacterIdle",		"AnimCtrl_Character", true);
+	importer.ImportAnimClip("0603_CharacterRun",		"AnimCtrl_Character", true);
+	importer.ImportAnimClip("0603_CharacterFire",		"AnimCtrl_Character", false);
+	importer.ImportAnimClip("0603_CharacterStartJump",	"AnimCtrl_Character", false);
+	importer.ImportAnimClip("0603_CharacterEndJump",	"AnimCtrl_Character", false);
+	importer.ImportAnimClip("0603_CharacterDied",		"AnimCtrl_Character", false);
+
 	CreateConstantBufferResorce();
 	CreateConstantBufferView();
 
@@ -1024,7 +1020,10 @@ void CObjectManager::CreateObjectData()
 		obj->SetMng(this);
 
 		
-		importer.ImportModel("0618_LevelTest", importer.GetTextureByName("Texture_Level"), obj, ImportType::DefaultMesh);
+		//importer.ImportModel("0618_LevelTest", importer.GetTextureByName("Texture_Level"), obj, ImportType::DefaultMesh);
+		obj->AddModel(importer.GetModelByName("Model_Level_Box042"));
+		obj->AddModel(importer.GetModelByName("Model_Level_Box045"));
+		obj->AddModel(importer.GetModelByName("Model_Level_Box047"));
 		for (int j = 0; j < m_LevelDataDesc.nCollisionMaps; ++j) {
 			/*********************************************************************
 			2019-07-06
@@ -1058,14 +1057,12 @@ void CObjectManager::CreateObjectData()
 	for (int i = 0; i < m_nPlayers; i++) {
 		CPlayer* obj = new CPlayer();
 		obj->SetMng(this);
+		obj->AddModel(importer.GetModelByName("Model_Character_body"));
+		obj->AddModel(importer.GetModelByName("Model_Character_jumper"));
+		obj->AddModel(importer.GetModelByName("Model_Character_mask"));
 
-		importer.ImportModel("0603_CharacterIdle", importer.GetTextureByName("Texture_Character"), obj, ImportType::AnimatedMesh);
-		importer.ImportAnimClip("0603_CharacterIdle", obj);
-		importer.ImportAnimClip("0603_CharacterRun", obj);
-		importer.ImportAnimClip("0603_CharacterFire", obj);
-		importer.ImportAnimClip("0603_CharacterStartJump", obj);
-		importer.ImportAnimClip("0603_CharacterEndJump", obj);
-		importer.ImportAnimClip("0603_CharacterDied", obj);
+		obj->SetAnimCtrl(importer.GetAnimCtrlByName("AnimCtrl_Character"));
+
 		obj->SetPosition(0, 100, i * g_fDefaultUnitScale * 3);
 		obj->SetSpawnPoint(obj->GetPosition());
 		obj->AddCollider(
@@ -1103,12 +1100,8 @@ void CObjectManager::CreateObjectData()
 	for (int i = 0; i < m_nProjectiles; i++) {
 		CProjectile* obj = new CProjectile();
 		obj->SetMng(this);
+		obj->AddModel(importer.GetModelByName("Model_PaperBox_box_1"));
 
-		/*********************************************************************
-		2019-06-17
-		투사체는 전부 미리 만들어두고 IsAlive를 false로 해둔다.
-		*********************************************************************/
-		importer.ImportModel("0615_Box", importer.GetTextureByName("Texture_PaperBox"), obj, ImportType::DefaultMesh);
 		obj->SetAlive(false);
 		obj->AddCollider(XMFLOAT3(0,0,0), 10.0f, XMFLOAT3(0, 0, 0));
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);

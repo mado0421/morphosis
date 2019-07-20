@@ -17,6 +17,7 @@ public:
 	void		Update(float fTime);
 
 	XMFLOAT4X4	GetPositionOfBone(const char* animClipName);
+	void		SetName(const char* name) { m_strName = name; }
 
 	bool		IsClipEnd();
 private:
@@ -33,6 +34,8 @@ public:
 	std::vector<AnimationClip*>		m_AnimData;
 	int								m_AnimState = 0;
 
-	bool							isLoop = true;
-	float							m_fTime = 0;
+	//bool							isLoop		= true;
+	float							m_fTime		= 0;
+
+	string							m_strName	= "";
 };
