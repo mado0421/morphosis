@@ -1019,17 +1019,10 @@ void CObjectManager::CreateObjectData()
 		CObject* obj = new CObject();
 		obj->SetMng(this);
 
-		
-		//importer.ImportModel("0618_LevelTest", importer.GetTextureByName("Texture_Level"), obj, ImportType::DefaultMesh);
 		obj->AddModel(importer.GetModelByName("Model_Level_Box042"));
 		obj->AddModel(importer.GetModelByName("Model_Level_Box045"));
 		obj->AddModel(importer.GetModelByName("Model_Level_Box047"));
 		for (int j = 0; j < m_LevelDataDesc.nCollisionMaps; ++j) {
-			/*********************************************************************
-			2019-07-06
-			인자로 이렇게 전해주는데 안에서 생성하고 그걸 삭제하는데서 문제가 생기나 봄
-			복사생성 등의 문제?
-			*********************************************************************/
 			obj->AddCollider(
 				XMFLOAT3(0, 0, 0),
 				m_LevelDataDesc.CollisionScale[j],

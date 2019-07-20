@@ -109,7 +109,7 @@ float4 TestLighting(float3 vPosition, float3 vNormal) {
 	/*********************************************************************
 	2019-07-20
 	*********************************************************************/
-	float4 cLightGlobalAmbient = float4(0.1f, 0.1f, 0.1f, 1.0f);
+	float4 cLightGlobalAmbient = float4(0.1f, 0.3f, 0.3f, 1.0f);
 
 	float3 vCameraPosition = float3(gvCameraPosition.x, gvCameraPosition.y, gvCameraPosition.z);
 	float3 vToCamera = normalize(vCameraPosition - vPosition);
