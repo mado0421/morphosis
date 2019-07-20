@@ -749,17 +749,6 @@ void CObjectManager::Render()
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Projectiles[i]->m_xmf4x4World)));
 	}
 
-	//if (g_IsMouseMode == 0) {
-
-	//}
-
-	//m_pd3dCommandList->SetPipelineState(m_PSO[1]);
-	//for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Render(m_pd3dCommandList);
-	//for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->Render(m_pd3dCommandList);
-
-	//m_pd3dCommandList->SetPipelineState(m_PSO[0]);
-	//for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->Render(m_pd3dCommandList);
-
 	m_pd3dCommandList->SetPipelineState(m_PSO[1]);
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Render(m_pd3dCommandList);
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->Render(m_pd3dCommandList);
@@ -976,7 +965,7 @@ void CObjectManager::CreateObjectData()
 	서술자 힙을 생성하기 위해 개수들을 정해준다. 지금은 임의로 하지만 나중에는
 	m_nProps는 LevelData에서 읽어오고, 나머지는 Defines.h에서 가져올 것.
 	*********************************************************************/
-	m_nProps = 1;
+	m_nProps = 2;
 	m_nPlayers = 1;
 	m_nProjectiles = m_nPlayers * g_nProjectilePerPlayer;
 	m_nObjects = m_nProps + m_nPlayers + m_nProjectiles;
@@ -1001,6 +990,7 @@ void CObjectManager::CreateObjectData()
 	importer.ImportModel("0618_LevelTest",		"Texture_Level",		ImportType::DefaultMesh,	"Model_Level");
 	importer.ImportModel("0603_CharacterIdle",	"Texture_Character",	ImportType::AnimatedMesh,	"Model_Character");
 	importer.ImportModel("0615_Box",			"Texture_PaperBox",		ImportType::DefaultMesh,	"Model_PaperBox");
+	importer.ImportModel("0615_Box",			"Texture_PaperBox",		ImportType::DefaultMesh,	"Model_PaperBox_Resize", 5.0f);
 
 	importer.ImportAnimController("AnimCtrl_Character");
 
@@ -1018,17 +1008,22 @@ void CObjectManager::CreateObjectData()
 	for (int i = 0; i < m_nProps; i++) {
 		CObject* obj = new CObject();
 		obj->SetMng(this);
-
-		obj->AddModel(importer.GetModelByName("Model_Level_Box042"));
-		obj->AddModel(importer.GetModelByName("Model_Level_Box045"));
-		obj->AddModel(importer.GetModelByName("Model_Level_Box047"));
-		for (int j = 0; j < m_LevelDataDesc.nCollisionMaps; ++j) {
-			obj->AddCollider(
-				XMFLOAT3(0, 0, 0),
-				m_LevelDataDesc.CollisionScale[j],
-				m_LevelDataDesc.CollisionRotation[j], 
-				m_LevelDataDesc.CollisionPosition[j],
-				ColliderTag::PROP);
+		if (0 == i) {
+			obj->AddModel(importer.GetModelByName("Model_Level_Box042"));
+			obj->AddModel(importer.GetModelByName("Model_Level_Box045"));
+			obj->AddModel(importer.GetModelByName("Model_Level_Box047"));
+			for (int j = 0; j < m_LevelDataDesc.nCollisionMaps; ++j) {
+				obj->AddCollider(
+					XMFLOAT3(0, 0, 0),
+					m_LevelDataDesc.CollisionScale[j],
+					m_LevelDataDesc.CollisionRotation[j],
+					m_LevelDataDesc.CollisionPosition[j],
+					ColliderTag::PROP);
+			}
+		}
+		else {
+			obj->AddModel(importer.GetModelByName("Model_PaperBox_Resize_box_1"));
+			obj->SetPosition(0.0f, 50.0f, 0.0f);
 		}
 
 		//CModel *model = new CModel();

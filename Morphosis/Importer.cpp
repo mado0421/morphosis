@@ -5,34 +5,6 @@
 #include "Mesh.h"
 #include "Texture.h"
 
-//void CImporter::ImportModel(const char * fileName, CTexture * texture, CObject * obj)
-//{
-//	TCHAR programpath[_MAX_PATH];
-//	GetCurrentDirectory(_MAX_PATH, programpath);
-//
-//	string modelDataName = ASSETPATH;
-//	modelDataName += fileName;
-//	modelDataName += "_mesh.dat";
-//	ImportModelData modelData;
-//	modelData.ImportFile(modelDataName.c_str());
-//
-//	/*********************************************************************
-//	2019-06-13
-//	여기서 파일을 읽고, 메쉬 개수만큼 모델을 생성, 메쉬를 넣고, 텍스처를 넣고,
-//	그걸 오브젝트에 추가해줘야 함.
-//
-//	모델은 포인터로 전달이 됨. 오브젝트는 모델 포인터를 벡터로 관리하는게 아니라
-//	모델 객체를 벡터로 관리하는 중이니까 그걸 염두에 두고 작업해야 함.
-//	*********************************************************************/
-//	for (int i = 0; i < modelData.GetNumOfMesh(); ++i) {
-//		CModel* model = new CModel();
-//		CAnimatedMesh* tempMesh = new CAnimatedMesh(m_pd3dDevice, m_pd3dCommandList, modelData.GetMeshData(i));
-//		model->SetMesh(tempMesh);
-//		model->SetTexture(texture);
-//		obj->AddModel(model);
-//	}
-//}
-
 std::vector<CTexture*>				g_vecTexture;
 std::vector<CModel*>				g_vecModel;
 std::vector<CAnimationController*>	g_vecAnimController;
@@ -61,100 +33,7 @@ CAnimationController * CImporter::GetAnimCtrlByName(const char * name)
 	return nullptr;
 }
 
-//void CImporter::ImportModel(const char * fileName, CTexture * texture, CObject * obj, ImportType type)
-//{
-//	TCHAR programpath[_MAX_PATH];
-//	GetCurrentDirectory(_MAX_PATH, programpath);
-//
-//	string modelDataName = ASSETPATH;
-//	modelDataName += fileName;
-//	modelDataName += "_mesh.dat";
-//	ImportModelData modelData;
-//	modelData.ImportFile(modelDataName.c_str());
-//
-//	/*********************************************************************
-//	2019-06-13
-//	여기서 파일을 읽고, 메쉬 개수만큼 모델을 생성, 메쉬를 넣고, 텍스처를 넣고,
-//	그걸 오브젝트에 추가해줘야 함.
-//
-//	모델은 포인터로 전달이 됨. 오브젝트는 모델 포인터를 벡터로 관리하는게 아니라
-//	모델 객체를 벡터로 관리하는 중이니까 그걸 염두에 두고 작업해야 함.
-//	*********************************************************************/
-//	if (ImportType::DefaultMesh == type) {
-//		for (int i = 0; i < modelData.GetNumOfMesh(); ++i) {
-//			CModel* model = new CModel();
-//			
-//			CIlluminatedTexturedMesh* tempMesh = new CIlluminatedTexturedMesh(m_pd3dDevice, m_pd3dCommandList, modelData.GetMeshData(i));
-//			model->SetMesh(tempMesh);
-//			model->SetTexture(texture);
-//			obj->AddModel(model);
-//		}
-//	}
-//	else if (ImportType::AnimatedMesh == type) {
-//		for (int i = 0; i < modelData.GetNumOfMesh(); ++i) {
-//			CModel* model = new CModel();
-//			CAnimatedMesh* tempMesh = new CAnimatedMesh(m_pd3dDevice, m_pd3dCommandList, modelData.GetMeshData(i));
-//			model->SetMesh(tempMesh);
-//			model->SetTexture(texture);
-//			obj->AddModel(model);
-//		}
-//	}
-//	else {
-//		cout << "ImportModel(const char*, CTexture*, CObject*, ImportType) 제대로 하자\n";
-//	}
-//
-//}
-//
-//void CImporter::ImportModel(const char * fileName, int textureIdx, CObject * obj, ImportType type)
-//{
-//	TCHAR programpath[_MAX_PATH];
-//	GetCurrentDirectory(_MAX_PATH, programpath);
-//
-//	string modelDataName = ASSETPATH;
-//	modelDataName += fileName;
-//	modelDataName += "_mesh.dat";
-//	ImportModelData modelData;
-//	modelData.ImportFile(modelDataName.c_str());
-//
-//	/*********************************************************************
-//	2019-06-13
-//	여기서 파일을 읽고, 메쉬 개수만큼 모델을 생성, 메쉬를 넣고, 텍스처를 넣고,
-//	그걸 오브젝트에 추가해줘야 함.
-//
-//	모델은 포인터로 전달이 됨. 오브젝트는 모델 포인터를 벡터로 관리하는게 아니라
-//	모델 객체를 벡터로 관리하는 중이니까 그걸 염두에 두고 작업해야 함.
-//	*********************************************************************/
-//	if (ImportType::DefaultMesh == type) {
-//		for (int i = 0; i < modelData.GetNumOfMesh(); ++i) {
-//			CModel* model = new CModel();
-//
-//			CIlluminatedTexturedMesh* tempMesh = new CIlluminatedTexturedMesh(m_pd3dDevice, m_pd3dCommandList, modelData.GetMeshData(i));
-//			model->SetMesh(tempMesh);
-//			model->SetTexture(g_vecTexture[textureIdx]);
-//
-//			g_vecModel.push_back(model);
-//
-//			obj->AddModel(model);
-//		}
-//	}
-//	else if (ImportType::AnimatedMesh == type) {
-//		for (int i = 0; i < modelData.GetNumOfMesh(); ++i) {
-//			CModel* model = new CModel();
-//			CAnimatedMesh* tempMesh = new CAnimatedMesh(m_pd3dDevice, m_pd3dCommandList, modelData.GetMeshData(i));
-//			model->SetMesh(tempMesh);
-//			model->SetTexture(g_vecTexture[textureIdx]);
-//
-//			g_vecModel.push_back(model);
-//
-//			obj->AddModel(model);
-//		}
-//	}
-//	else {
-//		cout << "ImportModel(const char*, CTexture*, CObject*, ImportType) 제대로 하자\n";
-//	}
-//}
-
-void CImporter::ImportModel(const char * fileName, const char * textureName, ImportType type, const char * modelName)
+void CImporter::ImportModel(const char * fileName, const char * textureName, ImportType type, const char * modelName, float scale)
 {
 	TCHAR programpath[_MAX_PATH];
 	GetCurrentDirectory(_MAX_PATH, programpath);
@@ -172,7 +51,7 @@ void CImporter::ImportModel(const char * fileName, const char * textureName, Imp
 			partName += modelData.GetMeshData(i).m_MeshName;
 
 			CModel* model = new CModel();
-			CIlluminatedTexturedMesh* tempMesh = new CIlluminatedTexturedMesh(m_pd3dDevice, m_pd3dCommandList, modelData.GetMeshData(i));
+			CIlluminatedTexturedMesh* tempMesh = new CIlluminatedTexturedMesh(m_pd3dDevice, m_pd3dCommandList, modelData.GetMeshData(i), scale);
 			model->SetMesh(tempMesh);
 			model->SetTexture(GetTextureByName(textureName));
 			model->SetName(partName.c_str());
@@ -197,17 +76,47 @@ void CImporter::ImportModel(const char * fileName, const char * textureName, Imp
 	}
 }
 
-//void CImporter::ImportAnimClip(const char * fileName, CObject * obj)
+//void CImporter::ImportModel(const char * fileName, const char * textureName, ImportType type, const char * modelName)
 //{
-//	string filePath("Assets/");
-//	filePath += fileName;
+//	TCHAR programpath[_MAX_PATH];
+//	GetCurrentDirectory(_MAX_PATH, programpath);
 //
-//	string animDataName = filePath;
-//	animDataName += "_anim.dat";
-//	AnimationClip* animData = new AnimationClip();
-//	animData->ImportFile(animDataName.c_str());
+//	string modelDataName = ASSETPATH;
+//	modelDataName += fileName;
+//	modelDataName += "_mesh.dat";
+//	ImportModelData modelData;
+//	modelData.ImportFile(modelDataName.c_str());
 //
-//	obj->AddAnimClip(animData);
+//	if (ImportType::DefaultMesh == type) {
+//		for (int i = 0; i < modelData.GetNumOfMesh(); ++i) {
+//			string partName = modelName;
+//			partName += "_";
+//			partName += modelData.GetMeshData(i).m_MeshName;
+//
+//			CModel* model = new CModel();
+//			CIlluminatedTexturedMesh* tempMesh = new CIlluminatedTexturedMesh(m_pd3dDevice, m_pd3dCommandList, modelData.GetMeshData(i));
+//			model->SetMesh(tempMesh);
+//			model->SetTexture(GetTextureByName(textureName));
+//			model->SetName(partName.c_str());
+//
+//			g_vecModel.push_back(model);
+//		}
+//	}
+//	if (ImportType::AnimatedMesh == type) {
+//		for (int i = 0; i < modelData.GetNumOfMesh(); ++i) {
+//			string partName = modelName;
+//			partName += "_";
+//			partName += modelData.GetMeshData(i).m_MeshName;
+//
+//			CModel* model = new CModel();
+//			CAnimatedMesh* tempMesh = new CAnimatedMesh(m_pd3dDevice, m_pd3dCommandList, modelData.GetMeshData(i));
+//			model->SetMesh(tempMesh);
+//			model->SetTexture(GetTextureByName(textureName));
+//			model->SetName(partName.c_str());
+//
+//			g_vecModel.push_back(model);
+//		}
+//	}
 //}
 
 void CImporter::ImportAnimClip(const char * fileName, const char * animCtrlName, bool IsLoop, const char * animClipName)
@@ -344,9 +253,6 @@ void CImporter::ImportLevel(const char * fileName, LEVELDATA_DESC & levelDataDes
 
 
 }
-
-extern std::vector<CTexture*>				g_vecTexture;
-
 
 void CImporter::ImportTexture(const wchar_t * fileName, const char * textureName)
 {

@@ -255,10 +255,8 @@ CIlluminatedTexturedMesh::CIlluminatedTexturedMesh(ID3D12Device *pd3dDevice, ID3
 	}
 }
 
-CIlluminatedTexturedMesh::CIlluminatedTexturedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ImportMeshData & m) : CIlluminatedMesh(pd3dDevice, pd3dCommandList)
+CIlluminatedTexturedMesh::CIlluminatedTexturedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ImportMeshData & m, float scale) : CIlluminatedMesh(pd3dDevice, pd3dCommandList)
 {
-	//CreateConstantBufferResource(pd3dDevice, pd3dCommandList);
-
 	int nCtrlPoint = static_cast<int>(m.m_nCtrlPointList);
 	int nPolyongVertex = static_cast<int>(m.m_nVertexList);
 
@@ -266,7 +264,7 @@ CIlluminatedTexturedMesh::CIlluminatedTexturedMesh(ID3D12Device * pd3dDevice, ID
 	m_nVertices = nPolyongVertex;
 
 	XMFLOAT3* pos = new XMFLOAT3[nCtrlPoint];
-	for (int i = 0; i < nCtrlPoint; ++i) pos[i] = m.m_CtrlPointList[i].xmf3Position;
+	for (int i = 0; i < nCtrlPoint; ++i) pos[i] = Vector3::Multiply(scale, m.m_CtrlPointList[i].xmf3Position);
 
 	XMFLOAT2* uv = new XMFLOAT2[nPolyongVertex];
 	for (int i = 0; i < nPolyongVertex; ++i) uv[i] = m.m_VertexList[i].xmf2UV;
@@ -282,23 +280,59 @@ CIlluminatedTexturedMesh::CIlluminatedTexturedMesh(ID3D12Device * pd3dDevice, ID
 
 	for (int i = 0; i < nPolyongVertex; ++i) Vertex[i].Init(pos[posIdx[i]], uv[i], normal[i]);
 
-	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, 
+	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
 		Vertex, m_nStride * m_nVertices,
 		D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
 
 	m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
 	m_d3dVertexBufferView.StrideInBytes = m_nStride;
 	m_d3dVertexBufferView.SizeInBytes = m_nStride * m_nVertices;
-
-	//pVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
-	//	animVertex, nStride * nVertices,
-	//	D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
-	//	&pVertexUploadBuffer);
-
-	//vertexBufferView.BufferLocation = pVertexBuffer->GetGPUVirtualAddress();
-	//vertexBufferView.StrideInBytes = nStride;
-	//vertexBufferView.SizeInBytes = nStride * nVertices;
 }
+
+//CIlluminatedTexturedMesh::CIlluminatedTexturedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ImportMeshData & m) : CIlluminatedMesh(pd3dDevice, pd3dCommandList)
+//{
+//	//CreateConstantBufferResource(pd3dDevice, pd3dCommandList);
+//
+//	int nCtrlPoint = static_cast<int>(m.m_nCtrlPointList);
+//	int nPolyongVertex = static_cast<int>(m.m_nVertexList);
+//
+//	m_nStride = sizeof(CIlluminatedTexturedVertex);
+//	m_nVertices = nPolyongVertex;
+//
+//	XMFLOAT3* pos = new XMFLOAT3[nCtrlPoint];
+//	for (int i = 0; i < nCtrlPoint; ++i) pos[i] = m.m_CtrlPointList[i].xmf3Position;
+//
+//	XMFLOAT2* uv = new XMFLOAT2[nPolyongVertex];
+//	for (int i = 0; i < nPolyongVertex; ++i) uv[i] = m.m_VertexList[i].xmf2UV;
+//
+//	XMFLOAT3* normal = new XMFLOAT3[nPolyongVertex];
+//	for (int i = 0; i < nPolyongVertex; ++i) normal[i] = m.m_VertexList[i].xmf3Normal;
+//
+//
+//	int* posIdx = new int[nPolyongVertex];
+//	for (int i = 0; i < nPolyongVertex; ++i) posIdx[i] = m.m_VertexList[i].ctrlPointIdx;
+//
+//	CIlluminatedTexturedVertex* Vertex = new CIlluminatedTexturedVertex[nPolyongVertex];
+//
+//	for (int i = 0; i < nPolyongVertex; ++i) Vertex[i].Init(pos[posIdx[i]], uv[i], normal[i]);
+//
+//	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, 
+//		Vertex, m_nStride * m_nVertices,
+//		D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
+//
+//	m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
+//	m_d3dVertexBufferView.StrideInBytes = m_nStride;
+//	m_d3dVertexBufferView.SizeInBytes = m_nStride * m_nVertices;
+//
+//	//pVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
+//	//	animVertex, nStride * nVertices,
+//	//	D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+//	//	&pVertexUploadBuffer);
+//
+//	//vertexBufferView.BufferLocation = pVertexBuffer->GetGPUVirtualAddress();
+//	//vertexBufferView.StrideInBytes = nStride;
+//	//vertexBufferView.SizeInBytes = nStride * nVertices;
+//}
 
 CIlluminatedTexturedMesh::~CIlluminatedTexturedMesh()
 {

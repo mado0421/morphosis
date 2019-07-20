@@ -248,7 +248,7 @@ public:
 	CModel*					GetModelByName(const char* name);
 	CAnimationController*	GetAnimCtrlByName(const char* name);
 
-	void ImportModel(const char* fileName, const char* textureName, ImportType type, const char* modelName = "");
+	void ImportModel(const char* fileName, const char* textureName, ImportType type, const char* modelName = "", float scale = 1.0f);
 	void ImportTexture(const wchar_t* fileName, const char* textureName = "");
 	void ImportAnimController(const char* animCtrlName = "");
 	void ImportAnimClip(const char* fileName, const char* animCtrlName, bool IsLoop, const char* animClipName = "");

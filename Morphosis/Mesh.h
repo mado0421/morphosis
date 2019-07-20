@@ -191,7 +191,8 @@ class CIlluminatedTexturedMesh : public CIlluminatedMesh
 public:
 	CIlluminatedTexturedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
 	CIlluminatedTexturedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nVertices, XMFLOAT3 *pxmf3Positions, XMFLOAT3 *pxmf3Normals, XMFLOAT2 *pxmf2UVs, UINT nIndices, UINT *pnIndices);
-	CIlluminatedTexturedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ImportMeshData& m);
+	//CIlluminatedTexturedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ImportMeshData& m);
+	CIlluminatedTexturedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ImportMeshData& m, float scale = 1.0f);
 
 	virtual ~CIlluminatedTexturedMesh();
 };
