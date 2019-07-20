@@ -1,6 +1,8 @@
 #pragma once
 #include "stdafx.h"
 
+
+
 struct ImportBone {
 	std::string	m_Name;
 	XMFLOAT4X4	m_GlobalTransform;
@@ -213,10 +215,12 @@ private:
 
 class CObject;
 class CTexture;
+class CModel;
+class CAnimationController;
 struct LEVELDATA_DESC;
 
-class CImporter {
 
+class CImporter {
 	/*********************************************************************
 	파일 이름만 넘겨주면 안에서 "_anim.dat"이랑 "_mesh.dat" 붙여서 함.
 
@@ -237,13 +241,13 @@ public:
 
 	}
 
-	//void ImportAnimClip(const char* fileName, CObject* obj);
-	//void ImportModel(const char* fileName, CObject* obj);
-	//void ImportModel(const char* fileName, CTexture* texture, CObject* obj);
-	void ImportModel(const char* fileName, CTexture* texture ,CObject* obj, ImportType type);
+	CTexture* GetTextureByName(const char* name);
+
+	void ImportModel(const char* fileName, CTexture* texture, CObject* obj, ImportType type);
+	void ImportModel(const char* fileName, int textureIdx ,CObject* obj, ImportType type);
 	void ImportAnimClip(const char* fileName, CObject* obj);
 	void ImportLevel(const char* fileName, LEVELDATA_DESC& desc);
-	
+	void ImportTexture(const wchar_t* fileName, const char* textureName = "");
 private:
 	ID3D12Device*				m_pd3dDevice		= NULL;
 	ID3D12GraphicsCommandList*	m_pd3dCommandList	= NULL;

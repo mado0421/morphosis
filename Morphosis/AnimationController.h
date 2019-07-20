@@ -36,4 +36,3 @@ public:
 	bool							isLoop = true;
 	float							m_fTime = 0;
 };
-

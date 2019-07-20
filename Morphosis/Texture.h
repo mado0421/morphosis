@@ -14,6 +14,9 @@ public:
 	CTexture(UINT nResourceType = RESOURCE_TEXTURE2D);
 	virtual ~CTexture();
 
+public:
+	string							m_strName						= "";
+
 private:
 	UINT							TextureType						= RESOURCE_TEXTURE2D;
 	ID3D12Resource					*texture						= NULL;
@@ -23,6 +26,7 @@ private:
 
 
 public:
+	void SetName(const char* name) { m_strName = name; }
 
 	void SetRootArgument(UINT nRootParameterIndex, D3D12_GPU_DESCRIPTOR_HANDLE d3dsrvGpuDescriptorHandle);
 	void SetSampler(D3D12_GPU_DESCRIPTOR_HANDLE *d3dSamplerGpuDescriptorHandle);

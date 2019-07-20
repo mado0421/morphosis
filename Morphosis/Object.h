@@ -2,6 +2,14 @@
 #include "Model.h"
 #include "Camera.h"
 
+class CAnimationController;
+class CTexture;
+class CObjectManager;
+class Collider;
+struct AnimationClip;
+// AB 순서로 넣으면 A에서 B로 가는 벡터 반환
+XMFLOAT3 GetBetweenVector(const Collider& A, const Collider& B);
+
 struct CB_OBJECT_INFO {
 	XMFLOAT4X4	m_xmf4x4World;
 	UINT		m_nMaterialIndex;
@@ -31,11 +39,6 @@ struct LEVELDATA_DESC {
 	XMFLOAT3 CapturePointScale;
 	XMFLOAT4 CapturePointRotation;
 };
-
-class CAnimationController;
-class CTexture;
-struct AnimationClip;
-
 class Collider {
 public:
 	//Collider() = delete;
@@ -67,11 +70,6 @@ private:
 	ColliderTag			m_Tag;
 
 };
-
-// AB 순서로 넣으면 A에서 B로 가는 벡터 반환
-XMFLOAT3 GetBetweenVector(const Collider& A, const Collider& B);
-
-class CObjectManager;
 
 class CObject
 {
@@ -394,7 +392,7 @@ private:
 	/*********************************************************************
 	2019-06-13
 	m_nObjects는 프롭과 플레이어, 투사체의 개수를 합한 값.
-	m_nAnimationMatrix는 m_nObject * g_NumAnimationBone를 한 값.
+	m_nAnimationMatrix는 m_nObject * g_nAnimBone를 한 값.
 	*********************************************************************/
 	int		m_nObjects									= 0;
 	int		m_nProps									= 0;
@@ -416,7 +414,6 @@ private:
 	vector<CObject*>	m_Props;
 	vector<CObject*>	m_Players;
 	vector<CObject*>	m_Projectiles;
-	vector<CTexture*>	m_TextureList;
 
 
 	/*********************************************************************

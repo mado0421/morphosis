@@ -244,7 +244,7 @@ private:
 
 	ID3D12Resource					*m_pd3dcbAnimation = NULL;
 	XMMATRIX						*m_pcbxmAnimation = NULL;
-	XMMATRIX						m_a[g_NumAnimationBone];
+	XMMATRIX						m_a[g_nAnimBone];
 };
 class CTestMesh : public CIlluminatedTexturedMesh
 {

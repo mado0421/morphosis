@@ -223,9 +223,9 @@ CPlayer
 *********************************************************************/
 CPlayer::CPlayer() : CObject()
 {
-	//m_ComprehensiveGroundCollider	= Collider(XMFLOAT3(0, 0, 0), g_DefaultUnitStandard / 2.0f, XMFLOAT3(0, 0, 0), ColliderTag::GROUNDCHECK);
-	//m_DetailedGroundCollider		= Collider(XMFLOAT3(0, 0, 0), g_DefaultUnitStandard / 4.0f, XMFLOAT3(0, 0, 0), ColliderTag::GROUNDCHECK);
-	m_fSpeed					= g_PlayerDefaultSpeed;
+	//m_ComprehensiveGroundCollider	= Collider(XMFLOAT3(0, 0, 0), g_fDefaultUnitScale / 2.0f, XMFLOAT3(0, 0, 0), ColliderTag::GROUNDCHECK);
+	//m_DetailedGroundCollider		= Collider(XMFLOAT3(0, 0, 0), g_fDefaultUnitScale / 4.0f, XMFLOAT3(0, 0, 0), ColliderTag::GROUNDCHECK);
+	m_fSpeed					= g_fDefaultPlayerSpeed;
 	m_fRemainingTimeOfFire		= 0.0f;
 	m_fRPM						= (1 / static_cast<float>(g_DefaultRPM)) * 60.0f;
 	m_Tag						= ObjectTag::Player;
@@ -305,8 +305,8 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 	2. 포괄적 충돌체를 가지고 주변에 충돌하는 애들을 전부 찾음.
 	3. 걔네들을 대상으로 디테일 충돌체로 검사
 
-	//m_ComprehensiveGroundCollider	= Collider(XMFLOAT3(0, 0, 0), g_DefaultUnitStandard / 2.0f, XMFLOAT3(0, 0, 0), ColliderTag::GROUNDCHECK);
-	//m_DetailedGroundCollider		= Collider(XMFLOAT3(0, 0, 0), g_DefaultUnitStandard / 4.0f, XMFLOAT3(0, 0, 0), ColliderTag::GROUNDCHECK);
+	//m_ComprehensiveGroundCollider	= Collider(XMFLOAT3(0, 0, 0), g_fDefaultUnitScale / 2.0f, XMFLOAT3(0, 0, 0), ColliderTag::GROUNDCHECK);
+	//m_DetailedGroundCollider		= Collider(XMFLOAT3(0, 0, 0), g_fDefaultUnitScale / 4.0f, XMFLOAT3(0, 0, 0), ColliderTag::GROUNDCHECK);
 	*********************************************************************/
 
 	// Queue Clear
@@ -322,7 +322,7 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 	static queue<int> test2;
 	while (true) {
 
-		Collider DetailedGroundCollider(Vector3::Add(GetPosition(), m_xmf3Move), g_DefaultUnitStandard / 2.0f, XMFLOAT3(0, 0, 0), ColliderTag::GROUNDCHECK);
+		Collider DetailedGroundCollider(Vector3::Add(GetPosition(), m_xmf3Move), g_fDefaultUnitScale / 2.0f, XMFLOAT3(0, 0, 0), ColliderTag::GROUNDCHECK);
 		Collider* collider = m_pObjMng->GetCollider(DetailedGroundCollider, ColliderTag::PROP);
 		if (NULL == collider) break;
 
@@ -397,15 +397,15 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 		XMVector3ComponentsFromNormal(&parallel, &perpendicular, XMLoadFloat3(&m_xmf3Move), XMLoadFloat3(&dir));
 
 
-		//if (IsIn(xmf3MyExtents.x, colliderExtents.x, colliderExtents.x + g_DefaultUnitStandard / 2.0f))		dir = Vector3::Add(dir, right);	
-		//if (IsIn(xmf3MyExtents.y, colliderExtents.y, colliderExtents.y + g_DefaultUnitStandard / 2.0f))		dir = Vector3::Add(dir, up);		
-		//if (IsIn(xmf3MyExtents.z, colliderExtents.z, colliderExtents.z + g_DefaultUnitStandard / 2.0f))		dir = Vector3::Add(dir, look);	
-		//if (IsIn(xmf3MyExtents.x, -colliderExtents.x - g_DefaultUnitStandard / 2.0f, -colliderExtents.x))	dir = Vector3::Add(dir, Vector3::Multiply(-1, right));
-		//if (IsIn(xmf3MyExtents.y, -colliderExtents.y - g_DefaultUnitStandard / 2.0f, -colliderExtents.y))	dir = Vector3::Add(dir, Vector3::Multiply(-1, up));
-		//if (IsIn(xmf3MyExtents.z, -colliderExtents.z - g_DefaultUnitStandard / 2.0f, -colliderExtents.z))	dir = Vector3::Add(dir, Vector3::Multiply(-1, look));
-		//if (IsIn(xmf3MyExtents.x, -colliderExtents.x - g_DefaultUnitStandard / 2.0f, -colliderExtents.x))	Vector3::Add(dir, Vector3::Multiply(-1, right));
-		//if (IsIn(xmf3MyExtents.y, -colliderExtents.y - g_DefaultUnitStandard / 2.0f, -colliderExtents.y))	Vector3::Add(dir, Vector3::Multiply(-1, up));
-		//if (IsIn(xmf3MyExtents.z, -colliderExtents.z - g_DefaultUnitStandard / 2.0f, -colliderExtents.z))	Vector3::Add(dir, Vector3::Multiply(-1, look));
+		//if (IsIn(xmf3MyExtents.x, colliderExtents.x, colliderExtents.x + g_fDefaultUnitScale / 2.0f))		dir = Vector3::Add(dir, right);	
+		//if (IsIn(xmf3MyExtents.y, colliderExtents.y, colliderExtents.y + g_fDefaultUnitScale / 2.0f))		dir = Vector3::Add(dir, up);		
+		//if (IsIn(xmf3MyExtents.z, colliderExtents.z, colliderExtents.z + g_fDefaultUnitScale / 2.0f))		dir = Vector3::Add(dir, look);	
+		//if (IsIn(xmf3MyExtents.x, -colliderExtents.x - g_fDefaultUnitScale / 2.0f, -colliderExtents.x))	dir = Vector3::Add(dir, Vector3::Multiply(-1, right));
+		//if (IsIn(xmf3MyExtents.y, -colliderExtents.y - g_fDefaultUnitScale / 2.0f, -colliderExtents.y))	dir = Vector3::Add(dir, Vector3::Multiply(-1, up));
+		//if (IsIn(xmf3MyExtents.z, -colliderExtents.z - g_fDefaultUnitScale / 2.0f, -colliderExtents.z))	dir = Vector3::Add(dir, Vector3::Multiply(-1, look));
+		//if (IsIn(xmf3MyExtents.x, -colliderExtents.x - g_fDefaultUnitScale / 2.0f, -colliderExtents.x))	Vector3::Add(dir, Vector3::Multiply(-1, right));
+		//if (IsIn(xmf3MyExtents.y, -colliderExtents.y - g_fDefaultUnitScale / 2.0f, -colliderExtents.y))	Vector3::Add(dir, Vector3::Multiply(-1, up));
+		//if (IsIn(xmf3MyExtents.z, -colliderExtents.z - g_fDefaultUnitScale / 2.0f, -colliderExtents.z))	Vector3::Add(dir, Vector3::Multiply(-1, look));
 
 		//dir = Vector3::Normalize(dir);
 
@@ -599,7 +599,7 @@ CProjectile::CProjectile() : CObject()
 {
 	m_IsAlive		= false;
 	m_xmf3Direction = XMFLOAT3(0, 0, 0);
-	m_fSpeed		= g_ProjectileDefaultSpeed;
+	m_fSpeed		= g_fDefaultProjectileSpeed;
 	m_fLifeTime		= g_DefaultProjectileLifeTime;
 	m_Tag			= ObjectTag::Projectile;
 	m_BaseDamage	= g_DefaultDamage;
@@ -708,8 +708,8 @@ CObjectManager::~CObjectManager()
 	for (int i = 0; i < m_Players.size(); ++i) delete m_Players[i];
 	m_Players.erase(m_Players.begin(), m_Players.end());
 
-	for (int i = 0; i < m_TextureList.size(); ++i) delete m_TextureList[i];
-	m_TextureList.erase(m_TextureList.begin(), m_TextureList.end());
+	//for (int i = 0; i < m_TextureList.size(); ++i) delete m_TextureList[i];
+	//m_TextureList.erase(m_TextureList.begin(), m_TextureList.end());
 }
 void CObjectManager::Render()
 {
@@ -970,9 +970,9 @@ void CObjectManager::CreateObjectData()
 	서술자 힙을 생성하기 위해 개수들을 정해준다. 지금은 임의로 하지만 나중에는
 	m_nProps는 LevelData에서 읽어오고, 나머지는 Defines.h에서 가져올 것.
 	*********************************************************************/
-	m_nProps = 2;
+	m_nProps = 1;
 	m_nPlayers = 1;
-	m_nProjectiles = m_nPlayers * g_NumProjectilePerPlayer;
+	m_nProjectiles = m_nPlayers * g_nProjectilePerPlayer;
 	m_nObjects = m_nProps + m_nPlayers + m_nProjectiles;
 
 	CreateDescriptorHeap();
@@ -981,22 +981,34 @@ void CObjectManager::CreateObjectData()
 	텍스처도 여기서 넣어야 할 것 같음. 텍스처를 먼저 만들어둔다.
 	텍스처는 서술자 힙 만들고 나서 해야 되는거 아냐?
 	*********************************************************************/
-	int nTexture = 4;
-	wstring fileNames[4];
-	fileNames[0] = LASSETPATH;
-	fileNames[0] += L"0615_Box_diff.dds";
-	fileNames[1] = LASSETPATH;
-	fileNames[1] += L"character_2_diff_test3.dds";
-	fileNames[2] = LASSETPATH;
-	fileNames[2] += L"0618_LevelTest_diff.dds";
-	fileNames[3] = LASSETPATH;
-	fileNames[3] += L"box_diff.dds";
-	for (int i = 0; i < nTexture; ++i) {
-		CTexture* texture = new CTexture(RESOURCE_TEXTURE2D);
-		texture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, fileNames[i].c_str());
-		CreateTextureResourceView(texture);
-		m_TextureList.push_back(texture);
+
+	g_vecTexture.clear();
+
+	importer.ImportTexture(L"0615_Box_diff",			"Texture_PaperBox");
+	importer.ImportTexture(L"character_2_diff_test3",	"Texture_Character");
+	importer.ImportTexture(L"0618_LevelTest_diff",		"Texture_Level");
+	importer.ImportTexture(L"box_diff",					"Texture_StandardBox");
+	for (int i = 0; i < g_vecTexture.size(); ++i)
+	{
+		CreateTextureResourceView(g_vecTexture[i]);
 	}
+
+	//int nTexture = 4;
+	//wstring fileNames[4];
+	//fileNames[0] = LASSETPATH;
+	//fileNames[0] += L"0615_Box_diff.dds";
+	//fileNames[1] = LASSETPATH;
+	//fileNames[1] += L"character_2_diff_test3.dds";
+	//fileNames[2] = LASSETPATH;
+	//fileNames[2] += L"0618_LevelTest_diff.dds";
+	//fileNames[3] = LASSETPATH;
+	//fileNames[3] += L"box_diff.dds";
+	//for (int i = 0; i < nTexture; ++i) {
+	//	CTexture* texture = new CTexture(RESOURCE_TEXTURE2D);
+	//	texture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, fileNames[i].c_str());
+	//	CreateTextureResourceView(texture);
+	//	m_TextureList.push_back(texture);
+	//}
 
 	/*********************************************************************
 	2019-06-15
@@ -1011,7 +1023,8 @@ void CObjectManager::CreateObjectData()
 		CObject* obj = new CObject();
 		obj->SetMng(this);
 
-		importer.ImportModel("0618_LevelTest", m_TextureList[2], obj, ImportType::DefaultMesh);
+		
+		importer.ImportModel("0618_LevelTest", importer.GetTextureByName("Texture_Level"), obj, ImportType::DefaultMesh);
 		for (int j = 0; j < m_LevelDataDesc.nCollisionMaps; ++j) {
 			/*********************************************************************
 			2019-07-06
@@ -1046,14 +1059,14 @@ void CObjectManager::CreateObjectData()
 		CPlayer* obj = new CPlayer();
 		obj->SetMng(this);
 
-		importer.ImportModel("0603_CharacterIdle", m_TextureList[1], obj, ImportType::AnimatedMesh);
+		importer.ImportModel("0603_CharacterIdle", importer.GetTextureByName("Texture_Character"), obj, ImportType::AnimatedMesh);
 		importer.ImportAnimClip("0603_CharacterIdle", obj);
 		importer.ImportAnimClip("0603_CharacterRun", obj);
 		importer.ImportAnimClip("0603_CharacterFire", obj);
 		importer.ImportAnimClip("0603_CharacterStartJump", obj);
 		importer.ImportAnimClip("0603_CharacterEndJump", obj);
 		importer.ImportAnimClip("0603_CharacterDied", obj);
-		obj->SetPosition(0, 100, i * g_DefaultUnitStandard * 3);
+		obj->SetPosition(0, 100, i * g_fDefaultUnitScale * 3);
 		obj->SetSpawnPoint(obj->GetPosition());
 		obj->AddCollider(
 			XMFLOAT3(0, 0, 0),
@@ -1095,7 +1108,7 @@ void CObjectManager::CreateObjectData()
 		2019-06-17
 		투사체는 전부 미리 만들어두고 IsAlive를 false로 해둔다.
 		*********************************************************************/
-		importer.ImportModel("0615_Box", m_TextureList[0], obj, ImportType::DefaultMesh);
+		importer.ImportModel("0615_Box", importer.GetTextureByName("Texture_PaperBox"), obj, ImportType::DefaultMesh);
 		obj->SetAlive(false);
 		obj->AddCollider(XMFLOAT3(0,0,0), 10.0f, XMFLOAT3(0, 0, 0));
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);

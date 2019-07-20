@@ -43,20 +43,30 @@ extern int g_RootParameterAnimation;
 *********************************************************************/
 #define ASSETPATH "Assets/"
 #define LASSETPATH L"Assets/"
-constexpr float		g_LevelSize		= 40.0f;
+constexpr float		g_fLevelScale		= 40.0f;
 
+/*********************************************************************
+2019-07-20
+리소스 관리를 위한 변수들
+*********************************************************************/
+class CTexture;
+class CModel;
+class CAnimationController;
+extern std::vector<CTexture*>				g_vecTexture;
+extern std::vector<CModel*>					g_vecModel;
+extern std::vector<CAnimationController*>	g_vecAnimController;
 
 /*********************************************************************
 2019-06-16
 오브젝트 관련 상수
 *********************************************************************/
-constexpr float		g_DefaultUnitStandard		= 20.0f;
+constexpr float		g_fDefaultUnitScale			= 20.0f;
 
 extern unsigned int	gnCbvSrvDescriptorIncrementSize;
-constexpr float		g_PlayerDefaultSpeed		= g_DefaultUnitStandard * 3;
-constexpr float		g_ProjectileDefaultSpeed	= g_PlayerDefaultSpeed * 3.0f;
-constexpr int		g_NumAnimationBone			= 64;
-constexpr int		g_NumProjectilePerPlayer	= 30;
+constexpr float		g_fDefaultPlayerSpeed		= g_fDefaultUnitScale * 3;
+constexpr float		g_fDefaultProjectileSpeed	= g_fDefaultPlayerSpeed * 3.0f;
+constexpr int		g_nAnimBone					= 64;
+constexpr int		g_nProjectilePerPlayer		= 30;
 constexpr float		TIMER_ATT					= 0.05f;
 constexpr float		TIMER_RESPANW				= 5.0f;
 
