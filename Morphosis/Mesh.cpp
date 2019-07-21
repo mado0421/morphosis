@@ -901,39 +901,39 @@ CTestMesh::~CTestMesh()
 	if (m_pnIndices) delete[] m_pnIndices;
 }
 
-CAnimatedMesh::CAnimatedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, UINT nVertices, XMFLOAT3 * pxmf3Positions, UINT nIndices, UINT * pnIndices)
-	:CMesh(pd3dDevice, pd3dCommandList)
-{
-	CreateConstantBufferResource(pd3dDevice, pd3dCommandList);
-	for (int i = 0; i < g_nAnimBone; ++i) m_a[i] = XMMatrixIdentity();
-	UINT nStride = sizeof(CAnimVertex);
-	this->nVertices = nVertices;
-
-	CAnimVertex *pVertices = new CAnimVertex[nVertices];
-	for (UINT i = 0; i < nVertices; i++) pVertices[i] = CAnimVertex(pxmf3Positions[i]);
-
-	pVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
-		pVertices, nStride * nVertices,
-		D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
-		&pVertexUploadBuffer);
-
-	vertexBufferView.BufferLocation = pVertexBuffer->GetGPUVirtualAddress();
-	vertexBufferView.StrideInBytes = nStride;
-	vertexBufferView.SizeInBytes = nStride * nVertices;
-
-	if (nIndices > 0)
-	{
-		this->nIndices = nIndices;
-
-		pIndexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pnIndices, sizeof(UINT) * nIndices,
-			D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_INDEX_BUFFER,
-			&pIndexUploadBuffer);
-
-		indexBufferView.BufferLocation = pIndexBuffer->GetGPUVirtualAddress();
-		indexBufferView.Format = DXGI_FORMAT_R32_UINT;
-		indexBufferView.SizeInBytes = sizeof(UINT) * nIndices;
-	}
-}
+//CAnimatedMesh::CAnimatedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, UINT nVertices, XMFLOAT3 * pxmf3Positions, UINT nIndices, UINT * pnIndices)
+//	:CMesh(pd3dDevice, pd3dCommandList)
+//{
+//	CreateConstantBufferResource(pd3dDevice, pd3dCommandList);
+//	for (int i = 0; i < g_nAnimBone; ++i) m_a[i] = XMMatrixIdentity();
+//	UINT nStride = sizeof(CAnimVertex);
+//	this->nVertices = nVertices;
+//
+//	CAnimVertex *pVertices = new CAnimVertex[nVertices];
+//	for (UINT i = 0; i < nVertices; i++) pVertices[i] = CAnimVertex(pxmf3Positions[i]);
+//
+//	pVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
+//		pVertices, nStride * nVertices,
+//		D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+//		&pVertexUploadBuffer);
+//
+//	vertexBufferView.BufferLocation = pVertexBuffer->GetGPUVirtualAddress();
+//	vertexBufferView.StrideInBytes = nStride;
+//	vertexBufferView.SizeInBytes = nStride * nVertices;
+//
+//	if (nIndices > 0)
+//	{
+//		this->nIndices = nIndices;
+//
+//		pIndexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pnIndices, sizeof(UINT) * nIndices,
+//			D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_INDEX_BUFFER,
+//			&pIndexUploadBuffer);
+//
+//		indexBufferView.BufferLocation = pIndexBuffer->GetGPUVirtualAddress();
+//		indexBufferView.Format = DXGI_FORMAT_R32_UINT;
+//		indexBufferView.SizeInBytes = sizeof(UINT) * nIndices;
+//	}
+//}
 
 CAnimatedMesh::CAnimatedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ImportMeshData & m) : CMesh(pd3dDevice, pd3dCommandList)
 {
@@ -948,22 +948,28 @@ CAnimatedMesh::CAnimatedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLis
 
 	XMFLOAT3* pos = new XMFLOAT3[nCtrlPoint];
 	for (int i = 0; i < nCtrlPoint; ++i) pos[i] = m.m_CtrlPointList[i].xmf3Position;
-
-	XMFLOAT2* uv = new XMFLOAT2[nPolyongVertex];
-	for (int i = 0; i < nPolyongVertex; ++i) uv[i] = m.m_VertexList[i].xmf2UV;
-
 	XMFLOAT4* weight = new XMFLOAT4[nCtrlPoint];
 	for (int i = 0; i < nCtrlPoint; ++i) weight[i] = m.m_CtrlPointList[i].xmf4BoneWeight;
-
 	XMINT4* boneIdx = new XMINT4[nCtrlPoint];
 	for (int i = 0; i < nCtrlPoint; ++i) boneIdx[i] = m.m_CtrlPointList[i].xmi4BoneIdx;
 
+
+	XMFLOAT2* uv = new XMFLOAT2[nPolyongVertex];
+	for (int i = 0; i < nPolyongVertex; ++i) uv[i] = m.m_VertexList[i].xmf2UV;
 	int* posIdx = new int[nPolyongVertex];
 	for (int i = 0; i < nPolyongVertex; ++i) posIdx[i] = m.m_VertexList[i].ctrlPointIdx;
+	XMFLOAT3* normal = new XMFLOAT3[nPolyongVertex];
+	for (int i = 0; i < nPolyongVertex; ++i) normal[i] = m.m_VertexList[i].xmf3Normal;
+	XMFLOAT3* tangent = new XMFLOAT3[nPolyongVertex];
+	for (int i = 0; i < nPolyongVertex; ++i) tangent[i] = m.m_VertexList[i].xmf3Tangent;
+
 
 	CAnimVertex* animVertex = new CAnimVertex[nPolyongVertex];
 
-	for (int i = 0; i < nPolyongVertex; ++i) animVertex[i].Init(pos[posIdx[i]], uv[i], weight[posIdx[i]], boneIdx[posIdx[i]]);
+
+	for (int i = 0; i < nPolyongVertex; ++i) 
+		animVertex[i].Init(pos[posIdx[i]], normal[i], tangent[i], uv[i], weight[posIdx[i]], boneIdx[posIdx[i]]);
+
 
 	pVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
 		animVertex, nStride * nVertices,

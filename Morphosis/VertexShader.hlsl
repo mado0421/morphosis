@@ -1,26 +1,28 @@
 #include "Header.hlsli"
 #include "Light.hlsli"
 
-VS_TEXTURED_ILLUMINATED_VERTEX_OUTPUT VSAnimated(VS_ANIMATED_VERTEX_INPUT input)
+ANIM_ILLUM_TEX_OUTPUT VSAnimated(ANIM_ILLUM_TEX_INPUT input)
 {
-	VS_TEXTURED_ILLUMINATED_VERTEX_OUTPUT output;
-	float3 weightedPos = 0;
-	float4x4 a = {
-	1,0,0,0,
-	0,1,0,0,
-	0,0,1,0,
-	0,0,0,1
-	};
+	ANIM_ILLUM_TEX_OUTPUT output;
+
+	float3 weightedPos	= 0;
+	float3 normalDir	= 0;
+	float3 tangentDir	= 0;
 
 	for (int i = 0; i < 4; ++i) {
-		float4 bonePos = mul(float4(input.position, 1), AnimMatrix[input.boneIdx[i]]);
-		//float4 bonePos = mul(float4(input.position, 1), a);
+		float4 bonePos		= mul(float4(input.position, 1),	AnimMatrix[input.boneIdx[i]]);
+		float4 boneNormal	= mul(float4(input.normal, 1),		AnimMatrix[input.boneIdx[i]]);
+		float4 boneTangent	= mul(float4(input.tangent, 1),		AnimMatrix[input.boneIdx[i]]);
 		weightedPos += input.weight[i] * bonePos.xyz;
+		normalDir	+= input.weight[i] * boneNormal.xyz;
+		tangentDir	+= input.weight[i] * boneTangent.xyz;
 	}
 
-	output.positionW = (float3)mul(float4(weightedPos, 1.0f), gmtxGameObject);
-	output.position = mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection);
-	output.uv = input.uv;
+	output.normalW		= (float3)mul(float4(normalDir, 1.0f),		gmtxGameObject);
+	output.tangentW		= (float3)mul(float4(tangentDir, 1.0f),		gmtxGameObject);
+	output.positionW	= (float3)mul(float4(weightedPos, 1.0f),	gmtxGameObject);
+	output.position		= mul(mul(float4(output.positionW, 1.0f),	gmtxView), gmtxProjection);
+	output.uv			= input.uv;
 
 	return output;
 }

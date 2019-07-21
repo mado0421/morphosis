@@ -27,18 +27,22 @@ cbuffer cbLightlInfo					: register(b5)
 
 
 
-struct VS_ANIMATED_VERTEX_INPUT
+struct ANIM_ILLUM_TEX_INPUT
 {
 	float3	position	: POSITION;
+	float3	normal		: NORMAL;
+	float3	tangent		: TANGENT;
 	float2	uv			: TEXCOORD0;
 	float4	weight		: BLENDWEIGHT0;
 	int4	boneIdx		: BLENDINDICES0;
 };
 
-struct VS_TEXTURED_ILLUMINATED_VERTEX_OUTPUT
+struct ANIM_ILLUM_TEX_OUTPUT
 {
 	float4 position		: SV_POSITION;
 	float3 positionW	: POSITION;
+	float3 normalW		: NORMAL;
+	float3 tangentW		: TANGENT;
 	float2 uv			: TEXCOORD;
 };
 

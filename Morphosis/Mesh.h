@@ -86,41 +86,24 @@ public:
 };
 class CAnimVertex {
 public:
-	CAnimVertex(
-		XMFLOAT3	pos = XMFLOAT3(0.0f, 0.0f, 0.0f),
-		XMFLOAT2	uv = XMFLOAT2(0.0f, 0.0f),
-		XMFLOAT4	weights = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f),
-		XMINT4		boneIdx = XMINT4(0, 0, 0, 0)
-	)
-		: m_xmf3Position(pos)
-		, m_xmf2UV(uv)
-		, m_xmf4Weight(weights)
-		, m_xmi4BoneIdx (boneIdx)
-		, m_xmf3Normal(0, 0, 0)
-	{}
-	CAnimVertex(
-		float x, float y, float z,
-		XMFLOAT2	uv = XMFLOAT2(0.0f, 0.0f),
-		XMFLOAT4	weights = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f),
-		XMINT4		boneIdx = XMINT4(0, 0, 0, 0)
-	)
-		: m_xmf3Position(XMFLOAT3(x,y,z))
-		, m_xmf2UV(uv)
-		, m_xmf4Weight(weights)
-		, m_xmi4BoneIdx(boneIdx)
-		, m_xmf3Normal(0,0,0)
-	{}
-	~CAnimVertex() {}
-
-	void Init(XMFLOAT3 p, XMFLOAT2 u, XMFLOAT4 w, XMINT4 b) {
-		m_xmf3Position	= p;
-		m_xmf2UV		= u;
-		m_xmf4Weight	= w;
-		m_xmi4BoneIdx	= b;
+	void Init(
+		XMFLOAT3 position,
+		XMFLOAT3 normal,
+		XMFLOAT3 tangent,
+		XMFLOAT2 uv, 
+		XMFLOAT4 weight, 
+		XMINT4 boneIdx) {
+		m_xmf3Position	= position;
+		m_xmf3Normal	= normal;
+		m_xmf3Tangent	= tangent;
+		m_xmf2UV		= uv;
+		m_xmf4Weight	= weight;
+		m_xmi4BoneIdx	= boneIdx;
 	}
 private:
 	XMFLOAT3	m_xmf3Position;
 	XMFLOAT3	m_xmf3Normal;
+	XMFLOAT3	m_xmf3Tangent;
 	XMFLOAT2	m_xmf2UV;
 	XMFLOAT4	m_xmf4Weight;
 	XMINT4		m_xmi4BoneIdx;
@@ -198,7 +181,7 @@ public:
 };
 class CAnimatedMesh : public CMesh {
 public:
-	CAnimatedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nVertices, XMFLOAT3 *pxmf3Positions, UINT nIndices, UINT *pnIndices);
+	//CAnimatedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nVertices, XMFLOAT3 *pxmf3Positions, UINT nIndices, UINT *pnIndices);
 	CAnimatedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ImportMeshData& m);
 	~CAnimatedMesh()
 	{
