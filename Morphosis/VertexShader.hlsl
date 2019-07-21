@@ -18,6 +18,7 @@ ANIM_ILLUM_TEX_OUTPUT VSAnimated(ANIM_ILLUM_TEX_INPUT input)
 		tangentDir	+= input.weight[i] * boneTangent.xyz;
 	}
 
+	output.normal		= input.normal;
 	output.normalW		= (float3)mul(float4(normalDir, 1.0f),		gmtxGameObject);
 	output.tangentW		= (float3)mul(float4(tangentDir, 1.0f),		gmtxGameObject);
 	output.positionW	= (float3)mul(float4(weightedPos, 1.0f),	gmtxGameObject);

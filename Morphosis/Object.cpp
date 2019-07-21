@@ -966,7 +966,7 @@ void CObjectManager::CreateObjectData()
 	m_nProps는 LevelData에서 읽어오고, 나머지는 Defines.h에서 가져올 것.
 	*********************************************************************/
 	m_nProps = 2;
-	m_nPlayers = 1;
+	m_nPlayers = 2;
 	m_nProjectiles = m_nPlayers * g_nProjectilePerPlayer;
 	m_nObjects = m_nProps + m_nPlayers + m_nProjectiles;
 
@@ -985,12 +985,14 @@ void CObjectManager::CreateObjectData()
 	importer.ImportTexture(L"character_2_diff_test3",	"Texture_Character");
 	importer.ImportTexture(L"0618_LevelTest_diff",		"Texture_Level");
 	importer.ImportTexture(L"box_diff",					"Texture_StandardBox");
+	importer.ImportTexture(L"2B_diff",					"Texture_2B");
 	for (int i = 0; i < g_vecTexture.size(); ++i) CreateTextureResourceView(g_vecTexture[i]);
 	
 	importer.ImportModel("0618_LevelTest",		"Texture_Level",		ImportType::DefaultMesh,	"Model_Level");
 	importer.ImportModel("0603_CharacterIdle",	"Texture_Character",	ImportType::AnimatedMesh,	"Model_Character");
 	importer.ImportModel("0615_Box",			"Texture_PaperBox",		ImportType::DefaultMesh,	"Model_PaperBox");
 	importer.ImportModel("0615_Box",			"Texture_PaperBox",		ImportType::DefaultMesh,	"Model_PaperBox_Resize", 5.0f);
+	importer.ImportModel("0721_2B",				"Texture_2B",			ImportType::DefaultMesh,	"Model_2B", 0.5f);
 
 	importer.ImportAnimController("AnimCtrl_Character");
 
@@ -1022,8 +1024,8 @@ void CObjectManager::CreateObjectData()
 			}
 		}
 		else {
-			obj->AddModel(importer.GetModelByName("Model_PaperBox_Resize_box_1"));
-			obj->SetPosition(0.0f, 50.0f, 0.0f);
+			obj->AddModel(importer.GetModelByName("Model_2B_body"));
+			obj->SetPosition(0.0f, 0.0f, 0.0f);
 		}
 
 		//CModel *model = new CModel();
