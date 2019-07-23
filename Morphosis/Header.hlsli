@@ -8,7 +8,8 @@ cbuffer cbCameraInfo					: register(b0)
 cbuffer cbGameObjectInfo				: register(b1)
 {
 	matrix		gmtxGameObject			: packoffset(c0);
-	uint		gnMaterial				: packoffset(c4);
+	matrix		gmtxGameObjectNoTrans	: packoffset(c4);
+	//uint		gnMaterial				: packoffset(c4);
 };
 Texture2D gtxtTexture					: register(t2);
 cbuffer cbAnimMatrixInfo				: register(b3)

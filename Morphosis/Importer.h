@@ -188,7 +188,7 @@ public:
 			in.read((char*)m_MeshList[i].m_VertexList, sizeof(ImportVertex) * m_MeshList[i].m_nVertexList);
 		}
 
-		ChangeZSign();
+		//ChangeZSign();
 	}
 	void Display() {
 		std::cout << m_ModelName.c_str() << "\n";
@@ -199,8 +199,13 @@ public:
 	}
 	void ChangeZSign() {
 		for (int i = 0; i < m_nMeshList; ++i) {
-			for (int j = 0; j < m_MeshList[i].m_nCtrlPointList; ++j)
+			for (int j = 0; j < m_MeshList[i].m_nCtrlPointList; ++j) 
 				m_MeshList[i].m_CtrlPointList[j].xmf3Position.z *= -1;
+			for (int j = 0; j < m_MeshList[i].m_nVertexList; ++j) {
+				m_MeshList[i].m_VertexList[j].xmf3Normal.z		*= -1;
+				m_MeshList[i].m_VertexList[j].xmf3BiNormal.z	*= -1;
+				m_MeshList[i].m_VertexList[j].xmf3Tangent.z		*= -1;
+			}
 		}
 	}
 

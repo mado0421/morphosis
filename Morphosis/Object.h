@@ -12,7 +12,8 @@ XMFLOAT3 GetBetweenVector(const Collider& A, const Collider& B);
 
 struct CB_OBJECT_INFO {
 	XMFLOAT4X4	m_xmf4x4World;
-	UINT		m_nMaterialIndex;
+	XMFLOAT4X4	m_xmf4x4WorldNoTranspose;
+	//UINT		m_nMaterialIndex;
 };
 struct LEVELDATA_DESC {
 	std::string levelName = "";

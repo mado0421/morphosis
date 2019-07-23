@@ -714,7 +714,7 @@ void ExportMeshFile(const char* fileName, const char* modelName) {
 	out.close();
 }
 
-const char * SAMPLE_FILENAME = "0721_2B(NoSplitNormal)";
+const char * SAMPLE_FILENAME = "0723_Box_SN";
 
 
 int main(int argc, char** argv)

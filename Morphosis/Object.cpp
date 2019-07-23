@@ -732,11 +732,21 @@ void CObjectManager::Render()
 	각 객체의 Render와 Update 함수에서 IsAlive를 체크하고 있기 때문에 hlsl의
 	정보를 업데이트 하는 부분에만 IsAlive를 체크하게 추가하였다.
 	*********************************************************************/
+
+	//XMVECTOR det;
+	//XMMATRIX temp;
+
 	for (int i = 0; i < m_nProps; i++) {
 		if (!m_Props[i]->IsAlive()) continue;
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedPropObjects + (i * ncbElementBytes));
 		memset(pbMappedcbObject, NULL, ncbElementBytes);
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Props[i]->m_xmf4x4World)));
+
+		//XMMatrixDeterminant(XMMatrixTranspose(XMLoadFloat4x4(&m_Props[i]->m_xmf4x4World)));
+		//temp = XMMatrixInverse(&det, XMMatrixTranspose(XMLoadFloat4x4(&m_Props[i]->m_xmf4x4World)));
+		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&m_Props[i]->m_xmf4x4World));
+
+
 	}
 	for (int i = 0; i < m_nPlayers; i++) {
 		if (!m_Players[i]->IsAlive()) continue;
@@ -750,7 +760,8 @@ void CObjectManager::Render()
 	}
 
 	m_pd3dCommandList->SetPipelineState(m_PSO[1]);
-	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Render(m_pd3dCommandList);
+	m_Props[1]->Render(m_pd3dCommandList);
+	//for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Render(m_pd3dCommandList);
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->Render(m_pd3dCommandList);
 
 	m_pd3dCommandList->SetPipelineState(m_PSO[0]);
@@ -758,6 +769,10 @@ void CObjectManager::Render()
 }
 void CObjectManager::Update(float fTime)
 {
+	//static float y = 0;
+	//y += fTime;
+	m_Props[1]->SetRotation(XMFLOAT3(0, fTime * 20, 0));
+
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Update(fTime);
 	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->Update(fTime);
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->Update(fTime);
@@ -991,7 +1006,7 @@ void CObjectManager::CreateObjectData()
 	importer.ImportModel("0618_LevelTest",		"Texture_Level",		ImportType::DefaultMesh,	"Model_Level");
 	importer.ImportModel("0603_CharacterIdle",	"Texture_Character",	ImportType::AnimatedMesh,	"Model_Character");
 	importer.ImportModel("0615_Box",			"Texture_PaperBox",		ImportType::DefaultMesh,	"Model_PaperBox");
-	importer.ImportModel("0615_Box",			"Texture_PaperBox",		ImportType::DefaultMesh,	"Model_PaperBox_Resize", 5.0f);
+	importer.ImportModel("0723_Box_SN",			"Texture_PaperBox",		ImportType::DefaultMesh,	"Model_PaperBox_Resize", 0.5f);
 	importer.ImportModel("0721_2B",				"Texture_2B",			ImportType::DefaultMesh,	"Model_2B", 0.5f);
 
 	importer.ImportAnimController("AnimCtrl_Character");
@@ -1024,8 +1039,9 @@ void CObjectManager::CreateObjectData()
 			}
 		}
 		else {
-			obj->AddModel(importer.GetModelByName("Model_2B_body"));
-			obj->SetPosition(0.0f, 0.0f, 0.0f);
+			obj->AddModel(importer.GetModelByName("Model_PaperBox_Resize_box_1"));
+			//obj->AddModel(importer.GetModelByName("Model_2B_body"));
+			obj->SetPosition(0.0f, 100.0f, 0.0f);
 		}
 
 		//CModel *model = new CModel();

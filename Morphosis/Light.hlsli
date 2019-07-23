@@ -84,10 +84,10 @@ float4 TestDirectionalLight(float3 vNormal, float3 vToCamera) {
 	*********************************************************************/
 
 	// 빛의 방향
-	float4 fLightDiffuse = float4(0.8f, 1.0f, 1.0f, 1.0f);	// 약간 노란색
-	float4 fLightSpecular = float4(1.0f, 1.0f, 1.0f, 1.0f);
-	float3 vLightDirection = float3(0.5f, -0.5f, 0.0f);
-	float fSpecular = 8.0f;
+	float4 fLightDiffuse = float4(1.0f, 0.0f, 0.0f, 1.0f);	// 약간 노란색
+	float4 fLightSpecular = float4(0.0f, 1.0f, 0.0f, 1.0f);
+	float3 vLightDirection = normalize(float3(1.0f, 0.0f, 0.0f));
+	float fSpecular = 16.0f;
 
 	// 빛의 방향의 반대
 	float3 vToLight = -vLightDirection;
@@ -109,7 +109,7 @@ float4 TestLighting(float3 vPosition, float3 vNormal) {
 	/*********************************************************************
 	2019-07-20
 	*********************************************************************/
-	float4 cLightGlobalAmbient = float4(0.1f, 0.3f, 0.3f, 1.0f);
+	float4 cLightGlobalAmbient = float4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	float3 vCameraPosition = float3(gvCameraPosition.x, gvCameraPosition.y, gvCameraPosition.z);
 	float3 vToCamera = normalize(vCameraPosition - vPosition);
