@@ -1005,7 +1005,7 @@ void CObjectManager::CreateObjectData()
 	
 	importer.ImportModel("0618_LevelTest",		"Texture_Level",		ImportType::DefaultMesh,	"Model_Level");
 	importer.ImportModel("0603_CharacterIdle",	"Texture_Character",	ImportType::AnimatedMesh,	"Model_Character");
-	importer.ImportModel("0615_Box",			"Texture_PaperBox",		ImportType::DefaultMesh,	"Model_PaperBox");
+	importer.ImportModel("0615_Box",			"Texture_PaperBox",		ImportType::DefaultMesh,	"Model_PaperBox", 5.0f);
 	importer.ImportModel("0723_Box_SN",			"Texture_PaperBox",		ImportType::DefaultMesh,	"Model_PaperBox_Resize", 0.5f);
 	importer.ImportModel("0721_2B",				"Texture_2B",			ImportType::DefaultMesh,	"Model_2B", 0.5f);
 
@@ -1039,7 +1039,7 @@ void CObjectManager::CreateObjectData()
 			}
 		}
 		else {
-			obj->AddModel(importer.GetModelByName("Model_PaperBox_Resize_box_1"));
+			obj->AddModel(importer.GetModelByName("Model_PaperBox_box_1"));
 			//obj->AddModel(importer.GetModelByName("Model_2B_body"));
 			obj->SetPosition(0.0f, 100.0f, 0.0f);
 		}

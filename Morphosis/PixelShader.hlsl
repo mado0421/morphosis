@@ -26,10 +26,11 @@ float4 PSDefaultShader(ILLUM_TEX_OUTPUT input) : SV_TARGET
 	float3 vLightDirection	= normalize(float3(1.0f, 0.0f, 0.0f));
 	float3 vToLight			= -vLightDirection;
 	float f = dot(vToLight, input.normalW);
-	int i = step(f, 0.5f);
+	//int i = step(f, 0.7f);
 
 
-	return float4(i,i,i, 1.0f);
+	return float4(f, f, f, 1.0f);
+	//return float4(i, i, i, 1.0f);
 
 	//float4 cColor = gtxtTexture.Sample(gSamplerState, input.uv);
 	//float4 cLightResult = TestLighting(input.positionW, input.normalW);
