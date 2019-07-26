@@ -963,9 +963,17 @@ CAnimatedMesh::CAnimatedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLis
 	int* posIdx = new int[nPolyongVertex];
 	for (int i = 0; i < nPolyongVertex; ++i) posIdx[i] = m.m_VertexList[i].ctrlPointIdx;
 	XMFLOAT3* normal = new XMFLOAT3[nPolyongVertex];
-	for (int i = 0; i < nPolyongVertex; ++i) normal[i] = m.m_VertexList[i].xmf3Normal;
+	for (int i = 0; i < nPolyongVertex; ++i)
+	{
+		normal[i] = m.m_VertexList[i].xmf3Normal;
+		normal[i].z *= -1;
+	}
 	XMFLOAT3* tangent = new XMFLOAT3[nPolyongVertex];
-	for (int i = 0; i < nPolyongVertex; ++i) tangent[i] = m.m_VertexList[i].xmf3Tangent;
+	for (int i = 0; i < nPolyongVertex; ++i)
+	{
+		tangent[i] = m.m_VertexList[i].xmf3Tangent;
+		tangent[i].z *= -1;
+	}
 
 
 	CAnimVertex* animVertex = new CAnimVertex[nPolyongVertex];

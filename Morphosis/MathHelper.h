@@ -315,6 +315,17 @@ namespace Matrix4x4
 			XMConvertToRadians(angle.y),
 			XMConvertToRadians(angle.z));
 	}
+	inline XMFLOAT4X4 InverseTranspose(const XMFLOAT4X4& m) {
+		XMFLOAT4X4 a = m;
+		a._41 = 0.0f;
+		a._42 = 0.0f;
+		a._43 = 0.0f;
+		a._44 = 1.0f;
+
+		XMVECTOR det = XMMatrixDeterminant(XMLoadFloat4x4(&a));
+		XMStoreFloat4x4(&a, XMMatrixTranspose(XMMatrixInverse(&det, XMLoadFloat4x4(&a))));
+		return a;
+	}
 }
 
 inline XMMATRIX XMMatrixRotationRollPitchYawDegree(float x, float y, float z) {

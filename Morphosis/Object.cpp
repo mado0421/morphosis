@@ -744,7 +744,7 @@ void CObjectManager::Render()
 
 		//XMMatrixDeterminant(XMMatrixTranspose(XMLoadFloat4x4(&m_Props[i]->m_xmf4x4World)));
 		//temp = XMMatrixInverse(&det, XMMatrixTranspose(XMLoadFloat4x4(&m_Props[i]->m_xmf4x4World)));
-		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&m_Props[i]->m_xmf4x4World));
+		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&Matrix4x4::InverseTranspose(m_Props[i]->m_xmf4x4World)));
 
 
 	}
@@ -752,14 +752,18 @@ void CObjectManager::Render()
 		if (!m_Players[i]->IsAlive()) continue;
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedPlayers + (i * ncbElementBytes));
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Players[i]->m_xmf4x4World)));
-		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&m_Players[i]->m_xmf4x4World));
+		//XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&m_Players[i]->m_xmf4x4World));
+		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&Matrix4x4::InverseTranspose(m_Players[i]->m_xmf4x4World)));
+
 
 	}
 	for (int i = 0; i < m_nProjectiles; i++) {
 		if (!m_Projectiles[i]->IsAlive()) continue;
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedProjectiles + (i * ncbElementBytes));
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Projectiles[i]->m_xmf4x4World)));
-		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&m_Projectiles[i]->m_xmf4x4World));
+		//XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&m_Projectiles[i]->m_xmf4x4World));
+		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&Matrix4x4::InverseTranspose(m_Projectiles[i]->m_xmf4x4World)));
+
 
 	}
 
@@ -1008,6 +1012,7 @@ void CObjectManager::CreateObjectData()
 	for (int i = 0; i < g_vecTexture.size(); ++i) CreateTextureResourceView(g_vecTexture[i]);
 	
 	importer.ImportModel("0618_LevelTest",						"Texture_Level",		ImportType::DefaultMesh,	"Model_Level");
+	importer.ImportModel("0725_Character",						"Texture_Character",	ImportType::DefaultMesh,	"Model_CharacterStatic", 2.0f);
 	importer.ImportModel("0725_Character",						"Texture_Character",	ImportType::AnimatedMesh,	"Model_Character");
 	importer.ImportModel("0725_PaperBox_NoSpitPerVertexNormal", "Texture_PaperBox",		ImportType::DefaultMesh,	"Model_PaperBox");
 	importer.ImportModel("box",									"Texture_StandardBox",	ImportType::DefaultMesh,	"Model_Box1");
@@ -1046,7 +1051,10 @@ void CObjectManager::CreateObjectData()
 		}
 		else {
 			//obj->AddModel(importer.GetModelByName("Model_Box2_Box001"));
-			obj->AddModel(importer.GetModelByName("Model_2B_body"));
+			//obj->AddModel(importer.GetModelByName("Model_2B_body"));
+			obj->AddModel(importer.GetModelByName("Model_CharacterStatic_body"));
+			obj->AddModel(importer.GetModelByName("Model_CharacterStatic_jumper"));
+			obj->AddModel(importer.GetModelByName("Model_CharacterStatic_mask"));
 			obj->SetPosition(0.0f, 0.0f, 0.0f);
 		}
 

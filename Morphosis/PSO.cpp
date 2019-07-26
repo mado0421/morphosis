@@ -125,7 +125,6 @@ D3D12_SHADER_BYTECODE CPSO::CompileShaderFromFile(const WCHAR * pszFileName, LPC
 
 	ID3DBlob *pd3dErrorBlob = NULL;
 	HRESULT result = ::D3DCompileFromFile(pszFileName, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, pszShaderName, pszShaderProfile, nCompileFlags, 0, ppd3dShaderBlob, &pd3dErrorBlob);
-	//	assert(result == S_OK);
 	char *pErrorString = NULL;
 	if (pd3dErrorBlob)pErrorString = (char *)pd3dErrorBlob->GetBufferPointer();
 
