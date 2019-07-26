@@ -940,18 +940,22 @@ CAnimatedMesh::CAnimatedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLis
 	CreateConstantBufferResource(pd3dDevice, pd3dCommandList);
 	for (int i = 0; i < g_nAnimBone; ++i) m_a[i] = XMMatrixIdentity();
 
-	int nCtrlPoint		= static_cast<int>(m.m_nCtrlPointList);
-	int nPolyongVertex	= static_cast<int>(m.m_nVertexList);
+	int nCtrlPoint = static_cast<int>(m.m_nCtrlPointList);
+	int nPolyongVertex = static_cast<int>(m.m_nVertexList);
 
 	UINT nStride = sizeof(CAnimVertex);
 	nVertices = nPolyongVertex;
 
 	XMFLOAT3* pos = new XMFLOAT3[nCtrlPoint];
-	for (int i = 0; i < nCtrlPoint; ++i) pos[i] = m.m_CtrlPointList[i].xmf3Position;
+	for (int i = 0; i < nCtrlPoint; ++i) {
+		pos[i] = m.m_CtrlPointList[i].xmf3Position;
+		pos[i].z *= -1;
+	}
 	XMFLOAT4* weight = new XMFLOAT4[nCtrlPoint];
 	for (int i = 0; i < nCtrlPoint; ++i) weight[i] = m.m_CtrlPointList[i].xmf4BoneWeight;
 	XMINT4* boneIdx = new XMINT4[nCtrlPoint];
 	for (int i = 0; i < nCtrlPoint; ++i) boneIdx[i] = m.m_CtrlPointList[i].xmi4BoneIdx;
+
 
 
 	XMFLOAT2* uv = new XMFLOAT2[nPolyongVertex];

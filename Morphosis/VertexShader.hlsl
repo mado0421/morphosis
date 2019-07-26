@@ -17,10 +17,24 @@ ANIM_ILLUM_TEX_OUTPUT VSAnimated(ANIM_ILLUM_TEX_INPUT input)
 		normalDir	+= input.weight[i] * boneNormal.xyz;
 		tangentDir	+= input.weight[i] * boneTangent.xyz;
 	}
+	weightedPos.x	*= -1;
+	normalDir.x		*= -1;
+	tangentDir.x	*= -1;
+
+	//weightedPos = input.position;
+	//normalDir	= input.normal;
+	//tangentDir	= input.tangent;
+
 
 	output.normal		= input.normal;
-	output.normalW		= (float3)mul(float4(normalDir, 1.0f),		gmtxGameObject);
-	output.tangentW		= (float3)mul(float4(tangentDir, 1.0f),		gmtxGameObject);
+	output.normalW		= normalize(mul(normalDir, (float3x3)gmtxGameObject));
+	output.tangentW		= normalize(mul(tangentDir, (float3x3)gmtxGameObject));
+
+
+	//output.normalW = float3(0, 1, 0);
+
+	//output.normalW		= (float3)mul(float4(normalDir, 1.0f),		gmtxGameObjectNoTrans);
+	//output.tangentW		= (float3)mul(float4(tangentDir, 1.0f),		gmtxGameObjectNoTrans);
 	output.positionW	= (float3)mul(float4(weightedPos, 1.0f),	gmtxGameObject);
 	output.position		= mul(mul(float4(output.positionW, 1.0f),	gmtxView), gmtxProjection);
 	output.uv			= input.uv;
@@ -32,14 +46,13 @@ ILLUM_TEX_OUTPUT VSDefaultShader(ILLUM_TEX_INPUT input)
 {
 	ILLUM_TEX_OUTPUT output;
 
-	//input.position.x *= -1;
-
-	//output.normalW	= input.normal;
-
-
 
 	//output.normalW		= normalize(mul(input.normal, (float3x3)gmtxGameObject));
-	output.normalW		= normalize(mul(input.normal, (float3x3)gmtxGameObjectNoTrans));
+	output.normalW		= normalize(mul(normalize(input.normal), (float3x3)gmtxGameObject));
+	//output.normalW.z *= -1;
+
+
+
 	//output.normalW		= mul(input.normal, (float3x3)gmtxGameObjectInvTrans);
 	output.positionW	= (float3)mul(float4(input.position, 1.0f), gmtxGameObject);
 	output.position		= mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection);

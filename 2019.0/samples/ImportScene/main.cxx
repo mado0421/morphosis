@@ -404,6 +404,14 @@ void MeshSwapYZ() {
 			std::swap(c->xmf3Position.y, c->xmf3Position.z);
 		}
 	}
+	for (auto p = g_MeshList.begin(); p != g_MeshList.end(); ++p) {
+
+		for (auto v = p->m_VertexList.begin(); v != p->m_VertexList.end(); ++v) {
+			std::swap(v->xmf3Normal.y, v->xmf3Normal.z);
+			std::swap(v->xmf3BiNormal.y, v->xmf3BiNormal.z);
+			std::swap(v->xmf3Tangent.y, v->xmf3Tangent.z);
+		}
+	}
 }
 
 void ReadNormal(FbxMesh* mesh, int CtrlPointIdx, int VertexCounter, XMFLOAT3& out) {
@@ -714,7 +722,7 @@ void ExportMeshFile(const char* fileName, const char* modelName) {
 	out.close();
 }
 
-const char * SAMPLE_FILENAME = "0723_Box_SN";
+const char * SAMPLE_FILENAME = "2b";
 
 
 int main(int argc, char** argv)
@@ -759,7 +767,11 @@ int main(int argc, char** argv)
 	FbxString meshFileName;
 	meshFileName += lFilePath;
 	meshFileName += "_mesh.dat";
-	ExportMeshFile(meshFileName, "2B");
+	ExportMeshFile(meshFileName, "2b");
+
+
+
+
 
     DestroySdkObjects(lSdkManager, lResult);
 	

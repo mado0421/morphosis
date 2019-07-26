@@ -752,11 +752,15 @@ void CObjectManager::Render()
 		if (!m_Players[i]->IsAlive()) continue;
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedPlayers + (i * ncbElementBytes));
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Players[i]->m_xmf4x4World)));
+		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&m_Players[i]->m_xmf4x4World));
+
 	}
 	for (int i = 0; i < m_nProjectiles; i++) {
 		if (!m_Projectiles[i]->IsAlive()) continue;
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedProjectiles + (i * ncbElementBytes));
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Projectiles[i]->m_xmf4x4World)));
+		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&m_Projectiles[i]->m_xmf4x4World));
+
 	}
 
 	m_pd3dCommandList->SetPipelineState(m_PSO[1]);
@@ -1003,11 +1007,13 @@ void CObjectManager::CreateObjectData()
 	importer.ImportTexture(L"2B_diff",					"Texture_2B");
 	for (int i = 0; i < g_vecTexture.size(); ++i) CreateTextureResourceView(g_vecTexture[i]);
 	
-	importer.ImportModel("0618_LevelTest",		"Texture_Level",		ImportType::DefaultMesh,	"Model_Level");
-	importer.ImportModel("0603_CharacterIdle",	"Texture_Character",	ImportType::AnimatedMesh,	"Model_Character");
-	importer.ImportModel("0615_Box",			"Texture_PaperBox",		ImportType::DefaultMesh,	"Model_PaperBox", 5.0f);
-	importer.ImportModel("0723_Box_SN",			"Texture_PaperBox",		ImportType::DefaultMesh,	"Model_PaperBox_Resize", 0.5f);
-	importer.ImportModel("0721_2B",				"Texture_2B",			ImportType::DefaultMesh,	"Model_2B", 0.5f);
+	importer.ImportModel("0618_LevelTest",						"Texture_Level",		ImportType::DefaultMesh,	"Model_Level");
+	importer.ImportModel("0725_Character",						"Texture_Character",	ImportType::AnimatedMesh,	"Model_Character");
+	importer.ImportModel("0725_PaperBox_NoSpitPerVertexNormal", "Texture_PaperBox",		ImportType::DefaultMesh,	"Model_PaperBox");
+	importer.ImportModel("box",									"Texture_StandardBox",	ImportType::DefaultMesh,	"Model_Box1");
+	importer.ImportModel("box2",								"Texture_StandardBox",	ImportType::DefaultMesh,	"Model_Box2");
+	//importer.ImportModel("0723_Box_SN",						"Texture_PaperBox",		ImportType::DefaultMesh,	"Model_PaperBox_Resize", 0.5f);
+	importer.ImportModel("2b",									"Texture_2B",			ImportType::DefaultMesh,	"Model_2B");
 
 	importer.ImportAnimController("AnimCtrl_Character");
 
@@ -1039,23 +1045,10 @@ void CObjectManager::CreateObjectData()
 			}
 		}
 		else {
-			obj->AddModel(importer.GetModelByName("Model_PaperBox_box_1"));
-			//obj->AddModel(importer.GetModelByName("Model_2B_body"));
-			obj->SetPosition(0.0f, 100.0f, 0.0f);
+			//obj->AddModel(importer.GetModelByName("Model_Box2_Box001"));
+			obj->AddModel(importer.GetModelByName("Model_2B_body"));
+			obj->SetPosition(0.0f, 0.0f, 0.0f);
 		}
-
-		//CModel *model = new CModel();
-		//CTestMesh *mesh = new CTestMesh(m_pd3dDevice, m_pd3dCommandList, 100);
-		//model->SetMesh(mesh);
-		//model->SetTexture(m_TextureList[3]);
-		//obj->AddModel(model);
-		//obj->SetPosition(0, -200.0f * i, -100.0f * i);
-		//obj->AddCollider(
-		//	XMFLOAT3(0, 0, 0),
-		//	XMFLOAT3(50, 50, 50),
-		//	XMFLOAT4(0, 0, 0, 1)
-		//);
-		//if(i == 0)	obj->SetRotation(XMFLOAT3(-60, 0, 0));
 
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 		m_Props.push_back(obj);
