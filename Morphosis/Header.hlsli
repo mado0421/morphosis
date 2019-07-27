@@ -42,8 +42,7 @@ struct ANIM_ILLUM_TEX_OUTPUT
 {
 	float4 position		: SV_POSITION;
 	float3 positionW	: POSITION;
-	float3 normal		: NORMAL0;
-	float3 normalW		: NORMAL1;
+	float3 normalW		: NORMAL0;
 	float3 tangentW		: TANGENT;
 	float2 uv			: TEXCOORD;
 };

@@ -11,17 +11,15 @@ class CAnimationController {
 public:
 	void		Init(AnimationClip& animData);
 	void		AddAnimData(AnimationClip* animData);
-	XMMATRIX	GetFinalMatrix(int boneIdx);
+	XMMATRIX	GetFinalMatrix(int boneIdx, float time);
 	float		GetEndTime();
 	void		ChangeAnimClip(const char* animClipName);
-	void		Update(float fTime);
 
-	XMFLOAT4X4	GetPositionOfBone(const char* animClipName);
 	void		SetName(const char* name) { m_strName = name; }
 
-	bool		IsClipEnd();
+	bool		IsClipEnd(float time);
 private:
-	XMMATRIX	GetInterpolatedToRootMtx(int boneIdx);
+	XMMATRIX	GetInterpolatedToRootMtx(int boneIdx, float time);
 	XMMATRIX	GetOffset(int boneIdx);
 	int			GetPrevIdx(float time);
 	float		GetNormalizedTime(float time, int boneIdx);
@@ -33,9 +31,6 @@ public:
 public:
 	std::vector<AnimationClip*>		m_AnimData;
 	int								m_AnimState = 0;
-
-	//bool							isLoop		= true;
-	float							m_fTime		= 0;
 
 	string							m_strName	= "";
 };

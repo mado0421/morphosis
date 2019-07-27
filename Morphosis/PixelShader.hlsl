@@ -18,12 +18,6 @@ float4 PSAnimated(ANIM_ILLUM_TEX_OUTPUT input) : SV_TARGET
 
 	input.normalW = normalize(input.normalW);
 
-
-	//float3 vLightDirection	= normalize(float3(1.0f, -1.0f, 0.0f));
-	//float3 vToLight			= -vLightDirection;
-	//float f = dot(vToLight, input.normalW);
-	//return float4(f, f, f, 1.0f);
-
 	float4 cColor = gtxtTexture.Sample(gSamplerState, input.uv);
 	float4 cLightResult = TestLighting(input.positionW, input.normalW);
 	return (lerp(cColor, cLightResult, 0.7f));

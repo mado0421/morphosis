@@ -78,15 +78,16 @@
 //		);
 //}
 
+
+
 float4 TestDirectionalLight(float3 vNormal, float3 vToCamera) {
 	/*********************************************************************
 	2019-07-20
 	*********************************************************************/
-
+	float4 fLightDiffuse	= float4(0.5f, 0.4f, 0.4f, 1.0f);
+	float4 fLightSpecular	= float4(1.0f, 0.9f, 0.9f, 1.0f);
+	float3 vLightDirection	= normalize(float3(0.7f, -1.0f, 0.0f));
 	// 빛의 방향
-	float4 fLightDiffuse = float4(1.0f, 0.0f, 0.0f, 1.0f);	// 약간 노란색
-	float4 fLightSpecular = float4(0.0f, 1.0f, 0.0f, 1.0f);
-	float3 vLightDirection = normalize(float3(1.0f, 0.0f, 0.0f));
 	float fSpecular = 16.0f;
 
 	// 빛의 방향의 반대
@@ -114,7 +115,7 @@ float4 TestLighting(float3 vPosition, float3 vNormal) {
 	float3 vCameraPosition = float3(gvCameraPosition.x, gvCameraPosition.y, gvCameraPosition.z);
 	float3 vToCamera = normalize(vCameraPosition - vPosition);
 
-	float4 cColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 cColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
 	cColor += TestDirectionalLight(vNormal, vToCamera);
 	cColor += cLightGlobalAmbient;
 

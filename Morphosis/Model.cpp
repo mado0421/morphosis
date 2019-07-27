@@ -11,11 +11,6 @@ void CModel::Render(ID3D12GraphicsCommandList *pd3dCommandList, bool isDebug)
 	if (m_Mesh) m_Mesh->Render(pd3dCommandList);
 }
 
-void CModel::SetAnimatedMatrix(CAnimationController * a)
-{
-	if (m_Mesh) m_Mesh->SetAnimatedMatrix(a);
-}
-
 void CModel::CreateConstantBufferResource(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
 {
 	if (m_Mesh) m_Mesh->CreateConstantBufferResource(pd3dDevice, pd3dCommandList);

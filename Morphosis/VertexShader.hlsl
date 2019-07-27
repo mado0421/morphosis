@@ -10,9 +10,6 @@ ANIM_ILLUM_TEX_OUTPUT VSAnimated(ANIM_ILLUM_TEX_INPUT input)
 	float3 normalL		= 0;
 	float3 tangentL		= 0;
 
-
-
-
 	for (int i = 0; i < 4; ++i) {
 		posL		+= weights[i] * mul(float4(input.position, 1.0f), AnimMatrix[input.boneIdx[i]]).xyz;
 		normalL		+= weights[i] * mul(input.normal, (float3x3)AnimMatrix[input.boneIdx[i]]);
@@ -22,21 +19,10 @@ ANIM_ILLUM_TEX_OUTPUT VSAnimated(ANIM_ILLUM_TEX_INPUT input)
 	normalL.x *= -1;
 	tangentL.x *= -1;
 
-
 	output.positionW	= (float3)mul(float4(posL, 1.0f), gmtxGameObject);
 	output.normalW		= mul(normalL, (float3x3)gmtxGameObject);
 	output.tangentW		= mul(tangentL, (float3x3)gmtxGameObject);
 	output.position		= mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection);
-
-
-
-	output.normal		= input.normal;
-	//output.normalW		= normalize(mul(normalize(normalDir), (float3x3)gmtxGameObject));
-	//output.tangentW		= normalize(mul(normalize(tangentDir), (float3x3)gmtxGameObject));
-
-
-	//output.positionW	= (float3)mul(float4(posL, 1.0f),	gmtxGameObject);
-	//output.position		= mul(mul(float4(output.positionW, 1.0f),	gmtxView), gmtxProjection);
 	output.uv			= input.uv;
 
 	return output;

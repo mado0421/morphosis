@@ -82,9 +82,6 @@ void CMesh::CreateIndexBuffer(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLi
 
 }
 
-void CMesh::SetAnimatedMatrix(CAnimationController * a)
-{
-}
 
 void CMesh::CreateConstantBufferResource(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
 {
@@ -938,7 +935,7 @@ CTestMesh::~CTestMesh()
 CAnimatedMesh::CAnimatedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ImportMeshData & m) : CMesh(pd3dDevice, pd3dCommandList)
 {
 	CreateConstantBufferResource(pd3dDevice, pd3dCommandList);
-	for (int i = 0; i < g_nAnimBone; ++i) m_a[i] = XMMatrixIdentity();
+	//for (int i = 0; i < g_nAnimBone; ++i) m_a[i] = XMMatrixIdentity();
 
 	int nCtrlPoint = static_cast<int>(m.m_nCtrlPointList);
 	int nPolyongVertex = static_cast<int>(m.m_nVertexList);
@@ -992,32 +989,4 @@ CAnimatedMesh::CAnimatedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLis
 	vertexBufferView.StrideInBytes = nStride;
 	vertexBufferView.SizeInBytes = nStride * nVertices;
 
-}
-
-void CAnimatedMesh::SetAnimatedMatrix(CAnimationController * a)
-{
-	for (int i = 0; i < a->m_AnimData[0]->m_nBoneList; ++i) {
-		m_a[i] = XMMatrixTranspose( a->GetFinalMatrix(i));
-	}
-}
-
-void CAnimatedMesh::CreateConstantBufferResource(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
-{
-	UINT ncbElementBytes = (((sizeof(XMMATRIX) * g_nAnimBone) + 255) & ~255); //256의 배수
-	m_pd3dcbAnimation = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-	m_pd3dcbAnimation->Map(0, NULL, (void **)&m_pcbxmAnimation);
-}
-
-void CAnimatedMesh::UpdateConstantBuffer(ID3D12GraphicsCommandList * pd3dCommandList)
-{
-	if (m_pd3dcbAnimation)
-	{
-		D3D12_GPU_VIRTUAL_ADDRESS d3dcbBoneOffsetsGpuVirtualAddress = m_pd3dcbAnimation->GetGPUVirtualAddress();
-		pd3dCommandList->SetGraphicsRootConstantBufferView(g_RootParameterAnimation, d3dcbBoneOffsetsGpuVirtualAddress);
-
-		for (int i = 0; i < g_nAnimBone; i++)
-		{
-			m_pcbxmAnimation[i] = m_a[i];
-		}
-	}
 }

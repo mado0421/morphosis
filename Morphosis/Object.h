@@ -75,33 +75,40 @@ private:
 class CObject
 {
 public:
+	// 생성자와 소멸자
 	CObject();
 	~CObject();
+	// GPU 연결하는 함수
+	void SetCbvGPUDescriptorHandle(D3D12_GPU_DESCRIPTOR_HANDLE d3dCbvGPUDescriptorHandle)	{ m_d3dCbvGPUDescriptorHandle = d3dCbvGPUDescriptorHandle; }
+	void SetCbvGPUDescriptorHandlePtr(UINT64 nCbvGPUDescriptorHandlePtr)					{ m_d3dCbvGPUDescriptorHandle.ptr = nCbvGPUDescriptorHandlePtr; }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetCbvGPUDescriptorHandle()									{ return(m_d3dCbvGPUDescriptorHandle); }
+	virtual void SetAnimatedMatrix(CAnimationController* a, float time);
+	virtual void CreateConstantBufferResource(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
+	virtual void UpdateConstantBuffer(ID3D12GraphicsCommandList *pd3dCommandList);
 
-public:
-	void SetMng(CObjectManager* mng);
-
-	void SetCbvGPUDescriptorHandle(D3D12_GPU_DESCRIPTOR_HANDLE d3dCbvGPUDescriptorHandle) { m_d3dCbvGPUDescriptorHandle = d3dCbvGPUDescriptorHandle; }
-	void SetCbvGPUDescriptorHandlePtr(UINT64 nCbvGPUDescriptorHandlePtr) { m_d3dCbvGPUDescriptorHandle.ptr = nCbvGPUDescriptorHandlePtr; }
-	D3D12_GPU_DESCRIPTOR_HANDLE GetCbvGPUDescriptorHandle() { return(m_d3dCbvGPUDescriptorHandle); }
-
+	// RootParameter를 정하는 함수
 	virtual void SetRootParameter(ID3D12GraphicsCommandList *pd3dCommandList);
-
+	// 기본적인 작동함수
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL, bool isDebug = false);
-	virtual void Update(float fTimeElapsed);
-	virtual void LateUpdate(float fTimeElapsed);
-
-	void AddModel(CModel* model) {
-		m_ModelList.push_back(*model);
-	}
-	//void AddAnimClip(AnimationClip* animClip);
-	void SetAnimCtrl(CAnimationController* animCtrl);
+	virtual void Update(float fTimeElapsed) {}
+	virtual void LateUpdate(float fTimeElapsed) {}
+	virtual void ProcessInput(UCHAR* pKeysBuffer, float mouse) {}
+	// 외부 설정 함수
+	void SetMng(CObjectManager* mng);
 	void AddCollider(XMFLOAT3 center, XMFLOAT3 extents, XMFLOAT4 quaternion, XMFLOAT3 offset = XMFLOAT3(0, 0, 0), ColliderTag tag = ColliderTag::DEFAULT);
 	void AddCollider(XMFLOAT3 center, float radius, XMFLOAT3 offset = XMFLOAT3(0, 0, 0), ColliderTag tag = ColliderTag::DEFAULT);
-	void ChangeAnimClip(const char* animClipName);
 	void SetPosition(float x, float y, float z);
+	void SetCameraTargetOffset(XMFLOAT3 pos);
 	void SetPosition(const XMFLOAT3 xmf3Position);
-
+	void SetRotation(const XMFLOAT3& angle);
+	void AddModel(CModel* model)						{ m_ModelList.push_back(*model); }
+	void SetAnimCtrl(CAnimationController* animCtrl)	{ m_AnimationController = animCtrl; }
+	void SetTeam(int team)								{ m_Team = team; }
+	void SetAlive(bool state)							{ m_IsAlive = state; }
+	virtual void Enable()								{ SetAlive(true); }
+	virtual void Disable()								{ SetAlive(false); }
+	// 외부 접근 함수
+	Collider* const GetCollisionCollider(const Collider& other);
 	const XMFLOAT3	GetPosition();
 	const XMFLOAT3	GetLook();
 	const XMFLOAT3	GetUp();
@@ -111,126 +118,99 @@ public:
 	const XMFLOAT4	GetQuaternion();
 	const int		GetNumAnimationBone();
 	const int		GetTeam() const { return m_Team; }
-
+	// 조건 함수
+	const bool IsCollide(const CObject& other);
+	const bool IsCollide(const Collider& other);
+	const bool IsAlive() const { return m_IsAlive; }
+protected:
+	// 내부 설정 함수
 	void SetLook(XMFLOAT3 look);
 	void SetUp(XMFLOAT3 up);
 	void SetRight(XMFLOAT3 right);
-	void SetCameraTargetOffset(XMFLOAT3 pos);
-	void SetTeam(int team) { m_Team = team; }
-	void SetRotation(const XMFLOAT3& angle);
-
-	virtual void Enable() { SetAlive(true); }
-	virtual void Disable() { SetAlive(false); }
-	void SetAlive(bool state) { m_IsAlive = state; }
-
-	const bool IsCollide(const CObject& other);
-	const bool IsCollide(const Collider& other);
-	Collider* GetCollisionCollider(const Collider& other);
-	const bool IsAlive() const { return m_IsAlive; }
-	virtual void ProcessInput(UCHAR* pKeysBuffer, float mouse);
-
-	//void AddCollideInfo(CObject* obj);
-
-
+	virtual void ChangeAnimClip() {}
 
 public:
+	// 월드 변환 행렬
 	XMFLOAT4X4						m_xmf4x4World;
-	ObjectTag						m_Tag;
 
 protected:
-	bool							m_IsAlive;
-	XMFLOAT3						m_xmf3CameraTargetOffset;
-	int								m_Team;
-
-	/*********************************************************************
-	2019-06-15
-	렌더링 관련 부분
-	*********************************************************************/
-	std::vector<CModel>				m_ModelList;
+	// 다이렉트X 내용
 	D3D12_GPU_DESCRIPTOR_HANDLE		m_d3dCbvGPUDescriptorHandle;
 	CB_OBJECT_INFO					*m_pcbMappedObject		= NULL;
 	ID3D12Resource					*m_pd3dcbObject			= NULL;
-
-	/*********************************************************************
-	2019-06-17
-	이동 관련 부분
-	*********************************************************************/
+	//렌더링
+	XMFLOAT3						m_xmf3CameraTargetOffset;
+	std::vector<CModel>				m_ModelList;
+	//이동
 	XMFLOAT3						m_xmf3CollisionOffset;
 	float							m_fHeightVelocity;
 	bool							m_IsGround;
-
-	/*********************************************************************
-	2019-06-15
-	애니메이션 관련 부분
-	*********************************************************************/
-	CAnimationController			*m_AnimationController = NULL;
+	//애니메이션
+	CAnimationController			*m_AnimationController	= NULL;
+	float							m_AnimationTime			= 0;
 	int								m_AnimationState;
+	ID3D12Resource					*m_pd3dcbAnimation		= NULL;
+	XMMATRIX						*m_pcbxmAnimation		= NULL;
+	XMMATRIX						m_a[g_nAnimBone];
 
-	/*********************************************************************
-	2019-06-18
-	충돌체 관련 부분
-	*********************************************************************/
-	//std::vector<CollisionBox>		m_CollisionBox;
-	//std::vector<CollisionSphere>	m_CollisionSphere;
+	//충돌체
 	std::vector<Collider>			m_Collider;
-	//std::queue<CObject*>			m_CollideInfo;
 	std::queue<Collider*>			m_CollideInfo;
-
-
-	/*********************************************************************
-	2019-07-15
-	오브젝트 매니저를 아래서 접근하기 위한 포인터
-	*********************************************************************/
+	//오브젝트 매니저를 아래서 접근하기 위한 포인터
 	CObjectManager*					m_pObjMng = NULL;
+	// 객체 정보
+	bool							m_IsAlive;
+	int								m_Team;
 };
 
+/*********************************************************************
+2019-06-18
+플레이어가 처음 생성되거나, 리스폰 될 때 처리
+- 체력 복구
+- 위치 복구
+- 바운딩박스 복구
+
+플레이어가 죽을 때 처리
+- 리스폰 타이머 시작
+*********************************************************************/
 class CPlayer : public CObject {
 public:
 	CPlayer();
 
 public:
-	/*********************************************************************
-	2019-06-18
-	플레이어가 처음 생성되거나, 리스폰 될 때 처리
-	- 체력 복구
-	- 위치 복구
-	- 바운딩박스 복구
-
-	플레이어가 죽을 때 처리
-	- 리스폰 타이머 시작
-	*********************************************************************/
+	// 기본적인 작동함수
 	virtual void	Update(float fTimeElapsed) override;
 	virtual void	LateUpdate(float fTimeElapsed) override;
 	virtual void	ProcessInput(UCHAR* pKeysBuffer, float mouse) override;
-
+	// 외부 설정 함수
 	virtual void	Enable()override;
 	virtual void	Disable()override;
-	void			Shoot();
 	void			SetSpawnPoint(const XMFLOAT3& pos) { m_xmf3SpawnPoint = pos; }
-	bool			IsShootable();
+	// 외부 작동 함수
+	void			Shoot();
 	void			TakeDamage(int val) { m_HealthPoint -= val; }
-	XMFLOAT4X4		GetHandMatrix();
-	
-
-	virtual void	AddGroundCollider(XMFLOAT3 center, float radius, XMFLOAT3 offset = XMFLOAT3(0, 0, 0));
-
-protected:
-	/*********************************************************************
-	2019-06-18
-	적어도 탄이 손 위치에선 나가야 하지 않을까요?
-	AnimationController에서 그 본의 위치를 받아올 수 있지 않을까요?
-	*********************************************************************/
-	void			TriggerOff();
+	// 조건 함수
+	bool			IsShootable();
 	bool			IsMoving() {
 		for (int i = 0; i < static_cast<int>(Move::count); ++i)
 			if (m_trigInput[i]) return true;
 		return false;
 	}
+	bool			IsJump();
+	bool			IsOnAir();
+	bool			IsShot();
+	bool			IsDied();
+
+
+protected:
+	// 내부 설정 함수
+	void			TriggerOff();
 	XMFLOAT3		Move(float fTimeElapsed);
 	float			Rotate(float fTimeElapsed);
+	void			ChangeAnimClip();
 
-	void			SetHandMatrix();
-
+protected:
+	// 내부 선언 나열자
 	enum class		Move {
 		W,
 		A,
@@ -252,38 +232,19 @@ protected:
 		count
 	};
 
-	bool			RestorePosition();
-
 protected:
-	/*********************************************************************
-	2019-06-18
-	이동과 이동 무효
-	*********************************************************************/
+	// 이동
 	XMFLOAT3		m_xmf3Move;
 	float			m_fSpeed;
+	// 키입력
 	bool			m_trigInput[static_cast<int>(Move::count)];
 	float			m_rotationInput;
-
-	//Collider		m_ComprehensiveGroundCollider;
-	//Collider		m_DetailedGroundCollider;
-
-
-	/*********************************************************************
-	2019-06-18
-	공격 관련 부분
-	*********************************************************************/
-	float			m_fRPM;	// 1 / Round Per Minute
+	// 내부 객체 정보
+	float			m_fRPM;	// 1/Round Per Minute
 	float			m_fRemainingTimeOfFire;
-	XMFLOAT4X4		m_xmf4x4Hand;
-
-	/*********************************************************************
-	2019-06-18
-	체력과 리스폰 관련 부분
-	*********************************************************************/
 	XMFLOAT3		m_xmf3SpawnPoint;
 	int				m_HealthPoint;
 	float			m_fRemainingTimeOfRespawn;
-	
 };
 
 class CProjectile : public CObject {
