@@ -52,9 +52,11 @@ constexpr float		g_fLevelScale		= 40.0f;
 class CTexture;
 class CModel;
 class CAnimationController;
+struct AINode;
 extern std::vector<CTexture*>				g_vecTexture;
 extern std::vector<CModel*>					g_vecModel;
 extern std::vector<CAnimationController*>	g_vecAnimController;
+extern std::vector<AINode*>					g_vecAINode;
 
 /*********************************************************************
 2019-06-16
@@ -63,7 +65,7 @@ extern std::vector<CAnimationController*>	g_vecAnimController;
 constexpr float		g_fDefaultUnitScale			= 20.0f;
 
 extern unsigned int	gnCbvSrvDescriptorIncrementSize;
-constexpr float		g_fDefaultPlayerSpeed		= g_fDefaultUnitScale * 3;
+constexpr float		g_fDefaultPlayerSpeed		= g_fDefaultUnitScale * 10;
 constexpr float		g_fDefaultProjectileSpeed	= g_fDefaultPlayerSpeed * 3.0f;
 constexpr int		g_nAnimBone					= 64;
 constexpr int		g_nProjectilePerPlayer		= 30;

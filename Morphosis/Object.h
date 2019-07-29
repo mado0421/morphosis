@@ -44,20 +44,24 @@ class Collider {
 public:
 	//Collider() = delete;
 	Collider();
-	Collider(XMFLOAT3 center, XMFLOAT3 extents, XMFLOAT4 quaternion, XMFLOAT3 offset = XMFLOAT3(0, 0, 0), ColliderTag tag = ColliderTag::DEFAULT);
-	Collider(XMFLOAT3 center, float radius, XMFLOAT3 offset = XMFLOAT3(0, 0, 0), ColliderTag tag = ColliderTag::DEFAULT);
+	Collider(XMFLOAT3 offset, XMFLOAT3 extents, XMFLOAT4 quaternion, ColliderTag tag = ColliderTag::DEFAULT);
+	Collider(XMFLOAT3 offset, float radius, ColliderTag tag = ColliderTag::DEFAULT);
 	void Update(XMFLOAT3 position, XMFLOAT4 rotation);
 	bool IsCollide(const Collider& other);
 	void SetTag(const string tag);
+	void TriggerOff() { m_trigCollided = false; }
+	void SetOrientation(const XMFLOAT4& orientation);
 
 	XMFLOAT3 GetLook();
 	XMFLOAT3 GetUp();
 	XMFLOAT3 GetCenter();
 	XMFLOAT3 GetExtents();
+	XMFLOAT4 GetOrientation();
 
 	BoundingOrientedBox m_Box;
 	BoundingSphere		m_Sphere;
 	ColliderType		m_Type;
+	bool				m_trigCollided = false;
 
 private:
 	XMFLOAT3 GetRotatedOffset(XMFLOAT4 rotation);
@@ -68,9 +72,18 @@ private:
 
 private:
 	XMFLOAT3			m_xmf3Offset;
+	XMFLOAT4			m_xmf4OrigOrientaion;
 	ColliderTag			m_Tag;
 
 };
+
+struct Test {
+	Collider* col;
+	XMFLOAT3 different;
+	XMFLOAT3 prevMove;
+	XMFLOAT3 nextMove;
+};
+
 
 class CObject
 {
@@ -95,8 +108,9 @@ public:
 	virtual void ProcessInput(UCHAR* pKeysBuffer, float mouse) {}
 	// 외부 설정 함수
 	void SetMng(CObjectManager* mng);
-	void AddCollider(XMFLOAT3 center, XMFLOAT3 extents, XMFLOAT4 quaternion, XMFLOAT3 offset = XMFLOAT3(0, 0, 0), ColliderTag tag = ColliderTag::DEFAULT);
-	void AddCollider(XMFLOAT3 center, float radius, XMFLOAT3 offset = XMFLOAT3(0, 0, 0), ColliderTag tag = ColliderTag::DEFAULT);
+	void AddCollider(XMFLOAT3 offset, XMFLOAT3 extents, XMFLOAT4 quaternion, ColliderTag tag = ColliderTag::DEFAULT);
+	void AddCollider(XMFLOAT3 offset, float radius, ColliderTag tag = ColliderTag::DEFAULT);
+	void SetColliderTrigOff() { for (int i = 0; i < m_Collider.size(); ++i) m_Collider[i].m_trigCollided = false; }
 	void SetPosition(float x, float y, float z);
 	void SetCameraTargetOffset(XMFLOAT3 pos);
 	void SetPosition(const XMFLOAT3 xmf3Position);
@@ -108,7 +122,7 @@ public:
 	virtual void Enable()								{ SetAlive(true); }
 	virtual void Disable()								{ SetAlive(false); }
 	// 외부 접근 함수
-	Collider* const GetCollisionCollider(const Collider& other);
+	Collider* const GetCollisionCollider(Collider& other, bool isMakeAlign);
 	const XMFLOAT3	GetPosition();
 	const XMFLOAT3	GetLook();
 	const XMFLOAT3	GetUp();
@@ -173,6 +187,8 @@ protected:
 플레이어가 죽을 때 처리
 - 리스폰 타이머 시작
 *********************************************************************/
+class CTinMan;
+
 class CPlayer : public CObject {
 public:
 	CPlayer();
@@ -186,7 +202,13 @@ public:
 	virtual void	Enable()override;
 	virtual void	Disable()override;
 	void			SetSpawnPoint(const XMFLOAT3& pos) { m_xmf3SpawnPoint = pos; }
+	void			SetLookAt(const XMFLOAT3& point) {
+		SetLook(Vector3::Normalize(Vector3::Subtract(point, GetPosition())));
+		SetUp(XMFLOAT3(0, 1, 0));
+		SetRight(Vector3::Normalize(Vector3::CrossProduct(GetUp(), GetLook())));
+	}
 	// 외부 작동 함수
+	void			MoveForwardTrigOn() { m_trigInput[static_cast<int>(Move::W)] = true; }
 	void			Shoot();
 	void			TakeDamage(int val) { m_HealthPoint -= val; }
 	// 조건 함수
@@ -231,6 +253,8 @@ protected:
 
 		count
 	};
+public:
+	CTinMan*		m_AIBrain = NULL;
 
 protected:
 	// 이동
@@ -315,8 +339,9 @@ public:
 	}
 	void ProcessInput(UCHAR* pKeysBuffer, float mouse);
 
-	void GetColliderList(const Collider& myCollider, std::queue<Collider*>& myColliderQueue, ColliderTag targetTag);
-	Collider* GetCollider(const Collider& myCollider, ColliderTag targetTag);
+	//void GetColliderList(Collider& myCollider, std::queue<Collider*>& myColliderQueue, ColliderTag targetTag, bool isMakeAlign = false);
+	Collider* GetCollider(Collider& myCollider, ColliderTag targetTag, bool isMakeAlign = false);
+	void ColliderTrigInit(ColliderTag targetTag);
 
 
 

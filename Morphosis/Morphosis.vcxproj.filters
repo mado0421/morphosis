@@ -42,6 +42,9 @@
     <Filter Include="소스 파일\Object\Animation">
       <UniqueIdentifier>{1ff4ed94-a96e-4405-98cb-7c35cc9ac733}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\AI">
+      <UniqueIdentifier>{cd6268c8-c814-485e-99e5-4678b0462075}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationController.cpp">
@@ -85,6 +88,9 @@
     </ClCompile>
     <ClCompile Include="Texture.cpp">
       <Filter>소스 파일\Object\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="AI.cpp">
+      <Filter>소스 파일\AI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +163,9 @@
     </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>소스 파일\Object\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="AI.h">
+      <Filter>소스 파일\AI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

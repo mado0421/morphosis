@@ -4,6 +4,7 @@
 #include "Mesh.h"
 #include "Importer.h"
 #include "Texture.h"
+#include "AI.h"
 
 /*********************************************************************
 2019-06-17
@@ -77,14 +78,14 @@ void CObject::Render(ID3D12GraphicsCommandList * pd3dCommandList, CCamera * pCam
 		}
 	}
 }
-void CObject::AddCollider(XMFLOAT3 center, XMFLOAT3 extents, XMFLOAT4 quaternion, XMFLOAT3 offset, ColliderTag tag)
+void CObject::AddCollider(XMFLOAT3 offset, XMFLOAT3 extents, XMFLOAT4 quaternion,  ColliderTag tag)
 {
-	m_Collider.emplace_back(center, extents, quaternion, offset, tag);
+	m_Collider.emplace_back(offset, extents, quaternion, tag);
 	m_Collider[m_Collider.size()-1].Update(GetPosition(), GetQuaternion());
 }
-void CObject::AddCollider(XMFLOAT3 center, float radius, XMFLOAT3 offset, ColliderTag tag)
+void CObject::AddCollider(XMFLOAT3 offset, float radius, ColliderTag tag)
 {
-	m_Collider.emplace_back(center, radius, offset, tag);
+	m_Collider.emplace_back(offset, radius, tag);
 	m_Collider[m_Collider.size() - 1].Update(GetPosition(), GetQuaternion());
 }
 void CObject::SetPosition(float x, float y, float z)
@@ -200,10 +201,13 @@ const bool CObject::IsCollide(const Collider & other)
 
 	return false;
 }
-Collider * const CObject::GetCollisionCollider(const Collider & other)
+Collider * const CObject::GetCollisionCollider(Collider& other, bool isMakeAlign)
 {
-	for (int i = 0; i < m_Collider.size(); ++i)
+	for (int i = 0; i < m_Collider.size(); ++i) {
+		if (isMakeAlign) 
+			other.SetOrientation(m_Collider[i].GetOrientation());
 		if (m_Collider[i].IsCollide(other)) return &m_Collider[i];
+	}
 
 
 	return NULL;
@@ -226,6 +230,7 @@ CPlayer::CPlayer() : CObject()
 	m_fRemainingTimeOfRespawn	= 0.0f;
 	m_rotationInput				= 0.0f;
 	for (int i = 0; i < static_cast<int>(Move::count); ++i) m_trigInput[i] = false;
+	m_AIBrain = new CTinMan(new CMoveBehavior(), this);
 }
 void CPlayer::Update(float fTimeElapsed)
 {
@@ -237,6 +242,13 @@ void CPlayer::Update(float fTimeElapsed)
 		if (m_fRemainingTimeOfRespawn <= 0.0f) CPlayer::Enable();
 		return;
 	}
+
+	m_AIBrain->Update();
+
+
+
+
+
 
 	/* 안 죽은 상태에서 해줘야 하는 것:
 		- 공격가능까지 남은 시간을 흐른 시간만큼 감소
@@ -281,22 +293,29 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 
 	// 진행 방향 구함
 	m_xmf3Move = Move(fTimeElapsed);
+	float radius = g_fDefaultUnitScale / 2.0f;
 
+	
+	static std::vector< Test > t;
 	int s = 0;
 	while (true) {
-
-		Collider DetailedGroundCollider(Vector3::Add(GetPosition(), m_xmf3Move), g_fDefaultUnitScale / 2.0f, XMFLOAT3(0, 0, 0), ColliderTag::GROUNDCHECK);
-		Collider* collider = m_pObjMng->GetCollider(DetailedGroundCollider, ColliderTag::PROP);
+		Collider DetailedGroundCollider(XMFLOAT3(0,0,0), radius, ColliderTag::GROUNDCHECK);
+		DetailedGroundCollider.Update(Vector3::Add(GetPosition(), m_xmf3Move), XMFLOAT4(0, 0, 0, 1));
+		Collider* collider = m_pObjMng->GetCollider(DetailedGroundCollider, ColliderTag::PROP, false);
 		if (NULL == collider) break;
 
 		s++;
-		XMFLOAT3 look = collider->GetLook();
-		XMFLOAT3 up = collider->GetUp();
-		XMFLOAT3 right = Vector3::CrossProduct(up, look);
+		Test a;
+		a.col = collider;
+		a.prevMove = m_xmf3Move;
 
-		XMVECTOR planeXY = XMPlaneFromPointNormal(XMLoadFloat3(&collider->GetCenter()), XMLoadFloat3(&look));
-		XMVECTOR planeXZ = XMPlaneFromPointNormal(XMLoadFloat3(&collider->GetCenter()), XMLoadFloat3(&up));
-		XMVECTOR planeYZ = XMPlaneFromPointNormal(XMLoadFloat3(&collider->GetCenter()), XMLoadFloat3(&right));
+		XMFLOAT3 look		= collider->GetLook();
+		XMFLOAT3 up			= collider->GetUp();
+		XMFLOAT3 right		= Vector3::CrossProduct(up, look);
+
+		XMVECTOR planeXY	= XMPlaneFromPointNormal(XMLoadFloat3(&collider->GetCenter()), XMLoadFloat3(&look));
+		XMVECTOR planeXZ	= XMPlaneFromPointNormal(XMLoadFloat3(&collider->GetCenter()), XMLoadFloat3(&up));
+		XMVECTOR planeYZ	= XMPlaneFromPointNormal(XMLoadFloat3(&collider->GetCenter()), XMLoadFloat3(&right));
 
 		XMVECTOR temp;
 		XMFLOAT3 xmf3Temp;
@@ -319,13 +338,59 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 		XMFLOAT3 colliderExtents = collider->GetExtents();
 		XMFLOAT3 dir(0, 0, 0);
 
+		//if (xmf3MyExtents.x >= 0) { if (IsIn(xmf3MyExtents.x, colliderExtents.x, colliderExtents.x + radius)) dir = Vector3::Add(dir, Vector3::Normalize(right)); }
+		//else { if (IsIn(xmf3MyExtents.x, -1 * colliderExtents.x - radius, -1 * colliderExtents.x)) dir = Vector3::Add(dir, Vector3::Normalize(Vector3::Multiply(-1, right))); }
+		//if (xmf3MyExtents.y >= 0) { if (IsIn(xmf3MyExtents.y, colliderExtents.y, colliderExtents.y + radius)) dir = Vector3::Add(dir, Vector3::Normalize(up)); }
+		//else { if (IsIn(xmf3MyExtents.y, -1 * colliderExtents.y - radius, -1 * colliderExtents.y)) dir = Vector3::Add(dir, Vector3::Normalize(Vector3::Multiply(-1, up))); }
+		//if (xmf3MyExtents.z >= 0) { if (IsIn(xmf3MyExtents.z, colliderExtents.z, colliderExtents.z + radius)) dir = Vector3::Add(dir, Vector3::Normalize(look)); }
+		//else { if (IsIn(xmf3MyExtents.z, -1 * colliderExtents.z - radius, -1 * colliderExtents.z)) dir = Vector3::Add(dir, Vector3::Normalize(Vector3::Multiply(-1, look))); }
+
+
+		//if (xmf3MyExtents.x >= 0)	{ if ( xmf3MyExtents.x - colliderExtents.x < radius) dir = Vector3::Add(dir, Vector3::Normalize(right));}
+		//else						{ if (-xmf3MyExtents.x - colliderExtents.x < radius) dir = Vector3::Add(dir, Vector3::Normalize(Vector3::Multiply(-1, right)));}
+		//if (xmf3MyExtents.y >= 0)	{ if ( xmf3MyExtents.y - colliderExtents.y < radius) dir = Vector3::Add(dir, Vector3::Normalize(up));}
+		//else						{ if (-xmf3MyExtents.y - colliderExtents.y < radius) dir = Vector3::Add(dir, Vector3::Normalize(Vector3::Multiply(-1, up)));}
+		//if (xmf3MyExtents.z >= 0)	{ if ( xmf3MyExtents.z - colliderExtents.z < radius) dir = Vector3::Add(dir, Vector3::Normalize(look));}
+		//else						{ if (-xmf3MyExtents.z - colliderExtents.z < radius) dir = Vector3::Add(dir, Vector3::Normalize(Vector3::Multiply(-1, look)));}
+
+		XMVECTOR parallel, perpendicular;
+
+		//if (IsIn(abs(xmf3MyExtents.x), colliderExtents.x, colliderExtents.x + radius) || 
+		//	IsIn(abs(xmf3MyExtents.y), colliderExtents.y, colliderExtents.y + radius) || 
+		//	IsIn(abs(xmf3MyExtents.z), colliderExtents.z, colliderExtents.z + radius)) {
+		//	// 이전 위치가 CollisionZone 안일 경우 다음 진행(그 라운드 코너 부분)
+		//	if (IsIn(xmf3MyExtents.x, colliderExtents.x, colliderExtents.x + radius))	dir = Vector3::Add(dir, right);
+		//	if (IsIn(xmf3MyExtents.y, colliderExtents.y, colliderExtents.y + radius))	dir = Vector3::Add(dir, up);
+		//	if (IsIn(xmf3MyExtents.z, colliderExtents.z, colliderExtents.z + radius))	dir = Vector3::Add(dir, look);
+		//	if (IsIn(xmf3MyExtents.x, -colliderExtents.x - radius, -colliderExtents.x))	dir = Vector3::Add(dir, Vector3::Multiply(-1, right));
+		//	if (IsIn(xmf3MyExtents.y, -colliderExtents.y - radius, -colliderExtents.y))	dir = Vector3::Add(dir, Vector3::Multiply(-1, up));
+		//	if (IsIn(xmf3MyExtents.z, -colliderExtents.z - radius, -colliderExtents.z))	dir = Vector3::Add(dir, Vector3::Multiply(-1, look));
+		//}
+		//else {
+		//	// 이전 위치가 CollisionZone 밖일 경우 아래로 진행
+		//	float max = abs(xmf3MyExtents.x) - colliderExtents.x; int colliderDir = 0;
+		//	if (abs(xmf3MyExtents.y) - colliderExtents.y > max) { max = abs(xmf3MyExtents.y) - colliderExtents.y; colliderDir = 1; }
+		//	if (abs(xmf3MyExtents.z) - colliderExtents.z > max) { max = abs(xmf3MyExtents.z) - colliderExtents.z; colliderDir = 2; }
+
+		//	if (colliderDir == 0) {
+		//		if (xmf3MyExtents.x > 0)	dir = Vector3::Normalize(right);
+		//		else					dir = Vector3::Normalize(Vector3::Multiply(-1, right));
+		//	}
+		//	else if (colliderDir == 1) {
+		//		if (xmf3MyExtents.y > 0)	dir = Vector3::Normalize(up);
+		//		else						dir = Vector3::Normalize(Vector3::Multiply(-1, up));
+		//	}
+		//	else {
+		//		if (xmf3MyExtents.z > 0)	dir = Vector3::Normalize(look);
+		//		else						dir = Vector3::Normalize(Vector3::Multiply(-1, look));
+		//	}
+		//}
 		float max = abs(xmf3MyExtents.x) - colliderExtents.x; int colliderDir = 0;
 		if (abs(xmf3MyExtents.y) - colliderExtents.y > max) { max = abs(xmf3MyExtents.y) - colliderExtents.y; colliderDir = 1; }
 		if (abs(xmf3MyExtents.z) - colliderExtents.z > max) { max = abs(xmf3MyExtents.z) - colliderExtents.z; colliderDir = 2; }
 
-		XMVECTOR parallel, perpendicular;
-		if(colliderDir == 0){ 
-			if(xmf3MyExtents.x >0)	dir = Vector3::Normalize(right);
+		if (colliderDir == 0) {
+			if (xmf3MyExtents.x > 0)	dir = Vector3::Normalize(right);
 			else					dir = Vector3::Normalize(Vector3::Multiply(-1, right));
 		}
 		else if (colliderDir == 1) {
@@ -337,17 +402,32 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 			else						dir = Vector3::Normalize(Vector3::Multiply(-1, look));
 		}
 
+		dir = Vector3::Normalize(dir);
+
 		XMVector3ComponentsFromNormal(&parallel, &perpendicular, XMLoadFloat3(&m_xmf3Move), XMLoadFloat3(&dir));
-
-
+		
 		XMStoreFloat3(&m_xmf3Move, perpendicular);
+
+		//if(Vector3::DotProduct(dir, xmf3Temp) > 0)	m_xmf3Move = xmf3Temp;
 
 		// 지면 판정
 		if (Vector3::DotProduct(dir, XMFLOAT3(0, 1, 0)) > 0.8) {
 			m_fHeightVelocity = fTimeElapsed * g_Gravity;
 		}
+		xmf3MyExtents.x = abs(xmf3MyExtents.x);
+		xmf3MyExtents.y = abs(xmf3MyExtents.y);
+		xmf3MyExtents.z = abs(xmf3MyExtents.z);
+		a.different = Vector3::Subtract(xmf3MyExtents, colliderExtents);
+		a.nextMove = m_xmf3Move;
+
+		t.push_back(a);
+
 	}
-	s++;
+	//m_pObjMng->ColliderTrigInit(ColliderTag::PROP);
+
+	while (t.size() > 100) { t.erase(t.begin()); }
+
+	//t.clear();
 
 	XMFLOAT3 xmf3Right	= XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
 	XMFLOAT3 xmf3Up		= XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
@@ -604,43 +684,28 @@ void CObjectManager::Render()
 	정보를 업데이트 하는 부분에만 IsAlive를 체크하게 추가하였다.
 	*********************************************************************/
 
-	//XMVECTOR det;
-	//XMMATRIX temp;
-
 	for (int i = 0; i < m_nProps; i++) {
 		if (!m_Props[i]->IsAlive()) continue;
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedPropObjects + (i * ncbElementBytes));
 		memset(pbMappedcbObject, NULL, ncbElementBytes);
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Props[i]->m_xmf4x4World)));
-
-		//XMMatrixDeterminant(XMMatrixTranspose(XMLoadFloat4x4(&m_Props[i]->m_xmf4x4World)));
-		//temp = XMMatrixInverse(&det, XMMatrixTranspose(XMLoadFloat4x4(&m_Props[i]->m_xmf4x4World)));
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&Matrix4x4::InverseTranspose(m_Props[i]->m_xmf4x4World)));
-
-
 	}
 	for (int i = 0; i < m_nPlayers; i++) {
 		if (!m_Players[i]->IsAlive()) continue;
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedPlayers + (i * ncbElementBytes));
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Players[i]->m_xmf4x4World)));
-		//XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&m_Players[i]->m_xmf4x4World));
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&Matrix4x4::InverseTranspose(m_Players[i]->m_xmf4x4World)));
-
-
 	}
 	for (int i = 0; i < m_nProjectiles; i++) {
 		if (!m_Projectiles[i]->IsAlive()) continue;
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedProjectiles + (i * ncbElementBytes));
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Projectiles[i]->m_xmf4x4World)));
-		//XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&m_Projectiles[i]->m_xmf4x4World));
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&Matrix4x4::InverseTranspose(m_Projectiles[i]->m_xmf4x4World)));
-
-
 	}
 
 	m_pd3dCommandList->SetPipelineState(m_PSO[1]);
-	m_Props[1]->Render(m_pd3dCommandList);
-	//for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Render(m_pd3dCommandList);
+	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Render(m_pd3dCommandList);
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->Render(m_pd3dCommandList);
 
 	m_pd3dCommandList->SetPipelineState(m_PSO[0]);
@@ -648,8 +713,6 @@ void CObjectManager::Render()
 }
 void CObjectManager::Update(float fTime)
 {
-	//static float y = 0;
-	//y += fTime;
 	m_Props[1]->SetRotation(XMFLOAT3(0, fTime * 20, 0));
 
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Update(fTime);
@@ -661,6 +724,10 @@ void CObjectManager::Update(float fTime)
 void CObjectManager::ProcessInput(UCHAR * pKeysBuffer, float mouse)
 {
 	if (m_Players[0]->IsAlive()) m_Players[0]->ProcessInput(pKeysBuffer, mouse);
+
+	if (pKeysBuffer[VK_RBUTTON] & 0xF0)
+		cout << m_Players[0]->GetPosition().x << ", " << m_Players[0]->GetPosition().y << ", " << m_Players[0]->GetPosition().z << "\n";
+
 
 	if (pKeysBuffer[VK_LBUTTON] & 0xF0) {
 		/*********************************************************************
@@ -683,69 +750,101 @@ void CObjectManager::ProcessInput(UCHAR * pKeysBuffer, float mouse)
 		}
 	}
 }
-void CObjectManager::GetColliderList(const Collider & myCollider, std::queue<Collider*>& myColliderQueue, ColliderTag targetTag)
-{
-	Collider* temp = NULL;
-	switch (targetTag)
-	{
-	case ColliderTag::PROP: 
-		for (int i = 0; i < m_Props.size(); ++i) {
-			temp = m_Props[i]->GetCollisionCollider(myCollider);
-			if (temp != NULL) {
-				myColliderQueue.push(temp);
-			}
-		}
-		break;
-	case ColliderTag::PROJECTILE: 
-		for (int i = 0; i < m_Projectiles.size(); ++i) {
-			temp = m_Projectiles[i]->GetCollisionCollider(myCollider);
-			if (temp != NULL) {
-				myColliderQueue.push(temp);
-			}
-		}
-		break;
-	case ColliderTag::PLAYER:
-		for (int i = 0; i < m_Players.size(); ++i) {
-			temp = m_Players[i]->GetCollisionCollider(myCollider);
-			if (temp != NULL) {
-				myColliderQueue.push(temp);
-			}
-		}
-		break;
-	default:break;
-	}
-}
-Collider * CObjectManager::GetCollider(const Collider & myCollider, ColliderTag targetTag)
+//void CObjectManager::GetColliderList(Collider & myCollider, std::queue<Collider*>& myColliderQueue, ColliderTag targetTag, bool isMakeAlign)
+//{
+//	Collider* temp = NULL;
+//	switch (targetTag)
+//	{
+//	case ColliderTag::PROP: 
+//		for (int i = 0; i < m_Props.size(); ++i) {
+//			temp = m_Props[i]->GetCollisionCollider(myCollider, isMakeAlign);
+//			if (temp != NULL || !temp->m_trigCollided) {
+//				temp->m_trigCollided = true;
+//
+//				myColliderQueue.push(temp);
+//			}
+//		}
+//		break;
+//	case ColliderTag::PROJECTILE: 
+//		for (int i = 0; i < m_Projectiles.size(); ++i) {
+//			temp = m_Projectiles[i]->GetCollisionCollider(myCollider, isMakeAlign);
+//			if (temp != NULL || !temp->m_trigCollided) {
+//				temp->m_trigCollided = true;
+//
+//				myColliderQueue.push(temp);
+//			}
+//		}
+//		break;
+//	case ColliderTag::PLAYER:
+//		for (int i = 0; i < m_Players.size(); ++i) {
+//			temp = m_Players[i]->GetCollisionCollider(myCollider, isMakeAlign);
+//			if (temp != NULL || !temp->m_trigCollided) {
+//				temp->m_trigCollided = true;
+//
+//				myColliderQueue.push(temp);
+//			}
+//		}
+//		break;
+//	default:break;
+//	}
+//}
+Collider * CObjectManager::GetCollider(Collider & myCollider, ColliderTag targetTag, bool isMakeAlign)
 {
 	Collider* temp = NULL;
 	switch (targetTag)
 	{
 	case ColliderTag::PROP:
 		for (int i = 0; i < m_Props.size(); ++i) {
-			temp = m_Props[i]->GetCollisionCollider(myCollider);
-			if (temp != NULL) return temp;
+			temp = m_Props[i]->GetCollisionCollider(myCollider, isMakeAlign);
+			if (temp != NULL)
+				return temp;
+
+				//if (!temp->m_trigCollided) {
+				//	temp->m_trigCollided = true;
+				//	return temp;
+				//}
 		}
 		break;
 	case ColliderTag::PROJECTILE:
 		for (int i = 0; i < m_Projectiles.size(); ++i) {
-			temp = m_Projectiles[i]->GetCollisionCollider(myCollider);
-			if (temp != NULL) return temp;
+			temp = m_Projectiles[i]->GetCollisionCollider(myCollider, isMakeAlign);
+			if (temp != NULL)
+				return temp;
+
+				//if (!temp->m_trigCollided) {
+				//	temp->m_trigCollided = true;
+				//	return temp;
+				//}
 		}
 		break;
 	case ColliderTag::PLAYER:
 		for (int i = 0; i < m_Players.size(); ++i) {
-			temp = m_Players[i]->GetCollisionCollider(myCollider);
-			if (temp != NULL) return temp;
+			temp = m_Players[i]->GetCollisionCollider(myCollider, isMakeAlign);
+			if (temp != NULL)
+				return temp;
+
+				//if (!temp->m_trigCollided) {
+				//	temp->m_trigCollided = true;
+				//	return temp;
+				//}
 		}
 		break;
 	default:break;
 	}
 	return NULL;
 }
+void CObjectManager::ColliderTrigInit(ColliderTag targetTag)
+{
+	switch (targetTag)
+	{
+	case ColliderTag::PROP:			for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->SetColliderTrigOff();		break;
+	case ColliderTag::PROJECTILE:	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->SetColliderTrigOff(); break;
+	case ColliderTag::PLAYER:		for (int i = 0; i < m_Players.size(); ++i) 		m_Players[i]->SetColliderTrigOff();		break;
+	default:break;
+	}
+}
 void CObjectManager::LateUpdate(float fTime)
 {
-	//CollisionCheck();
-
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->LateUpdate(fTime);
 	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->LateUpdate(fTime);
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->LateUpdate(fTime);
@@ -853,6 +952,28 @@ void CObjectManager::CreateObjectData()
 
 	importer.ImportLevel("LevelData_TestMap", m_LevelDataDesc);
 
+	XMFLOAT3 nodePositions[9] = {
+		XMFLOAT3(0,0,0),
+		XMFLOAT3(-200,0,88),
+		XMFLOAT3(-200,0,230),
+		XMFLOAT3(-139,0,257),
+		XMFLOAT3(-127,0,341),
+		XMFLOAT3(-42,0,387),
+		XMFLOAT3(-18,0,297),
+		XMFLOAT3(73,0,270),
+		XMFLOAT3(56,0,137)
+	};
+
+	for (int i = 0; i < 9; ++i) {
+		AINode* tempNode = new AINode();
+		tempNode->m_xmf3Position = nodePositions[i];
+		g_vecAINode.push_back(tempNode);
+	}
+	for (int i = 0; i < 8; ++i) {
+		g_vecAINode[i]->next = g_vecAINode[i + 1];
+	}
+	g_vecAINode[8]->next = g_vecAINode[0];
+
 
 	/*********************************************************************
 	2019-06-15
@@ -913,10 +1034,9 @@ void CObjectManager::CreateObjectData()
 			obj->AddModel(importer.GetModelByName("Model_Level_Box047"));
 			for (int j = 0; j < m_LevelDataDesc.nCollisionMaps; ++j) {
 				obj->AddCollider(
-					XMFLOAT3(0, 0, 0),
+					m_LevelDataDesc.CollisionPosition[j],
 					m_LevelDataDesc.CollisionScale[j],
 					m_LevelDataDesc.CollisionRotation[j],
-					m_LevelDataDesc.CollisionPosition[j],
 					ColliderTag::PROP);
 			}
 		}
@@ -973,6 +1093,9 @@ void CObjectManager::CreateObjectData()
 
 		obj->SetTeam((i % 2) + 1);
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
+
+		if (i >= 1) obj->m_AIBrain->PowerOn();
+
 		m_Players.push_back(obj);
 	}
 	for (int i = 0; i < m_nProjectiles; i++) {
@@ -981,7 +1104,7 @@ void CObjectManager::CreateObjectData()
 		obj->AddModel(importer.GetModelByName("Model_PaperBox_box_1"));
 
 		obj->SetAlive(false);
-		obj->AddCollider(XMFLOAT3(0,0,0), 10.0f, XMFLOAT3(0, 0, 0));
+		obj->AddCollider(XMFLOAT3(0,0,0), 10.0f);
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 		m_Projectiles.push_back(obj);
 	}
@@ -1074,19 +1197,20 @@ Collider::Collider()
 자체의 회전각과 주인 객체의 회전각이 더해져야 하는데 이건 어떻게 만들거?
 Quaternion 더하는 함수가 있나?
 *********************************************************************/
-Collider::Collider(XMFLOAT3 center, XMFLOAT3 extents, XMFLOAT4 quaternion, XMFLOAT3 offset, ColliderTag tag)
+Collider::Collider(XMFLOAT3 offset, XMFLOAT3 extents, XMFLOAT4 quaternion, ColliderTag tag)
 	: m_xmf3Offset(offset)
-	, m_Box(BoundingOrientedBox(center, extents, quaternion))
+	, m_Box(BoundingOrientedBox(XMFLOAT3(0,0,0), extents, XMFLOAT4(0, 0, 0, 0)))
 	, m_Type(ColliderType::BOX)
 	, m_Tag(tag)
+	, m_xmf4OrigOrientaion(quaternion)
 {
 	
 }
 
-Collider::Collider(XMFLOAT3 center, float radius, XMFLOAT3 offset, ColliderTag tag)
+Collider::Collider(XMFLOAT3 offset, float radius, ColliderTag tag)
 	: m_xmf3Offset(offset)
 	, m_Type(ColliderType::SPHERE)
-	, m_Sphere(BoundingSphere(center, radius))
+	, m_Sphere(BoundingSphere(XMFLOAT3(0, 0, 0), radius))
 	, m_Tag(tag)
 {
 
@@ -1125,6 +1249,11 @@ void Collider::SetTag(const string tag)
 	if ("Hitbox" == tag)		{ m_Tag = ColliderTag::HITBOX;		 return; }
 }
 
+void Collider::SetOrientation(const XMFLOAT4 & orientation)
+{
+	if (m_Type == ColliderType::BOX)	m_Box.Orientation = orientation;
+}
+
 XMFLOAT3 Collider::GetLook()
 {
 	XMFLOAT3 look(0, 0, 1);
@@ -1153,6 +1282,12 @@ XMFLOAT3 Collider::GetExtents()
 {
 	if (m_Type == ColliderType::BOX)	return m_Box.Extents;
 	else return XMFLOAT3(0,0,0);
+}
+
+XMFLOAT4 Collider::GetOrientation()
+{
+	if (m_Type == ColliderType::BOX)	return m_Box.Orientation;
+	else return XMFLOAT4(0, 0, 0, 1);
 }
 
 XMFLOAT3 GetBetweenVector(const Collider & A, const Collider & B)
@@ -1184,7 +1319,12 @@ void Collider::SetPosition(XMFLOAT3 position, XMFLOAT3 rotatedOffset)
 
 void Collider::SetRotation(XMFLOAT4 rotation)
 {
-	if (m_Type == ColliderType::BOX) 
-		m_Box.Orientation = rotation;
+	if (m_Type == ColliderType::BOX) {
+		XMFLOAT4 objRotation = rotation;
+		XMStoreFloat4(&m_Box.Orientation, XMQuaternionRotationMatrix(XMMatrixMultiply(XMMatrixRotationQuaternion(XMLoadFloat4(&objRotation)), XMMatrixRotationQuaternion(XMLoadFloat4(&m_xmf4OrigOrientaion)))));
+
+
+		//m_Box.Orientation = rotation;
+	}
 	
 }
