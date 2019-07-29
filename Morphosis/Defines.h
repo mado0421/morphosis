@@ -65,7 +65,7 @@ extern std::vector<AINode*>					g_vecAINode;
 constexpr float		g_fDefaultUnitScale			= 20.0f;
 
 extern unsigned int	gnCbvSrvDescriptorIncrementSize;
-constexpr float		g_fDefaultPlayerSpeed		= g_fDefaultUnitScale * 10;
+constexpr float		g_fDefaultPlayerSpeed		= g_fDefaultUnitScale * 6;
 constexpr float		g_fDefaultProjectileSpeed	= g_fDefaultPlayerSpeed * 3.0f;
 constexpr int		g_nAnimBone					= 64;
 constexpr int		g_nProjectilePerPlayer		= 30;

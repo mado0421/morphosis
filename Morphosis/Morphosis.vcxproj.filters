@@ -45,6 +45,9 @@
     <Filter Include="소스 파일\AI">
       <UniqueIdentifier>{cd6268c8-c814-485e-99e5-4678b0462075}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Effect">
+      <UniqueIdentifier>{6a53693a-9849-445d-b70c-8a5fc5cb69db}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationController.cpp">
@@ -91,6 +94,9 @@
     </ClCompile>
     <ClCompile Include="AI.cpp">
       <Filter>소스 파일\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="Effect.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -167,6 +173,7 @@
     <ClInclude Include="AI.h">
       <Filter>소스 파일\AI</Filter>
     </ClInclude>
+    <ClInclude Include="Effect.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl" />

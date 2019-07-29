@@ -157,6 +157,7 @@
     <ClCompile Include="AnimationController.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DDSTextureLoader12.cpp" />
+    <ClCompile Include="Effect.cpp" />
     <ClCompile Include="Framework.cpp" />
     <ClCompile Include="Importer.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -183,6 +184,7 @@
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DDSTextureLoader12.h" />
     <ClInclude Include="Defines.h" />
+    <ClInclude Include="Effect.h" />
     <ClInclude Include="Framework.h" />
     <ClInclude Include="Importer.h" />
     <ClInclude Include="MathHelper.h" />

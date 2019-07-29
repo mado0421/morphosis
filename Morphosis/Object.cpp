@@ -4,6 +4,7 @@
 #include "Mesh.h"
 #include "Importer.h"
 #include "Texture.h"
+#include "Effect.h"
 #include "AI.h"
 
 /*********************************************************************
@@ -24,6 +25,12 @@ CObject::CObject()
 }
 CObject::~CObject()
 {
+}
+void CObject::AddCollisionEffect(CObject * p)
+{
+	for (int i = 0; i < m_vecEffects.size(); ++i) {
+		m_vecEffects[i]->Act(dynamic_cast<CPlayer*>( p));
+	}
 }
 void CObject::SetMng(CObjectManager * mng)
 {
@@ -254,8 +261,10 @@ void CPlayer::Update(float fTimeElapsed)
 		- 공격가능까지 남은 시간을 흐른 시간만큼 감소
 		- AnimTime을 흐른 시간만큼 증가
 		- AnimState를 조건에 따라 관리*/
-
-	m_fRemainingTimeOfFire -= fTimeElapsed;
+	if (m_fRemainingTimeOfFire > 0) m_fRemainingTimeOfFire		-= fTimeElapsed;
+	if (m_fRemainingTimeOfSkill1 > 0) m_fRemainingTimeOfSkill1	-= fTimeElapsed;
+	if (m_fRemainingTimeOfSlow > 0) m_fRemainingTimeOfSlow		-= fTimeElapsed;
+	else m_fSlowFactor = 1.0f;
 
 	if (m_AnimationController) {
 		m_AnimationTime += fTimeElapsed;
@@ -305,6 +314,7 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 		if (NULL == collider) break;
 
 		s++;
+		if (s > 10) collider->m_trigCollided = true;
 		Test a;
 		a.col = collider;
 		a.prevMove = m_xmf3Move;
@@ -423,9 +433,13 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 		t.push_back(a);
 
 	}
-	//m_pObjMng->ColliderTrigInit(ColliderTag::PROP);
+	m_pObjMng->ColliderTrigInit(ColliderTag::PROP);
 
 	while (t.size() > 100) { t.erase(t.begin()); }
+
+	
+
+
 
 	//t.clear();
 
@@ -477,6 +491,7 @@ void CPlayer::Enable()
 	m_HealthPoint = g_DefaultHealthPoint;
 	SetPosition(m_xmf3SpawnPoint);
 	m_fHeightVelocity = 0;
+	m_AIBrain->ChangeBehavior(new CMoveBehavior());
 
 	/*********************************************************************
 	2019-07-03
@@ -499,9 +514,24 @@ void CPlayer::Shoot()
 	m_AnimationTime = 0;
 	m_fRemainingTimeOfFire = m_fRPM;
 }
+void CPlayer::Skill(int idx)
+{
+	m_AnimationState = static_cast<int>(AnimationState::FIRE);
+	m_AnimationTime = 0;
+	m_fRemainingTimeOfSkill1 = 0.5f;
+}
+void CPlayer::Slow()
+{
+	m_fRemainingTimeOfSlow = 3.0f;
+	m_fSlowFactor = 0.5;
+}
 bool CPlayer::IsShootable()
 {
 	return m_fRemainingTimeOfFire <= 0;
+}
+bool CPlayer::IsSkillUseable(int idx)
+{
+	return m_fRemainingTimeOfSkill1 <= 0;
 }
 void CPlayer::ChangeAnimClip()
 {
@@ -528,7 +558,7 @@ XMFLOAT3 CPlayer::Move(float fTimeElapsed)
 
 	temp.y += m_fHeightVelocity;
 
-	return Vector3::Multiply(fTimeElapsed * m_fSpeed, temp);
+	return Vector3::Multiply(fTimeElapsed * m_fSpeed * m_fSlowFactor, temp);
 }
 float CPlayer::Rotate(float fTimeElapsed)
 {
@@ -573,7 +603,7 @@ void CProjectile::Initialize(CObject * obj)
 	충돌체 위치도 바꿔줘야 함.
 	*********************************************************************/
 	XMFLOAT3 pos = obj->GetPosition();
-	pos.y += 20;
+	pos.y += 10;
 	SetPosition(pos);
 	for (int i = 0; i < m_Collider.size(); ++i) m_Collider[i].Update(GetPosition(), GetQuaternion());
 
@@ -613,6 +643,27 @@ void CProjectile::Initialize(CObject * obj)
 	//SetUp(xmf3Up);
 	//SetRight(xmf3Right);
 }
+void CProjectile::Initialize(CObject * obj, const char * modelName, Effect * effect)
+{
+	XMFLOAT3 pos = obj->GetPosition();
+	pos.y += 10;
+	SetPosition(pos);
+	for (int i = 0; i < m_Collider.size(); ++i) m_Collider[i].Update(GetPosition(), GetQuaternion());
+
+
+	m_ModelList.clear();
+	AddModel(GetModelByName(modelName));
+	m_vecEffects.push_back(effect);
+
+	SetLook(obj->GetLook());
+	SetUp(obj->GetUp());
+	SetRight(obj->GetRight());
+
+	SetTeam(obj->GetTeam());
+
+	m_xmf3Direction = Vector3::Normalize(obj->GetLook());
+	m_fLifeTime = g_DefaultProjectileLifeTime;
+}
 void CProjectile::Update(float fTimeElapsed)
 {
 	if (!m_IsAlive) return;
@@ -621,7 +672,7 @@ void CProjectile::Update(float fTimeElapsed)
 	LifeTime 관리
 	*********************************************************************/
 	m_fLifeTime -= fTimeElapsed;
-	if (IsExpired()) { m_IsAlive = false; return; }
+	if (IsExpired()) { Disable(); return; }
 
 	XMFLOAT3 xmf3Move = m_xmf3Direction;
 	xmf3Move = Vector3::Multiply(m_fSpeed, xmf3Move);
@@ -633,16 +684,17 @@ void CProjectile::Update(float fTimeElapsed)
 
 	//if (m_AnimationController) m_AnimationController->Update(fTimeElapsed);
 
-	/*********************************************************************
-	2019-06-18
-	충돌체 파트
-	*********************************************************************/
-	for (int i = 0; i < m_Collider.size(); ++i) m_Collider[i].Update(GetPosition(), GetQuaternion());
+	///*********************************************************************
+	//2019-06-18
+	//충돌체 파트
+	//*********************************************************************/
+	//for (int i = 0; i < m_Collider.size(); ++i) m_Collider[i].Update(GetPosition(), GetQuaternion());
 
 }
 void CProjectile::LateUpdate(float fTimeElapsed)
 {
 	if (!m_IsAlive) return;
+	for (int i = 0; i < m_Collider.size(); ++i) m_Collider[i].Update(GetPosition(), GetQuaternion());
 
 }
 void CProjectile::Damage(CObject* obj)
@@ -725,8 +777,8 @@ void CObjectManager::ProcessInput(UCHAR * pKeysBuffer, float mouse)
 {
 	if (m_Players[0]->IsAlive()) m_Players[0]->ProcessInput(pKeysBuffer, mouse);
 
-	if (pKeysBuffer[VK_RBUTTON] & 0xF0)
-		cout << m_Players[0]->GetPosition().x << ", " << m_Players[0]->GetPosition().y << ", " << m_Players[0]->GetPosition().z << "\n";
+	//if (pKeysBuffer[VK_RBUTTON] & 0xF0)
+	//	cout << m_Players[0]->GetPosition().x << ", " << m_Players[0]->GetPosition().y << ", " << m_Players[0]->GetPosition().z << "\n";
 
 
 	if (pKeysBuffer[VK_LBUTTON] & 0xF0) {
@@ -744,50 +796,22 @@ void CObjectManager::ProcessInput(UCHAR * pKeysBuffer, float mouse)
 			dynamic_cast<CPlayer*>(m_Players[0])->Shoot();
 			auto iter = find_if(m_Projectiles.begin(), m_Projectiles.end(), [](CObject* p) {return !(p->IsAlive()); });
 			if (iter != m_Projectiles.end()) {
-				dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[0]);
+				dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[0],"Model_PaperBox_box_1", new EDefaultDamage() );
+				(*iter)->SetAlive(true);
+			}
+		}
+	}
+	if (pKeysBuffer[VK_RBUTTON] & 0xF0) {
+		if (dynamic_cast<CPlayer*>(m_Players[0])->IsSkillUseable()) {
+			dynamic_cast<CPlayer*>(m_Players[0])->Skill();
+			auto iter = find_if(m_Projectiles.begin(), m_Projectiles.end(), [](CObject* p) {return !(p->IsAlive()); });
+			if (iter != m_Projectiles.end()) {
+				dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[0], "Model_Crystal_default", new ESlow());
 				(*iter)->SetAlive(true);
 			}
 		}
 	}
 }
-//void CObjectManager::GetColliderList(Collider & myCollider, std::queue<Collider*>& myColliderQueue, ColliderTag targetTag, bool isMakeAlign)
-//{
-//	Collider* temp = NULL;
-//	switch (targetTag)
-//	{
-//	case ColliderTag::PROP: 
-//		for (int i = 0; i < m_Props.size(); ++i) {
-//			temp = m_Props[i]->GetCollisionCollider(myCollider, isMakeAlign);
-//			if (temp != NULL || !temp->m_trigCollided) {
-//				temp->m_trigCollided = true;
-//
-//				myColliderQueue.push(temp);
-//			}
-//		}
-//		break;
-//	case ColliderTag::PROJECTILE: 
-//		for (int i = 0; i < m_Projectiles.size(); ++i) {
-//			temp = m_Projectiles[i]->GetCollisionCollider(myCollider, isMakeAlign);
-//			if (temp != NULL || !temp->m_trigCollided) {
-//				temp->m_trigCollided = true;
-//
-//				myColliderQueue.push(temp);
-//			}
-//		}
-//		break;
-//	case ColliderTag::PLAYER:
-//		for (int i = 0; i < m_Players.size(); ++i) {
-//			temp = m_Players[i]->GetCollisionCollider(myCollider, isMakeAlign);
-//			if (temp != NULL || !temp->m_trigCollided) {
-//				temp->m_trigCollided = true;
-//
-//				myColliderQueue.push(temp);
-//			}
-//		}
-//		break;
-//	default:break;
-//	}
-//}
 Collider * CObjectManager::GetCollider(Collider & myCollider, ColliderTag targetTag, bool isMakeAlign)
 {
 	Collider* temp = NULL;
@@ -797,36 +821,36 @@ Collider * CObjectManager::GetCollider(Collider & myCollider, ColliderTag target
 		for (int i = 0; i < m_Props.size(); ++i) {
 			temp = m_Props[i]->GetCollisionCollider(myCollider, isMakeAlign);
 			if (temp != NULL)
-				return temp;
+				//return temp;
 
-				//if (!temp->m_trigCollided) {
-				//	temp->m_trigCollided = true;
-				//	return temp;
-				//}
+				if (!temp->m_trigCollided) {
+					//temp->m_trigCollided = true;
+					return temp;
+				}
 		}
 		break;
 	case ColliderTag::PROJECTILE:
 		for (int i = 0; i < m_Projectiles.size(); ++i) {
 			temp = m_Projectiles[i]->GetCollisionCollider(myCollider, isMakeAlign);
 			if (temp != NULL)
-				return temp;
+				//return temp;
 
-				//if (!temp->m_trigCollided) {
-				//	temp->m_trigCollided = true;
-				//	return temp;
-				//}
+				if (!temp->m_trigCollided) {
+					//temp->m_trigCollided = true;
+					return temp;
+				}
 		}
 		break;
 	case ColliderTag::PLAYER:
 		for (int i = 0; i < m_Players.size(); ++i) {
 			temp = m_Players[i]->GetCollisionCollider(myCollider, isMakeAlign);
 			if (temp != NULL)
-				return temp;
+				//return temp;
 
-				//if (!temp->m_trigCollided) {
-				//	temp->m_trigCollided = true;
-				//	return temp;
-				//}
+				if (!temp->m_trigCollided) {
+					//temp->m_trigCollided = true;
+					return temp;
+				}
 		}
 		break;
 	default:break;
@@ -845,6 +869,17 @@ void CObjectManager::ColliderTrigInit(ColliderTag targetTag)
 }
 void CObjectManager::LateUpdate(float fTime)
 {
+	for (auto projectile = m_Projectiles.begin(); projectile != m_Projectiles.end(); ++projectile)
+		for (auto player = m_Players.begin(); player != m_Players.end(); ++player) 
+			if ((*player)->IsAlive()) 
+				if (IsCollidable((*player), (*projectile)))
+					if ((*player)->IsCollide(*(*projectile))) {
+						(*projectile)->AddCollisionEffect((*player));
+						(*projectile)->Disable();
+					}
+
+
+
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->LateUpdate(fTime);
 	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->LateUpdate(fTime);
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->LateUpdate(fTime);
@@ -1001,6 +1036,7 @@ void CObjectManager::CreateObjectData()
 	importer.ImportTexture(L"0618_LevelTest_diff",		"Texture_Level");
 	importer.ImportTexture(L"box_diff",					"Texture_StandardBox");
 	importer.ImportTexture(L"2B_diff",					"Texture_2B");
+	importer.ImportTexture(L"TEX_crystal",				"Texture_Crystal");
 	for (int i = 0; i < g_vecTexture.size(); ++i) CreateTextureResourceView(g_vecTexture[i]);
 	
 	importer.ImportModel("0618_LevelTest",						"Texture_Level",		ImportType::DefaultMesh,	"Model_Level");
@@ -1010,6 +1046,7 @@ void CObjectManager::CreateObjectData()
 	importer.ImportModel("box",									"Texture_StandardBox",	ImportType::DefaultMesh,	"Model_Box1");
 	importer.ImportModel("box2",								"Texture_StandardBox",	ImportType::DefaultMesh,	"Model_Box2");
 	//importer.ImportModel("0723_Box_SN",						"Texture_PaperBox",		ImportType::DefaultMesh,	"Model_PaperBox_Resize", 0.5f);
+	importer.ImportModel("crystal",								"Texture_Crystal",		ImportType::DefaultMesh,	"Model_Crystal");
 	importer.ImportModel("2b",									"Texture_2B",			ImportType::DefaultMesh,	"Model_2B");
 
 	importer.ImportAnimController("AnimCtrl_Character");
@@ -1029,9 +1066,9 @@ void CObjectManager::CreateObjectData()
 		CObject* obj = new CObject();
 		obj->SetMng(this);
 		if (0 == i) {
-			obj->AddModel(importer.GetModelByName("Model_Level_Box042"));
-			obj->AddModel(importer.GetModelByName("Model_Level_Box045"));
-			obj->AddModel(importer.GetModelByName("Model_Level_Box047"));
+			obj->AddModel(GetModelByName("Model_Level_Box042"));
+			obj->AddModel(GetModelByName("Model_Level_Box045"));
+			obj->AddModel(GetModelByName("Model_Level_Box047"));
 			for (int j = 0; j < m_LevelDataDesc.nCollisionMaps; ++j) {
 				obj->AddCollider(
 					m_LevelDataDesc.CollisionPosition[j],
@@ -1042,10 +1079,10 @@ void CObjectManager::CreateObjectData()
 		}
 		else {
 			//obj->AddModel(importer.GetModelByName("Model_Box2_Box001"));
-			//obj->AddModel(importer.GetModelByName("Model_2B_body"));
-			obj->AddModel(importer.GetModelByName("Model_CharacterStatic_body"));
-			obj->AddModel(importer.GetModelByName("Model_CharacterStatic_jumper"));
-			obj->AddModel(importer.GetModelByName("Model_CharacterStatic_mask"));
+			obj->AddModel(GetModelByName("Model_2B_body"));
+			//obj->AddModel(GetModelByName("Model_CharacterStatic_body"));
+			//obj->AddModel(GetModelByName("Model_CharacterStatic_jumper"));
+			//obj->AddModel(GetModelByName("Model_CharacterStatic_mask"));
 			obj->SetPosition(0.0f, 0.0f, 0.0f);
 		}
 
@@ -1055,17 +1092,17 @@ void CObjectManager::CreateObjectData()
 	for (int i = 0; i < m_nPlayers; i++) {
 		CPlayer* obj = new CPlayer();
 		obj->SetMng(this);
-		obj->AddModel(importer.GetModelByName("Model_Character_body"));
-		obj->AddModel(importer.GetModelByName("Model_Character_jumper"));
-		obj->AddModel(importer.GetModelByName("Model_Character_mask"));
+		obj->AddModel(GetModelByName("Model_Character_body"));
+		obj->AddModel(GetModelByName("Model_Character_jumper"));
+		obj->AddModel(GetModelByName("Model_Character_mask"));
 
-		obj->SetAnimCtrl(importer.GetAnimCtrlByName("AnimCtrl_Character"));
+		obj->SetAnimCtrl(GetAnimCtrlByName("AnimCtrl_Character"));
 
 		obj->SetPosition(0, 100, i * g_fDefaultUnitScale * 3);
 		obj->SetSpawnPoint(obj->GetPosition());
 		obj->AddCollider(
-			XMFLOAT3(0, 0, 0),
-			XMFLOAT3(5, 5, 5),
+			XMFLOAT3(0, 8, 0),
+			XMFLOAT3(6, 8, 6),
 			XMFLOAT4(0, 0, 0, 1)
 		);
 		obj->SetCameraTargetOffset(XMFLOAT3(0, 47, -21));
@@ -1101,7 +1138,7 @@ void CObjectManager::CreateObjectData()
 	for (int i = 0; i < m_nProjectiles; i++) {
 		CProjectile* obj = new CProjectile();
 		obj->SetMng(this);
-		obj->AddModel(importer.GetModelByName("Model_PaperBox_box_1"));
+		obj->AddModel(GetModelByName("Model_PaperBox_box_1"));
 
 		obj->SetAlive(false);
 		obj->AddCollider(XMFLOAT3(0,0,0), 10.0f);

@@ -9,30 +9,6 @@ std::vector<CTexture*>				g_vecTexture;
 std::vector<CModel*>				g_vecModel;
 std::vector<CAnimationController*>	g_vecAnimController;
 
-CTexture * CImporter::GetTextureByName(const char * name)
-{
-	for (int i = 0; i < g_vecTexture.size(); ++i) 
-		if (g_vecTexture[i]->m_strName == name) return g_vecTexture[i];
-		
-	return nullptr;
-}
-
-CModel * CImporter::GetModelByName(const char * name)
-{
-	for (int i = 0; i < g_vecModel.size(); ++i)
-		if (g_vecModel[i]->m_strName == name) return g_vecModel[i];
-
-	return nullptr;
-}
-
-CAnimationController * CImporter::GetAnimCtrlByName(const char * name)
-{
-	for (int i = 0; i < g_vecAnimController.size(); ++i)
-		if (g_vecAnimController[i]->m_strName == name) return g_vecAnimController[i];
-
-	return nullptr;
-}
-
 void CImporter::ImportModel(const char * fileName, const char * textureName, ImportType type, const char * modelName, float scale)
 {
 	TCHAR programpath[_MAX_PATH];
@@ -273,4 +249,28 @@ void CImporter::ImportAnimController(const char * animControllerName)
 	animController->SetName(animControllerName);
 
 	g_vecAnimController.push_back(animController);
+}
+
+CTexture * GetTextureByName(const char * name)
+{
+	for (int i = 0; i < g_vecTexture.size(); ++i)
+		if (g_vecTexture[i]->m_strName == name) return g_vecTexture[i];
+
+	return nullptr;
+}
+
+CModel * GetModelByName(const char * name)
+{
+	for (int i = 0; i < g_vecModel.size(); ++i)
+		if (g_vecModel[i]->m_strName == name) return g_vecModel[i];
+
+	return nullptr;
+}
+
+CAnimationController * GetAnimCtrlByName(const char * name)
+{
+	for (int i = 0; i < g_vecAnimController.size(); ++i)
+		if (g_vecAnimController[i]->m_strName == name) return g_vecAnimController[i];
+
+	return nullptr;
 }

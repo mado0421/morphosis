@@ -48,4 +48,7 @@ void CDefendBehavior::Update(CPlayer * obj)
 
 void CAttackhavior::Update(CPlayer * obj)
 {
+
+
+
 }

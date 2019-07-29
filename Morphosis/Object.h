@@ -6,6 +6,8 @@ class CAnimationController;
 class CTexture;
 class CObjectManager;
 class Collider;
+class Effect;
+class CTinMan;
 struct AnimationClip;
 // AB 순서로 넣으면 A에서 B로 가는 벡터 반환
 XMFLOAT3 GetBetweenVector(const Collider& A, const Collider& B);
@@ -85,6 +87,8 @@ struct Test {
 };
 
 
+
+
 class CObject
 {
 public:
@@ -107,6 +111,8 @@ public:
 	virtual void LateUpdate(float fTimeElapsed) {}
 	virtual void ProcessInput(UCHAR* pKeysBuffer, float mouse) {}
 	// 외부 설정 함수
+	void AddCollisionEffect(CObject* p);
+
 	void SetMng(CObjectManager* mng);
 	void AddCollider(XMFLOAT3 offset, XMFLOAT3 extents, XMFLOAT4 quaternion, ColliderTag tag = ColliderTag::DEFAULT);
 	void AddCollider(XMFLOAT3 offset, float radius, ColliderTag tag = ColliderTag::DEFAULT);
@@ -120,7 +126,10 @@ public:
 	void SetTeam(int team)								{ m_Team = team; }
 	void SetAlive(bool state)							{ m_IsAlive = state; }
 	virtual void Enable()								{ SetAlive(true); }
-	virtual void Disable()								{ SetAlive(false); }
+	virtual void Disable()								{ 
+		SetAlive(false); 
+		m_vecEffects.clear();
+	}
 	// 외부 접근 함수
 	Collider* const GetCollisionCollider(Collider& other, bool isMakeAlign);
 	const XMFLOAT3	GetPosition();
@@ -175,6 +184,9 @@ protected:
 	// 객체 정보
 	bool							m_IsAlive;
 	int								m_Team;
+
+	std::vector<Effect*>			m_vecEffects;
+	
 };
 
 /*********************************************************************
@@ -187,7 +199,6 @@ protected:
 플레이어가 죽을 때 처리
 - 리스폰 타이머 시작
 *********************************************************************/
-class CTinMan;
 
 class CPlayer : public CObject {
 public:
@@ -210,9 +221,12 @@ public:
 	// 외부 작동 함수
 	void			MoveForwardTrigOn() { m_trigInput[static_cast<int>(Move::W)] = true; }
 	void			Shoot();
+	void			Skill(int idx = 0);
 	void			TakeDamage(int val) { m_HealthPoint -= val; }
+	void			Slow();
 	// 조건 함수
 	bool			IsShootable();
+	bool			IsSkillUseable(int idx = 0);
 	bool			IsMoving() {
 		for (int i = 0; i < static_cast<int>(Move::count); ++i)
 			if (m_trigInput[i]) return true;
@@ -260,6 +274,8 @@ protected:
 	// 이동
 	XMFLOAT3		m_xmf3Move;
 	float			m_fSpeed;
+	float			m_fSlowFactor = 1.0f;
+	float			m_fRemainingTimeOfSlow = 0;
 	// 키입력
 	bool			m_trigInput[static_cast<int>(Move::count)];
 	float			m_rotationInput;
@@ -269,6 +285,7 @@ protected:
 	XMFLOAT3		m_xmf3SpawnPoint;
 	int				m_HealthPoint;
 	float			m_fRemainingTimeOfRespawn;
+	float			m_fRemainingTimeOfSkill1;
 };
 
 class CProjectile : public CObject {
@@ -277,6 +294,7 @@ public:
 
 public:
 	void			Initialize(CObject* obj);
+	void			Initialize(CObject* obj, const char* modelName, Effect* effect);
 	virtual void	Update(float fTimeElapsed) override;
 	virtual void	LateUpdate(float fTimeElapsed) override;
 	void			Damage(CObject* obj);
