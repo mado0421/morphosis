@@ -295,6 +295,11 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 	if (!m_IsAlive) return;
 
 	m_fHeightVelocity -= fTimeElapsed * g_Gravity;
+	if (m_fHeightVelocity < -1.5) m_fHeightVelocity = -1.5;
+
+	//if(m_trigInput[static_cast<int>(Move::SPACE)]) m_fHeightVelocity += 
+	if (m_IsOnGround && m_trigInput[static_cast<int>(Move::SPACE)]) m_fHeightVelocity = 3;
+	m_IsOnGround = false;
 
 	// Queue Clear
 	std::queue<Collider*> empty;
@@ -304,9 +309,11 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 	m_xmf3Move = Move(fTimeElapsed);
 	float radius = g_fDefaultUnitScale / 2.0f;
 
-	
+	/* For Test */
 	static std::vector< Test > t;
 	int s = 0;
+
+
 	while (true) {
 		Collider DetailedGroundCollider(XMFLOAT3(0,0,0), radius, ColliderTag::GROUNDCHECK);
 		DetailedGroundCollider.Update(Vector3::Add(GetPosition(), m_xmf3Move), XMFLOAT4(0, 0, 0, 1));
@@ -422,8 +429,12 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 
 		// 지면 판정
 		if (Vector3::DotProduct(dir, XMFLOAT3(0, 1, 0)) > 0.8) {
+
 			m_fHeightVelocity = fTimeElapsed * g_Gravity;
+			m_IsOnGround = true;
 		}
+
+		/* For Test */
 		xmf3MyExtents.x = abs(xmf3MyExtents.x);
 		xmf3MyExtents.y = abs(xmf3MyExtents.y);
 		xmf3MyExtents.z = abs(xmf3MyExtents.z);
@@ -435,13 +446,9 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 	}
 	m_pObjMng->ColliderTrigInit(ColliderTag::PROP);
 
+	/* For Test */
 	while (t.size() > 100) { t.erase(t.begin()); }
 
-	
-
-
-
-	//t.clear();
 
 	XMFLOAT3 xmf3Right	= XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
 	XMFLOAT3 xmf3Up		= XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
@@ -477,6 +484,7 @@ void CPlayer::ProcessInput(UCHAR * pKeysBuffer, float mouse)
 	if (pKeysBuffer[KEY::A] & 0xF0) m_trigInput[static_cast<int>(Move::A)] = true;
 	if (pKeysBuffer[KEY::S] & 0xF0) m_trigInput[static_cast<int>(Move::S)] = true;
 	if (pKeysBuffer[KEY::D] & 0xF0) m_trigInput[static_cast<int>(Move::D)] = true;
+	if (pKeysBuffer[VK_SPACE] & 0xF0) m_trigInput[static_cast<int>(Move::SPACE)] = true;
 
 	if (g_IsMouseMode) {
 		m_rotationInput = mouse;

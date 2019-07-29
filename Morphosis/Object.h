@@ -254,6 +254,7 @@ protected:
 		D,
 		Q,
 		E,
+		SPACE,
 
 		count
 	};
@@ -286,6 +287,7 @@ protected:
 	int				m_HealthPoint;
 	float			m_fRemainingTimeOfRespawn;
 	float			m_fRemainingTimeOfSkill1;
+	bool			m_IsOnGround = false;
 };
 
 class CProjectile : public CObject {
