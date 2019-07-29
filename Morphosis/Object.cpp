@@ -282,7 +282,14 @@ void CPlayer::Update(float fTimeElapsed)
 			}
 		}
 		else if (static_cast<int>(AnimationState::FIRE) == m_AnimationState) {
-			m_AnimationController->ChangeAnimClip("PlayerFire");
+			//m_AnimationController->ChangeAnimClip("PlayerFire");
+			if (m_AnimationController->IsClipEnd(m_AnimationTime)) {
+				m_AnimationState = static_cast<int>(AnimationState::IDLE);
+				m_AnimationTime = 0;
+			}
+		}
+		else if (static_cast<int>(AnimationState::ENDJUMP) == m_AnimationState) {
+			//m_AnimationController->ChangeAnimClip("PlayerFire");
 			if (m_AnimationController->IsClipEnd(m_AnimationTime)) {
 				m_AnimationState = static_cast<int>(AnimationState::IDLE);
 				m_AnimationTime = 0;
@@ -292,13 +299,22 @@ void CPlayer::Update(float fTimeElapsed)
 }
 void CPlayer::LateUpdate(float fTimeElapsed)
 {
+	bool Falling = false;
 	if (!m_IsAlive) return;
 
 	m_fHeightVelocity -= fTimeElapsed * g_Gravity;
-	if (m_fHeightVelocity < -1.5) m_fHeightVelocity = -1.5;
+	if (m_fHeightVelocity < -1.5) { 
+		m_fHeightVelocity = -1.5;
+		Falling = true;
+	}
 
 	//if(m_trigInput[static_cast<int>(Move::SPACE)]) m_fHeightVelocity += 
-	if (m_IsOnGround && m_trigInput[static_cast<int>(Move::SPACE)]) m_fHeightVelocity = 3;
+	if (m_IsOnGround && m_trigInput[static_cast<int>(Move::SPACE)]) {
+		m_AnimationState = static_cast<int>(AnimationState::STARTJUMP);
+		m_AnimationTime = 0;
+
+		m_fHeightVelocity = 3;
+	}
 	m_IsOnGround = false;
 
 	// Queue Clear
@@ -429,7 +445,10 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 
 		// 지면 판정
 		if (Vector3::DotProduct(dir, XMFLOAT3(0, 1, 0)) > 0.8) {
-
+			if (Falling) {
+				m_AnimationState = static_cast<int>(AnimationState::ENDJUMP);
+				m_AnimationTime = 0;
+			}
 			m_fHeightVelocity = fTimeElapsed * g_Gravity;
 			m_IsOnGround = true;
 		}
@@ -448,7 +467,6 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 
 	/* For Test */
 	while (t.size() > 100) { t.erase(t.begin()); }
-
 
 	XMFLOAT3 xmf3Right	= XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
 	XMFLOAT3 xmf3Up		= XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
@@ -514,6 +532,10 @@ void CPlayer::Enable()
 void CPlayer::Disable()
 {
 	m_fRemainingTimeOfRespawn = g_RespawnDelay;
+	m_fRemainingTimeOfSlow = 0;
+	m_fRemainingTimeOfFire = 0;
+	m_fRemainingTimeOfSkill1 = 0;
+
 	CObject::Disable();
 }
 void CPlayer::Shoot()
@@ -549,6 +571,10 @@ void CPlayer::ChangeAnimClip()
 		m_AnimationController->ChangeAnimClip("PlayerFire");
 	if (static_cast<int>(AnimationState::RUN) == m_AnimationState) 
 		m_AnimationController->ChangeAnimClip("PlayerRun");
+	if (static_cast<int>(AnimationState::STARTJUMP) == m_AnimationState)
+		m_AnimationController->ChangeAnimClip("PlayerStartJump");
+	if (static_cast<int>(AnimationState::ENDJUMP) == m_AnimationState)
+		m_AnimationController->ChangeAnimClip("PlayerEndJump");
 }
 void CPlayer::TriggerOff()
 {
