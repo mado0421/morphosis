@@ -20,14 +20,14 @@ float4 PSAnimated(ANIM_ILLUM_TEX_OUTPUT input) : SV_TARGET
 
 	float4 cColor = gtxtTexture.Sample(gSamplerState, input.uv);
 	float4 cLightResult = TestLighting(input.positionW, input.normalW);
-	return (lerp(cColor, cLightResult, 0.7f));
+	return (lerp(cColor, cLightResult, 0.5f));
 }
 
 float4 PSDefaultShader(ILLUM_TEX_OUTPUT input) : SV_TARGET
 {
 	float4 cColor = gtxtTexture.Sample(gSamplerState, input.uv);
 	float4 cLightResult = TestLighting(input.positionW, input.normalW);
-	return (lerp(cColor, cLightResult, 0.7f));
+	return (lerp(cColor, cLightResult, 0.5f));
 }
 
 float4 PSDebug(VS_DEBUG_OUTPUT input) : SV_TARGET

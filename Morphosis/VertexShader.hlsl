@@ -19,6 +19,7 @@ ANIM_ILLUM_TEX_OUTPUT VSAnimated(ANIM_ILLUM_TEX_INPUT input)
 	normalL.x *= -1;
 	tangentL.x *= -1;
 
+
 	output.positionW	= (float3)mul(float4(posL, 1.0f), gmtxGameObject);
 	output.normalW		= mul(normalL, (float3x3)gmtxGameObject);
 	output.tangentW		= mul(tangentL, (float3x3)gmtxGameObject);

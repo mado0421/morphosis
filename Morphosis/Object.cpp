@@ -799,7 +799,7 @@ void CObjectManager::Render()
 }
 void CObjectManager::Update(float fTime)
 {
-	m_Props[1]->SetRotation(XMFLOAT3(0, fTime * 20, 0));
+	//m_Props[1]->SetRotation(XMFLOAT3(0, fTime * 20, 0));
 
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Update(fTime);
 	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->Update(fTime);
@@ -1049,7 +1049,7 @@ void CObjectManager::CreateObjectData()
 	서술자 힙을 생성하기 위해 개수들을 정해준다. 지금은 임의로 하지만 나중에는
 	m_nProps는 LevelData에서 읽어오고, 나머지는 Defines.h에서 가져올 것.
 	*********************************************************************/
-	m_nProps = 2;
+	m_nProps = 3;
 	m_nPlayers = 2;
 	m_nProjectiles = m_nPlayers * g_nProjectilePerPlayer;
 	m_nObjects = m_nProps + m_nPlayers + m_nProjectiles;
@@ -1070,10 +1070,12 @@ void CObjectManager::CreateObjectData()
 	importer.ImportTexture(L"0618_LevelTest_diff",		"Texture_Level");
 	importer.ImportTexture(L"box_diff",					"Texture_StandardBox");
 	importer.ImportTexture(L"2B_diff",					"Texture_2B");
+	importer.ImportTexture(L"DefaultMaterial_albedo",	"Texture_Bench");
+	importer.ImportTexture(L"spotlight_BaseColor",		"Texture_Spotlight");
 	importer.ImportTexture(L"TEX_crystal",				"Texture_Crystal");
 	for (int i = 0; i < g_vecTexture.size(); ++i) CreateTextureResourceView(g_vecTexture[i]);
 	
-	importer.ImportModel("0618_LevelTest",						"Texture_Level",		ImportType::DefaultMesh,	"Model_Level");
+	importer.ImportModel("0730_LevelTest",						"Texture_Level",		ImportType::DefaultMesh,	"Model_Level");
 	importer.ImportModel("0725_Character",						"Texture_Character",	ImportType::DefaultMesh,	"Model_CharacterStatic", 2.0f);
 	importer.ImportModel("0725_Character",						"Texture_Character",	ImportType::AnimatedMesh,	"Model_Character");
 	importer.ImportModel("0725_PaperBox_NoSpitPerVertexNormal", "Texture_PaperBox",		ImportType::DefaultMesh,	"Model_PaperBox");
@@ -1081,6 +1083,8 @@ void CObjectManager::CreateObjectData()
 	importer.ImportModel("box2",								"Texture_StandardBox",	ImportType::DefaultMesh,	"Model_Box2");
 	//importer.ImportModel("0723_Box_SN",						"Texture_PaperBox",		ImportType::DefaultMesh,	"Model_PaperBox_Resize", 0.5f);
 	importer.ImportModel("crystal",								"Texture_Crystal",		ImportType::DefaultMesh,	"Model_Crystal");
+	importer.ImportModel("Bench", "Texture_Bench",										ImportType::DefaultMesh, "Model_Bench", 2.0f);
+	importer.ImportModel("Spotlight", "Texture_Spotlight",								ImportType::DefaultMesh, "Model_Spotlight", 1.1f);
 	importer.ImportModel("2b",									"Texture_2B",			ImportType::DefaultMesh,	"Model_2B");
 
 	importer.ImportAnimController("AnimCtrl_Character");
@@ -1111,14 +1115,25 @@ void CObjectManager::CreateObjectData()
 					ColliderTag::PROP);
 			}
 		}
-		else {
-			//obj->AddModel(importer.GetModelByName("Model_Box2_Box001"));
-			obj->AddModel(GetModelByName("Model_2B_body"));
-			//obj->AddModel(GetModelByName("Model_CharacterStatic_body"));
-			//obj->AddModel(GetModelByName("Model_CharacterStatic_jumper"));
-			//obj->AddModel(GetModelByName("Model_CharacterStatic_mask"));
-			obj->SetPosition(0.0f, 0.0f, 0.0f);
+		else if (1 == i) {
+			obj->AddModel(GetModelByName("Model_Bench_Cube.005"));
+			obj->SetPosition(0.0f, 0.0f, 70.0f);
+			obj->SetRotation(XMFLOAT3(0, 35, 0));
 		}
+		else {
+			obj->AddModel(GetModelByName("Model_Spotlight_Spotlight"));
+			obj->SetPosition(30.0f, 0.0f, 0.0f);
+			obj->SetRotation(XMFLOAT3(0, 80, 0));
+
+		}
+		//else {
+		//	//obj->AddModel(importer.GetModelByName("Model_Box2_Box001"));
+		//	obj->AddModel(GetModelByName("Model_2B_body"));
+		//	//obj->AddModel(GetModelByName("Model_CharacterStatic_body"));
+		//	//obj->AddModel(GetModelByName("Model_CharacterStatic_jumper"));
+		//	//obj->AddModel(GetModelByName("Model_CharacterStatic_mask"));
+		//	obj->SetPosition(0.0f, 0.0f, 0.0f);
+		//}
 
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 		m_Props.push_back(obj);
