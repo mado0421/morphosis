@@ -536,3 +536,27 @@
  - 7월 29일 월요일 4시 30분
  - 맵 이동 (경사로 이동, 계단 이동, Jump 구현), Light 넣기(Shading), 애니메이션 (NPC 애니메이션, JUMP, 사망, SKILL ), 시간이 남으면 그림자도 해보기
  - 작품 소개서 작성, NPC 제작, 스킬 구현, 시간 남으면 그림자.
+
+
+2019-07-29
+-------------
+1. 진행상황
+ - 맵이동 (경사로, Jump 구현), Light 넣기 (Shading, Directional Light), 애니메이션 (이동, 점프, 사격, IDLE)
+ - NPC 이동 (with Animation), waypoint node를 심음
+ - JUMP 구현
+
+2. TODO
+ - Title Scene 구현, Stage End Scene 구현
+ - UI (HP, 총알, SKILL ICON)
+ - 카메라와 조준점을 Third Person Shooting에 맞춰야 함.
+ - SKILL 두개 정도는 넣어야.
+ - 사운드 (BGM, 사격, 스킬사용)
+ - NPC 배치, 공격, 사망 
+ - 게임 시나리오 구현 (NPC 리스폰, 점령)
+ - 그림자 (시간 남으면 구현) (stencil buffer shadows를 사용하면 UV 좌표 수정 없이도 가능)
+ - NPC 모델링 (시간 남으면 구현)
+
+3. 다음 미팅
+ - 작품소개서는 내일 가져 올것 (저녁 5시30분까지)
+ - 8월 5일 월요일 오후 2시 30분
+
