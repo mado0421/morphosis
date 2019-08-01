@@ -6,6 +6,7 @@
 #include "Texture.h"
 #include "Effect.h"
 #include "AI.h"
+#include "PSO.h"
 
 /*********************************************************************
 2019-06-17
@@ -25,6 +26,22 @@ CObject::CObject()
 }
 CObject::~CObject()
 {
+	// stl container clear
+	m_Collider.clear();
+	m_ModelList.clear();
+	std::queue<Collider*> empty;
+	std::swap(m_CollideInfo, empty);
+
+	// uploadAddress delete
+	delete m_pcbxmAnimation;
+	delete m_pcbMappedObject;
+
+	// ID3D12Resource release
+	m_pd3dcbAnimation->Release();
+	m_pd3dcbObject->Release();
+
+	// 얘는 나중에 전역 벡터 클리어하면서 지울 것이므로 여기서는 그냥 NULL로 해줌
+	m_AnimationController = NULL;
 }
 void CObject::AddCollisionEffect(CObject * p)
 {
@@ -238,6 +255,10 @@ CPlayer::CPlayer() : CObject()
 	m_rotationInput				= 0.0f;
 	for (int i = 0; i < static_cast<int>(Move::count); ++i) m_trigInput[i] = false;
 	m_AIBrain = new CTinMan(new CMoveBehavior(), this);
+}
+CPlayer::~CPlayer()
+{
+	delete m_AIBrain;
 }
 void CPlayer::Update(float fTimeElapsed)
 {
@@ -625,6 +646,10 @@ CProjectile::CProjectile() : CObject()
 	m_fLifeTime		= g_DefaultProjectileLifeTime;
 	m_BaseDamage	= g_DefaultDamage;
 }
+CProjectile::~CProjectile()
+{
+
+}
 void CProjectile::Initialize(CObject * obj)
 {
 	/*********************************************************************
@@ -742,14 +767,31 @@ CObjectManager
 *********************************************************************/
 CObjectManager::~CObjectManager()
 {
-	for (int i = 0; i < m_Props.size(); ++i) delete m_Props[i];
-	m_Props.erase(m_Props.begin(), m_Props.end());
+	m_Props.clear();
+	m_Players.clear();
+	m_Projectiles.clear();
+	//for (int i = 0; i < m_Props.size(); ++i) delete m_Props[i];
+	//m_Props.erase(m_Props.begin(), m_Props.end());
 
-	for (int i = 0; i < m_Projectiles.size(); ++i) delete m_Projectiles[i];
-	m_Projectiles.erase(m_Projectiles.begin(), m_Projectiles.end());
+	//for (int i = 0; i < m_Projectiles.size(); ++i) delete m_Projectiles[i];
+	//m_Projectiles.erase(m_Projectiles.begin(), m_Projectiles.end());
 
-	for (int i = 0; i < m_Players.size(); ++i) delete m_Players[i];
-	m_Players.erase(m_Players.begin(), m_Players.end());
+	//for (int i = 0; i < m_Players.size(); ++i) delete m_Players[i];
+	//m_Players.erase(m_Players.begin(), m_Players.end());
+
+	// 얘네는 밖에서 받아옴.
+	m_pd3dDevice = NULL;
+	m_pd3dCommandList = NULL;
+
+	// 얘는 안에서 만들었음.
+	m_pd3dCbvSrvDescriptorHeap->Release();
+	m_pd3dCBPropResource->Release();
+	m_pd3dCBPlayersResource->Release();
+	m_pd3dCBProjectilesResource->Release();
+
+	//delete m_pCBMappedPropObjects;
+	//delete m_pCBMappedPlayers;
+	//delete m_pCBMappedProjectiles;
 
 	//for (int i = 0; i < m_TextureList.size(); ++i) delete m_TextureList[i];
 	//m_TextureList.erase(m_TextureList.begin(), m_TextureList.end());
@@ -790,11 +832,11 @@ void CObjectManager::Render()
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&Matrix4x4::InverseTranspose(m_Projectiles[i]->m_xmf4x4World)));
 	}
 
-	m_pd3dCommandList->SetPipelineState(m_PSO[1]);
+	m_pd3dCommandList->SetPipelineState(g_vecPSO[static_cast<int>( PSO::MODEL )]);
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Render(m_pd3dCommandList);
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->Render(m_pd3dCommandList);
 
-	m_pd3dCommandList->SetPipelineState(m_PSO[0]);
+	m_pd3dCommandList->SetPipelineState(g_vecPSO[static_cast<int>( PSO::ANIMATEDMODEL )]);
 	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->Render(m_pd3dCommandList);
 }
 void CObjectManager::Update(float fTime)

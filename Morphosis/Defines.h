@@ -51,12 +51,15 @@ constexpr float		g_fLevelScale		= 40.0f;
 *********************************************************************/
 class CTexture;
 class CModel;
+struct ID3D12PipelineState;
 class CAnimationController;
 struct AINode;
 extern std::vector<CTexture*>				g_vecTexture;
 extern std::vector<CModel*>					g_vecModel;
 extern std::vector<CAnimationController*>	g_vecAnimController;
 extern std::vector<AINode*>					g_vecAINode;
+extern std::vector<ID3D12PipelineState*>	g_vecPSO;
+
 
 /*********************************************************************
 2019-06-16
@@ -89,6 +92,20 @@ constexpr float		g_DefaultProjectileLifeTime = 5.0f;
 *********************************************************************/
 #define CAM_Y_DISTANCE 0
 
+
+
+
+
+
+
+
+
+
+
+#define MOUSE_XSPEED 10
+#define MOVE_SPEED 0.15f
+#define ROTATE_SPEED 300
+#define PO_PER_PLAYER 16
 
 /*********************************************************************
 2019-07-02
@@ -126,3 +143,79 @@ enum class ImportType {
 	AnimatedMesh,
 	ETC
 };
+enum class PSO {
+	MODEL,
+	ANIMATEDMODEL,
+	UI,
+	DEBUG,
+
+	count
+};
+enum class Move {
+	W,
+	A,
+	S,
+	D,
+	Q,
+	E,
+	SPACE,
+
+	count
+};
+enum class AnimationState {
+	IDLE,
+	RUN,
+	FIRE,
+	STARTJUMP,
+	ENDJUMP,
+	DIE,
+
+	count
+};
+enum class SceneType {
+	LOBBY,
+	MAINPLAY,
+
+	count
+};
+namespace KEY {
+	enum {
+		A = 65,
+		B,
+		C,
+		D,
+		E,
+		F,
+		G,
+		H,
+		I,
+		J,
+		K,
+		L,
+		M,
+		N,
+		O,
+		P,
+		Q,
+		R,
+		S,
+		T,
+		U,
+		V,
+		W,
+		X,
+		Y,
+		Z,
+
+		_0 = 48,
+		_1,
+		_2,
+		_3,
+		_4,
+		_5,
+		_6,
+		_7,
+		_8,
+		_9
+	};
+}

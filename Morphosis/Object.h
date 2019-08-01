@@ -19,9 +19,9 @@ struct CB_OBJECT_INFO {
 };
 struct LEVELDATA_DESC {
 	std::string levelName = "";
-	int nCollisionMaps = 0;
-	int nTeam1SpawnPoint = 0;
-	int nTeam2SpawnPoint = 0;
+	int nCollisionMaps		= 0;
+	int nTeam1SpawnPoint	= 0;
+	int nTeam2SpawnPoint	= 0;
 	bool isCapturePointExist = false;
 
 	XMFLOAT3 BoundaryBoxPosition;
@@ -203,6 +203,7 @@ protected:
 class CPlayer : public CObject {
 public:
 	CPlayer();
+	~CPlayer();
 
 public:
 	// 기본적인 작동함수
@@ -245,29 +246,6 @@ protected:
 	float			Rotate(float fTimeElapsed);
 	void			ChangeAnimClip();
 
-protected:
-	// 내부 선언 나열자
-	enum class		Move {
-		W,
-		A,
-		S,
-		D,
-		Q,
-		E,
-		SPACE,
-
-		count
-	};
-	enum class		AnimationState {
-		IDLE,
-		RUN,
-		FIRE,
-		STARTJUMP,
-		ENDJUMP,
-		DIE,
-
-		count
-	};
 public:
 	CTinMan*		m_AIBrain = NULL;
 
@@ -293,6 +271,7 @@ protected:
 class CProjectile : public CObject {
 public:
 	CProjectile();
+	~CProjectile();
 
 public:
 	void			Initialize(CObject* obj);
@@ -353,9 +332,6 @@ public:
 	}
 	ID3D12DescriptorHeap* GetDescriptorHeap() {
 		return m_pd3dCbvSrvDescriptorHeap;
-	}
-	void AddPSO(ID3D12PipelineState* pso) {
-		m_PSO.push_back(pso);
 	}
 	void ProcessInput(UCHAR* pKeysBuffer, float mouse);
 
@@ -422,14 +398,6 @@ private:
 	vector<CObject*>	m_Props;
 	vector<CObject*>	m_Players;
 	vector<CObject*>	m_Projectiles;
-
-
-	/*********************************************************************
-	2019-06-16
-	PSO 관리를 해야 Render()에서 그릴 수 있을 듯.
-	*********************************************************************/
-	vector<ID3D12PipelineState*> m_PSO;
-
 
 	/*********************************************************************
 	2019-07-01

@@ -119,6 +119,9 @@ void CFramework::OnDestroy()
 
 	if (m_pd3dFence) m_pd3dFence->Release();
 
+	if (_heapchk() != _HEAPOK)
+		DebugBreak();
+
 	m_pdxgiSwapChain->SetFullscreenState(FALSE, NULL);
 	if (m_pdxgiSwapChain) m_pdxgiSwapChain->Release();
 	if (m_pd3dDevice) m_pd3dDevice->Release();
@@ -282,7 +285,8 @@ void CFramework::CreateDepthStencilView()
 	d3dDepthStencilViewDesc.Flags = D3D12_DSV_FLAG_NONE;
 
 	m_pd3dDevice->CreateDepthStencilView(m_pd3dDepthStencilBuffer, NULL, d3dDsvCPUDescriptorHandle);
-
+	if (_heapchk() != _HEAPOK)
+		DebugBreak();
 }
 
 void CFramework::CreateCommandQueueAndList()
@@ -330,18 +334,13 @@ void CFramework::BuildScenes()
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
 	// 이후 Scene 추가할 때 수정할 것
-	//m_ppScene = new Scene*[Scenes::NumOfScenes];
-	m_ppScenes = new CScene*[Scenes::count];
+	m_ppScenes = new CScene*[static_cast<int>(SceneType::count)];
 
-	//m_ppScenes[Scenes::TITLE] = new CTitleScene();
-	//m_ppScenes[Scenes::PLAY] = new CPlayScene();
-	//m_ppScenes[Scenes::ENTERROOM] = new CEnterRoomScene();
-	//m_ppScenes[Scenes::MATCHING] = new CMatchingScene();
-	//m_ppScenes[Scenes::RESULT] = new CResultScene();
-	m_ppScenes[Scenes::TEST] = new CTestGroundScene();
+	m_ppScenes[static_cast<int>(SceneType::LOBBY)]		= new CSceneLobby();
+	m_ppScenes[static_cast<int>(SceneType::MAINPLAY)]	= new CSceneMainPlay();
 
-	m_pCurrentScene = m_ppScenes[Scenes::TEST];
-	m_pCurrentScene->Initialize(m_pd3dDevice, m_pd3dCommandList, this);
+	m_pCurrentScene = m_ppScenes[static_cast<int>(SceneType::LOBBY)];
+	m_pCurrentScene->Initialize(m_pd3dDevice, m_pd3dCommandList);
 
 	m_pd3dCommandList->Close();
 	ID3D12CommandList *ppd3dCommandLists[] = { m_pd3dCommandList };
@@ -351,24 +350,27 @@ void CFramework::BuildScenes()
 	m_MainTimer.Reset();
 }
 
-void CFramework::ChangeScene(int targetSceneIdx, void * subData)
+void CFramework::ChangeScene(SceneType type)
 {
 	 //Scene Change 부분
-	m_pCurrentScene->ReleaseShaderVariables();
+	m_pCurrentScene->Release();
 
-	switch (targetSceneIdx)
+	switch (type)
 	{
-	//case Scenes::TITLE:		m_pCurrentScene = m_ppScenes[Scenes::TITLE];	break;
-	//case Scenes::ENTERROOM: m_pCurrentScene = m_ppScenes[Scenes::ENTERROOM];break;
-	//case Scenes::MATCHING:	m_pCurrentScene = m_ppScenes[Scenes::MATCHING];	break;
-	//case Scenes::PLAY:		m_pCurrentScene = m_ppScenes[Scenes::PLAY];		break;
-	//case Scenes::RESULT:	m_pCurrentScene = m_ppScenes[Scenes::RESULT];	break;
-	case Scenes::TEST:		m_pCurrentScene = m_ppScenes[Scenes::TEST];		break;
-	default: assert(!"으악 너 지금 Scene Change에 뭐 넣은거야!!"); break;
+	case SceneType::LOBBY:		m_pCurrentScene = m_ppScenes[static_cast<int>(SceneType::LOBBY)];		break;
+	case SceneType::MAINPLAY:	m_pCurrentScene = m_ppScenes[static_cast<int>(SceneType::MAINPLAY)];	break;
+	default: break;
 	}
+	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
-	m_pCurrentScene->Initialize(m_pd3dDevice, m_pd3dCommandList, subData);
+	m_pCurrentScene->Initialize(m_pd3dDevice, m_pd3dCommandList);
 
+	m_pd3dCommandList->Close();
+	ID3D12CommandList *ppd3dCommandLists[] = { m_pd3dCommandList };
+	m_pd3dCommandQueue->ExecuteCommandLists(1, ppd3dCommandLists);
+
+	WaitForGpuComplete();
+	m_MainTimer.Reset();
 }
 
 void CFramework::ReleaseScenes()
@@ -381,6 +383,8 @@ void CFramework::ProcessInput()
 	bool bProcessedByScene = false;
 	if (GetKeyboardState(pKeysBuffer) && m_pCurrentScene) m_pCurrentScene->ProcessInput(pKeysBuffer);
 
+	if (pKeysBuffer[KEY::_8] & 0xF0) { ChangeScene(SceneType::LOBBY); }
+	if (pKeysBuffer[KEY::_9] & 0xF0) { ChangeScene(SceneType::MAINPLAY); }
 
 }
 

@@ -74,7 +74,7 @@ public:
 	void OnResizeBackBuffers();
 
 	void BuildScenes();
-	void ChangeScene(int targetSceneIdx, void * subData = NULL);
+	void ChangeScene(SceneType);
 	void ReleaseScenes();
 
 	void ProcessInput();
