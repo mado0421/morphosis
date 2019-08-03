@@ -7,7 +7,6 @@
 CMesh::CMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList)
 {
 }
-
 CMesh::CMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nVertices, XMFLOAT3 *pxmf3Positions, UINT nIndices, UINT *pnIndices)
 {
 	m_nStride = sizeof(CVertex);
@@ -33,7 +32,6 @@ CMesh::CMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandLis
 		m_d3dIndexBufferView.SizeInBytes = sizeof(UINT) * m_nIndices;
 	}
 }
-
 CMesh::~CMesh()
 {
 	if (m_pd3dVertexBuffer) m_pd3dVertexBuffer->Release();
@@ -41,7 +39,6 @@ CMesh::~CMesh()
 	if (m_pd3dVertexUploadBuffer) m_pd3dVertexUploadBuffer->Release();
 	if (m_pd3dIndexUploadBuffer) m_pd3dIndexUploadBuffer->Release();
 }
-
 void CMesh::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 {
 	pd3dCommandList->IASetPrimitiveTopology(m_d3dPrimitiveTopology);
@@ -56,7 +53,6 @@ void CMesh::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 		pd3dCommandList->DrawInstanced(m_nVertices, 1, m_nOffset, 0);
 	}
 }
-
 void CMesh::CreateVertexBuffer(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pData)
 {
 	assert(m_nVertices&&m_nStride&&"m_nVertices or m_nStride is zero\n");
@@ -70,7 +66,6 @@ void CMesh::CreateVertexBuffer(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandL
 	m_d3dVertexBufferView.SizeInBytes = m_nStride * m_nVertices;
 
 }
-
 void CMesh::CreateIndexBuffer(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pData)
 {
 	assert(m_nIndices&&"m_nIndices is zero\n");
@@ -82,52 +77,7 @@ void CMesh::CreateIndexBuffer(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLi
 
 }
 
-
-void CMesh::CreateConstantBufferResource(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
-{
-}
-
-void CMesh::UpdateConstantBuffer(ID3D12GraphicsCommandList * pd3dCommandList)
-{
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-CIlluminatedMesh::CIlluminatedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList) : CMesh(pd3dDevice, pd3dCommandList)
-{
-}
-
-CIlluminatedMesh::CIlluminatedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nVertices, XMFLOAT3 *pxmf3Positions, XMFLOAT3 *pxmf3Normals, UINT nIndices, UINT *pnIndices) : CMesh(pd3dDevice, pd3dCommandList)
-{
-	m_nStride = sizeof(CIlluminatedVertex);
-	m_nVertices = nVertices;
-
-	CIlluminatedVertex *pVertices = new CIlluminatedVertex[m_nVertices];
-	for (UINT i = 0; i < m_nVertices; i++) pVertices[i] = CIlluminatedVertex(pxmf3Positions[i], pxmf3Normals[i]);
-
-	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pVertices, m_nStride * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
-
-	m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
-	m_d3dVertexBufferView.StrideInBytes = m_nStride;
-	m_d3dVertexBufferView.SizeInBytes = m_nStride * m_nVertices;
-
-	if (nIndices > 0)
-	{
-		m_nIndices = nIndices;
-
-		m_pd3dIndexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pnIndices, sizeof(UINT) * m_nIndices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_INDEX_BUFFER, &m_pd3dIndexUploadBuffer);
-
-		m_d3dIndexBufferView.BufferLocation = m_pd3dIndexBuffer->GetGPUVirtualAddress();
-		m_d3dIndexBufferView.Format = DXGI_FORMAT_R32_UINT;
-		m_d3dIndexBufferView.SizeInBytes = sizeof(UINT) * m_nIndices;
-	}
-}
-
-CIlluminatedMesh::~CIlluminatedMesh()
-{
-}
-
-void CIlluminatedMesh::CalculateTriangleListVertexNormals(XMFLOAT3 *pxmf3Normals, XMFLOAT3 *pxmf3Positions, int nVertices)
+void CModelMesh::CalculateTriangleListVertexNormals(XMFLOAT3 *pxmf3Normals, XMFLOAT3 *pxmf3Positions, int nVertices)
 {
 	int nPrimitives = nVertices / 3;
 	UINT nIndex0, nIndex1, nIndex2;
@@ -141,8 +91,7 @@ void CIlluminatedMesh::CalculateTriangleListVertexNormals(XMFLOAT3 *pxmf3Normals
 		pxmf3Normals[nIndex0] = pxmf3Normals[nIndex1] = pxmf3Normals[nIndex2] = Vector3::CrossProduct(xmf3Edge01, xmf3Edge02, true);
 	}
 }
-
-void CIlluminatedMesh::CalculateTriangleListVertexNormals(XMFLOAT3 *pxmf3Normals, XMFLOAT3 *pxmf3Positions, UINT nVertices, UINT *pnIndices, UINT nIndices)
+void CModelMesh::CalculateTriangleListVertexNormals(XMFLOAT3 *pxmf3Normals, XMFLOAT3 *pxmf3Positions, UINT nVertices, UINT *pnIndices, UINT nIndices)
 {
 	UINT nPrimitives = (pnIndices) ? (nIndices / 3) : (nVertices / 3);
 	XMFLOAT3 xmf3SumOfNormal, xmf3Edge01, xmf3Edge02, xmf3Normal;
@@ -172,8 +121,7 @@ void CIlluminatedMesh::CalculateTriangleListVertexNormals(XMFLOAT3 *pxmf3Normals
 		pxmf3Normals[j] = Vector3::Normalize(xmf3SumOfNormal);
 	}
 }
-
-void CIlluminatedMesh::CalculateTriangleStripVertexNormals(XMFLOAT3 *pxmf3Normals, XMFLOAT3 *pxmf3Positions, UINT nVertices, UINT *pnIndices, UINT nIndices)
+void CModelMesh::CalculateTriangleStripVertexNormals(XMFLOAT3 *pxmf3Normals, XMFLOAT3 *pxmf3Positions, UINT nVertices, UINT *pnIndices, UINT nIndices)
 {
 	UINT nPrimitives = (pnIndices) ? (nIndices - 2) : (nVertices - 2);
 	XMFLOAT3 xmf3SumOfNormal(0.0f, 0.0f, 0.0f);
@@ -199,8 +147,7 @@ void CIlluminatedMesh::CalculateTriangleStripVertexNormals(XMFLOAT3 *pxmf3Normal
 		pxmf3Normals[j] = Vector3::Normalize(xmf3SumOfNormal);
 	}
 }
-
-void CIlluminatedMesh::CalculateVertexNormals(XMFLOAT3 *pxmf3Normals, XMFLOAT3 *pxmf3Positions, int nVertices, UINT *pnIndices, int nIndices)
+void CModelMesh::CalculateVertexNormals(XMFLOAT3 *pxmf3Normals, XMFLOAT3 *pxmf3Positions, int nVertices, UINT *pnIndices, int nIndices)
 {
 	switch (m_d3dPrimitiveTopology)
 	{
@@ -217,20 +164,16 @@ void CIlluminatedMesh::CalculateVertexNormals(XMFLOAT3 *pxmf3Normals, XMFLOAT3 *
 		break;
 	}
 }
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-CIlluminatedTexturedMesh::CIlluminatedTexturedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList) : CIlluminatedMesh(pd3dDevice, pd3dCommandList)
+CModelMesh::CModelMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList) : CMesh(pd3dDevice, pd3dCommandList)
 {
 }
-
-CIlluminatedTexturedMesh::CIlluminatedTexturedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nVertices, XMFLOAT3 *pxmf3Positions, XMFLOAT3 *pxmf3Normals, XMFLOAT2 *pxmf2UVs, UINT nIndices, UINT *pnIndices) : CIlluminatedMesh(pd3dDevice, pd3dCommandList)
+CModelMesh::CModelMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nVertices, XMFLOAT3 *pxmf3Positions, XMFLOAT3 *pxmf3Normals, XMFLOAT2 *pxmf2UVs, UINT nIndices, UINT *pnIndices) : CMesh(pd3dDevice, pd3dCommandList)
 {
-	m_nStride = sizeof(CIlluminatedTexturedVertex);
+	m_nStride = sizeof(CModelVertex);
 	m_nVertices = nVertices;
 
-	CIlluminatedTexturedVertex *pVertices = new CIlluminatedTexturedVertex[m_nVertices];
-	for (UINT i = 0; i < m_nVertices; i++) pVertices[i] = CIlluminatedTexturedVertex(pxmf3Positions[i], pxmf3Normals[i], pxmf2UVs[i]);
+	CModelVertex *pVertices = new CModelVertex[m_nVertices];
+	for (UINT i = 0; i < m_nVertices; i++) pVertices[i] = CModelVertex(pxmf3Positions[i], pxmf3Normals[i], pxmf2UVs[i]);
 
 	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pVertices, m_nStride * m_nVertices,
 		D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
@@ -251,13 +194,12 @@ CIlluminatedTexturedMesh::CIlluminatedTexturedMesh(ID3D12Device *pd3dDevice, ID3
 		m_d3dIndexBufferView.SizeInBytes = sizeof(UINT) * m_nIndices;
 	}
 }
-
-CIlluminatedTexturedMesh::CIlluminatedTexturedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ImportMeshData & m, float scale) : CIlluminatedMesh(pd3dDevice, pd3dCommandList)
+CModelMesh::CModelMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ImportMeshData & m, float scale) : CMesh(pd3dDevice, pd3dCommandList)
 {
 	int nCtrlPoint = static_cast<int>(m.m_nCtrlPointList);
 	int nPolyongVertex = static_cast<int>(m.m_nVertexList);
 
-	m_nStride = sizeof(CIlluminatedTexturedVertex);
+	m_nStride = sizeof(CModelVertex);
 	m_nVertices = nPolyongVertex;
 
 	XMFLOAT3* pos = new XMFLOAT3[nCtrlPoint];
@@ -273,9 +215,9 @@ CIlluminatedTexturedMesh::CIlluminatedTexturedMesh(ID3D12Device * pd3dDevice, ID
 	int* posIdx = new int[nPolyongVertex];
 	for (int i = 0; i < nPolyongVertex; ++i) posIdx[i] = m.m_VertexList[i].ctrlPointIdx;
 
-	CIlluminatedTexturedVertex* Vertex = new CIlluminatedTexturedVertex[nPolyongVertex];
+	CModelVertex* Vertex = new CModelVertex[nPolyongVertex];
 
-	for (int i = 0; i < nPolyongVertex; ++i) Vertex[i].Init(pos[posIdx[i]], uv[i], normal[i]);
+	for (int i = 0; i < nPolyongVertex; ++i) Vertex[i] = CModelVertex(pos[posIdx[i]], normal[i], uv[i]);
 
 	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
 		Vertex, m_nStride * m_nVertices,
@@ -286,94 +228,10 @@ CIlluminatedTexturedMesh::CIlluminatedTexturedMesh(ID3D12Device * pd3dDevice, ID
 	m_d3dVertexBufferView.SizeInBytes = m_nStride * m_nVertices;
 }
 
-//CIlluminatedTexturedMesh::CIlluminatedTexturedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ImportMeshData & m) : CIlluminatedMesh(pd3dDevice, pd3dCommandList)
-//{
-//	//CreateConstantBufferResource(pd3dDevice, pd3dCommandList);
-//
-//	int nCtrlPoint = static_cast<int>(m.m_nCtrlPointList);
-//	int nPolyongVertex = static_cast<int>(m.m_nVertexList);
-//
-//	m_nStride = sizeof(CIlluminatedTexturedVertex);
-//	m_nVertices = nPolyongVertex;
-//
-//	XMFLOAT3* pos = new XMFLOAT3[nCtrlPoint];
-//	for (int i = 0; i < nCtrlPoint; ++i) pos[i] = m.m_CtrlPointList[i].xmf3Position;
-//
-//	XMFLOAT2* uv = new XMFLOAT2[nPolyongVertex];
-//	for (int i = 0; i < nPolyongVertex; ++i) uv[i] = m.m_VertexList[i].xmf2UV;
-//
-//	XMFLOAT3* normal = new XMFLOAT3[nPolyongVertex];
-//	for (int i = 0; i < nPolyongVertex; ++i) normal[i] = m.m_VertexList[i].xmf3Normal;
-//
-//
-//	int* posIdx = new int[nPolyongVertex];
-//	for (int i = 0; i < nPolyongVertex; ++i) posIdx[i] = m.m_VertexList[i].ctrlPointIdx;
-//
-//	CIlluminatedTexturedVertex* Vertex = new CIlluminatedTexturedVertex[nPolyongVertex];
-//
-//	for (int i = 0; i < nPolyongVertex; ++i) Vertex[i].Init(pos[posIdx[i]], uv[i], normal[i]);
-//
-//	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, 
-//		Vertex, m_nStride * m_nVertices,
-//		D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
-//
-//	m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
-//	m_d3dVertexBufferView.StrideInBytes = m_nStride;
-//	m_d3dVertexBufferView.SizeInBytes = m_nStride * m_nVertices;
-//
-//	//pVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
-//	//	animVertex, nStride * nVertices,
-//	//	D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
-//	//	&pVertexUploadBuffer);
-//
-//	//vertexBufferView.BufferLocation = pVertexBuffer->GetGPUVirtualAddress();
-//	//vertexBufferView.StrideInBytes = nStride;
-//	//vertexBufferView.SizeInBytes = nStride * nVertices;
-//}
-
-CIlluminatedTexturedMesh::~CIlluminatedTexturedMesh()
-{
-}
-
-CTexturedMesh::CTexturedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList) : CMesh(pd3dDevice, pd3dCommandList)
-{
-}
-
-CTexturedMesh::CTexturedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, UINT nVertices, XMFLOAT3 * pxmf3Positions, XMFLOAT2 * pxmf2UVs, UINT nIndices, UINT * pnIndices) : CMesh(pd3dDevice, pd3dCommandList)
-{
-	m_nStride = sizeof(CTexturedVertex);
-	m_nVertices = nVertices;
-
-	CTexturedVertex *pVertices = new CTexturedVertex[m_nVertices];
-	for (UINT i = 0; i < m_nVertices; i++) pVertices[i] = CTexturedVertex(pxmf3Positions[i], pxmf2UVs[i]);
-
-	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pVertices, m_nStride * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
-
-	m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
-	m_d3dVertexBufferView.StrideInBytes = m_nStride;
-	m_d3dVertexBufferView.SizeInBytes = m_nStride * m_nVertices;
-
-	if (nIndices > 0)
-	{
-		m_nIndices = nIndices;
-
-		m_pd3dIndexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pnIndices, sizeof(UINT) * m_nIndices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_INDEX_BUFFER, &m_pd3dIndexUploadBuffer);
-
-		m_d3dIndexBufferView.BufferLocation = m_pd3dIndexBuffer->GetGPUVirtualAddress();
-		m_d3dIndexBufferView.Format = DXGI_FORMAT_R32_UINT;
-		m_d3dIndexBufferView.SizeInBytes = sizeof(UINT) * m_nIndices;
-	}
-}
-
-CTexturedMesh::~CTexturedMesh()
-{
-}
-
-///////////////////////////////////////////////////////////////
-CTestMesh::CTestMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList) : CIlluminatedTexturedMesh(pd3dDevice, pd3dCommandList)
+CTestMesh::CTestMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList) : CModelMesh(pd3dDevice, pd3dCommandList)
 {
 	m_nVertices = 36;
-	m_nStride = sizeof(CIlluminatedTexturedVertex);
+	m_nStride = sizeof(CModelVertex);
 	m_nOffset = 0;
 	m_nSlot = 0;
 	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -483,27 +341,20 @@ CTestMesh::CTestMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3d
 	XMFLOAT3 pxmf3Normals[36];
 	CalculateVertexNormals(pxmf3Normals, pxmf3Positions, m_nVertices, NULL, 0);
 
-	//	CIlluminatedTexturedVertex pVertices[36];	
 	m_pnIndices = new UINT[m_nVertices];
-	m_pVertices = new CIlluminatedTexturedVertex[36];
-	for (int i = 0; i < 36; i++) m_pVertices[i] = CIlluminatedTexturedVertex(pxmf3Positions[i], pxmf3Normals[i], pxmf2TexCoords[i]);
+	m_pVertices = new CModelVertex[36];
+	for (int i = 0; i < 36; i++) m_pVertices[i] = CModelVertex(pxmf3Positions[i], pxmf3Normals[i], pxmf2TexCoords[i]);
 
 	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, m_pVertices, m_nStride * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
-
-	//m_pVertices = pVertices;
 
 	m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
 	m_d3dVertexBufferView.StrideInBytes = m_nStride;
 	m_d3dVertexBufferView.SizeInBytes = m_nStride * m_nVertices;
-
-//	m_xmBoundingBox = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(10.0f, 10.0f, 10.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
-
 }
-
-CTestMesh::CTestMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, float size) : CIlluminatedTexturedMesh(pd3dDevice, pd3dCommandList)
+CTestMesh::CTestMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, float size) : CModelMesh(pd3dDevice, pd3dCommandList)
 {
 	m_nVertices = 36;
-	m_nStride = sizeof(CIlluminatedTexturedVertex);
+	m_nStride = sizeof(CModelVertex);
 	m_nOffset = 0;
 	m_nSlot = 0;
 	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -614,9 +465,9 @@ CTestMesh::CTestMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3d
 	CalculateVertexNormals(pxmf3Normals, pxmf3Positions, m_nVertices, NULL, 0);
 
 	m_pnIndices = new UINT[m_nIndices];
-	m_pVertices = new CIlluminatedTexturedVertex[36];
-	CIlluminatedTexturedVertex pVertices[36];
-	for (int i = 0; i < 36; i++) pVertices[i] = CIlluminatedTexturedVertex(pxmf3Positions[i], pxmf3Normals[i], pxmf2TexCoords[i]);
+	m_pVertices = new CModelVertex[36];
+	CModelVertex pVertices[36];
+	for (int i = 0; i < 36; i++) pVertices[i] = CModelVertex(pxmf3Positions[i], pxmf3Normals[i], pxmf2TexCoords[i]);
 
 	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pVertices, m_nStride * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
 
@@ -626,13 +477,11 @@ CTestMesh::CTestMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3d
 
 
 	m_pVertices = pVertices;
-//	m_xmBoundingBox = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(size, size, size), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 }
-
-CTestMesh::CTestMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, XMFLOAT3 extents) : CIlluminatedTexturedMesh(pd3dDevice, pd3dCommandList)
+CTestMesh::CTestMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, XMFLOAT3 extents) : CModelMesh(pd3dDevice, pd3dCommandList)
 {
 	m_nVertices = 36;
-	m_nStride = sizeof(CIlluminatedTexturedVertex);
+	m_nStride = sizeof(CModelVertex);
 	m_nOffset = 0;
 	m_nSlot = 0;
 	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -743,9 +592,9 @@ CTestMesh::CTestMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3d
 	CalculateVertexNormals(pxmf3Normals, pxmf3Positions, m_nVertices, NULL, 0);
 
 	m_pnIndices = new UINT[m_nIndices];
-	m_pVertices = new CIlluminatedTexturedVertex[36];
-	CIlluminatedTexturedVertex pVertices[36];
-	for (int i = 0; i < 36; i++) pVertices[i] = CIlluminatedTexturedVertex(pxmf3Positions[i], pxmf3Normals[i], pxmf2TexCoords[i]);
+	m_pVertices = new CModelVertex[36];
+	CModelVertex pVertices[36];
+	for (int i = 0; i < 36; i++) pVertices[i] = CModelVertex(pxmf3Positions[i], pxmf3Normals[i], pxmf2TexCoords[i]);
 
 	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pVertices, m_nStride * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
 
@@ -756,11 +605,10 @@ CTestMesh::CTestMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3d
 
 	m_pVertices = pVertices;
 }
-
-CTestMesh::CTestMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, XMFLOAT3 position, XMFLOAT3 extents) : CIlluminatedTexturedMesh(pd3dDevice, pd3dCommandList)
+CTestMesh::CTestMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, XMFLOAT3 position, XMFLOAT3 extents) : CModelMesh(pd3dDevice, pd3dCommandList)
 {
 	m_nVertices = 36;
-	m_nStride = sizeof(CIlluminatedTexturedVertex);
+	m_nStride = sizeof(CModelVertex);
 	m_nOffset = 0;
 	m_nSlot = 0;
 	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -877,9 +725,9 @@ CTestMesh::CTestMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3d
 	CalculateVertexNormals(pxmf3Normals, pxmf3Positions, m_nVertices, NULL, 0);
 
 	m_pnIndices = new UINT[m_nIndices];
-	m_pVertices = new CIlluminatedTexturedVertex[36];
-	CIlluminatedTexturedVertex pVertices[36];
-	for (int i = 0; i < 36; i++) pVertices[i] = CIlluminatedTexturedVertex(pxmf3Positions[i], pxmf3Normals[i], pxmf2TexCoords[i]);
+	m_pVertices = new CModelVertex[36];
+	CModelVertex pVertices[36];
+	for (int i = 0; i < 36; i++) pVertices[i] = CModelVertex(pxmf3Positions[i], pxmf3Normals[i], pxmf2TexCoords[i]);
 
 	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pVertices, m_nStride * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
 
@@ -890,7 +738,6 @@ CTestMesh::CTestMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3d
 
 	m_pVertices = pVertices;
 }
-
 CTestMesh::~CTestMesh()
 {
 	CMesh::~CMesh();
@@ -898,50 +745,14 @@ CTestMesh::~CTestMesh()
 	if (m_pnIndices) delete[] m_pnIndices;
 }
 
-//CAnimatedMesh::CAnimatedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, UINT nVertices, XMFLOAT3 * pxmf3Positions, UINT nIndices, UINT * pnIndices)
-//	:CMesh(pd3dDevice, pd3dCommandList)
-//{
-//	CreateConstantBufferResource(pd3dDevice, pd3dCommandList);
-//	for (int i = 0; i < g_nAnimBone; ++i) m_a[i] = XMMatrixIdentity();
-//	UINT nStride = sizeof(CAnimVertex);
-//	this->nVertices = nVertices;
-//
-//	CAnimVertex *pVertices = new CAnimVertex[nVertices];
-//	for (UINT i = 0; i < nVertices; i++) pVertices[i] = CAnimVertex(pxmf3Positions[i]);
-//
-//	pVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
-//		pVertices, nStride * nVertices,
-//		D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
-//		&pVertexUploadBuffer);
-//
-//	vertexBufferView.BufferLocation = pVertexBuffer->GetGPUVirtualAddress();
-//	vertexBufferView.StrideInBytes = nStride;
-//	vertexBufferView.SizeInBytes = nStride * nVertices;
-//
-//	if (nIndices > 0)
-//	{
-//		this->nIndices = nIndices;
-//
-//		pIndexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pnIndices, sizeof(UINT) * nIndices,
-//			D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_INDEX_BUFFER,
-//			&pIndexUploadBuffer);
-//
-//		indexBufferView.BufferLocation = pIndexBuffer->GetGPUVirtualAddress();
-//		indexBufferView.Format = DXGI_FORMAT_R32_UINT;
-//		indexBufferView.SizeInBytes = sizeof(UINT) * nIndices;
-//	}
-//}
-
-CAnimatedMesh::CAnimatedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ImportMeshData & m) : CMesh(pd3dDevice, pd3dCommandList)
+CAnimatedModelMesh::CAnimatedModelMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ImportMeshData & m) : CMesh(pd3dDevice, pd3dCommandList)
 {
-	CreateConstantBufferResource(pd3dDevice, pd3dCommandList);
-	//for (int i = 0; i < g_nAnimBone; ++i) m_a[i] = XMMatrixIdentity();
-
 	int nCtrlPoint = static_cast<int>(m.m_nCtrlPointList);
 	int nPolyongVertex = static_cast<int>(m.m_nVertexList);
 
-	UINT nStride = sizeof(CAnimVertex);
-	nVertices = nPolyongVertex;
+	UINT nStride = sizeof(CAnimatedVertex);
+	m_nVertices = nPolyongVertex;
+	//nVertices = nPolyongVertex;
 
 	XMFLOAT3* pos = new XMFLOAT3[nCtrlPoint];
 	for (int i = 0; i < nCtrlPoint; ++i) {
@@ -973,20 +784,54 @@ CAnimatedMesh::CAnimatedMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLis
 	}
 
 
-	CAnimVertex* animVertex = new CAnimVertex[nPolyongVertex];
+	CAnimatedVertex* animVertex = new CAnimatedVertex[nPolyongVertex];
 
 
 	for (int i = 0; i < nPolyongVertex; ++i) 
-		animVertex[i].Init(pos[posIdx[i]], normal[i], tangent[i], uv[i], weight[posIdx[i]], boneIdx[posIdx[i]]);
+		animVertex[i] = CAnimatedVertex(pos[posIdx[i]], normal[i], tangent[i], uv[i], weight[posIdx[i]], boneIdx[posIdx[i]]);
 
 
-	pVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
-		animVertex, nStride * nVertices,
+	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
+		animVertex, sizeof(CAnimatedVertex) * nPolyongVertex,
 		D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
-		&pVertexUploadBuffer);
+		&m_pd3dVertexUploadBuffer);
 
-	vertexBufferView.BufferLocation = pVertexBuffer->GetGPUVirtualAddress();
-	vertexBufferView.StrideInBytes = nStride;
-	vertexBufferView.SizeInBytes = nStride * nVertices;
+	m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
+	m_d3dVertexBufferView.StrideInBytes = nStride;
+	m_d3dVertexBufferView.SizeInBytes = nStride * nPolyongVertex;
 
+}
+
+CUIMesh::CUIMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, float width, float height) : CMesh(pd3dDevice, pd3dCommandList)
+{
+	m_nStride = sizeof(CUIVertex);
+	m_nVertices = 6;
+	int i = 0;
+	XMFLOAT3 l_position[6];
+	l_position[i++] = XMFLOAT3(0, 0, 0);
+	l_position[i++] = XMFLOAT3(0, width, 0);
+	l_position[i++] = XMFLOAT3(0, width, -height);
+
+	l_position[i++] = XMFLOAT3(0, 0, 0);
+	l_position[i++] = XMFLOAT3(0, width, -height);
+	l_position[i++] = XMFLOAT3(0, 0, -height);
+	i = 0;
+	XMFLOAT2  l_texCoord[6];
+	l_texCoord[i++] = XMFLOAT2(0, 0);
+	l_texCoord[i++] = XMFLOAT2(1, 0);
+	l_texCoord[i++] = XMFLOAT2(1, 1);
+
+	l_texCoord[i++] = XMFLOAT2(0, 0);
+	l_texCoord[i++] = XMFLOAT2(1, 1);
+	l_texCoord[i++] = XMFLOAT2(0, 1);
+
+
+	CUIVertex *pVertices = new CUIVertex[m_nVertices];
+	for (UINT i = 0; i < m_nVertices; i++) pVertices[i] = CUIVertex(l_position[i], l_texCoord[i]);
+
+	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pVertices, m_nStride * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
+
+	m_d3dVertexBufferView.BufferLocation	= m_pd3dVertexBuffer->GetGPUVirtualAddress();
+	m_d3dVertexBufferView.StrideInBytes		= m_nStride;
+	m_d3dVertexBufferView.SizeInBytes		= m_nStride * m_nVertices;
 }

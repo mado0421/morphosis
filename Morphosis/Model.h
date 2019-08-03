@@ -29,9 +29,6 @@ public:
 	void SetMesh(CMesh* mesh)			{ m_Mesh	= mesh;		}
 	void SetTexture(CTexture* texture)	{ m_Texture = texture;	}
 	void SetName(const char* name)		{ m_strName = name;		}
-
-	void CreateConstantBufferResource(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
-	void UpdateConstantBuffer(ID3D12GraphicsCommandList *pd3dCommandList);
 public:
 	string			m_strName		= "";
 

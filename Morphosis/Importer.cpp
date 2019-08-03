@@ -9,10 +9,18 @@ std::vector<CTexture*>				g_vecTexture;
 std::vector<CModel*>				g_vecModel;
 std::vector<CAnimationController*>	g_vecAnimController;
 
-void CImporter::ImportModel(const char * fileName, const char * textureName, ImportType type, const char * modelName, float scale)
+void CImporter::ImportModel(const char * fileName, const char * textureName, ModelType type, const char * modelName, float scale)
 {
-	TCHAR programpath[_MAX_PATH];
-	GetCurrentDirectory(_MAX_PATH, programpath);
+	if (ModelType::UI == type) {
+		CModel* model = new CModel();
+		CUIMesh* tempMesh = new CUIMesh(m_pd3dDevice, m_pd3dCommandList);
+		model->SetMesh(tempMesh);
+		model->SetTexture(GetTextureByName(textureName));
+		model->SetName(modelName);
+
+		g_vecModel.push_back(model);
+		return;
+	}
 
 	string modelDataName = ASSETPATH;
 	modelDataName += fileName;
@@ -20,14 +28,14 @@ void CImporter::ImportModel(const char * fileName, const char * textureName, Imp
 	ImportModelData modelData;
 	modelData.ImportFile(modelDataName.c_str());
 
-	if (ImportType::DefaultMesh == type) {
+	if (ModelType::DEFAULT == type) {
 		for (int i = 0; i < modelData.GetNumOfMesh(); ++i) {
 			string partName = modelName;
 			partName += "_";
 			partName += modelData.GetMeshData(i).m_MeshName;
 
 			CModel* model = new CModel();
-			CIlluminatedTexturedMesh* tempMesh = new CIlluminatedTexturedMesh(m_pd3dDevice, m_pd3dCommandList, modelData.GetMeshData(i), scale);
+			CModelMesh* tempMesh = new CModelMesh(m_pd3dDevice, m_pd3dCommandList, modelData.GetMeshData(i), scale);
 			model->SetMesh(tempMesh);
 			model->SetTexture(GetTextureByName(textureName));
 			model->SetName(partName.c_str());
@@ -35,14 +43,14 @@ void CImporter::ImportModel(const char * fileName, const char * textureName, Imp
 			g_vecModel.push_back(model);
 		}
 	}
-	if (ImportType::AnimatedMesh == type) {
+	if (ModelType::ANIMATED == type) {
 		for (int i = 0; i < modelData.GetNumOfMesh(); ++i) {
 			string partName = modelName;
 			partName += "_";
 			partName += modelData.GetMeshData(i).m_MeshName;
 
 			CModel* model = new CModel();
-			CAnimatedMesh* tempMesh = new CAnimatedMesh(m_pd3dDevice, m_pd3dCommandList, modelData.GetMeshData(i));
+			CAnimatedModelMesh* tempMesh = new CAnimatedModelMesh(m_pd3dDevice, m_pd3dCommandList, modelData.GetMeshData(i));
 			model->SetMesh(tempMesh);
 			model->SetTexture(GetTextureByName(textureName));
 			model->SetName(partName.c_str());
@@ -50,51 +58,9 @@ void CImporter::ImportModel(const char * fileName, const char * textureName, Imp
 			g_vecModel.push_back(model);
 		}
 	}
+
+
 }
-
-//void CImporter::ImportModel(const char * fileName, const char * textureName, ImportType type, const char * modelName)
-//{
-//	TCHAR programpath[_MAX_PATH];
-//	GetCurrentDirectory(_MAX_PATH, programpath);
-//
-//	string modelDataName = ASSETPATH;
-//	modelDataName += fileName;
-//	modelDataName += "_mesh.dat";
-//	ImportModelData modelData;
-//	modelData.ImportFile(modelDataName.c_str());
-//
-//	if (ImportType::DefaultMesh == type) {
-//		for (int i = 0; i < modelData.GetNumOfMesh(); ++i) {
-//			string partName = modelName;
-//			partName += "_";
-//			partName += modelData.GetMeshData(i).m_MeshName;
-//
-//			CModel* model = new CModel();
-//			CIlluminatedTexturedMesh* tempMesh = new CIlluminatedTexturedMesh(m_pd3dDevice, m_pd3dCommandList, modelData.GetMeshData(i));
-//			model->SetMesh(tempMesh);
-//			model->SetTexture(GetTextureByName(textureName));
-//			model->SetName(partName.c_str());
-//
-//			g_vecModel.push_back(model);
-//		}
-//	}
-//	if (ImportType::AnimatedMesh == type) {
-//		for (int i = 0; i < modelData.GetNumOfMesh(); ++i) {
-//			string partName = modelName;
-//			partName += "_";
-//			partName += modelData.GetMeshData(i).m_MeshName;
-//
-//			CModel* model = new CModel();
-//			CAnimatedMesh* tempMesh = new CAnimatedMesh(m_pd3dDevice, m_pd3dCommandList, modelData.GetMeshData(i));
-//			model->SetMesh(tempMesh);
-//			model->SetTexture(GetTextureByName(textureName));
-//			model->SetName(partName.c_str());
-//
-//			g_vecModel.push_back(model);
-//		}
-//	}
-//}
-
 void CImporter::ImportAnimClip(const char * fileName, const char * animCtrlName, bool IsLoop, const char * animClipName)
 {
 	string filePath = ASSETPATH;

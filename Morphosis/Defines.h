@@ -24,6 +24,7 @@ extern int g_RootParameterCamera;
 extern int g_RootParameterObject;
 extern int g_RootParameterTexture;
 extern int g_RootParameterAnimation;
+extern int g_RootParameterUI;
 
 
 /*********************************************************************
@@ -118,6 +119,7 @@ constexpr float		g_Gravity				= 9.8f;
 constexpr float		g_MouseInputSensitivity = 50.0f;
 extern bool			g_IsMouseMode;
 
+
 enum class ColliderTag {
 	DEFAULT,
 	GROUNDCHECK,
@@ -138,14 +140,15 @@ enum class ObjectTag {
 	Player,
 	Projectile
 };
-enum class ImportType {
-	DefaultMesh,
-	AnimatedMesh,
+enum class ModelType {
+	DEFAULT,
+	ANIMATED,
+	UI,
 	ETC
 };
 enum class PSO {
-	MODEL,
-	ANIMATEDMODEL,
+	DEFAULT,
+	ANIMATED,
 	UI,
 	DEBUG,
 
@@ -177,6 +180,11 @@ enum class SceneType {
 	MAINPLAY,
 
 	count
+};
+enum class MouseState {
+	NONE,
+	OVER,
+	CLICKED
 };
 namespace KEY {
 	enum {

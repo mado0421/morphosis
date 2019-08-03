@@ -13,7 +13,7 @@ int g_RootParameterCamera;
 int g_RootParameterObject;
 int g_RootParameterTexture;
 int g_RootParameterAnimation;
-
+int g_RootParameterUI;
 bool g_IsMouseMode = true;
 
 ID3D12RootSignature * CSceneMainPlay::CreateRootSignature(ID3D12Device * pd3dDevice)
@@ -26,9 +26,10 @@ ID3D12RootSignature * CSceneMainPlay::CreateRootSignature(ID3D12Device * pd3dDev
 	g_RootParameterObject		= 1;
 	g_RootParameterTexture		= 2;
 	g_RootParameterAnimation	= 3;
+	g_RootParameterUI			= 4;
 
 	ID3D12RootSignature *pd3dGraphicsRootSignature = NULL;
-	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[2];	// Object, Texture and Animation
+	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[3];	// Object, Texture and UI
 
 	pd3dDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
 	pd3dDescriptorRanges[0].NumDescriptors = 1;
@@ -42,7 +43,13 @@ ID3D12RootSignature * CSceneMainPlay::CreateRootSignature(ID3D12Device * pd3dDev
 	pd3dDescriptorRanges[1].RegisterSpace = 0;
 	pd3dDescriptorRanges[1].OffsetInDescriptorsFromTableStart = 0;
 
-	D3D12_ROOT_PARAMETER pd3dRootParameters[4];	//Camera, Obejct, texture, anim
+	pd3dDescriptorRanges[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+	pd3dDescriptorRanges[2].NumDescriptors = 1;
+	pd3dDescriptorRanges[2].BaseShaderRegister = g_RootParameterUI; //b4
+	pd3dDescriptorRanges[2].RegisterSpace = 0;
+	pd3dDescriptorRanges[2].OffsetInDescriptorsFromTableStart = 0;
+
+	D3D12_ROOT_PARAMETER pd3dRootParameters[5];	//Camera, Obejct, texture, anim
 
 	//Camera
 	pd3dRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
@@ -62,11 +69,18 @@ ID3D12RootSignature * CSceneMainPlay::CreateRootSignature(ID3D12Device * pd3dDev
 	pd3dRootParameters[2].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[1];
 	pd3dRootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
-	//anim
+	//Anim
 	pd3dRootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	pd3dRootParameters[3].Descriptor.ShaderRegister = g_RootParameterAnimation;
+	pd3dRootParameters[3].Descriptor.ShaderRegister = g_RootParameterAnimation;	//b3
 	pd3dRootParameters[3].Descriptor.RegisterSpace = 0;
 	pd3dRootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+
+	//UI
+	pd3dRootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	pd3dRootParameters[4].DescriptorTable.NumDescriptorRanges = 1;
+	pd3dRootParameters[4].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[2];
+	pd3dRootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+
 	///*
 	//Root Signiature 추가 필요
 	//*/
@@ -125,6 +139,7 @@ void CSceneMainPlay::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommand
 	CPsoGenerator l_psoGenerator;
 	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoModel());
 	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoAnimatedModel());
+	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoUI());
 }
 
 

@@ -802,8 +802,9 @@ void CObjectManager::Render()
 	2019-06-16
 	렌더 하기 전에 위치 행렬 등을 hlsl에서 쓸 수 있게 map한 주소로 복사해줘야 함.
 	*********************************************************************/
-	UINT ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
+	UINT ncbElementBytes;
 	CB_OBJECT_INFO	*pbMappedcbObject;
+	CB_UI_INFO		*pbMappedcbui;
 
 
 	/*********************************************************************
@@ -811,41 +812,69 @@ void CObjectManager::Render()
 	각 객체의 Render와 Update 함수에서 IsAlive를 체크하고 있기 때문에 hlsl의
 	정보를 업데이트 하는 부분에만 IsAlive를 체크하게 추가하였다.
 	*********************************************************************/
-
+	ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
 	for (int i = 0; i < m_nProps; i++) {
 		if (!m_Props[i]->IsAlive()) continue;
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedPropObjects + (i * ncbElementBytes));
 		memset(pbMappedcbObject, NULL, ncbElementBytes);
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Props[i]->m_xmf4x4World)));
-		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&Matrix4x4::InverseTranspose(m_Props[i]->m_xmf4x4World)));
+		//XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&Matrix4x4::InverseTranspose(m_Props[i]->m_xmf4x4World)));
 	}
 	for (int i = 0; i < m_nPlayers; i++) {
 		if (!m_Players[i]->IsAlive()) continue;
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedPlayers + (i * ncbElementBytes));
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Players[i]->m_xmf4x4World)));
-		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&Matrix4x4::InverseTranspose(m_Players[i]->m_xmf4x4World)));
+		//XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&Matrix4x4::InverseTranspose(m_Players[i]->m_xmf4x4World)));
 	}
 	for (int i = 0; i < m_nProjectiles; i++) {
 		if (!m_Projectiles[i]->IsAlive()) continue;
 		pbMappedcbObject = (CB_OBJECT_INFO *)((UINT8 *)m_pCBMappedProjectiles + (i * ncbElementBytes));
 		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Projectiles[i]->m_xmf4x4World)));
-		XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&Matrix4x4::InverseTranspose(m_Projectiles[i]->m_xmf4x4World)));
+		//XMStoreFloat4x4(&pbMappedcbObject->m_xmf4x4WorldNoTranspose, XMLoadFloat4x4(&Matrix4x4::InverseTranspose(m_Projectiles[i]->m_xmf4x4World)));
+	}
+	ncbElementBytes = ((sizeof(CB_UI_INFO) + 255) & ~255);
+	for (int i = 0; i < m_nUI; i++) {
+		pbMappedcbui = (CB_UI_INFO *)((UINT8 *)m_pCBMappedUIs + (i * ncbElementBytes));
+		XMStoreFloat4x4(&pbMappedcbui->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_UI[i]->m_xmf4x4World)));
+		pbMappedcbui->m_xmf2Size = static_cast<CUI*>( m_UI[i] )->GetSize();
 	}
 
-	m_pd3dCommandList->SetPipelineState(g_vecPSO[static_cast<int>( PSO::MODEL )]);
+	m_pd3dCommandList->SetPipelineState(g_vecPSO[static_cast<int>( PSO::DEFAULT )]);
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Render(m_pd3dCommandList);
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->Render(m_pd3dCommandList);
 
-	m_pd3dCommandList->SetPipelineState(g_vecPSO[static_cast<int>( PSO::ANIMATEDMODEL )]);
+	m_pd3dCommandList->SetPipelineState(g_vecPSO[static_cast<int>( PSO::ANIMATED )]);
 	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->Render(m_pd3dCommandList);
+
+	m_pd3dCommandList->SetPipelineState(g_vecPSO[static_cast<int>(PSO::UI)]);
+	for (int i = 0; i < m_UI.size(); ++i)			m_UI[i]->Render(m_pd3dCommandList);
+
 }
 void CObjectManager::Update(float fTime)
 {
 	//m_Props[1]->SetRotation(XMFLOAT3(0, fTime * 20, 0));
+	//static float f = 1.0f;
+	//static bool turn = false;
+	//if (turn) {
+	//	f += fTime * 0.1f;
+	//	if (f > 1) turn = false;
+	//}
+	//else {
+	//	f -= fTime * 0.1f;
+	//	if (f < 0) turn = true;
+	//}
+	
+	//static_cast<CPlayer*>(m_Players[1])->GetHP() / static_cast<float>(g_DefaultHealthPoint);
+	static_cast<CUI*>(m_UI[0])->SetScale(XMFLOAT2(static_cast<CPlayer*>(m_Players[1])->GetHP() / static_cast<float>(g_DefaultHealthPoint), 0.02f));
+	XMFLOAT3 pos = static_cast<CPlayer*>(m_Players[1])->GetPosition();
+	pos.y += 50;
+	pos.x -= 25;
+	static_cast<CUI*>(m_UI[0])->SetPosition(pos);
 
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Update(fTime);
 	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->Update(fTime);
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->Update(fTime);
+	for (int i = 0; i < m_UI.size(); ++i)			m_UI[i]->Update(fTime);
 
 	LateUpdate(fTime);
 }
@@ -959,6 +988,7 @@ void CObjectManager::LateUpdate(float fTime)
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->LateUpdate(fTime);
 	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->LateUpdate(fTime);
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->LateUpdate(fTime);
+	for (int i = 0; i < m_UI.size(); ++i)			m_UI[i]->LateUpdate(fTime);
 }
 void CObjectManager::CreateDescriptorHeap()
 {
@@ -992,6 +1022,12 @@ void CObjectManager::CreateConstantBufferResorce()
 	m_pd3dCBProjectilesResource = ::CreateBufferResource(m_pd3dDevice, m_pd3dCommandList, NULL, ncbElementBytes * m_nProjectiles,
 		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
 	if (nullptr != m_pd3dCBProjectilesResource) m_pd3dCBProjectilesResource->Map(0, NULL, (void **)&m_pCBMappedProjectiles);
+
+	ncbElementBytes = ((sizeof(CB_UI_INFO) + 255) & ~255);
+
+	m_pd3dCBUIsResource = ::CreateBufferResource(m_pd3dDevice, m_pd3dCommandList, NULL, ncbElementBytes * m_nUI,
+		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	if (nullptr != m_pd3dCBUIsResource) m_pd3dCBUIsResource->Map(0, NULL, (void **)&m_pCBMappedUIs);
 }
 void CObjectManager::CreateConstantBufferView()
 {
@@ -1031,6 +1067,17 @@ void CObjectManager::CreateConstantBufferView()
 			d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * i);
 			D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
 			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (i + m_nProps + m_nPlayers));
+			m_pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
+		}
+	}
+
+	ncbElementBytes = ((sizeof(CB_UI_INFO) + 255) & ~255);
+	if (nullptr != m_pd3dCBUIsResource) {
+		d3dGpuVirtualAddress = m_pd3dCBUIsResource->GetGPUVirtualAddress();
+		for (int i = 0; i < m_nUI; i++) {
+			d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * i);
+			D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
+			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (i + m_nProps + m_nPlayers + m_nProjectiles));
 			m_pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
 		}
 	}
@@ -1091,10 +1138,11 @@ void CObjectManager::CreateObjectData()
 	서술자 힙을 생성하기 위해 개수들을 정해준다. 지금은 임의로 하지만 나중에는
 	m_nProps는 LevelData에서 읽어오고, 나머지는 Defines.h에서 가져올 것.
 	*********************************************************************/
-	m_nProps = 3;
+	m_nProps = 1;
 	m_nPlayers = 2;
+	m_nUI = 1;
 	m_nProjectiles = m_nPlayers * g_nProjectilePerPlayer;
-	m_nObjects = m_nProps + m_nPlayers + m_nProjectiles;
+	m_nObjects = m_nProps + m_nPlayers + m_nProjectiles + m_nUI;
 
 	CreateDescriptorHeap();
 	/*********************************************************************
@@ -1114,20 +1162,22 @@ void CObjectManager::CreateObjectData()
 	importer.ImportTexture(L"2B_diff",					"Texture_2B");
 	importer.ImportTexture(L"DefaultMaterial_albedo",	"Texture_Bench");
 	importer.ImportTexture(L"spotlight_BaseColor",		"Texture_Spotlight");
+	importer.ImportTexture(L"HealthBar",				"Texture_HPBar");
 	importer.ImportTexture(L"TEX_crystal",				"Texture_Crystal");
 	for (int i = 0; i < g_vecTexture.size(); ++i) CreateTextureResourceView(g_vecTexture[i]);
 	
-	importer.ImportModel("0730_LevelTest",						"Texture_Level",		ImportType::DefaultMesh,	"Model_Level");
-	importer.ImportModel("0725_Character",						"Texture_Character",	ImportType::DefaultMesh,	"Model_CharacterStatic", 2.0f);
-	importer.ImportModel("0725_Character",						"Texture_Character",	ImportType::AnimatedMesh,	"Model_Character");
-	importer.ImportModel("0725_PaperBox_NoSpitPerVertexNormal", "Texture_PaperBox",		ImportType::DefaultMesh,	"Model_PaperBox");
-	importer.ImportModel("box",									"Texture_StandardBox",	ImportType::DefaultMesh,	"Model_Box1");
-	importer.ImportModel("box2",								"Texture_StandardBox",	ImportType::DefaultMesh,	"Model_Box2");
-	//importer.ImportModel("0723_Box_SN",						"Texture_PaperBox",		ImportType::DefaultMesh,	"Model_PaperBox_Resize", 0.5f);
-	importer.ImportModel("crystal",								"Texture_Crystal",		ImportType::DefaultMesh,	"Model_Crystal");
-	importer.ImportModel("Bench", "Texture_Bench",										ImportType::DefaultMesh, "Model_Bench", 2.0f);
-	importer.ImportModel("Spotlight", "Texture_Spotlight",								ImportType::DefaultMesh, "Model_Spotlight", 1.1f);
-	importer.ImportModel("2b",									"Texture_2B",			ImportType::DefaultMesh,	"Model_2B");
+	importer.ImportModel("0730_LevelTest",						"Texture_Level",		ModelType::DEFAULT,	"Model_Level");
+	importer.ImportModel("0725_Character",						"Texture_Character",	ModelType::DEFAULT,	"Model_CharacterStatic", 2.0f);
+	importer.ImportModel("0725_Character",						"Texture_Character",	ModelType::ANIMATED,"Model_Character");
+	importer.ImportModel("0725_PaperBox_NoSpitPerVertexNormal", "Texture_PaperBox",		ModelType::DEFAULT,	"Model_PaperBox");
+	importer.ImportModel("box",									"Texture_StandardBox",	ModelType::DEFAULT,	"Model_Box1");
+	importer.ImportModel("box2",								"Texture_StandardBox",	ModelType::DEFAULT,	"Model_Box2");
+	//importer.ImportModel("0723_Box_SN",						"Texture_PaperBox",		ModelType::DEFAULT,	"Model_PaperBox_Resize", 0.5f);
+	importer.ImportModel("crystal",								"Texture_Crystal",		ModelType::DEFAULT,	"Model_Crystal");
+	importer.ImportModel("Bench",								"Texture_Bench",		ModelType::DEFAULT, "Model_Bench", 2.0f);
+	importer.ImportModel("Spotlight",							"Texture_Spotlight",	ModelType::DEFAULT, "Model_Spotlight", 1.1f);
+	importer.ImportModel("",									"Texture_HPBar",		ModelType::UI,		"UI_TEST");
+	importer.ImportModel("2b",									"Texture_2B",			ModelType::DEFAULT,	"Model_2B");
 
 	importer.ImportAnimController("AnimCtrl_Character");
 
@@ -1198,27 +1248,6 @@ void CObjectManager::CreateObjectData()
 		);
 		obj->SetCameraTargetOffset(XMFLOAT3(0, 47, -21));
 
-		//XMFLOAT3 pos = obj->GetPosition();
-		//obj->AddCollider(pos, XMFLOAT3(8, 2.577f, 8), XMFLOAT4(0, 0, 0, 1), XMFLOAT3(0,0,0), ColliderTag::GROUNDCHECK);
-		//pos = obj->GetPosition();
-		//pos.y += 16.807f;
-		//obj->AddCollider(pos, XMFLOAT3(11.766f / 2, 16.807f / 2, 13.198f / 2), XMFLOAT4(0, 0, 0, 1), XMFLOAT3(0, 0, 0));
-
-		//CModel *model = new CModel();
-		//CTestMesh *mesh = new CTestMesh(m_pd3dDevice, m_pd3dCommandList, 10);
-		//model->SetMesh(mesh);
-		//model->SetTexture(m_TextureList[3]);
-		//obj->AddModel(model);
-		//obj->SetPosition(0, 100, 0);
-		//obj->SetSpawnPoint(obj->GetPosition());
-		//obj->AddCollider(
-		//	XMFLOAT3(0, 0, 0),
-		//	XMFLOAT3(5, 5, 5),
-		//	XMFLOAT4(0, 0, 0, 1)
-		//);
-		//obj->SetCameraTargetOffset(XMFLOAT3(0, 0, 0));
-
-
 		obj->SetTeam((i % 2) + 1);
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 
@@ -1236,11 +1265,21 @@ void CObjectManager::CreateObjectData()
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 		m_Projectiles.push_back(obj);
 	}
+	for (int i = 0; i < m_nUI; i++) {
+		CUI* obj = new CUI();
+		obj->SetMng(this);
+		obj->AddModel(GetModelByName("UI_TEST"));
+		obj->SetPosition(0.0f, 50.0f, 0.0f);
+		obj->Initialize(XMFLOAT2(50, 50));
 
+		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
+		m_UI.push_back(obj);
+	}
 
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->CreateConstantBufferResource(m_pd3dDevice, m_pd3dCommandList);
 	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->CreateConstantBufferResource(m_pd3dDevice, m_pd3dCommandList);
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->CreateConstantBufferResource(m_pd3dDevice, m_pd3dCommandList);
+	for (int i = 0; i < m_UI.size(); ++i)			m_UI[i]->CreateConstantBufferResource(m_pd3dDevice, m_pd3dCommandList);
 
 }
 //void CObjectManager::CollisionCheck()
@@ -1455,4 +1494,49 @@ void Collider::SetRotation(XMFLOAT4 rotation)
 		//m_Box.Orientation = rotation;
 	}
 	
+}
+
+CUI::CUI()
+{
+	m_xmf2Size		= XMFLOAT2(0, 0);
+	m_xmf2Scale		= XMFLOAT2(1.0f, 1.0f);
+	m_MouseState	= MouseState::NONE;
+}
+
+void CUI::SetRootParameter(ID3D12GraphicsCommandList * pd3dCommandList)
+{
+	pd3dCommandList->SetGraphicsRootDescriptorTable(g_RootParameterUI, m_d3dCbvGPUDescriptorHandle);
+
+}
+
+void CUI::Render(ID3D12GraphicsCommandList * pd3dCommandList, CCamera * pCamera, bool isDebug)
+{
+	if (!m_IsAlive) return;
+	if (!m_ModelList.empty()) {
+		if (m_AnimationController) {
+			ChangeAnimClip();
+			SetAnimatedMatrix(m_AnimationController, m_AnimationTime);
+		}
+		UpdateConstantBuffer(pd3dCommandList);
+		for (auto p = m_ModelList.begin(); p != m_ModelList.end(); ++p) {
+
+			pd3dCommandList->SetGraphicsRootDescriptorTable(g_RootParameterUI, m_d3dCbvGPUDescriptorHandle);
+			p->Render(pd3dCommandList, isDebug);
+		}
+	}
+}
+
+void CUI::Initialize(XMFLOAT2 size)
+{
+	m_xmf2Size = size;
+}
+
+void CUI::SetScale(XMFLOAT2 scale)
+{
+	m_xmf2Scale = scale;
+}
+
+const XMFLOAT2 CUI::GetSize()
+{
+	return XMFLOAT2(m_xmf2Size.x * m_xmf2Scale.x, m_xmf2Size.y * m_xmf2Scale.y);
 }

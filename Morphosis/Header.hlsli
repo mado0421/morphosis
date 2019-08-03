@@ -8,7 +8,7 @@ cbuffer cbCameraInfo					: register(b0)
 cbuffer cbGameObjectInfo				: register(b1)
 {
 	matrix		gmtxGameObject			: packoffset(c0);
-	matrix		gmtxGameObjectNoTrans	: packoffset(c4);
+	//matrix		gmtxGameObjectNoTrans	: packoffset(c4);
 	//uint		gnMaterial				: packoffset(c4);
 };
 Texture2D gtxtTexture					: register(t2);
@@ -16,20 +16,22 @@ cbuffer cbAnimMatrixInfo				: register(b3)
 {
 	matrix		AnimMatrix[64]			: packoffset(c0);
 };
-cbuffer cbMaterialInfo					: register(b4)
+cbuffer cbUIInfo						: register(b4)
 {
-	matrix		Material[64]			: packoffset(c0);
+	matrix		gmtxUI					: packoffset(c0);
+	float2		gf2Size					: packoffset(c4);
+
 };
-cbuffer cbLightlInfo					: register(b5)
-{
-	matrix		Light[64]				: packoffset(c0);
-};
+//cbuffer cbMaterialInfo					: register(b4)
+//{
+//	matrix		Material[64]			: packoffset(c0);
+//};
+//cbuffer cbLightlInfo					: register(b5)
+//{
+//	matrix		Light[64]				: packoffset(c0);
+//};
 
-
-
-
-struct ANIM_ILLUM_TEX_INPUT
-{
+struct VS_ANIM_INPUT {
 	float3	position	: POSITION;
 	float3	normal		: NORMAL;
 	float3	tangent		: TANGENT;
@@ -37,9 +39,7 @@ struct ANIM_ILLUM_TEX_INPUT
 	float4	weight		: BLENDWEIGHT0;
 	int4	boneIdx		: BLENDINDICES0;
 };
-
-struct ANIM_ILLUM_TEX_OUTPUT
-{
+struct VS_ANIM_OUTPUT {
 	float4 position		: SV_POSITION;
 	float3 positionW	: POSITION;
 	float3 normalW		: NORMAL0;
@@ -47,26 +47,31 @@ struct ANIM_ILLUM_TEX_OUTPUT
 	float2 uv			: TEXCOORD;
 };
 
-struct ILLUM_TEX_INPUT
-{
+struct VS_MODEL_INPUT {
 	float3 position		: POSITION;
 	float2 uv			: TEXCOORD;
 	float3 normal		: NORMAL;
 };
-
-struct ILLUM_TEX_OUTPUT
-{
+struct VS_MODEL_OUTPUT {
 	float4 position		: SV_POSITION;
 	float3 positionW	: POSITION;
 	float3 normalW		: NORMAL;
 	float2 uv			: TEXCOORD;
 };
 
-struct VS_DEBUG_INPUT
-{
+struct VS_UI_INPUT {
+	float3 position		: POSITION;
+	float2 uv			: TEXCOORD;
+};
+struct VS_UI_OUTPUT {
+	float4 position		: SV_POSITION;
+	float3 positionW	: POSITION;
+	float2 uv			: TEXCOORD;
+};
+
+struct VS_DEBUG_INPUT {
 	float3 position : POSITION;
 };
-struct VS_DEBUG_OUTPUT
-{
+struct VS_DEBUG_OUTPUT {
 	float4 position : SV_POSITION;
 };

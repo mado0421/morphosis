@@ -14,9 +14,15 @@ XMFLOAT3 GetBetweenVector(const Collider& A, const Collider& B);
 
 struct CB_OBJECT_INFO {
 	XMFLOAT4X4	m_xmf4x4World;
-	XMFLOAT4X4	m_xmf4x4WorldNoTranspose;
+	//XMFLOAT4X4	m_xmf4x4WorldNoTranspose;
 	//UINT		m_nMaterialIndex;
 };
+struct CB_UI_INFO {
+	XMFLOAT4X4	m_xmf4x4World;
+	XMFLOAT2	m_xmf2Size;
+};
+
+
 struct LEVELDATA_DESC {
 	std::string levelName = "";
 	int nCollisionMaps		= 0;
@@ -44,7 +50,6 @@ struct LEVELDATA_DESC {
 };
 class Collider {
 public:
-	//Collider() = delete;
 	Collider();
 	Collider(XMFLOAT3 offset, XMFLOAT3 extents, XMFLOAT4 quaternion, ColliderTag tag = ColliderTag::DEFAULT);
 	Collider(XMFLOAT3 offset, float radius, ColliderTag tag = ColliderTag::DEFAULT);
@@ -189,17 +194,6 @@ protected:
 	
 };
 
-/*********************************************************************
-2019-06-18
-플레이어가 처음 생성되거나, 리스폰 될 때 처리
-- 체력 복구
-- 위치 복구
-- 바운딩박스 복구
-
-플레이어가 죽을 때 처리
-- 리스폰 타이머 시작
-*********************************************************************/
-
 class CPlayer : public CObject {
 public:
 	CPlayer();
@@ -210,6 +204,9 @@ public:
 	virtual void	Update(float fTimeElapsed) override;
 	virtual void	LateUpdate(float fTimeElapsed) override;
 	virtual void	ProcessInput(UCHAR* pKeysBuffer, float mouse) override;
+
+	const int GetHP() { return m_HealthPoint; }
+
 	// 외부 설정 함수
 	virtual void	Enable()override;
 	virtual void	Disable()override;
@@ -284,27 +281,33 @@ private:
 	bool			IsExpired() const { return m_fLifeTime <= 0; }
 
 protected:
-	/*********************************************************************
-	2019-06-17
-	이동 관련 부분
-
-	직접 입력을 받아서 이동하는 객체가 있고 고정된 값으로 계속 이동해야 하는
-	객체도 있다. 컴포넌트 방식 쓰고 싶다. 하지만 지금은 무리.
-
-	투사체의 경우는 이동하는 속력, 방향, 중력의 영향을 받는지 여부 등을 가져야
-	한다.
-
-	중력의 영향을 안 받는 직선 이동 투사체의 경우는 플레이어의 Look, Right, Up
-	을 그대로 쓰면 된다. 노멀라이즈 정도만 해주면 될 듯.
-	중력의 영향을 받는 경우, 투사체는 플레이어의 RIght를 먼저 받고 Look벡터를
-	Right벡터 축을 기준으로 위로 약간 회전시켜 준 다음에 그 둘을 가지고 Up 벡터
-	를 구해주면 된다.
-	아니 그냥 점점 y축으로 떨어지게 해버려. 뭘 어렵게 생각해. 그러게.
-	*********************************************************************/
 	XMFLOAT3		m_xmf3Direction;	//Normal Vector
 	float			m_fSpeed;
 	float			m_fLifeTime;
 	float			m_BaseDamage;
+};
+
+class CUI : public CObject {
+public:
+	CUI();
+public:
+	virtual void SetRootParameter(ID3D12GraphicsCommandList *pd3dCommandList);
+	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL, bool isDebug = false);
+
+	void	Initialize(XMFLOAT2 size);
+	void	SetScale(XMFLOAT2 scale);
+
+	const XMFLOAT2 GetSize();
+
+	bool	IsMouseEnter();
+	bool	IsMouseOver();
+	bool	IsMouseLeave();
+	bool	IsClicked();
+
+private:
+	XMFLOAT2	m_xmf2Size;
+	XMFLOAT2	m_xmf2Scale;
+	MouseState	m_MouseState;
 };
 
 class CObjectManager {
@@ -318,6 +321,7 @@ public:
 		m_nProps			= 0;
 		m_nPlayers			= 0;
 		m_nProjectiles		= 0;
+		m_nUI				= 0;
 		CreateObjectData();
 	}
 	~CObjectManager();
@@ -335,7 +339,6 @@ public:
 	}
 	void ProcessInput(UCHAR* pKeysBuffer, float mouse);
 
-	//void GetColliderList(Collider& myCollider, std::queue<Collider*>& myColliderQueue, ColliderTag targetTag, bool isMakeAlign = false);
 	Collider* GetCollider(Collider& myCollider, ColliderTag targetTag, bool isMakeAlign = false);
 	void ColliderTrigInit(ColliderTag targetTag);
 
@@ -381,14 +384,17 @@ private:
 	int		m_nObjects									= 0;
 	int		m_nProps									= 0;
 	int		m_nPlayers									= 0;
+	int		m_nUI										= 0;
 	int		m_nProjectiles								= 0;
 	
 	ID3D12Resource*		m_pd3dCBPropResource			= NULL;
 	ID3D12Resource*		m_pd3dCBPlayersResource			= NULL;
+	ID3D12Resource*		m_pd3dCBUIsResource				= NULL;
 	ID3D12Resource*		m_pd3dCBProjectilesResource		= NULL;
 
 	CB_OBJECT_INFO*		m_pCBMappedPropObjects			= NULL;
 	CB_OBJECT_INFO*		m_pCBMappedPlayers				= NULL;
+	CB_OBJECT_INFO*		m_pCBMappedUIs					= NULL;
 	CB_OBJECT_INFO*		m_pCBMappedProjectiles			= NULL;
 
 	/*********************************************************************
@@ -398,6 +404,7 @@ private:
 	vector<CObject*>	m_Props;
 	vector<CObject*>	m_Players;
 	vector<CObject*>	m_Projectiles;
+	vector<CObject*>	m_UI;
 
 	/*********************************************************************
 	2019-07-01
