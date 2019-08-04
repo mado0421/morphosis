@@ -394,8 +394,8 @@ private:
 
 	CB_OBJECT_INFO*		m_pCBMappedPropObjects			= NULL;
 	CB_OBJECT_INFO*		m_pCBMappedPlayers				= NULL;
-	CB_OBJECT_INFO*		m_pCBMappedUIs					= NULL;
 	CB_OBJECT_INFO*		m_pCBMappedProjectiles			= NULL;
+	CB_UI_INFO*			m_pCBMappedUIs					= NULL;
 
 	/*********************************************************************
 	2019-06-15
