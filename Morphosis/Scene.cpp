@@ -29,7 +29,7 @@ ID3D12RootSignature * CSceneMainPlay::CreateRootSignature(ID3D12Device * pd3dDev
 	g_RootParameterUI			= 4;
 
 	ID3D12RootSignature *pd3dGraphicsRootSignature = NULL;
-	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[3];	// Object, Texture and UI
+	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[3];	// Object, Texture and FloatingUI
 
 	pd3dDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
 	pd3dDescriptorRanges[0].NumDescriptors = 1;
@@ -75,7 +75,7 @@ ID3D12RootSignature * CSceneMainPlay::CreateRootSignature(ID3D12Device * pd3dDev
 	pd3dRootParameters[3].Descriptor.RegisterSpace = 0;
 	pd3dRootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 
-	//UI
+	//FloatingUI
 	pd3dRootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	pd3dRootParameters[4].DescriptorTable.NumDescriptorRanges = 1;
 	pd3dRootParameters[4].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[2];
@@ -139,7 +139,8 @@ void CSceneMainPlay::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommand
 	CPsoGenerator l_psoGenerator;
 	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoModel());
 	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoAnimatedModel());
-	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoUI());
+	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoFloatingUI());
+	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoDefaultUI());
 }
 
 

@@ -51,11 +51,10 @@ struct LEVELDATA_DESC {
 class Collider {
 public:
 	Collider();
-	Collider(XMFLOAT3 offset, XMFLOAT3 extents, XMFLOAT4 quaternion, ColliderTag tag = ColliderTag::DEFAULT);
-	Collider(XMFLOAT3 offset, float radius, ColliderTag tag = ColliderTag::DEFAULT);
+	Collider(XMFLOAT3 offset, XMFLOAT3 extents, XMFLOAT4 quaternion);
+	Collider(XMFLOAT3 offset, float radius);
 	void Update(XMFLOAT3 position, XMFLOAT4 rotation);
 	bool IsCollide(const Collider& other);
-	void SetTag(const string tag);
 	void TriggerOff() { m_trigCollided = false; }
 	void SetOrientation(const XMFLOAT4& orientation);
 
@@ -80,8 +79,6 @@ private:
 private:
 	XMFLOAT3			m_xmf3Offset;
 	XMFLOAT4			m_xmf4OrigOrientaion;
-	ColliderTag			m_Tag;
-
 };
 
 struct Test {
@@ -119,8 +116,8 @@ public:
 	void AddCollisionEffect(CObject* p);
 
 	void SetMng(CObjectManager* mng);
-	void AddCollider(XMFLOAT3 offset, XMFLOAT3 extents, XMFLOAT4 quaternion, ColliderTag tag = ColliderTag::DEFAULT);
-	void AddCollider(XMFLOAT3 offset, float radius, ColliderTag tag = ColliderTag::DEFAULT);
+	void AddCollider(XMFLOAT3 offset, XMFLOAT3 extents, XMFLOAT4 quaternion);
+	void AddCollider(XMFLOAT3 offset, float radius);
 	void SetColliderTrigOff() { for (int i = 0; i < m_Collider.size(); ++i) m_Collider[i].m_trigCollided = false; }
 	void SetPosition(float x, float y, float z);
 	void SetCameraTargetOffset(XMFLOAT3 pos);
@@ -317,11 +314,6 @@ public:
 		: m_pd3dDevice(pd3dDevice)
 		, m_pd3dCommandList(pd3dCommandList) 
 	{
-		m_nObjects			= 0;
-		m_nProps			= 0;
-		m_nPlayers			= 0;
-		m_nProjectiles		= 0;
-		m_nUI				= 0;
 		CreateObjectData();
 	}
 	~CObjectManager();
@@ -382,29 +374,28 @@ private:
 	m_nAnimationMatrix는 m_nObject * g_nAnimBone를 한 값.
 	*********************************************************************/
 	int		m_nObjects									= 0;
-	int		m_nProps									= 0;
-	int		m_nPlayers									= 0;
-	int		m_nUI										= 0;
-	int		m_nProjectiles								= 0;
 	
 	ID3D12Resource*		m_pd3dCBPropResource			= NULL;
 	ID3D12Resource*		m_pd3dCBPlayersResource			= NULL;
-	ID3D12Resource*		m_pd3dCBUIsResource				= NULL;
 	ID3D12Resource*		m_pd3dCBProjectilesResource		= NULL;
+	ID3D12Resource*		m_pd3dCBFloatingUIsResource		= NULL;
+	ID3D12Resource*		m_pd3dCBDefaultUIsResource		= NULL;
 
 	CB_OBJECT_INFO*		m_pCBMappedPropObjects			= NULL;
 	CB_OBJECT_INFO*		m_pCBMappedPlayers				= NULL;
 	CB_OBJECT_INFO*		m_pCBMappedProjectiles			= NULL;
-	CB_UI_INFO*			m_pCBMappedUIs					= NULL;
+	CB_UI_INFO*			m_pCBMappedFloatingUIs			= NULL;
+	CB_UI_INFO*			m_pCBMappedDefaultUIs			= NULL;
 
 	/*********************************************************************
 	2019-06-15
 	생성한 객체들을 관리할 벡터.
 	*********************************************************************/
-	vector<CObject*>	m_Props;
-	vector<CObject*>	m_Players;
-	vector<CObject*>	m_Projectiles;
-	vector<CObject*>	m_UI;
+	vector<CObject*>		m_Props;
+	vector<CPlayer*>		m_Players;
+	vector<CProjectile*>	m_Projectiles;
+	vector<CUI*>			m_FloatingUI;
+	vector<CUI*>			m_DefaultUI;
 
 	/*********************************************************************
 	2019-07-01

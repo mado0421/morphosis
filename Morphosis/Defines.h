@@ -121,36 +121,27 @@ extern bool			g_IsMouseMode;
 
 
 enum class ColliderTag {
-	DEFAULT,
-	GROUNDCHECK,
-	HEIGHTCHECK,
-	HITBOX,
-
 	PROP,
 	PROJECTILE,
-	PLAYER,
+	PLAYER
 };
 enum class ColliderType
 {
 	BOX = 0,
 	SPHERE
 };
-enum class ObjectTag {
-	Prop,
-	Player,
-	Projectile
-};
 enum class ModelType {
-	DEFAULT,
-	ANIMATED,
-	UI,
+	DefaultModel,
+	AnimatedModel,
+	FloatingUI,
 	ETC
 };
 enum class PSO {
-	DEFAULT,
-	ANIMATED,
-	UI,
-	DEBUG,
+	DefaultModel,
+	AnimatedModel,
+	FloatingUI,
+	DefaultUI,
+	Debug,
 
 	count
 };

@@ -39,7 +39,7 @@ VS_MODEL_OUTPUT VSModelShader(VS_MODEL_INPUT input) {
 	return output;
 }
 
-VS_UI_OUTPUT VSUIShader(VS_UI_INPUT input, uint nVertexID : SV_VertexID) {
+VS_UI_OUTPUT VSFloatingUI(VS_UI_INPUT input, uint nVertexID : SV_VertexID) {
 	VS_UI_OUTPUT output;
 
 	if (0 == nVertexID % 6) {
@@ -64,7 +64,45 @@ VS_UI_OUTPUT VSUIShader(VS_UI_INPUT input, uint nVertexID : SV_VertexID) {
 
 	output.positionW = (float3)mul(float4(input.position, 1.0f), gmtxUI);
 	output.position = mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection);
+
 	output.uv = input.uv;
+
+	return output;
+}
+
+VS_UI_OUTPUT VSDefaultUI(VS_UI_INPUT input, uint nVertexID : SV_VertexID) {
+	VS_UI_OUTPUT output;
+
+	input.position.x += gmtxUI._m30;
+	input.position.y -= gmtxUI._m31;
+
+	if (0 == nVertexID % 6) {
+
+	}
+	else if (1 == nVertexID % 6) {
+		input.position.x += gf2Size.x;
+	}
+	else if (2 == nVertexID % 6) {
+		input.position.x += gf2Size.x;
+		input.position.y -= gf2Size.y;
+	}
+	else if (3 == nVertexID % 6) {
+	}
+	else if (4 == nVertexID % 6) {
+		input.position.x += gf2Size.x;
+		input.position.y -= gf2Size.y;
+	}
+	else if (5 == nVertexID % 6) {
+		input.position.y -= gf2Size.y;
+	}
+
+
+	input.position.x = (input.position.x * 2) - 1;
+	input.position.y = (input.position.y * 2) + 1;
+
+	output.position		= float4(input.position, 1.0f);
+	output.positionW	= float3(0,0,0);
+	output.uv			= input.uv;
 
 	return output;
 }

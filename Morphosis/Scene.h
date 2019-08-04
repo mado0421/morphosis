@@ -11,15 +11,17 @@ class CScene
 {
 protected:
 	ID3D12RootSignature				*m_pd3dGraphicsRootSignature	= NULL;
-
 	ID3D12Device					*m_pd3dDevice					= NULL;
 	ID3D12GraphicsCommandList		*m_pd3dCommandList				= NULL;
-
 	ID3D12DescriptorHeap			*m_pd3dCbvSrvDescriptorHeap		= NULL;
 
 	POINT							m_ptOldCursorPos;
 	CCamera							*m_pCamera = NULL;
 	CFramework						*m_pFramework = NULL;
+
+
+
+
 
 public:
 	// Scene의 기본적인 함수들

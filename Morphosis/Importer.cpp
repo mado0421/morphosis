@@ -11,7 +11,7 @@ std::vector<CAnimationController*>	g_vecAnimController;
 
 void CImporter::ImportModel(const char * fileName, const char * textureName, ModelType type, const char * modelName, float scale)
 {
-	if (ModelType::UI == type) {
+	if (ModelType::FloatingUI == type) {
 		CModel* model = new CModel();
 		CUIMesh* tempMesh = new CUIMesh(m_pd3dDevice, m_pd3dCommandList);
 		model->SetMesh(tempMesh);
@@ -28,7 +28,7 @@ void CImporter::ImportModel(const char * fileName, const char * textureName, Mod
 	ImportModelData modelData;
 	modelData.ImportFile(modelDataName.c_str());
 
-	if (ModelType::DEFAULT == type) {
+	if (ModelType::DefaultModel == type) {
 		for (int i = 0; i < modelData.GetNumOfMesh(); ++i) {
 			string partName = modelName;
 			partName += "_";
@@ -43,7 +43,7 @@ void CImporter::ImportModel(const char * fileName, const char * textureName, Mod
 			g_vecModel.push_back(model);
 		}
 	}
-	if (ModelType::ANIMATED == type) {
+	if (ModelType::AnimatedModel == type) {
 		for (int i = 0; i < modelData.GetNumOfMesh(); ++i) {
 			string partName = modelName;
 			partName += "_";

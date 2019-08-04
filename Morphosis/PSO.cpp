@@ -218,7 +218,7 @@ void CPsoGenerator::Init(ID3D12Device * pd3dDevice, ID3D12RootSignature * pd3dGr
 	g_vecPSO.push_back(psoType->GetPipelineState());
 }
 
-D3D12_INPUT_LAYOUT_DESC CPsoUI::CreateInputLayout()
+D3D12_INPUT_LAYOUT_DESC CPsoFloatingUI::CreateInputLayout()
 {
 	UINT nInputElementDescs = 2;
 	D3D12_INPUT_ELEMENT_DESC *pd3dInputElementDescs = new D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
@@ -233,14 +233,41 @@ D3D12_INPUT_LAYOUT_DESC CPsoUI::CreateInputLayout()
 	return(d3dInputLayoutDesc);
 }
 
-D3D12_SHADER_BYTECODE CPsoUI::CreateVertexShader(ID3DBlob ** ppd3dShaderBlob)
+D3D12_SHADER_BYTECODE CPsoFloatingUI::CreateVertexShader(ID3DBlob ** ppd3dShaderBlob)
 {
-	return(CompileShaderFromFile(L"VertexShader.hlsl", "VSUIShader", "vs_5_1", ppd3dShaderBlob));
+	return(CompileShaderFromFile(L"VertexShader.hlsl", "VSFloatingUI", "vs_5_1", ppd3dShaderBlob));
 
 }
 
-D3D12_SHADER_BYTECODE CPsoUI::CreatePixelShader(ID3DBlob ** ppd3dShaderBlob)
+D3D12_SHADER_BYTECODE CPsoFloatingUI::CreatePixelShader(ID3DBlob ** ppd3dShaderBlob)
 {
-	return(CompileShaderFromFile(L"PixelShader.hlsl", "PSUIShader", "ps_5_1", ppd3dShaderBlob));
+	return(CompileShaderFromFile(L"PixelShader.hlsl", "PSDefaultUI", "ps_5_1", ppd3dShaderBlob));
+
+}
+
+D3D12_INPUT_LAYOUT_DESC CPsoDefaultUI::CreateInputLayout()
+{
+	UINT nInputElementDescs = 2;
+	D3D12_INPUT_ELEMENT_DESC *pd3dInputElementDescs = new D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
+
+	pd3dInputElementDescs[0] = { "POSITION", 0,	DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[1] = { "TEXCOORD", 0,	DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+
+	D3D12_INPUT_LAYOUT_DESC d3dInputLayoutDesc;
+	d3dInputLayoutDesc.pInputElementDescs = pd3dInputElementDescs;
+	d3dInputLayoutDesc.NumElements = nInputElementDescs;
+
+	return(d3dInputLayoutDesc);
+}
+
+D3D12_SHADER_BYTECODE CPsoDefaultUI::CreateVertexShader(ID3DBlob ** ppd3dShaderBlob)
+{
+	return(CompileShaderFromFile(L"VertexShader.hlsl", "VSDefaultUI", "vs_5_1", ppd3dShaderBlob));
+
+}
+
+D3D12_SHADER_BYTECODE CPsoDefaultUI::CreatePixelShader(ID3DBlob ** ppd3dShaderBlob)
+{
+	return(CompileShaderFromFile(L"PixelShader.hlsl", "PSDefaultUI", "ps_5_1", ppd3dShaderBlob));
 
 }
