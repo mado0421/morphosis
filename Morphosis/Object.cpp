@@ -863,8 +863,10 @@ void CObjectManager::Update(float fTime)
 	//}
 	if (SceneType::MAINPLAY == m_SceneType) {
 
+		int hp = m_Players[1]->GetHP();
+
 		//static_cast<CPlayer*>(m_Players[1])->GetHP() / static_cast<float>(g_DefaultHealthPoint);
-		m_FloatingUI[0]->SetScale(XMFLOAT2(m_Players[1]->GetHP() / static_cast<float>(g_DefaultHealthPoint), 0.02f));
+		m_FloatingUI[0]->SetScale(XMFLOAT2(hp / static_cast<float>(g_DefaultHealthPoint), 0.02f));
 		//m_DefaultUI[0]->SetPosition(XMFLOAT3(0, f*0.1,0));
 		XMFLOAT3 pos = m_Players[1]->GetPosition();
 		pos.y += 50;

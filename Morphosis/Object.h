@@ -217,7 +217,7 @@ public:
 	void			MoveForwardTrigOn() { m_trigInput[static_cast<int>(Move::W)] = true; }
 	void			Shoot();
 	void			Skill(int idx = 0);
-	void			TakeDamage(int val) { m_HealthPoint -= val; }
+	void			TakeDamage(int val) { m_HealthPoint -= val; if (m_HealthPoint < 0) m_HealthPoint = 0; }
 	void			Slow();
 	// 조건 함수
 	bool			IsShootable();
