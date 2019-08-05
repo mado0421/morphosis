@@ -15,14 +15,14 @@ CObject
 CObject::CObject()
 {
 	SetPosition(XMFLOAT3(0, 0, 0));
-	m_xmf4x4World			= Matrix4x4::Identity();
-	m_IsAlive				= true;
-	m_xmf3CollisionOffset	= XMFLOAT3(0, 0, 0);
-	m_xmf3CameraTargetOffset= XMFLOAT3(0, 0, 0);
-	m_AnimationState		= static_cast<int>(0);
-	m_Team					= TEAM_DEFAULT;
-	m_fHeightVelocity		= 0.0f;
-	m_IsGround				= false;
+	m_xmf4x4World = Matrix4x4::Identity();
+	m_IsAlive = true;
+	m_xmf3CollisionOffset = XMFLOAT3(0, 0, 0);
+	m_xmf3CameraTargetOffset = XMFLOAT3(0, 0, 0);
+	m_AnimationState = static_cast<int>(0);
+	m_Team = TEAM_DEFAULT;
+	m_fHeightVelocity = 0.0f;
+	m_IsGround = false;
 }
 CObject::~CObject()
 {
@@ -46,7 +46,7 @@ CObject::~CObject()
 void CObject::AddCollisionEffect(CObject * p)
 {
 	for (int i = 0; i < m_vecEffects.size(); ++i) {
-		m_vecEffects[i]->Act(dynamic_cast<CPlayer*>( p));
+		m_vecEffects[i]->Act(dynamic_cast<CPlayer*>(p));
 	}
 }
 void CObject::SetMng(CObjectManager * mng)
@@ -63,9 +63,9 @@ void CObject::CreateConstantBufferResource(ID3D12Device * pd3dDevice, ID3D12Grap
 {
 	if (m_AnimationController) {
 
-	UINT ncbElementBytes = (((sizeof(XMMATRIX) * g_nAnimBone) + 255) & ~255); //256의 배수
-	m_pd3dcbAnimation = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-	m_pd3dcbAnimation->Map(0, NULL, (void **)&m_pcbxmAnimation);
+		UINT ncbElementBytes = (((sizeof(XMMATRIX) * g_nAnimBone) + 255) & ~255); //256의 배수
+		m_pd3dcbAnimation = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+		m_pd3dcbAnimation->Map(0, NULL, (void **)&m_pcbxmAnimation);
 	}
 }
 void CObject::UpdateConstantBuffer(ID3D12GraphicsCommandList * pd3dCommandList)
@@ -105,7 +105,7 @@ void CObject::Render(ID3D12GraphicsCommandList * pd3dCommandList, CCamera * pCam
 void CObject::AddCollider(XMFLOAT3 offset, XMFLOAT3 extents, XMFLOAT4 quaternion)
 {
 	m_Collider.emplace_back(offset, extents, quaternion);
-	m_Collider[m_Collider.size()-1].Update(GetPosition(), GetQuaternion());
+	m_Collider[m_Collider.size() - 1].Update(GetPosition(), GetQuaternion());
 }
 void CObject::AddCollider(XMFLOAT3 offset, float radius)
 {
@@ -180,16 +180,16 @@ void CObject::SetCameraTargetOffset(XMFLOAT3 pos)
 void CObject::SetRotation(const XMFLOAT3& angle)
 {
 	XMMATRIX xmmtxRotate = XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(XMConvertToRadians(angle.x), XMConvertToRadians(angle.y), XMConvertToRadians(angle.z)));
-	XMFLOAT3 xmf3Right	= XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
-	XMFLOAT3 xmf3Up		= XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
-	XMFLOAT3 xmf3Look	= XMFLOAT3(m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33);
+	XMFLOAT3 xmf3Right = XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
+	XMFLOAT3 xmf3Up = XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
+	XMFLOAT3 xmf3Look = XMFLOAT3(m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33);
 
-	xmf3Look	= Vector3::TransformNormal(xmf3Look, xmmtxRotate);
-	xmf3Right	= Vector3::TransformNormal(xmf3Right, xmmtxRotate);
+	xmf3Look = Vector3::TransformNormal(xmf3Look, xmmtxRotate);
+	xmf3Right = Vector3::TransformNormal(xmf3Right, xmmtxRotate);
 
-	xmf3Look	= Vector3::Normalize(xmf3Look);
-	xmf3Right	= Vector3::CrossProduct(xmf3Up, xmf3Look, true);
-	xmf3Up		= Vector3::CrossProduct(xmf3Look, xmf3Right, true);
+	xmf3Look = Vector3::Normalize(xmf3Look);
+	xmf3Right = Vector3::CrossProduct(xmf3Up, xmf3Look, true);
+	xmf3Up = Vector3::CrossProduct(xmf3Look, xmf3Right, true);
 
 	m_xmf4x4World._11 = xmf3Right.x;	m_xmf4x4World._12 = xmf3Right.y;	m_xmf4x4World._13 = xmf3Right.z;
 	m_xmf4x4World._21 = xmf3Up.x;		m_xmf4x4World._22 = xmf3Up.y;		m_xmf4x4World._23 = xmf3Up.z;
@@ -213,7 +213,7 @@ const bool CObject::IsCollide(const CObject& other)
 	2019-06-18
 	other의 충돌체들과 내 충돌체들을 전부 비교해야 함.
 	*********************************************************************/
-	for (int i = 0; i < m_Collider.size(); ++i) 
+	for (int i = 0; i < m_Collider.size(); ++i)
 		for (int j = 0; j < other.m_Collider.size(); ++j) if (m_Collider[i].IsCollide(other.m_Collider[j])) return true;
 
 	return false;
@@ -228,7 +228,7 @@ const bool CObject::IsCollide(const Collider & other)
 Collider * const CObject::GetCollisionCollider(Collider& other, bool isMakeAlign)
 {
 	for (int i = 0; i < m_Collider.size(); ++i) {
-		if (isMakeAlign) 
+		if (isMakeAlign)
 			other.SetOrientation(m_Collider[i].GetOrientation());
 		if (m_Collider[i].IsCollide(other)) return &m_Collider[i];
 	}
@@ -245,14 +245,14 @@ CPlayer::CPlayer() : CObject()
 {
 	//m_ComprehensiveGroundCollider	= Collider(XMFLOAT3(0, 0, 0), g_fDefaultUnitScale / 2.0f, XMFLOAT3(0, 0, 0), ColliderTag::GROUNDCHECK);
 	//m_DetailedGroundCollider		= Collider(XMFLOAT3(0, 0, 0), g_fDefaultUnitScale / 4.0f, XMFLOAT3(0, 0, 0), ColliderTag::GROUNDCHECK);
-	m_fSpeed					= g_fDefaultPlayerSpeed;
-	m_fRemainingTimeOfFire		= 0.0f;
-	m_fRPM						= (1 / static_cast<float>(g_DefaultRPM)) * 60.0f;
-	m_xmf3Move					= XMFLOAT3(0, 0, 0);
-	m_xmf3SpawnPoint			= GetPosition();
-	m_HealthPoint				= g_DefaultHealthPoint;
-	m_fRemainingTimeOfRespawn	= 0.0f;
-	m_rotationInput				= 0.0f;
+	m_fSpeed = g_fDefaultPlayerSpeed;
+	m_fRemainingTimeOfFire = 0.0f;
+	m_fRPM = (1 / static_cast<float>(g_DefaultRPM)) * 60.0f;
+	m_xmf3Move = XMFLOAT3(0, 0, 0);
+	m_xmf3SpawnPoint = GetPosition();
+	m_HealthPoint = g_DefaultHealthPoint;
+	m_fRemainingTimeOfRespawn = 0.0f;
+	m_rotationInput = 0.0f;
 	for (int i = 0; i < static_cast<int>(Move::count); ++i) m_trigInput[i] = false;
 	m_AIBrain = new CTinMan(new CMoveBehavior(), this);
 }
@@ -282,9 +282,9 @@ void CPlayer::Update(float fTimeElapsed)
 		- 공격가능까지 남은 시간을 흐른 시간만큼 감소
 		- AnimTime을 흐른 시간만큼 증가
 		- AnimState를 조건에 따라 관리*/
-	if (m_fRemainingTimeOfFire > 0) m_fRemainingTimeOfFire		-= fTimeElapsed;
-	if (m_fRemainingTimeOfSkill1 > 0) m_fRemainingTimeOfSkill1	-= fTimeElapsed;
-	if (m_fRemainingTimeOfSlow > 0) m_fRemainingTimeOfSlow		-= fTimeElapsed;
+	if (m_fRemainingTimeOfFire > 0) m_fRemainingTimeOfFire -= fTimeElapsed;
+	if (m_fRemainingTimeOfSkill1 > 0) m_fRemainingTimeOfSkill1 -= fTimeElapsed;
+	if (m_fRemainingTimeOfSlow > 0) m_fRemainingTimeOfSlow -= fTimeElapsed;
 	else m_fSlowFactor = 1.0f;
 
 	if (m_AnimationController) {
@@ -324,7 +324,7 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 	if (!m_IsAlive) return;
 
 	m_fHeightVelocity -= fTimeElapsed * g_Gravity;
-	if (m_fHeightVelocity < -1.5) { 
+	if (m_fHeightVelocity < -1.5) {
 		m_fHeightVelocity = -1.5;
 		Falling = true;
 	}
@@ -352,7 +352,7 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 
 
 	while (true) {
-		Collider DetailedGroundCollider(XMFLOAT3(0,0,0), radius);
+		Collider DetailedGroundCollider(XMFLOAT3(0, 0, 0), radius);
 		DetailedGroundCollider.Update(Vector3::Add(GetPosition(), m_xmf3Move), XMFLOAT4(0, 0, 0, 1));
 		Collider* collider = m_pObjMng->GetCollider(DetailedGroundCollider, ColliderTag::PROP, false);
 		if (NULL == collider) break;
@@ -363,13 +363,13 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 		a.col = collider;
 		a.prevMove = m_xmf3Move;
 
-		XMFLOAT3 look		= collider->GetLook();
-		XMFLOAT3 up			= collider->GetUp();
-		XMFLOAT3 right		= Vector3::CrossProduct(up, look);
+		XMFLOAT3 look = collider->GetLook();
+		XMFLOAT3 up = collider->GetUp();
+		XMFLOAT3 right = Vector3::CrossProduct(up, look);
 
-		XMVECTOR planeXY	= XMPlaneFromPointNormal(XMLoadFloat3(&collider->GetCenter()), XMLoadFloat3(&look));
-		XMVECTOR planeXZ	= XMPlaneFromPointNormal(XMLoadFloat3(&collider->GetCenter()), XMLoadFloat3(&up));
-		XMVECTOR planeYZ	= XMPlaneFromPointNormal(XMLoadFloat3(&collider->GetCenter()), XMLoadFloat3(&right));
+		XMVECTOR planeXY = XMPlaneFromPointNormal(XMLoadFloat3(&collider->GetCenter()), XMLoadFloat3(&look));
+		XMVECTOR planeXZ = XMPlaneFromPointNormal(XMLoadFloat3(&collider->GetCenter()), XMLoadFloat3(&up));
+		XMVECTOR planeYZ = XMPlaneFromPointNormal(XMLoadFloat3(&collider->GetCenter()), XMLoadFloat3(&right));
 
 		XMVECTOR temp;
 		XMFLOAT3 xmf3Temp;
@@ -459,7 +459,7 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 		dir = Vector3::Normalize(dir);
 
 		XMVector3ComponentsFromNormal(&parallel, &perpendicular, XMLoadFloat3(&m_xmf3Move), XMLoadFloat3(&dir));
-		
+
 		XMStoreFloat3(&m_xmf3Move, perpendicular);
 
 		//if(Vector3::DotProduct(dir, xmf3Temp) > 0)	m_xmf3Move = xmf3Temp;
@@ -489,9 +489,9 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 	/* For Test */
 	while (t.size() > 100) { t.erase(t.begin()); }
 
-	XMFLOAT3 xmf3Right	= XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
-	XMFLOAT3 xmf3Up		= XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
-	XMFLOAT3 xmf3Look	= XMFLOAT3(m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33);
+	XMFLOAT3 xmf3Right = XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
+	XMFLOAT3 xmf3Up = XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
+	XMFLOAT3 xmf3Look = XMFLOAT3(m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33);
 
 	float rotationAngle = Rotate(fTimeElapsed);
 	XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(rotationAngle));
@@ -588,9 +588,9 @@ void CPlayer::ChangeAnimClip()
 {
 	if (static_cast<int>(AnimationState::IDLE) == m_AnimationState)
 		m_AnimationController->ChangeAnimClip("PlayerIdle");
-	if (static_cast<int>(AnimationState::FIRE) == m_AnimationState) 
+	if (static_cast<int>(AnimationState::FIRE) == m_AnimationState)
 		m_AnimationController->ChangeAnimClip("PlayerFire");
-	if (static_cast<int>(AnimationState::RUN) == m_AnimationState) 
+	if (static_cast<int>(AnimationState::RUN) == m_AnimationState)
 		m_AnimationController->ChangeAnimClip("PlayerRun");
 	if (static_cast<int>(AnimationState::STARTJUMP) == m_AnimationState)
 		m_AnimationController->ChangeAnimClip("PlayerStartJump");
@@ -640,11 +640,11 @@ CProjectile
 *********************************************************************/
 CProjectile::CProjectile() : CObject()
 {
-	m_IsAlive		= false;
+	m_IsAlive = false;
 	m_xmf3Direction = XMFLOAT3(0, 0, 0);
-	m_fSpeed		= g_fDefaultProjectileSpeed;
-	m_fLifeTime		= g_DefaultProjectileLifeTime;
-	m_BaseDamage	= g_DefaultDamage;
+	m_fSpeed = g_fDefaultProjectileSpeed;
+	m_fLifeTime = g_DefaultProjectileLifeTime;
+	m_BaseDamage = g_DefaultDamage;
 }
 CProjectile::~CProjectile()
 {
@@ -677,8 +677,8 @@ void CProjectile::Initialize(CObject * obj)
 
 	SetTeam(obj->GetTeam());
 
-	m_xmf3Direction		= Vector3::Normalize(obj->GetLook());
-	m_fLifeTime			= g_DefaultProjectileLifeTime;
+	m_xmf3Direction = Vector3::Normalize(obj->GetLook());
+	m_fLifeTime = g_DefaultProjectileLifeTime;
 
 
 	/*********************************************************************
@@ -770,16 +770,21 @@ CObjectManager::~CObjectManager()
 	m_Props.clear();
 	m_Players.clear();
 	m_Projectiles.clear();
+	m_FloatingUI.clear();
+	m_DefaultUI.clear();
 
 	// 얘네는 밖에서 받아옴.
 	m_pd3dDevice = NULL;
 	m_pd3dCommandList = NULL;
 
 	// 얘는 안에서 만들었음.
-	m_pd3dCbvSrvDescriptorHeap->Release();
-	m_pd3dCBPropResource->Release();
-	m_pd3dCBPlayersResource->Release();
-	m_pd3dCBProjectilesResource->Release();
+	if (m_pd3dCbvSrvDescriptorHeap) m_pd3dCbvSrvDescriptorHeap->Release();
+
+	if(m_pd3dCBPropResource)		m_pd3dCBPropResource->Release();
+	if(m_pd3dCBPlayersResource)		m_pd3dCBPlayersResource->Release();
+	if(m_pd3dCBProjectilesResource)	m_pd3dCBProjectilesResource->Release();
+	if (m_pd3dCBFloatingUIsResource)m_pd3dCBFloatingUIsResource->Release();
+	if (m_pd3dCBDefaultUIsResource)	m_pd3dCBDefaultUIsResource->Release();
 }
 void CObjectManager::Render()
 {
@@ -829,11 +834,11 @@ void CObjectManager::Render()
 		pbMappedcbui->m_xmf2Size = m_DefaultUI[i]->GetSize();
 	}
 
-	m_pd3dCommandList->SetPipelineState(g_vecPSO[static_cast<int>( PSO::DefaultModel )]);
+	m_pd3dCommandList->SetPipelineState(g_vecPSO[static_cast<int>(PSO::DefaultModel)]);
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Render(m_pd3dCommandList);
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->Render(m_pd3dCommandList);
 
-	m_pd3dCommandList->SetPipelineState(g_vecPSO[static_cast<int>( PSO::AnimatedModel )]);
+	m_pd3dCommandList->SetPipelineState(g_vecPSO[static_cast<int>(PSO::AnimatedModel)]);
 	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->Render(m_pd3dCommandList);
 
 	m_pd3dCommandList->SetPipelineState(g_vecPSO[static_cast<int>(PSO::FloatingUI)]);
@@ -856,14 +861,16 @@ void CObjectManager::Update(float fTime)
 	//	f -= fTime;
 	//	if (f < 0) turn = true;
 	//}
-	
-	//static_cast<CPlayer*>(m_Players[1])->GetHP() / static_cast<float>(g_DefaultHealthPoint);
-	m_FloatingUI[0]->SetScale(XMFLOAT2(m_Players[1]->GetHP() / static_cast<float>(g_DefaultHealthPoint), 0.02f));
-	//m_DefaultUI[0]->SetPosition(XMFLOAT3(0, f*0.1,0));
-	XMFLOAT3 pos = m_Players[1]->GetPosition();
-	pos.y += 50;
-	pos.x -= 25;
-	m_FloatingUI[0]->SetPosition(pos);
+	if (SceneType::MAINPLAY == m_SceneType) {
+
+		//static_cast<CPlayer*>(m_Players[1])->GetHP() / static_cast<float>(g_DefaultHealthPoint);
+		m_FloatingUI[0]->SetScale(XMFLOAT2(m_Players[1]->GetHP() / static_cast<float>(g_DefaultHealthPoint), 0.02f));
+		//m_DefaultUI[0]->SetPosition(XMFLOAT3(0, f*0.1,0));
+		XMFLOAT3 pos = m_Players[1]->GetPosition();
+		pos.y += 50;
+		pos.x -= 25;
+		m_FloatingUI[0]->SetPosition(pos);
+	}
 
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Update(fTime);
 	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->Update(fTime);
@@ -875,39 +882,56 @@ void CObjectManager::Update(float fTime)
 }
 void CObjectManager::ProcessInput(UCHAR * pKeysBuffer, float mouse)
 {
-	if (m_Players[0]->IsAlive()) m_Players[0]->ProcessInput(pKeysBuffer, mouse);
+	if (SceneType::MAINPLAY == m_SceneType) {
 
-	//if (pKeysBuffer[VK_RBUTTON] & 0xF0)
-	//	cout << m_Players[0]->GetPosition().x << ", " << m_Players[0]->GetPosition().y << ", " << m_Players[0]->GetPosition().z << "\n";
+		if (m_Players[0]->IsAlive()) m_Players[0]->ProcessInput(pKeysBuffer, mouse);
 
+		static float cameraOffsetZ = 23;
+		static float cameraOffsetY = 27;
+		if (pKeysBuffer[VK_RBUTTON] & 0xF0)
+			cout << m_Players[0]->GetPosition().x << ", " << m_Players[0]->GetPosition().y << ", " << m_Players[0]->GetPosition().z << "\n";
 
-	if (pKeysBuffer[VK_LBUTTON] & 0xF0) {
-		/*********************************************************************
-		2019-06-17
-		마우스를 클릭하면 해줘야 하는 것들.
+		if (pKeysBuffer[KEY::I] & 0xF0) {
+			cameraOffsetY += 0.05; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+		}
+		if (pKeysBuffer[KEY::K] & 0xF0) {
+			cameraOffsetY -= 0.05; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+		}
+		if (pKeysBuffer[KEY::J] & 0xF0) {
+			cameraOffsetZ += 0.05; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+		}
+		if (pKeysBuffer[KEY::L] & 0xF0) {
+			cameraOffsetZ -= 0.05; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+		}
 
-		먼저, IsAlive == false인 투사체를 찾는다.
-		찾았으면 그 객체를 초기화하고(위치 변경, 방향 변경 등등)
-		IsAlive = true로 변경한다.
+		if (pKeysBuffer[VK_LBUTTON] & 0xF0) {
+			/*********************************************************************
+			2019-06-17
+			마우스를 클릭하면 해줘야 하는 것들.
 
-		Render와 Update는 IsAlive가 true 일 때만 되게 해야 한다.
-		*********************************************************************/
-		if (dynamic_cast<CPlayer*>(m_Players[0])->IsShootable()) {
-			dynamic_cast<CPlayer*>(m_Players[0])->Shoot();
-			auto iter = find_if(m_Projectiles.begin(), m_Projectiles.end(), [](CObject* p) {return !(p->IsAlive()); });
-			if (iter != m_Projectiles.end()) {
-				dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[0],"Model_PaperBox_box_1", new EDefaultDamage() );
-				(*iter)->SetAlive(true);
+			먼저, IsAlive == false인 투사체를 찾는다.
+			찾았으면 그 객체를 초기화하고(위치 변경, 방향 변경 등등)
+			IsAlive = true로 변경한다.
+
+			Render와 Update는 IsAlive가 true 일 때만 되게 해야 한다.
+			*********************************************************************/
+			if (dynamic_cast<CPlayer*>(m_Players[0])->IsShootable()) {
+				dynamic_cast<CPlayer*>(m_Players[0])->Shoot();
+				auto iter = find_if(m_Projectiles.begin(), m_Projectiles.end(), [](CObject* p) {return !(p->IsAlive()); });
+				if (iter != m_Projectiles.end()) {
+					dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[0], "Model_PaperBox_box_1", new EDefaultDamage());
+					(*iter)->SetAlive(true);
+				}
 			}
 		}
-	}
-	if (pKeysBuffer[VK_RBUTTON] & 0xF0) {
-		if (dynamic_cast<CPlayer*>(m_Players[0])->IsSkillUseable()) {
-			dynamic_cast<CPlayer*>(m_Players[0])->Skill();
-			auto iter = find_if(m_Projectiles.begin(), m_Projectiles.end(), [](CObject* p) {return !(p->IsAlive()); });
-			if (iter != m_Projectiles.end()) {
-				dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[0], "Model_Crystal_default", new ESlow());
-				(*iter)->SetAlive(true);
+		if (pKeysBuffer[VK_RBUTTON] & 0xF0) {
+			if (dynamic_cast<CPlayer*>(m_Players[0])->IsSkillUseable()) {
+				dynamic_cast<CPlayer*>(m_Players[0])->Skill();
+				auto iter = find_if(m_Projectiles.begin(), m_Projectiles.end(), [](CObject* p) {return !(p->IsAlive()); });
+				if (iter != m_Projectiles.end()) {
+					dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[0], "Model_Crystal_default", new ESlow());
+					(*iter)->SetAlive(true);
+				}
 			}
 		}
 	}
@@ -970,8 +994,8 @@ void CObjectManager::ColliderTrigInit(ColliderTag targetTag)
 void CObjectManager::LateUpdate(float fTime)
 {
 	for (auto projectile = m_Projectiles.begin(); projectile != m_Projectiles.end(); ++projectile)
-		for (auto player = m_Players.begin(); player != m_Players.end(); ++player) 
-			if ((*player)->IsAlive()) 
+		for (auto player = m_Players.begin(); player != m_Players.end(); ++player)
+			if ((*player)->IsAlive())
 				if (IsCollidable((*player), (*projectile)))
 					if ((*player)->IsCollide(*(*projectile))) {
 						(*projectile)->AddCollisionEffect((*player));
@@ -1127,192 +1151,296 @@ void CObjectManager::CreateObjectData()
 	*********************************************************************/
 	CImporter importer(m_pd3dDevice, m_pd3dCommandList);
 
-	importer.ImportLevel("LevelData_TestMap", m_LevelDataDesc);
-
-	XMFLOAT3 nodePositions[9] = {
-		XMFLOAT3(0,0,0),
-		XMFLOAT3(-200,0,88),
-		XMFLOAT3(-200,0,230),
-		XMFLOAT3(-139,0,257),
-		XMFLOAT3(-127,0,341),
-		XMFLOAT3(-42,0,387),
-		XMFLOAT3(-18,0,297),
-		XMFLOAT3(73,0,270),
-		XMFLOAT3(56,0,137)
-	};
-
-	for (int i = 0; i < 9; ++i) {
-		AINode* tempNode = new AINode();
-		tempNode->m_xmf3Position = nodePositions[i];
-		g_vecAINode.push_back(tempNode);
-	}
-	for (int i = 0; i < 8; ++i) {
-		g_vecAINode[i]->next = g_vecAINode[i + 1];
-	}
-	g_vecAINode[8]->next = g_vecAINode[0];
 
 
-	/*********************************************************************
-	2019-06-15
-	서술자 힙을 생성하기 위해 개수들을 정해준다. 지금은 임의로 하지만 나중에는
-	m_nProps는 LevelData에서 읽어오고, 나머지는 Defines.h에서 가져올 것.
-	*********************************************************************/
-	int nProps = 1;
-	int nPlayers = 2;
-	int nFloatingUI = 1;
-	int nDefaultUI = 1;
-	int nProjectiles = nPlayers * g_nProjectilePerPlayer;
-	m_nObjects = nProps + nPlayers + nProjectiles + nFloatingUI + nDefaultUI;
-
-	m_Props.resize(nProps);
-	m_Players.resize(nPlayers);
-	m_Projectiles.resize(nProjectiles);
-	m_FloatingUI.resize(nFloatingUI);
-	m_DefaultUI.resize(nDefaultUI);
 
 
-	CreateDescriptorHeap();
-	/*********************************************************************
-	2019-06-15
-	텍스처도 여기서 넣어야 할 것 같음. 텍스처를 먼저 만들어둔다.
-	텍스처는 서술자 힙 만들고 나서 해야 되는거 아냐?
 
-	2019-07-21
-	텍스처를 전역 벡터로 관리하기 시작.
-	*********************************************************************/
 
-	g_vecTexture.clear();
-	importer.ImportTexture(L"0615_Box_diff",			"Texture_PaperBox");
-	importer.ImportTexture(L"character_2_diff_test3",	"Texture_Character");
-	importer.ImportTexture(L"0618_LevelTest_diff",		"Texture_Level");
-	importer.ImportTexture(L"box_diff",					"Texture_StandardBox");
-	importer.ImportTexture(L"2B_diff",					"Texture_2B");
-	importer.ImportTexture(L"DefaultMaterial_albedo",	"Texture_Bench");
-	importer.ImportTexture(L"spotlight_BaseColor",		"Texture_Spotlight");
-	importer.ImportTexture(L"HealthBar",				"Texture_HPBar");
-	importer.ImportTexture(L"crosshair",				"Texture_Crosshair");
-	importer.ImportTexture(L"TEX_crystal",				"Texture_Crystal");
-	for (int i = 0; i < g_vecTexture.size(); ++i) CreateTextureResourceView(g_vecTexture[i]);
-	
-	importer.ImportModel("0730_LevelTest",						"Texture_Level",		ModelType::DefaultModel,	"Model_Level");
-	importer.ImportModel("0725_Character",						"Texture_Character",	ModelType::DefaultModel,	"Model_CharacterStatic", 2.0f);
-	importer.ImportModel("0725_Character",						"Texture_Character",	ModelType::AnimatedModel,"Model_Character");
-	importer.ImportModel("0725_PaperBox_NoSpitPerVertexNormal", "Texture_PaperBox",		ModelType::DefaultModel,	"Model_PaperBox");
-	importer.ImportModel("box",									"Texture_StandardBox",	ModelType::DefaultModel,	"Model_Box1");
-	importer.ImportModel("box2",								"Texture_StandardBox",	ModelType::DefaultModel,	"Model_Box2");
-	//importer.ImportModel("0723_Box_SN",						"Texture_PaperBox",		ModelType::DefaultModel,	"Model_PaperBox_Resize", 0.5f);
-	importer.ImportModel("crystal",								"Texture_Crystal",		ModelType::DefaultModel,	"Model_Crystal");
-	importer.ImportModel("Bench",								"Texture_Bench",		ModelType::DefaultModel, "Model_Bench", 2.0f);
-	importer.ImportModel("Spotlight",							"Texture_Spotlight",	ModelType::DefaultModel, "Model_Spotlight", 1.1f);
-	importer.ImportModel("",									"Texture_HPBar",		ModelType::FloatingUI,		"UI_TEST");
-	importer.ImportModel("",									"Texture_Crosshair",		ModelType::FloatingUI,		"UI_Crosshair");
-	importer.ImportModel("2b",									"Texture_2B",			ModelType::DefaultModel,	"Model_2B");
 
-	importer.ImportAnimController("AnimCtrl_Character");
 
-	importer.ImportAnimClip("0603_CharacterIdle",		"AnimCtrl_Character", true);
-	importer.ImportAnimClip("0603_CharacterRun",		"AnimCtrl_Character", true);
-	importer.ImportAnimClip("0603_CharacterFire",		"AnimCtrl_Character", false);
-	importer.ImportAnimClip("0603_CharacterStartJump",	"AnimCtrl_Character", false);
-	importer.ImportAnimClip("0603_CharacterEndJump",	"AnimCtrl_Character", false);
-	importer.ImportAnimClip("0603_CharacterDied",		"AnimCtrl_Character", false);
+	if (SceneType::MAINPLAY == m_SceneType) {
 
-	CreateConstantBufferResorce();
-	CreateConstantBufferView();
 
-	int count = 0;
-	for (int i = 0; i < m_Props.size(); i++) {
-		CObject* obj = new CObject();
-		obj->SetMng(this);
-		if (0 == i) {
-			obj->AddModel(GetModelByName("Model_Level_Box042"));
-			obj->AddModel(GetModelByName("Model_Level_Box045"));
-			obj->AddModel(GetModelByName("Model_Level_Box047"));
-			for (int j = 0; j < m_LevelDataDesc.nCollisionMaps; ++j) {
-				obj->AddCollider(
-					m_LevelDataDesc.CollisionPosition[j],
-					m_LevelDataDesc.CollisionScale[j],
-					m_LevelDataDesc.CollisionRotation[j]);
+
+		importer.ImportLevel("LevelData_TestMap", m_LevelDataDesc);
+
+		XMFLOAT3 nodePositions[9] = {
+			XMFLOAT3(0,0,0),
+			XMFLOAT3(-200,0,88),
+			XMFLOAT3(-200,0,230),
+			XMFLOAT3(-139,0,257),
+			XMFLOAT3(-127,0,341),
+			XMFLOAT3(-42,0,387),
+			XMFLOAT3(-18,0,297),
+			XMFLOAT3(73,0,270),
+			XMFLOAT3(56,0,137)
+		};
+
+		for (int i = 0; i < 9; ++i) {
+			AINode* tempNode = new AINode();
+			tempNode->m_xmf3Position = nodePositions[i];
+			g_vecAINode.push_back(tempNode);
+		}
+		for (int i = 0; i < 8; ++i) {
+			g_vecAINode[i]->next = g_vecAINode[i + 1];
+		}
+		g_vecAINode[8]->next = g_vecAINode[0];
+
+
+		/*********************************************************************
+		2019-06-15
+		서술자 힙을 생성하기 위해 개수들을 정해준다. 지금은 임의로 하지만 나중에는
+		m_nProps는 LevelData에서 읽어오고, 나머지는 Defines.h에서 가져올 것.
+		*********************************************************************/
+		int nProps = 1;
+		int nPlayers = 2;
+		int nFloatingUI = 1;
+		int nDefaultUI = 1;
+		int nProjectiles = nPlayers * g_nProjectilePerPlayer;
+		m_nObjects = nProps + nPlayers + nProjectiles + nFloatingUI + nDefaultUI;
+
+		m_Props.resize(nProps);
+		m_Players.resize(nPlayers);
+		m_Projectiles.resize(nProjectiles);
+		m_FloatingUI.resize(nFloatingUI);
+		m_DefaultUI.resize(nDefaultUI);
+
+
+		CreateDescriptorHeap();
+		/*********************************************************************
+		2019-06-15
+		텍스처도 여기서 넣어야 할 것 같음. 텍스처를 먼저 만들어둔다.
+		텍스처는 서술자 힙 만들고 나서 해야 되는거 아냐?
+
+		2019-07-21
+		텍스처를 전역 벡터로 관리하기 시작.
+		*********************************************************************/
+
+		g_vecTexture.clear();
+		importer.ImportTexture(L"0615_Box_diff", "Texture_PaperBox");
+		importer.ImportTexture(L"character_2_diff_test3", "Texture_Character");
+		importer.ImportTexture(L"0618_LevelTest_diff", "Texture_Level");
+		importer.ImportTexture(L"box_diff", "Texture_StandardBox");
+		importer.ImportTexture(L"2B_diff", "Texture_2B");
+		importer.ImportTexture(L"DefaultMaterial_albedo", "Texture_Bench");
+		importer.ImportTexture(L"spotlight_BaseColor", "Texture_Spotlight");
+		importer.ImportTexture(L"HealthBar", "Texture_HPBar");
+		importer.ImportTexture(L"crosshair", "Texture_Crosshair");
+		importer.ImportTexture(L"TEX_crystal", "Texture_Crystal");
+		for (int i = 0; i < g_vecTexture.size(); ++i) CreateTextureResourceView(g_vecTexture[i]);
+
+		importer.ImportModel("0730_LevelTest", "Texture_Level", ModelType::DefaultModel, "Model_Level");
+		importer.ImportModel("0725_Character", "Texture_Character", ModelType::DefaultModel, "Model_CharacterStatic", 2.0f);
+		importer.ImportModel("0725_Character", "Texture_Character", ModelType::AnimatedModel, "Model_Character");
+		importer.ImportModel("0725_PaperBox_NoSpitPerVertexNormal", "Texture_PaperBox", ModelType::DefaultModel, "Model_PaperBox");
+		importer.ImportModel("box", "Texture_StandardBox", ModelType::DefaultModel, "Model_Box1");
+		importer.ImportModel("box2", "Texture_StandardBox", ModelType::DefaultModel, "Model_Box2");
+		//importer.ImportModel("0723_Box_SN",						"Texture_PaperBox",		ModelType::DefaultModel,	"Model_PaperBox_Resize", 0.5f);
+		importer.ImportModel("crystal", "Texture_Crystal", ModelType::DefaultModel, "Model_Crystal");
+		importer.ImportModel("Bench", "Texture_Bench", ModelType::DefaultModel, "Model_Bench", 2.0f);
+		importer.ImportModel("Spotlight", "Texture_Spotlight", ModelType::DefaultModel, "Model_Spotlight", 1.1f);
+		importer.ImportModel("", "Texture_HPBar", ModelType::FloatingUI, "UI_TEST");
+		importer.ImportModel("", "Texture_Crosshair", ModelType::FloatingUI, "UI_Crosshair");
+		importer.ImportModel("2b", "Texture_2B", ModelType::DefaultModel, "Model_2B");
+
+		importer.ImportAnimController("AnimCtrl_Character");
+
+		importer.ImportAnimClip("0603_CharacterIdle", "AnimCtrl_Character", true);
+		importer.ImportAnimClip("0603_CharacterRun", "AnimCtrl_Character", true);
+		importer.ImportAnimClip("0603_CharacterFire", "AnimCtrl_Character", false);
+		importer.ImportAnimClip("0603_CharacterStartJump", "AnimCtrl_Character", false);
+		importer.ImportAnimClip("0603_CharacterEndJump", "AnimCtrl_Character", false);
+		importer.ImportAnimClip("0603_CharacterDied", "AnimCtrl_Character", false);
+
+		CreateConstantBufferResorce();
+		CreateConstantBufferView();
+
+		int count = 0;
+		for (int i = 0; i < m_Props.size(); i++) {
+			CObject* obj = new CObject();
+			obj->SetMng(this);
+			if (0 == i) {
+				obj->AddModel(GetModelByName("Model_Level_Box042"));
+				obj->AddModel(GetModelByName("Model_Level_Box045"));
+				obj->AddModel(GetModelByName("Model_Level_Box047"));
+				for (int j = 0; j < m_LevelDataDesc.nCollisionMaps; ++j) {
+					obj->AddCollider(
+						m_LevelDataDesc.CollisionPosition[j],
+						m_LevelDataDesc.CollisionScale[j],
+						m_LevelDataDesc.CollisionRotation[j]);
+				}
 			}
+			else if (1 == i) {
+				obj->AddModel(GetModelByName("Model_Bench_Cube.005"));
+				obj->SetPosition(0.0f, 0.0f, 70.0f);
+				obj->SetRotation(XMFLOAT3(0, 35, 0));
+			}
+			else {
+				obj->AddModel(GetModelByName("Model_Spotlight_Spotlight"));
+				obj->SetPosition(30.0f, 0.0f, 0.0f);
+				obj->SetRotation(XMFLOAT3(0, 80, 0));
+
+			}
+			//else {
+			//	//obj->AddModel(importer.GetModelByName("Model_Box2_Box001"));
+			//	obj->AddModel(GetModelByName("Model_2B_body"));
+			//	//obj->AddModel(GetModelByName("Model_CharacterStatic_body"));
+			//	//obj->AddModel(GetModelByName("Model_CharacterStatic_jumper"));
+			//	//obj->AddModel(GetModelByName("Model_CharacterStatic_mask"));
+			//	obj->SetPosition(0.0f, 0.0f, 0.0f);
+			//}
+
+			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
+			m_Props[i] = obj;
 		}
-		else if (1 == i) {
-			obj->AddModel(GetModelByName("Model_Bench_Cube.005"));
-			obj->SetPosition(0.0f, 0.0f, 70.0f);
-			obj->SetRotation(XMFLOAT3(0, 35, 0));
+		for (int i = 0; i < m_Players.size(); i++) {
+			CPlayer* obj = new CPlayer();
+			obj->SetMng(this);
+			obj->AddModel(GetModelByName("Model_Character_body"));
+			obj->AddModel(GetModelByName("Model_Character_jumper"));
+			obj->AddModel(GetModelByName("Model_Character_mask"));
+
+			obj->SetAnimCtrl(GetAnimCtrlByName("AnimCtrl_Character"));
+
+			obj->SetPosition(0, 100, i * g_fDefaultUnitScale * 3);
+			obj->SetSpawnPoint(obj->GetPosition());
+			obj->AddCollider(
+				XMFLOAT3(0, 8, 0),
+				XMFLOAT3(6, 8, 6),
+				XMFLOAT4(0, 0, 0, 1)
+			);
+			obj->SetCameraTargetOffset(XMFLOAT3(0, 23, 27));
+
+			obj->SetTeam((i % 2) + 1);
+			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
+
+			if (i >= 1) obj->m_AIBrain->PowerOn();
+
+			m_Players[i] = obj;
 		}
-		else {
-			obj->AddModel(GetModelByName("Model_Spotlight_Spotlight"));
-			obj->SetPosition(30.0f, 0.0f, 0.0f);
-			obj->SetRotation(XMFLOAT3(0, 80, 0));
+		for (int i = 0; i < m_Projectiles.size(); i++) {
+			CProjectile* obj = new CProjectile();
+			obj->SetMng(this);
+			obj->AddModel(GetModelByName("Model_PaperBox_box_1"));
+
+			obj->SetAlive(false);
+			obj->AddCollider(XMFLOAT3(0, 0, 0), 10.0f);
+			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
+			m_Projectiles[i] = obj;
+		}
+		for (int i = 0; i < m_FloatingUI.size(); i++) {
+			CUI* obj = new CUI();
+			obj->SetMng(this);
+			obj->AddModel(GetModelByName("UI_TEST"));
+			obj->SetPosition(0.0f, 50.0f, 0.0f);
+			obj->Initialize(XMFLOAT2(50, 50));
+
+			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
+			m_FloatingUI[i] = obj;
+		}
+		for (int i = 0; i < m_DefaultUI.size(); i++) {
+			CUI* obj = new CUI();
+			obj->SetMng(this);
+			obj->AddModel(GetModelByName("UI_Crosshair"));
+			obj->SetPosition(0.5, 0.35, 0.0f);
+			obj->Initialize(XMFLOAT2(50, 50));
+
+			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
+			m_DefaultUI[i] = obj;
+		}
+
+	}
+	else if (SceneType::LOBBY == m_SceneType)
+	{
+		importer.ImportLevel("LevelData_TestMap", m_LevelDataDesc);
+
+		XMFLOAT3 nodePositions[9] = {
+			XMFLOAT3(0,0,0),
+			XMFLOAT3(-200,0,88),
+			XMFLOAT3(-200,0,230),
+			XMFLOAT3(-139,0,257),
+			XMFLOAT3(-127,0,341),
+			XMFLOAT3(-42,0,387),
+			XMFLOAT3(-18,0,297),
+			XMFLOAT3(73,0,270),
+			XMFLOAT3(56,0,137)
+		};
+
+		for (int i = 0; i < 9; ++i) {
+			AINode* tempNode = new AINode();
+			tempNode->m_xmf3Position = nodePositions[i];
+			g_vecAINode.push_back(tempNode);
+		}
+		for (int i = 0; i < 8; ++i) {
+			g_vecAINode[i]->next = g_vecAINode[i + 1];
+		}
+		g_vecAINode[8]->next = g_vecAINode[0];
+
+
+		/*********************************************************************
+		2019-06-15
+		서술자 힙을 생성하기 위해 개수들을 정해준다. 지금은 임의로 하지만 나중에는
+		m_nProps는 LevelData에서 읽어오고, 나머지는 Defines.h에서 가져올 것.
+		*********************************************************************/
+		int nProps = 0;
+		int nPlayers = 0;
+		int nFloatingUI = 0;
+		int nDefaultUI = 1;
+		int nProjectiles = nPlayers * g_nProjectilePerPlayer;
+		m_nObjects = nProps + nPlayers + nProjectiles + nFloatingUI + nDefaultUI;
+
+		m_Props.resize(nProps);
+		m_Players.resize(nPlayers);
+		m_Projectiles.resize(nProjectiles);
+		m_FloatingUI.resize(nFloatingUI);
+		m_DefaultUI.resize(nDefaultUI);
+
+
+		CreateDescriptorHeap();
+		/*********************************************************************
+		2019-06-15
+		텍스처도 여기서 넣어야 할 것 같음. 텍스처를 먼저 만들어둔다.
+		텍스처는 서술자 힙 만들고 나서 해야 되는거 아냐?
+
+		2019-07-21
+		텍스처를 전역 벡터로 관리하기 시작.
+		*********************************************************************/
+
+		g_vecTexture.clear();
+		importer.ImportTexture(L"TitleImg_Test", "Texture_TitleImg");
+		for (int i = 0; i < g_vecTexture.size(); ++i) CreateTextureResourceView(g_vecTexture[i]);
+
+		importer.ImportModel("", "Texture_TitleImg", ModelType::FloatingUI, "UI_TitleImg");
+
+		CreateConstantBufferResorce();
+		CreateConstantBufferView();
+
+		int count = 0;
+		for (int i = 0; i < m_Props.size(); i++) {
 
 		}
-		//else {
-		//	//obj->AddModel(importer.GetModelByName("Model_Box2_Box001"));
-		//	obj->AddModel(GetModelByName("Model_2B_body"));
-		//	//obj->AddModel(GetModelByName("Model_CharacterStatic_body"));
-		//	//obj->AddModel(GetModelByName("Model_CharacterStatic_jumper"));
-		//	//obj->AddModel(GetModelByName("Model_CharacterStatic_mask"));
-		//	obj->SetPosition(0.0f, 0.0f, 0.0f);
-		//}
+		for (int i = 0; i < m_Players.size(); i++) {
 
-		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
-		m_Props[i] = obj;
+		}
+		for (int i = 0; i < m_Projectiles.size(); i++) {
+
+		}
+		for (int i = 0; i < m_FloatingUI.size(); i++) {
+
+		}
+		for (int i = 0; i < m_DefaultUI.size(); i++) {
+			CUI* obj = new CUI();
+			obj->SetMng(this);
+			obj->AddModel(GetModelByName("UI_TitleImg"));
+			obj->SetPosition(0.5, 0.5, 0.0f);
+			obj->Initialize(XMFLOAT2(1920, 1080));
+
+			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
+			m_DefaultUI[i] = obj;
+		}
 	}
-	for (int i = 0; i < m_Players.size(); i++) {
-		CPlayer* obj = new CPlayer();
-		obj->SetMng(this);
-		obj->AddModel(GetModelByName("Model_Character_body"));
-		obj->AddModel(GetModelByName("Model_Character_jumper"));
-		obj->AddModel(GetModelByName("Model_Character_mask"));
 
-		obj->SetAnimCtrl(GetAnimCtrlByName("AnimCtrl_Character"));
-
-		obj->SetPosition(0, 100, i * g_fDefaultUnitScale * 3);
-		obj->SetSpawnPoint(obj->GetPosition());
-		obj->AddCollider(
-			XMFLOAT3(0, 8, 0),
-			XMFLOAT3(6, 8, 6),
-			XMFLOAT4(0, 0, 0, 1)
-		);
-		obj->SetCameraTargetOffset(XMFLOAT3(0, 47, -21));
-
-		obj->SetTeam((i % 2) + 1);
-		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
-
-		if (i >= 1) obj->m_AIBrain->PowerOn();
-
-		m_Players[i] = obj;
-	}
-	for (int i = 0; i < m_Projectiles.size(); i++) {
-		CProjectile* obj = new CProjectile();
-		obj->SetMng(this);
-		obj->AddModel(GetModelByName("Model_PaperBox_box_1"));
-
-		obj->SetAlive(false);
-		obj->AddCollider(XMFLOAT3(0,0,0), 10.0f);
-		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
-		m_Projectiles[i] = obj;
-	}
-	for (int i = 0; i < m_FloatingUI.size(); i++) {
-		CUI* obj = new CUI();
-		obj->SetMng(this);
-		obj->AddModel(GetModelByName("UI_TEST"));
-		obj->SetPosition(0.0f, 50.0f, 0.0f);
-		obj->Initialize(XMFLOAT2(50, 50));
-
-		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
-		m_FloatingUI[i] = obj;
-	}
-	for (int i = 0; i < m_DefaultUI.size(); i++) {
-		CUI* obj = new CUI();
-		obj->SetMng(this);
-		obj->AddModel(GetModelByName("UI_Crosshair"));
-		obj->SetPosition(0.5, 0.5, 0.0f);
-		obj->Initialize(XMFLOAT2(50, 50));
-
-		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
-		m_DefaultUI[i] = obj;
-	}
 
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->CreateConstantBufferResource(m_pd3dDevice, m_pd3dCommandList);
 	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->CreateConstantBufferResource(m_pd3dDevice, m_pd3dCommandList);
@@ -1405,11 +1533,11 @@ Quaternion 더하는 함수가 있나?
 *********************************************************************/
 Collider::Collider(XMFLOAT3 offset, XMFLOAT3 extents, XMFLOAT4 quaternion)
 	: m_xmf3Offset(offset)
-	, m_Box(BoundingOrientedBox(XMFLOAT3(0,0,0), extents, XMFLOAT4(0, 0, 0, 0)))
+	, m_Box(BoundingOrientedBox(XMFLOAT3(0, 0, 0), extents, XMFLOAT4(0, 0, 0, 0)))
 	, m_Type(ColliderType::BOX)
 	, m_xmf4OrigOrientaion(quaternion)
 {
-	
+
 }
 
 Collider::Collider(XMFLOAT3 offset, float radius)
@@ -1477,7 +1605,7 @@ XMFLOAT3 Collider::GetCenter()
 XMFLOAT3 Collider::GetExtents()
 {
 	if (m_Type == ColliderType::BOX)	return m_Box.Extents;
-	else return XMFLOAT3(0,0,0);
+	else return XMFLOAT3(0, 0, 0);
 }
 
 XMFLOAT4 Collider::GetOrientation()
@@ -1489,11 +1617,11 @@ XMFLOAT4 Collider::GetOrientation()
 XMFLOAT3 GetBetweenVector(const Collider & A, const Collider & B)
 {
 	if (A.m_Type == ColliderType::BOX) {
-		if (B.m_Type == ColliderType::BOX)  return Vector3::Subtract(B.m_Box.Center,	A.m_Box.Center);
+		if (B.m_Type == ColliderType::BOX)  return Vector3::Subtract(B.m_Box.Center, A.m_Box.Center);
 		else								return Vector3::Subtract(B.m_Sphere.Center, A.m_Box.Center);
 	}
 	else {
-		if (B.m_Type == ColliderType::BOX)  return Vector3::Subtract(B.m_Box.Center,	A.m_Sphere.Center);
+		if (B.m_Type == ColliderType::BOX)  return Vector3::Subtract(B.m_Box.Center, A.m_Sphere.Center);
 		else								return Vector3::Subtract(B.m_Sphere.Center, A.m_Sphere.Center);
 	}
 	return XMFLOAT3(0, 0, 0);
@@ -1508,9 +1636,9 @@ XMFLOAT3 Collider::GetRotatedOffset(XMFLOAT4 rotation)
 
 void Collider::SetPosition(XMFLOAT3 position, XMFLOAT3 rotatedOffset)
 {
-	if (m_Type == ColliderType::BOX)	m_Box.Center	= Vector3::Add(position, rotatedOffset);
+	if (m_Type == ColliderType::BOX)	m_Box.Center = Vector3::Add(position, rotatedOffset);
 	else								m_Sphere.Center = Vector3::Add(position, rotatedOffset);
-	
+
 }
 
 void Collider::SetRotation(XMFLOAT4 rotation)
@@ -1522,14 +1650,14 @@ void Collider::SetRotation(XMFLOAT4 rotation)
 
 		//m_Box.Orientation = rotation;
 	}
-	
+
 }
 
 CUI::CUI()
 {
-	m_xmf2Size		= XMFLOAT2(0, 0);
-	m_xmf2Scale		= XMFLOAT2(1.0f, 1.0f);
-	m_MouseState	= MouseState::NONE;
+	m_xmf2Size = XMFLOAT2(0, 0);
+	m_xmf2Scale = XMFLOAT2(1.0f, 1.0f);
+	m_MouseState = MouseState::NONE;
 }
 
 void CUI::SetRootParameter(ID3D12GraphicsCommandList * pd3dCommandList)

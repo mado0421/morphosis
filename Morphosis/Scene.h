@@ -19,10 +19,6 @@ protected:
 	CCamera							*m_pCamera = NULL;
 	CFramework						*m_pFramework = NULL;
 
-
-
-
-
 public:
 	// Scene의 기본적인 함수들
 	virtual void Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList) = 0;

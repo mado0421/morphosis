@@ -383,8 +383,8 @@ void CFramework::ProcessInput()
 	bool bProcessedByScene = false;
 	if (GetKeyboardState(pKeysBuffer) && m_pCurrentScene) m_pCurrentScene->ProcessInput(pKeysBuffer);
 
-	if (pKeysBuffer[KEY::_8] & 0xF0) { ChangeScene(SceneType::LOBBY); }
-	if (pKeysBuffer[KEY::_9] & 0xF0) { ChangeScene(SceneType::MAINPLAY); }
+	if (pKeysBuffer[KEY::_8] & 0xF0) { if(m_pCurrentScene != m_ppScenes[static_cast<int>(SceneType::LOBBY)]) ChangeScene(SceneType::LOBBY); }
+	if (pKeysBuffer[KEY::_9] & 0xF0) { if (m_pCurrentScene != m_ppScenes[static_cast<int>(SceneType::MAINPLAY)]) ChangeScene(SceneType::MAINPLAY); }
 
 }
 

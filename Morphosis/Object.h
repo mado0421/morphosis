@@ -310,9 +310,10 @@ private:
 class CObjectManager {
 public:
 	CObjectManager() = delete;
-	CObjectManager(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+	CObjectManager(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, SceneType sceneType)
 		: m_pd3dDevice(pd3dDevice)
 		, m_pd3dCommandList(pd3dCommandList) 
+		, m_SceneType(sceneType)
 	{
 		CreateObjectData();
 	}
@@ -323,7 +324,8 @@ public:
 	void Update(float fTime);
 
 	CObject* GetTarget(int i) {
-		return m_Players[i];
+		if(m_Players.size() > i) return m_Players[i];
+		else return NULL;
 		//return m_Objects[m_nProps + i];
 	}
 	ID3D12DescriptorHeap* GetDescriptorHeap() {
@@ -354,6 +356,8 @@ private:
 	//void CollisionCheck();
 
 private:
+	SceneType						m_SceneType;
+
 	ID3D12Device					*m_pd3dDevice				= NULL;
 	ID3D12GraphicsCommandList		*m_pd3dCommandList			= NULL;
 	ID3D12DescriptorHeap			*m_pd3dCbvSrvDescriptorHeap = NULL;

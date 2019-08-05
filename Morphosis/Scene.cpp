@@ -130,10 +130,11 @@ void CSceneMainPlay::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommand
 
 	m_pCamera = new CFollowCamera();
 	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	m_pCamera->SetOffset(XMFLOAT3(0, 100.0f, 100.0f));
+	//m_pCamera->SetOffset(XMFLOAT3(0, 30.0f, 50.0f));
 
-	m_ObjMng = new CObjectManager(m_pd3dDevice, m_pd3dCommandList);
+	m_ObjMng = new CObjectManager(m_pd3dDevice, m_pd3dCommandList, SceneType::MAINPLAY);
 	m_pCamera->SetTarget(m_ObjMng->GetTarget(0));
+	m_pCamera->SetOffset(XMFLOAT3(0, 30, 60));
 	m_pd3dCbvSrvDescriptorHeap = m_ObjMng->GetDescriptorHeap();
 
 	CPsoGenerator l_psoGenerator;
@@ -148,9 +149,24 @@ void CSceneMainPlay::ProcessInput(UCHAR * pKeysBuffer)
 {
 	float cxDelta = 0.0f/*, cyDelta = 0.0f*/;
 	POINT ptCursorPos;
+	static float cameraOffsetZ = 60;
+	static float cameraOffsetY = 30;
 
 	if (pKeysBuffer[KEY::_1] & 0xF0) { g_IsMouseMode = false; }
 	if (pKeysBuffer[KEY::_2] & 0xF0) { g_IsMouseMode = true; }
+
+	if (pKeysBuffer[VK_UP] & 0xF0) { 
+		cameraOffsetY += 0.1; 
+		m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+	}
+	if (pKeysBuffer[VK_DOWN] & 0xF0) { cameraOffsetY -= 0.1; m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+	}
+	if (pKeysBuffer[VK_LEFT] & 0xF0) { cameraOffsetZ += 0.1; m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+	}
+	if (pKeysBuffer[VK_RIGHT] & 0xF0) { cameraOffsetZ -= 0.1; m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+	}
+	
+
 
 	if (pKeysBuffer[KEY::_3] & 0xF0) { m_ObjMng->GetTarget(0)->Enable(); }
 
@@ -209,9 +225,10 @@ ID3D12RootSignature * CSceneLobby::CreateRootSignature(ID3D12Device * pd3dDevice
 	g_RootParameterObject = 1;
 	g_RootParameterTexture = 2;
 	g_RootParameterAnimation = 3;
+	g_RootParameterUI = 4;
 
 	ID3D12RootSignature *pd3dGraphicsRootSignature = NULL;
-	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[2];	// Object, Texture and Animation
+	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[3];	// Object, Texture and FloatingUI
 
 	pd3dDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
 	pd3dDescriptorRanges[0].NumDescriptors = 1;
@@ -225,7 +242,13 @@ ID3D12RootSignature * CSceneLobby::CreateRootSignature(ID3D12Device * pd3dDevice
 	pd3dDescriptorRanges[1].RegisterSpace = 0;
 	pd3dDescriptorRanges[1].OffsetInDescriptorsFromTableStart = 0;
 
-	D3D12_ROOT_PARAMETER pd3dRootParameters[4];	//Camera, Obejct, texture, anim
+	pd3dDescriptorRanges[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+	pd3dDescriptorRanges[2].NumDescriptors = 1;
+	pd3dDescriptorRanges[2].BaseShaderRegister = g_RootParameterUI; //b4
+	pd3dDescriptorRanges[2].RegisterSpace = 0;
+	pd3dDescriptorRanges[2].OffsetInDescriptorsFromTableStart = 0;
+
+	D3D12_ROOT_PARAMETER pd3dRootParameters[5];	//Camera, Obejct, texture, anim
 
 	//Camera
 	pd3dRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
@@ -245,11 +268,18 @@ ID3D12RootSignature * CSceneLobby::CreateRootSignature(ID3D12Device * pd3dDevice
 	pd3dRootParameters[2].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[1];
 	pd3dRootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
-	//anim
+	//Anim
 	pd3dRootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	pd3dRootParameters[3].Descriptor.ShaderRegister = g_RootParameterAnimation;
+	pd3dRootParameters[3].Descriptor.ShaderRegister = g_RootParameterAnimation;	//b3
 	pd3dRootParameters[3].Descriptor.RegisterSpace = 0;
 	pd3dRootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+
+	//FloatingUI
+	pd3dRootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	pd3dRootParameters[4].DescriptorTable.NumDescriptorRanges = 1;
+	pd3dRootParameters[4].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[2];
+	pd3dRootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+
 	///*
 	//Root Signiature 추가 필요
 	//*/
@@ -279,8 +309,8 @@ ID3D12RootSignature * CSceneLobby::CreateRootSignature(ID3D12Device * pd3dDevice
 
 	ID3DBlob *pd3dSignatureBlob = NULL;
 	ID3DBlob *pd3dErrorBlob = NULL;
-	D3D12SerializeRootSignature(&d3dRootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1_0, &pd3dSignatureBlob, &pd3dErrorBlob);
-	pd3dDevice->CreateRootSignature(0, pd3dSignatureBlob->GetBufferPointer(), pd3dSignatureBlob->GetBufferSize(), __uuidof(ID3D12RootSignature), (void **)&pd3dGraphicsRootSignature);
+	/*HRESULT isSuccess = */D3D12SerializeRootSignature(&d3dRootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1_0, &pd3dSignatureBlob, &pd3dErrorBlob);
+	/*isSuccess = */pd3dDevice->CreateRootSignature(0, pd3dSignatureBlob->GetBufferPointer(), pd3dSignatureBlob->GetBufferSize(), __uuidof(ID3D12RootSignature), (void **)&pd3dGraphicsRootSignature);
 	if (pd3dSignatureBlob) pd3dSignatureBlob->Release();
 	if (pd3dErrorBlob) pd3dErrorBlob->Release();
 
@@ -293,19 +323,22 @@ void CSceneLobby::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLis
 	m_pd3dCommandList = pd3dCommandList;
 	GetCursorPos(&m_ptOldCursorPos);
 
+
 	m_pd3dGraphicsRootSignature = CreateRootSignature(pd3dDevice);
 
 	m_pCamera = new CFollowCamera();
 	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	m_pCamera->SetOffset(XMFLOAT3(0, 100.0f, 100.0f));
 
-	m_ObjMng = new CObjectManager(m_pd3dDevice, m_pd3dCommandList);
-	m_pCamera->SetTarget(m_ObjMng->GetTarget(0));
+	m_ObjMng = new CObjectManager(m_pd3dDevice, m_pd3dCommandList, SceneType::LOBBY);
+	//m_pCamera->SetTarget(m_ObjMng->GetTarget(0));
 	m_pd3dCbvSrvDescriptorHeap = m_ObjMng->GetDescriptorHeap();
 
 	CPsoGenerator l_psoGenerator;
 	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoModel());
 	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoAnimatedModel());
+	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoFloatingUI());
+	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoDefaultUI());
 }
 
 void CSceneLobby::ProcessInput(UCHAR * pKeysBuffer)
@@ -315,10 +348,6 @@ void CSceneLobby::ProcessInput(UCHAR * pKeysBuffer)
 
 	if (pKeysBuffer[KEY::_1] & 0xF0) { g_IsMouseMode = false; }
 	if (pKeysBuffer[KEY::_2] & 0xF0) { g_IsMouseMode = true; }
-
-	if (pKeysBuffer[KEY::_3] & 0xF0) { m_ObjMng->GetTarget(0)->Enable(); }
-
-
 
 	if (g_IsMouseMode) {
 		GetCursorPos(&ptCursorPos);
