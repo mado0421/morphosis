@@ -903,16 +903,16 @@ void CObjectManager::ProcessInput(UCHAR * pKeysBuffer, float mouse)
 			cout << m_Players[0]->GetPosition().x << ", " << m_Players[0]->GetPosition().y << ", " << m_Players[0]->GetPosition().z << "\n";
 
 		if (pKeysBuffer[KEY::I] & 0xF0) {
-			cameraOffsetY += 0.05; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+			cameraOffsetY += 0.05f; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
 		}
 		if (pKeysBuffer[KEY::K] & 0xF0) {
-			cameraOffsetY -= 0.05; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+			cameraOffsetY -= 0.05f; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
 		}
 		if (pKeysBuffer[KEY::J] & 0xF0) {
-			cameraOffsetZ += 0.05; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+			cameraOffsetZ += 0.05f; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
 		}
 		if (pKeysBuffer[KEY::L] & 0xF0) {
-			cameraOffsetZ -= 0.05; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+			cameraOffsetZ -= 0.05f; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
 		}
 
 		if (pKeysBuffer[VK_LBUTTON] & 0xF0) {
@@ -1358,17 +1358,17 @@ void CObjectManager::CreateObjectData()
 			else if (2 == i) {
 				obj->AddModel(GetModelByName("UI_TEST2"));
 				obj->SetPosition(0.0f, 0.0f, 0.0f);
-				obj->Initialize(XMFLOAT2(50/3.0, 50 / 3.0));
+				obj->Initialize(XMFLOAT2(50/3.0f, 50 / 3.0f));
 			}
 			else if (3 == i) {
 				obj->AddModel(GetModelByName("UI_TEST2"));
 				obj->SetPosition(0.0f, 0.0f, 0.0f);
-				obj->Initialize(XMFLOAT2(50 / 3.0, 50 / 3.0));
+				obj->Initialize(XMFLOAT2(50 / 3.0f, 50 / 3.0f));
 			}
 			else if (4 == i) {
 				obj->AddModel(GetModelByName("UI_TEST2"));
 				obj->SetPosition(0.0f, 0.0f, 0.0f);
-				obj->Initialize(XMFLOAT2(50 / 3.0, 50 / 3.0));
+				obj->Initialize(XMFLOAT2(50 / 3.0f, 50 / 3.0f));
 			}
 
 

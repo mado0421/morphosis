@@ -61,7 +61,24 @@ extern std::vector<CAnimationController*>	g_vecAnimController;
 extern std::vector<AINode*>					g_vecAINode;
 extern std::vector<ID3D12PipelineState*>	g_vecPSO;
 
+class FMOD::Sound;
+class FMOD::System;
+class FMOD::Channel;
+extern std::vector<FMOD::Sound *>	g_vecSound;
+extern FMOD::System					*g_System;
+extern FMOD::Channel				*g_Channel;
+//struct FMOD_SYSTEM;
+//struct FMOD_CHANNEL;
+//struct FMOD_SOUND;
+//extern FMOD_SYSTEM *g_System;
+//extern std::vector< FMOD_SOUND *>	g_vecSound;
+//extern FMOD_CHANNEL* channel;
+enum class SOUND {
+	BGM,
+	SHOT,
 
+	count
+};
 /*********************************************************************
 2019-06-16
 오브젝트 관련 상수

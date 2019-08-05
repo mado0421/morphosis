@@ -2,13 +2,42 @@
 #include "Framework.h"
 
 
+std::vector<FMOD::Sound *>	g_vecSound;
+FMOD::System				*g_System;
+FMOD::Channel				*g_Channel = 0;
+//std::vector< FMOD_SOUND *>	g_vecSound;
+//FMOD_SYSTEM * g_System;
+//FMOD_CHANNEL* channel;
+
+
 CFramework::CFramework()
 {
+
+
+	// Note: FMOD 사운드 초기화 및 사운드 로딩
+	FMOD::System_Create(&g_System);
+	g_System->init(32, FMOD_INIT_NORMAL, NULL);
+
+	g_vecSound.resize(2);
+
+	g_System->createSound("run.wav", FMOD_DEFAULT, 0, &g_vecSound[static_cast<int>(SOUND::BGM)]);
+	g_System->createSound("382735__schots__gun-shot.mp3", FMOD_DEFAULT, 0, &g_vecSound[static_cast<int>(SOUND::SHOT)]);
+	//FMOD_System_Create(&g_System);
+	//FMOD_System_Init(g_System, 32, FMOD_INIT_NORMAL, NULL);
+
+	//g_vecSound.resize(2);
+
+	//FMOD_System_CreateSound(g_System, "run.wav", FMOD_DEFAULT, 0, &g_vecSound[static_cast<int>(SOUND::BGM)]);
+	//FMOD_System_CreateSound(g_System, "382735__schots__gun-shot.mp3", FMOD_DEFAULT, 0, &g_vecSound[static_cast<int>(SOUND::SHOT)]);
 }
 
 
 CFramework::~CFramework()
 {
+	// Note: FMOD 해제
+	for (int i = 0; i < g_vecSound.size(); ++i) g_vecSound[i]->release();
+	g_System->close();
+	g_System->release();
 }
 
 void CFramework::Render()
@@ -28,6 +57,7 @@ void CFramework::Update()
 	// 여기에 Update() 내용을 넣어주세요.
 	// 아래는 Render 관련입니다.
 
+	if (g_System) g_System->update();
 	if (m_pCurrentScene) m_pCurrentScene->Update(fTimeElapsed);
 
 	//====================================

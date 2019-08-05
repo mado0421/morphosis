@@ -8,7 +8,6 @@
 #include "Texture.h"
 
 
-
 int g_RootParameterCamera;
 int g_RootParameterObject;
 int g_RootParameterTexture;
@@ -120,7 +119,6 @@ ID3D12RootSignature * CSceneMainPlay::CreateRootSignature(ID3D12Device * pd3dDev
 
 void CSceneMainPlay::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
 {
-
 	m_pd3dDevice		= pd3dDevice;
 	m_pd3dCommandList	= pd3dCommandList;
 	GetCursorPos(&m_ptOldCursorPos);
@@ -142,6 +140,9 @@ void CSceneMainPlay::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommand
 	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoAnimatedModel());
 	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoFloatingUI());
 	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoDefaultUI());
+
+	//FMOD_System_PlaySound(g_System, FMOD_CHANNEL_FREE, g_vecSound[static_cast<int>(SOUND::BGM)], 0, &channel);
+	g_System->playSound(g_vecSound[static_cast<int>(SOUND::BGM)], 0, false, &g_Channel);
 }
 
 
