@@ -872,6 +872,15 @@ void CObjectManager::Update(float fTime)
 		pos.y += 50;
 		pos.x -= 25;
 		m_FloatingUI[0]->SetPosition(pos);
+
+		//Vector3::Multiply(10, m_Players[0]->GetRight());
+		//Vector3::Multiply(10, m_Players[0]->GetLook());
+		//pos = Vector3::Add( m_Players[0]->GetPosition(), Vector3::Multiply(10, m_Players[0]->GetRight()));
+		//pos = Vector3::Add(pos, Vector3::Multiply(10, m_Players[0]->GetLook()));
+		//m_FloatingUI[1]->SetPosition(pos);
+
+
+
 	}
 
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Update(fTime);
@@ -1243,6 +1252,7 @@ void CObjectManager::CreateObjectData()
 		importer.ImportModel("Bench", "Texture_Bench", ModelType::DefaultModel, "Model_Bench", 2.0f);
 		importer.ImportModel("Spotlight", "Texture_Spotlight", ModelType::DefaultModel, "Model_Spotlight", 1.1f);
 		importer.ImportModel("", "Texture_HPBar", ModelType::FloatingUI, "UI_TEST");
+		importer.ImportModel("", "Texture_StandardBox", ModelType::FloatingUI, "UI_TEST2");
 		importer.ImportModel("", "Texture_Crosshair", ModelType::FloatingUI, "UI_Crosshair");
 		importer.ImportModel("2b", "Texture_2B", ModelType::DefaultModel, "Model_2B");
 
@@ -1334,9 +1344,34 @@ void CObjectManager::CreateObjectData()
 		for (int i = 0; i < m_FloatingUI.size(); i++) {
 			CUI* obj = new CUI();
 			obj->SetMng(this);
-			obj->AddModel(GetModelByName("UI_TEST"));
-			obj->SetPosition(0.0f, 50.0f, 0.0f);
-			obj->Initialize(XMFLOAT2(50, 50));
+
+			if (0 == i) {
+				obj->AddModel(GetModelByName("UI_TEST"));
+				obj->SetPosition(0.0f, 50.0f, 0.0f);
+				obj->Initialize(XMFLOAT2(50, 50));
+			}
+			else if (1 == i) {
+				obj->AddModel(GetModelByName("UI_TEST2"));
+				obj->SetPosition(0.0f, 0.0f, 0.0f);
+				obj->Initialize(XMFLOAT2(50, 1));
+			}
+			else if (2 == i) {
+				obj->AddModel(GetModelByName("UI_TEST2"));
+				obj->SetPosition(0.0f, 0.0f, 0.0f);
+				obj->Initialize(XMFLOAT2(50/3.0, 50 / 3.0));
+			}
+			else if (3 == i) {
+				obj->AddModel(GetModelByName("UI_TEST2"));
+				obj->SetPosition(0.0f, 0.0f, 0.0f);
+				obj->Initialize(XMFLOAT2(50 / 3.0, 50 / 3.0));
+			}
+			else if (4 == i) {
+				obj->AddModel(GetModelByName("UI_TEST2"));
+				obj->SetPosition(0.0f, 0.0f, 0.0f);
+				obj->Initialize(XMFLOAT2(50 / 3.0, 50 / 3.0));
+			}
+
+
 
 			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 			m_FloatingUI[i] = obj;
@@ -1447,8 +1482,8 @@ void CObjectManager::CreateObjectData()
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->CreateConstantBufferResource(m_pd3dDevice, m_pd3dCommandList);
 	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->CreateConstantBufferResource(m_pd3dDevice, m_pd3dCommandList);
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->CreateConstantBufferResource(m_pd3dDevice, m_pd3dCommandList);
-	for (int i = 0; i < m_FloatingUI.size(); ++i)			m_FloatingUI[i]->CreateConstantBufferResource(m_pd3dDevice, m_pd3dCommandList);
-	for (int i = 0; i < m_DefaultUI.size(); ++i)			m_DefaultUI[i]->CreateConstantBufferResource(m_pd3dDevice, m_pd3dCommandList);
+	for (int i = 0; i < m_FloatingUI.size(); ++i)	m_FloatingUI[i]->CreateConstantBufferResource(m_pd3dDevice, m_pd3dCommandList);
+	for (int i = 0; i < m_DefaultUI.size(); ++i)	m_DefaultUI[i]->CreateConstantBufferResource(m_pd3dDevice, m_pd3dCommandList);
 
 }
 //void CObjectManager::CollisionCheck()
