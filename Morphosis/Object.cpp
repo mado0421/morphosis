@@ -1307,8 +1307,8 @@ void CObjectManager::CreateObjectData()
 		CUI* obj = new CUI();
 		obj->SetMng(this);
 		obj->AddModel(GetModelByName("UI_Crosshair"));
-		obj->SetPosition(0.45f, 0.45f, 0.0f);
-		obj->Initialize(XMFLOAT2(0.1, 0.1));
+		obj->SetPosition(0.5, 0.5, 0.0f);
+		obj->Initialize(XMFLOAT2(50, 50));
 
 		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 		m_DefaultUI[i] = obj;

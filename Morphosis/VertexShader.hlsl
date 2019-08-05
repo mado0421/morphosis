@@ -73,32 +73,37 @@ VS_UI_OUTPUT VSFloatingUI(VS_UI_INPUT input, uint nVertexID : SV_VertexID) {
 VS_UI_OUTPUT VSDefaultUI(VS_UI_INPUT input, uint nVertexID : SV_VertexID) {
 	VS_UI_OUTPUT output;
 
-	input.position.x += gmtxUI._m30;
-	input.position.y -= gmtxUI._m31;
+	input.position.x += gmtxUI._m30 * 1920.0;
+	input.position.y -= gmtxUI._m31 * 1080.0;
 
 	if (0 == nVertexID % 6) {
-
+		input.position.x -= gf2Size.x;
+		input.position.y += gf2Size.y;
 	}
 	else if (1 == nVertexID % 6) {
 		input.position.x += gf2Size.x;
+		input.position.y += gf2Size.y;
 	}
 	else if (2 == nVertexID % 6) {
 		input.position.x += gf2Size.x;
 		input.position.y -= gf2Size.y;
 	}
 	else if (3 == nVertexID % 6) {
+		input.position.x -= gf2Size.x;
+		input.position.y += gf2Size.y;
 	}
 	else if (4 == nVertexID % 6) {
 		input.position.x += gf2Size.x;
 		input.position.y -= gf2Size.y;
 	}
 	else if (5 == nVertexID % 6) {
+		input.position.x -= gf2Size.x;
 		input.position.y -= gf2Size.y;
 	}
 
 
-	input.position.x = (input.position.x * 2) - 1;
-	input.position.y = (input.position.y * 2) + 1;
+	input.position.x = ((input.position.x * 2) - 1920) / 1920.0;
+	input.position.y = ((input.position.y * 2) + 1080) / 1080.0;
 
 	output.position		= float4(input.position, 1.0f);
 	output.positionW	= float3(0,0,0);
