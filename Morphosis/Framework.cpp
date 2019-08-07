@@ -12,6 +12,28 @@ FMOD::Channel				*g_Channel = 0;
 
 CFramework::CFramework()
 {
+	m_pdxgiFactory = NULL;
+	m_pdxgiSwapChain = NULL;
+	m_pd3dDevice = NULL;
+	m_pd3dCommandAllocator = NULL;
+	m_pd3dCommandQueue = NULL;
+	//m_pd3dPipelineState = NULL;
+	m_pd3dCommandList = NULL;
+	//for (int i = 0; i < m_nSwapChainBuffers; i++) m_ppd3dRenderTargetBuffers[i] = NULL;
+	m_pd3dRtvDescriptorHeap = NULL;
+	m_nRtvDescriptorIncrementSize = 0;
+	m_pd3dDepthStencilBuffer = NULL;
+	m_pd3dDsvDescriptorHeap = NULL;
+	m_nDsvDescriptorIncrementSize = 0;
+	m_nSwapChainBufferIndex = 0;
+	m_hFenceEvent = NULL;
+	m_pd3dFence = NULL;
+	//m_nFenceValue = 0;
+	m_nWndClientWidth = FRAME_BUFFER_WIDTH;
+	m_nWndClientHeight = FRAME_BUFFER_HEIGHT;
+
+
+
 
 
 	// Note: FMOD 사운드 초기화 및 사운드 로딩
@@ -126,6 +148,8 @@ bool CFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	CreateRtvAndDsvDescriptorHeaps();
 	CreateSwapChain();
 
+	m_hFenceEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL); // 얘 추가했음.
+
 	BuildScenes();
 
 	return true;
@@ -134,6 +158,7 @@ bool CFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 void CFramework::OnDestroy()
 {
 	ReleaseScenes();
+	m_pdxgiSwapChain->SetFullscreenState(FALSE, NULL);
 
 	::CloseHandle(m_hFenceEvent);
 
@@ -152,7 +177,6 @@ void CFramework::OnDestroy()
 	if (_heapchk() != _HEAPOK)
 		DebugBreak();
 
-	m_pdxgiSwapChain->SetFullscreenState(FALSE, NULL);
 	if (m_pdxgiSwapChain) m_pdxgiSwapChain->Release();
 	if (m_pd3dDevice) m_pd3dDevice->Release();
 	if (m_pdxgiFactory) m_pdxgiFactory->Release();
@@ -180,7 +204,7 @@ void CFramework::CreateSwapChain()
 	dxgiSwapChainDesc.SampleDesc.Count = (m_bMsaa4xEnable) ? 4 : 1;
 	dxgiSwapChainDesc.SampleDesc.Quality = (m_bMsaa4xEnable) ? (m_nMsaa4xQualityLevels - 1) : 0;
 	dxgiSwapChainDesc.Windowed = TRUE;
-	dxgiSwapChainDesc.Flags = 0;
+	dxgiSwapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 	//작성한 서술자대로 팩토리에 만들어주기
 	HRESULT hResult = m_pdxgiFactory->CreateSwapChain(m_pd3dCommandQueue, &dxgiSwapChainDesc, (IDXGISwapChain **)&m_pdxgiSwapChain);
@@ -405,6 +429,8 @@ void CFramework::ChangeScene(SceneType type)
 
 void CFramework::ReleaseScenes()
 {
+	m_pCurrentScene->Release();
+	delete[] m_ppScenes;
 }
 
 void CFramework::ProcessInput()
@@ -431,7 +457,9 @@ void CFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM 
 	case WM_KEYUP:
 		switch (wParam)
 		{
-		case VK_ESCAPE: ::PostQuitMessage(0); break;
+		case VK_ESCAPE: 
+			::PostQuitMessage(0); 
+			break;
 
 			// 전체 화면 테스트 용도
 		case VK_F9:
@@ -452,9 +480,11 @@ void CFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM 
 				m_pdxgiSwapChain->ResizeTarget(&dxgiTargetParameters);
 			}
 			m_pdxgiSwapChain->SetFullscreenState(!bFullScreenState, NULL);
+
 			OnResizeBackBuffers();
+
+			break;
 		}
-		break;
 		default: break;
 		}
 		break;

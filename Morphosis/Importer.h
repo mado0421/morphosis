@@ -64,8 +64,14 @@ public:
 	}
 
 	~AnimationClip() {
-		if (NULL != m_BoneList) delete[] m_BoneList;
-		if (NULL != m_KeyTime) delete[] m_KeyTime;
+		if (m_BoneList) {
+
+			//for (int i = 0; i < m_nBoneList; ++i) {
+			//	delete[] m_BoneList[i].m_pToRootTransforms;
+			//}
+			delete[] m_BoneList;
+		}
+		if (m_KeyTime) delete[] m_KeyTime;
 	}
 
 public:
@@ -100,6 +106,8 @@ public:
 				in.read((char*)&m_BoneList[i].m_pToRootTransforms[j], sizeof(XMFLOAT4X4));
 			}
 		}
+
+
 
 		in.close();
 	}
@@ -141,6 +149,12 @@ struct ImportVertex {
 	XMFLOAT2	xmf2UV;
 };
 struct ImportMeshData {
+	~ImportMeshData() {
+		if (m_CtrlPointList) delete[] m_CtrlPointList;
+		if (m_VertexList) delete[] m_VertexList;
+	}
+
+
 	std::string			m_MeshName;
 	ImportCtrlPoint*	m_CtrlPointList;
 	ImportVertex*		m_VertexList;

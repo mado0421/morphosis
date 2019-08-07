@@ -2,12 +2,12 @@
 #include "AnimationController.h"
 #include "Importer.h"
 
-void CAnimationController::Init(AnimationClip & animData)
+CAnimationController::~CAnimationController()
 {
-	AnimationClip* tmp = new AnimationClip(animData);
-
-	m_AnimData.push_back(tmp);
+	for (int i = 0; i < m_AnimData.size(); ++i) delete m_AnimData[i];
+	MemoryClear(m_AnimData);
 }
+
 void CAnimationController::AddAnimData(AnimationClip * animData)
 {
 	m_AnimData.push_back(animData);

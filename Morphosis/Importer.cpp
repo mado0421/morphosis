@@ -19,6 +19,9 @@ void CImporter::ImportModel(const char * fileName, const char * textureName, Mod
 		model->SetName(modelName);
 
 		g_vecModel.push_back(model);
+
+		//delete tempMesh;
+
 		return;
 	}
 
@@ -56,6 +59,7 @@ void CImporter::ImportModel(const char * fileName, const char * textureName, Mod
 			model->SetName(partName.c_str());
 
 			g_vecModel.push_back(model);
+
 		}
 	}
 

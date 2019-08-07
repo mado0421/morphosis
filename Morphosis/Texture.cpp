@@ -12,9 +12,10 @@ CTexture::CTexture( UINT nTextureType)
 
 CTexture::~CTexture()
 {
-	if (texture) texture->Release();
-	if (rootArgumentInfo) delete rootArgumentInfo;
-	if (SamplerGpuDescriptorHandles) delete SamplerGpuDescriptorHandles;
+	if (texture)						texture->Release();
+	if (uploadBuffer)					uploadBuffer->Release();
+	if (rootArgumentInfo)				delete rootArgumentInfo;
+	if (SamplerGpuDescriptorHandles)	delete SamplerGpuDescriptorHandles;
 }
 
 void CTexture::SetRootArgument(UINT nRootParameterIndex, D3D12_GPU_DESCRIPTOR_HANDLE d3dSrvGpuDescriptorHandle)

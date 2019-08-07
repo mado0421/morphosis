@@ -31,13 +31,15 @@ CMesh::CMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandLis
 		m_d3dIndexBufferView.Format = DXGI_FORMAT_R32_UINT;
 		m_d3dIndexBufferView.SizeInBytes = sizeof(UINT) * m_nIndices;
 	}
+
+	delete[]pVertices;
 }
 CMesh::~CMesh()
 {
-	if (m_pd3dVertexBuffer) m_pd3dVertexBuffer->Release();
-	if (m_pd3dIndexBuffer) m_pd3dIndexBuffer->Release();
-	if (m_pd3dVertexUploadBuffer) m_pd3dVertexUploadBuffer->Release();
-	if (m_pd3dIndexUploadBuffer) m_pd3dIndexUploadBuffer->Release();
+	if (m_pd3dVertexBuffer)			m_pd3dVertexBuffer->Release();
+	if (m_pd3dIndexBuffer)			m_pd3dIndexBuffer->Release();
+	if (m_pd3dVertexUploadBuffer)	m_pd3dVertexUploadBuffer->Release();
+	if (m_pd3dIndexUploadBuffer)	m_pd3dIndexUploadBuffer->Release();
 }
 void CMesh::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 {
@@ -193,6 +195,7 @@ CModelMesh::CModelMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3d
 		m_d3dIndexBufferView.Format = DXGI_FORMAT_R32_UINT;
 		m_d3dIndexBufferView.SizeInBytes = sizeof(UINT) * m_nIndices;
 	}
+	delete[]pVertices;
 }
 CModelMesh::CModelMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ImportMeshData & m, float scale) : CMesh(pd3dDevice, pd3dCommandList)
 {
@@ -222,6 +225,12 @@ CModelMesh::CModelMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd
 	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
 		Vertex, m_nStride * m_nVertices,
 		D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
+
+	delete[] pos;
+	delete[] posIdx;
+	delete[] uv;
+	delete[] normal;
+	delete[] Vertex;
 
 	m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
 	m_d3dVertexBufferView.StrideInBytes = m_nStride;
@@ -346,6 +355,10 @@ CTestMesh::CTestMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3d
 	for (int i = 0; i < 36; i++) m_pVertices[i] = CModelVertex(pxmf3Positions[i], pxmf3Normals[i], pxmf2TexCoords[i]);
 
 	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, m_pVertices, m_nStride * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
+
+	delete[]m_pnIndices;
+	delete[]m_pVertices;
+
 
 	m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
 	m_d3dVertexBufferView.StrideInBytes = m_nStride;
@@ -475,8 +488,11 @@ CTestMesh::CTestMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3d
 	m_d3dVertexBufferView.StrideInBytes = m_nStride;
 	m_d3dVertexBufferView.SizeInBytes = m_nStride * m_nVertices;
 
-
 	m_pVertices = pVertices;
+
+	delete[]m_pnIndices;
+	delete[]m_pVertices;
+
 }
 CTestMesh::CTestMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, XMFLOAT3 extents) : CModelMesh(pd3dDevice, pd3dCommandList)
 {
@@ -602,8 +618,9 @@ CTestMesh::CTestMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3d
 	m_d3dVertexBufferView.StrideInBytes = m_nStride;
 	m_d3dVertexBufferView.SizeInBytes = m_nStride * m_nVertices;
 
-
 	m_pVertices = pVertices;
+	delete[]m_pnIndices;
+	delete[]m_pVertices;
 }
 CTestMesh::CTestMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, XMFLOAT3 position, XMFLOAT3 extents) : CModelMesh(pd3dDevice, pd3dCommandList)
 {
@@ -735,8 +752,9 @@ CTestMesh::CTestMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3d
 	m_d3dVertexBufferView.StrideInBytes = m_nStride;
 	m_d3dVertexBufferView.SizeInBytes = m_nStride * m_nVertices;
 
-
 	m_pVertices = pVertices;
+	delete[]m_pnIndices;
+	delete[]m_pVertices;
 }
 CTestMesh::~CTestMesh()
 {
@@ -796,6 +814,18 @@ CAnimatedModelMesh::CAnimatedModelMesh(ID3D12Device * pd3dDevice, ID3D12Graphics
 		D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
 		&m_pd3dVertexUploadBuffer);
 
+	delete[] pos;
+	delete[] weight;
+	delete[] boneIdx;
+	delete[] uv;
+	delete[] posIdx;
+	delete[] normal;
+	delete[] tangent;
+	delete[] animVertex;
+
+
+
+
 	m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
 	m_d3dVertexBufferView.StrideInBytes = nStride;
 	m_d3dVertexBufferView.SizeInBytes = nStride * nPolyongVertex;
@@ -834,4 +864,6 @@ CUIMesh::CUIMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dComm
 	m_d3dVertexBufferView.BufferLocation	= m_pd3dVertexBuffer->GetGPUVirtualAddress();
 	m_d3dVertexBufferView.StrideInBytes		= m_nStride;
 	m_d3dVertexBufferView.SizeInBytes		= m_nStride * m_nVertices;
+
+	delete[]pVertices;
 }

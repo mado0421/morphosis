@@ -9,7 +9,9 @@ struct AnimationClip;
 
 class CAnimationController {
 public:
-	void		Init(AnimationClip& animData);
+	~CAnimationController();
+
+public:
 	void		AddAnimData(AnimationClip* animData);
 	XMMATRIX	GetFinalMatrix(int boneIdx, float time);
 	float		GetEndTime();

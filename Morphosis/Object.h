@@ -22,8 +22,17 @@ struct CB_UI_INFO {
 	XMFLOAT2	m_xmf2Size;
 };
 
-
 struct LEVELDATA_DESC {
+	~LEVELDATA_DESC() {
+		MemoryClear(CollisionPosition);
+		MemoryClear(CollisionScale);
+		MemoryClear(CollisionRotation);
+		MemoryClear(Team1SpawnPointPosition);
+		MemoryClear(Team1SpawnPointRotation);
+		MemoryClear(Team2SpawnPointPosition);
+		MemoryClear(Team2SpawnPointRotation);
+	}
+
 	std::string levelName = "";
 	int nCollisionMaps		= 0;
 	int nTeam1SpawnPoint	= 0;
@@ -123,7 +132,7 @@ public:
 	void SetCameraTargetOffset(XMFLOAT3 pos);
 	void SetPosition(const XMFLOAT3 xmf3Position);
 	void SetRotation(const XMFLOAT3& angle);
-	void AddModel(CModel* model)						{ m_ModelList.push_back(*model); }
+	void AddModel(CModel* model)						{	m_ModelList.push_back(model); 	}
 	void SetAnimCtrl(CAnimationController* animCtrl)	{ m_AnimationController = animCtrl; }
 	void SetTeam(int team)								{ m_Team = team; }
 	void SetAlive(bool state)							{ m_IsAlive = state; }
@@ -165,7 +174,7 @@ protected:
 	ID3D12Resource					*m_pd3dcbObject			= NULL;
 	//렌더링
 	XMFLOAT3						m_xmf3CameraTargetOffset;
-	std::vector<CModel>				m_ModelList;
+	std::vector<CModel*>			m_ModelList;
 	//이동
 	XMFLOAT3						m_xmf3CollisionOffset;
 	float							m_fHeightVelocity;
@@ -197,6 +206,8 @@ public:
 	~CPlayer();
 
 public:
+	virtual void CreateConstantBufferResource(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
+
 	// 기본적인 작동함수
 	virtual void	Update(float fTimeElapsed) override;
 	virtual void	LateUpdate(float fTimeElapsed) override;

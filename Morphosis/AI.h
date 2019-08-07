@@ -64,7 +64,7 @@ public:
 		, m_pObject(m_pObject)
 	{}
 	~CTinMan() {
-		delete m_curBehavior;
+		if (m_curBehavior) delete m_curBehavior;
 	}
 
 public:

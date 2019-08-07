@@ -134,12 +134,36 @@ void CSceneMainPlay::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommand
 	m_pCamera->SetTarget(m_ObjMng->GetTarget(0));
 	m_pCamera->SetOffset(XMFLOAT3(0, 30, 60));
 	m_pd3dCbvSrvDescriptorHeap = m_ObjMng->GetDescriptorHeap();
-
 	CPsoGenerator l_psoGenerator;
 	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoModel());
 	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoAnimatedModel());
 	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoFloatingUI());
 	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoDefaultUI());
+
+	//int i = 0;
+	//while (i < 100) {
+	//	std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
+	//	m_ObjMng = new CObjectManager(m_pd3dDevice, m_pd3dCommandList, SceneType::MAINPLAY);
+	//	m_pd3dCbvSrvDescriptorHeap = m_ObjMng->GetDescriptorHeap();
+	//	if(m_pd3dCbvSrvDescriptorHeap) m_pd3dCbvSrvDescriptorHeap->Release();
+	//	delete m_ObjMng;
+	//	CPsoGenerator l_psoGenerator;
+	//	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoModel());
+	//	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoAnimatedModel());
+	//	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoFloatingUI());
+	//	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoDefaultUI());
+	//	g_vecPSO.clear();
+	//	std::chrono::duration<double> sec = std::chrono::system_clock::now() - start;
+	//	i++;
+	//	system("cls");
+	//	cout << "[";
+	//	for (int j = 0; j < 10; ++j) {
+	//		if (i > j * 10) cout << "/";
+	//		else cout << ".";
+	//	}
+	//	cout << "] - " << i << "%\n";
+	//	cout << sec.count() << "sec\n";
+	//}
 
 	//FMOD_System_PlaySound(g_System, FMOD_CHANNEL_FREE, g_vecSound[static_cast<int>(SOUND::BGM)], 0, &channel);
 	g_System->playSound(g_vecSound[static_cast<int>(SOUND::BGM)], 0, false, &g_Channel);

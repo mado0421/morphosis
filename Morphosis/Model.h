@@ -24,6 +24,8 @@ class CAnimationController;
 class CModel
 {
 public:
+	~CModel();
+public:
 	void Render(ID3D12GraphicsCommandList *pd3dCommandList, bool isDebug = false);
 
 	void SetMesh(CMesh* mesh)			{ m_Mesh	= mesh;		}
