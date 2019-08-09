@@ -1,6 +1,6 @@
 #pragma once
 
-class CObject;
+class CPlayer;
 
 
 struct AINode {

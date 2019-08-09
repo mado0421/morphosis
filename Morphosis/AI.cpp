@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Object.h"
+#include "Player.h"
 #include "AI.h"
 
 std::vector<AINode*>					g_vecAINode;

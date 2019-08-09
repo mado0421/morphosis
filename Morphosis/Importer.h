@@ -34,102 +34,7 @@ struct ImportBone {
 		return *this;
 	}
 };
-struct AnimationClip {
-public:
-	AnimationClip()
-		: m_AnimName("")
-		, m_nBoneList(0)
-		, m_nKeyTime(0)
-		, m_BoneList(NULL)
-		, m_KeyTime(NULL)
-		, m_IsLoop(false)
-	{}
-	AnimationClip(const AnimationClip& a) 
-		: m_AnimName(a.m_AnimName)
-		, m_nBoneList(a.m_nBoneList)
-		, m_nKeyTime(a.m_nKeyTime)
-		, m_BoneList(NULL)
-		, m_KeyTime(NULL)
-		, m_IsLoop(false)
-	{
-		m_BoneList = new ImportBone[m_nBoneList];
-		for (int i = 0; i < m_nBoneList; ++i) 
-			m_BoneList[i] = a.m_BoneList[i];
-		
 
-		m_KeyTime = new double[m_nKeyTime];
-		for (int i = 0; i < m_nKeyTime; ++i) 
-			m_KeyTime[i] = a.m_KeyTime[i];
-		
-	}
-
-	~AnimationClip() {
-		if (m_BoneList) {
-
-			//for (int i = 0; i < m_nBoneList; ++i) {
-			//	delete[] m_BoneList[i].m_pToRootTransforms;
-			//}
-			delete[] m_BoneList;
-		}
-		if (m_KeyTime) delete[] m_KeyTime;
-	}
-
-public:
-	void ImportFile(const char* fileName) {
-		std::ifstream in;
-
-		in.open(fileName, std::ios::in | std::ios::binary);
-		char AnimName[32];
-		in.read((char*)AnimName, sizeof(AnimName));
-		m_AnimName = AnimName;
-
-		m_nKeyTime = 0;
-		in.read((char*)&m_nKeyTime, sizeof(int));
-		m_KeyTime = new double[m_nKeyTime];
-		in.read((char*)m_KeyTime, sizeof(double) * m_nKeyTime);
-
-		in.read((char*)&m_nBoneList, sizeof(int));
-		m_BoneList = new ImportBone[m_nBoneList];
-
-		for (int i = 0; i < m_nBoneList; ++i) {
-			char name[32];
-			in.read((char*)name, sizeof(name));
-			m_BoneList[i].m_Name = name;
-
-			in.read((char*)&m_BoneList[i].m_GlobalTransform, sizeof(XMFLOAT4X4));
-		}
-
-		for (int i = 0; i < m_nBoneList; ++i) {
-			m_BoneList[i].m_nKeyframe = m_nKeyTime;
-			m_BoneList[i].m_pToRootTransforms = new XMFLOAT4X4[m_nKeyTime];
-			for (int j = 0; j < m_nKeyTime; ++j) {
-				in.read((char*)&m_BoneList[i].m_pToRootTransforms[j], sizeof(XMFLOAT4X4));
-			}
-		}
-
-
-
-		in.close();
-	}
-	void Display() {
-		std::cout << m_AnimName.c_str() << "\n\n";
-
-		for (int i = 0; i < m_nBoneList; ++i) {
-			std::cout << m_BoneList[i].m_Name.c_str() << "\n\n";
-		}
-	}
-	void SetIsLoop(bool IsLoop) { m_IsLoop = IsLoop; }
-
-public:
-	std::string m_AnimName;
-	int			m_nBoneList;
-	int			m_nKeyTime;
-
-	ImportBone*	m_BoneList;
-	double*		m_KeyTime;
-
-	bool		m_IsLoop;
-};
 
 struct ImportCtrlPoint {
 	XMFLOAT3	xmf3Position = XMFLOAT3(0,0,0);
@@ -282,12 +187,3 @@ private:
 	ID3D12Device*				m_pd3dDevice		= NULL;
 	ID3D12GraphicsCommandList*	m_pd3dCommandList	= NULL;
 };
-
-
-CTexture * GetTextureByName(const char * name);
-
-
-CModel * GetModelByName(const char * name);
-
-
-CAnimationController * GetAnimCtrlByName(const char * name);

@@ -5,7 +5,42 @@ struct CB_ANIMDATA_INFO {
 	XMFLOAT4X4 interpolatedMatrix;
 };
 
-struct AnimationClip;
+struct ImportBone;
+
+struct AnimationClip {
+public:
+	AnimationClip()
+		: m_AnimName("")
+		, m_nBoneList(0)
+		, m_nKeyTime(0)
+		, m_BoneList(NULL)
+		, m_KeyTime(NULL)
+		, m_IsLoop(false)
+	{}
+	AnimationClip(const AnimationClip& a);
+	~AnimationClip();
+
+public:
+	void ImportFile(const char* fileName);
+	//void Display() {
+	//	std::cout << m_AnimName.c_str() << "\n\n";
+
+	//	for (int i = 0; i < m_nBoneList; ++i) {
+	//		std::cout << m_BoneList[i].m_Name.c_str() << "\n\n";
+	//	}
+	//}
+	void SetIsLoop(bool IsLoop) { m_IsLoop = IsLoop; }
+
+public:
+	std::string m_AnimName;
+	int			m_nBoneList;
+	int			m_nKeyTime;
+
+	ImportBone*	m_BoneList;
+	double*		m_KeyTime;
+
+	bool		m_IsLoop;
+};
 
 class CAnimationController {
 public:

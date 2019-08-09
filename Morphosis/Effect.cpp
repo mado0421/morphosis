@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Effect.h"
-#include "Object.h"
+#include "Player.h"
 
 
 void EDefaultDamage::Act(CPlayer * p)

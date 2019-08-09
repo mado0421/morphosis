@@ -38,3 +38,4 @@ private:
 	CMesh*			m_Mesh			= NULL;
 	CTexture*		m_Texture		= NULL;
 };
+
