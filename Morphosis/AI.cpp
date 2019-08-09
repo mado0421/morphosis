@@ -12,6 +12,7 @@ void CMoveBehavior::Update(CPlayer * obj)
 	if (m_state == AIMoveState::GOTOCLOSESTNODE) {
 		float min = FLT_MAX;
 		float temp;
+
 		for (int i = 0; i < g_vecAINode.size(); ++i) {
 			temp = GetDistance(obj->GetPosition(), g_vecAINode[i]->m_xmf3Position);
 			if (temp < min) {
@@ -19,6 +20,7 @@ void CMoveBehavior::Update(CPlayer * obj)
 				m_targetNode = g_vecAINode[i];
 			}
 		}
+
 		if (NULL == m_targetNode) return;
 		nextPos = m_targetNode->m_xmf3Position;
 

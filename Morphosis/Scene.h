@@ -9,6 +9,8 @@ struct CB_OBJECT_INFO;
 // 인터페이스?
 class CScene
 {
+public:
+	~CScene();
 protected:
 	ID3D12RootSignature				*m_pd3dGraphicsRootSignature	= NULL;
 	ID3D12Device					*m_pd3dDevice					= NULL;

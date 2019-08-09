@@ -142,7 +142,7 @@ void CSceneMainPlay::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommand
 
 	//int i = 0;
 	//while (i < 100) {
-	//	std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
+	//	//std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
 	//	m_ObjMng = new CObjectManager(m_pd3dDevice, m_pd3dCommandList, SceneType::MAINPLAY);
 	//	m_pd3dCbvSrvDescriptorHeap = m_ObjMng->GetDescriptorHeap();
 	//	if(m_pd3dCbvSrvDescriptorHeap) m_pd3dCbvSrvDescriptorHeap->Release();
@@ -153,20 +153,21 @@ void CSceneMainPlay::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommand
 	//	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoFloatingUI());
 	//	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoDefaultUI());
 	//	g_vecPSO.clear();
-	//	std::chrono::duration<double> sec = std::chrono::system_clock::now() - start;
+	//	//std::chrono::duration<double> sec = std::chrono::system_clock::now() - start;
 	//	i++;
-	//	system("cls");
-	//	cout << "[";
-	//	for (int j = 0; j < 10; ++j) {
-	//		if (i > j * 10) cout << "/";
-	//		else cout << ".";
-	//	}
-	//	cout << "] - " << i << "%\n";
-	//	cout << sec.count() << "sec\n";
+	//	//system("cls");
+	//	//cout << "[";
+	//	//for (int j = 0; j < 10; ++j) {
+	//	//	if (i > j * 10) cout << "/";
+	//	//	else cout << ".";
+	//	//}
+	//	//cout << "] - " << i << "%\n";
+	//	//cout << sec.count() << "sec\n";
 	//}
 
 	//FMOD_System_PlaySound(g_System, FMOD_CHANNEL_FREE, g_vecSound[static_cast<int>(SOUND::BGM)], 0, &channel);
 	g_System->playSound(g_vecSound[static_cast<int>(SOUND::BGM)], 0, false, &g_Channel);
+	g_Channel->setVolume(0.1f);
 }
 
 
@@ -207,6 +208,11 @@ void CSceneMainPlay::ProcessInput(UCHAR * pKeysBuffer)
 	m_ObjMng->ProcessInput(pKeysBuffer, cxDelta);
 }
 
+CScene::~CScene()
+{
+	Release();
+}
+
 void CScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 {
 	pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);	// 이 루트 시그니처를 쓸 것
@@ -227,17 +233,14 @@ void CScene::Update(float fTimeElapsed)
 
 void CScene::Release()
 {
-	g_vecAnimController.clear();
-	g_vecModel.clear();
-	g_vecModel.clear();
-	g_vecPSO.clear();
-	g_vecTexture.clear();
-
-	delete m_ObjMng;
-	delete m_pCamera;
-	m_pd3dGraphicsRootSignature->Release();
-	m_pd3dCbvSrvDescriptorHeap->Release();
-
+	for (int i = 0; i < g_vecPSO.size(); ++i) g_vecPSO[i]->Release();
+	MemoryClear(g_vecPSO);
+	
+	if (m_pFramework)							m_pFramework = NULL;
+	if (m_ObjMng)						delete	m_ObjMng;
+	if (m_pCamera)						delete	m_pCamera;
+	if (m_pd3dGraphicsRootSignature)			m_pd3dGraphicsRootSignature->Release();
+	if (m_pd3dCbvSrvDescriptorHeap)				m_pd3dCbvSrvDescriptorHeap->Release();
 }
 
 ID3D12RootSignature * CSceneLobby::CreateRootSignature(ID3D12Device * pd3dDevice)

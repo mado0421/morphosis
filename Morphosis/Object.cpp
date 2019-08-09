@@ -30,7 +30,6 @@ CObject::~CObject()
 	m_Collider.clear();
 	m_ModelList.clear();
 	std::queue<Collider*> empty;
-	std::swap(m_CollideInfo, empty);
 
 	// uploadAddress delete
 	if (m_pd3dcbAnimation) {
@@ -229,6 +228,12 @@ const bool CObject::IsCollide(const Collider & other)
 
 	return false;
 }
+void CObject::Disable()
+{
+	SetAlive(false);
+	for (int i = 0; i < m_vecEffects.size(); ++i) delete m_vecEffects[i];
+	MemoryClear(m_vecEffects);
+}
 Collider * const CObject::GetCollisionCollider(Collider& other, bool isMakeAlign)
 {
 	for (int i = 0; i < m_Collider.size(); ++i) {
@@ -351,17 +356,13 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 	}
 	m_IsOnGround = false;
 
-	// Queue Clear
-	std::queue<Collider*> empty;
-	std::swap(m_CollideInfo, empty);
-
 	// 진행 방향 구함
 	m_xmf3Move = Move(fTimeElapsed);
 	float radius = g_fDefaultUnitScale / 2.0f;
 
 	/* For Test */
-	static std::vector< Test > t;
-	int s = 0;
+	//static std::vector< Test > t;
+	//int s = 0;
 
 
 	while (true) {
@@ -370,11 +371,11 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 		Collider* collider = m_pObjMng->GetCollider(DetailedGroundCollider, ColliderTag::PROP, false);
 		if (NULL == collider) break;
 
-		s++;
-		if (s > 10) collider->m_trigCollided = true;
-		Test a;
-		a.col = collider;
-		a.prevMove = m_xmf3Move;
+		//s++;
+		//if (s > 10) collider->m_trigCollided = true;
+		//Test a;
+		//a.col = collider;
+		//a.prevMove = m_xmf3Move;
 
 		XMFLOAT3 look = collider->GetLook();
 		XMFLOAT3 up = collider->GetUp();
@@ -491,16 +492,16 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 		xmf3MyExtents.x = abs(xmf3MyExtents.x);
 		xmf3MyExtents.y = abs(xmf3MyExtents.y);
 		xmf3MyExtents.z = abs(xmf3MyExtents.z);
-		a.different = Vector3::Subtract(xmf3MyExtents, colliderExtents);
-		a.nextMove = m_xmf3Move;
+		//a.different = Vector3::Subtract(xmf3MyExtents, colliderExtents);
+		//a.nextMove = m_xmf3Move;
 
-		t.push_back(a);
+		//t.push_back(a);
 
 	}
 	m_pObjMng->ColliderTrigInit(ColliderTag::PROP);
 
 	/* For Test */
-	while (t.size() > 100) { t.erase(t.begin()); }
+	//while (t.size() > 100) { t.erase(t.begin()); }
 
 	XMFLOAT3 xmf3Right = XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
 	XMFLOAT3 xmf3Up = XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);

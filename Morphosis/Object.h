@@ -137,10 +137,7 @@ public:
 	void SetTeam(int team)								{ m_Team = team; }
 	void SetAlive(bool state)							{ m_IsAlive = state; }
 	virtual void Enable()								{ SetAlive(true); }
-	virtual void Disable()								{ 
-		SetAlive(false); 
-		m_vecEffects.clear();
-	}
+	virtual void Disable();
 	// 외부 접근 함수
 	Collider* const GetCollisionCollider(Collider& other, bool isMakeAlign);
 	const XMFLOAT3	GetPosition();
@@ -189,7 +186,6 @@ protected:
 
 	//충돌체
 	std::vector<Collider>			m_Collider;
-	std::queue<Collider*>			m_CollideInfo;
 	//오브젝트 매니저를 아래서 접근하기 위한 포인터
 	CObjectManager*					m_pObjMng = NULL;
 	// 객체 정보

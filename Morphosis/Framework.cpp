@@ -58,6 +58,7 @@ CFramework::~CFramework()
 {
 	// Note: FMOD 해제
 	for (int i = 0; i < g_vecSound.size(); ++i) g_vecSound[i]->release();
+	MemoryClear(g_vecSound);
 	g_System->close();
 	g_System->release();
 }
@@ -149,6 +150,25 @@ bool CFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	CreateSwapChain();
 
 	m_hFenceEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL); // 얘 추가했음.
+
+	BOOL bFullScreenState = FALSE;
+	m_pdxgiSwapChain->GetFullscreenState(&bFullScreenState, NULL);
+	if (!bFullScreenState)
+	{
+		DXGI_MODE_DESC dxgiTargetParameters;
+		dxgiTargetParameters.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		dxgiTargetParameters.Width = m_nWndClientWidth;
+		dxgiTargetParameters.Height = m_nWndClientHeight;
+		dxgiTargetParameters.RefreshRate.Numerator = 60;
+		dxgiTargetParameters.RefreshRate.Denominator = 1;
+		dxgiTargetParameters.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+		dxgiTargetParameters.ScanlineOrdering =
+			DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+		m_pdxgiSwapChain->ResizeTarget(&dxgiTargetParameters);
+	}
+	m_pdxgiSwapChain->SetFullscreenState(!bFullScreenState, NULL);
+
+	OnResizeBackBuffers();
 
 	BuildScenes();
 
@@ -429,7 +449,7 @@ void CFramework::ChangeScene(SceneType type)
 
 void CFramework::ReleaseScenes()
 {
-	m_pCurrentScene->Release();
+	for (int i = 0; i < static_cast<int>(SceneType::count); ++i) delete m_ppScenes[i];
 	delete[] m_ppScenes;
 }
 

@@ -216,6 +216,7 @@ void CPsoGenerator::Init(ID3D12Device * pd3dDevice, ID3D12RootSignature * pd3dGr
 {
 	psoType->Initialize(pd3dDevice, pd3dGraphicsRootSignature);
 	g_vecPSO.push_back(psoType->GetPipelineState());
+	delete psoType;
 }
 
 D3D12_INPUT_LAYOUT_DESC CPsoFloatingUI::CreateInputLayout()

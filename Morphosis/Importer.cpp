@@ -20,8 +20,6 @@ void CImporter::ImportModel(const char * fileName, const char * textureName, Mod
 
 		g_vecModel.push_back(model);
 
-		//delete tempMesh;
-
 		return;
 	}
 
@@ -115,7 +113,7 @@ void CImporter::ImportLevel(const char * fileName, LEVELDATA_DESC & levelDataDes
 	in.getline(line, 256); levelDataDesc.BoundaryBoxRotation.x	= (float)atof(line);
 	in.getline(line, 256); levelDataDesc.BoundaryBoxRotation.y	= (float)atof(line);
 	in.getline(line, 256); levelDataDesc.BoundaryBoxRotation.z	= (float)atof(line);
-	in.getline(line, 256); levelDataDesc.BoundaryBoxRotation.w	= (float)atof(line);
+	in.getline(line, 256); levelDataDesc.BoundaryBoxRotation.w	= (float)atof(line); 
 
 	for (int i = 0; i < levelDataDesc.nCollisionMaps; ++i) {
 		XMFLOAT3 temp3;
@@ -194,7 +192,6 @@ void CImporter::ImportLevel(const char * fileName, LEVELDATA_DESC & levelDataDes
 
 
 	in.close();
-
 
 
 
