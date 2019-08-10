@@ -77,7 +77,6 @@ void CImporter::ImportAnimClip(const char * fileName, const char * animCtrlName,
 
 	GetAnimCtrlByName(animCtrlName)->AddAnimData(animData);
 }
-
 void CImporter::ImportLevel(const char * fileName, LEVELDATA_DESC & levelDataDesc)
 {
 	ifstream in;
@@ -197,7 +196,6 @@ void CImporter::ImportLevel(const char * fileName, LEVELDATA_DESC & levelDataDes
 
 
 }
-
 void CImporter::ImportTexture(const wchar_t * fileName, const char * textureName)
 {
 	wstring filePath = LASSETPATH;
@@ -210,7 +208,6 @@ void CImporter::ImportTexture(const wchar_t * fileName, const char * textureName
 
 	g_vecTexture.push_back(texture);
 }
-
 void CImporter::ImportAnimController(const char * animControllerName)
 {
 	//CAnimationController* animController = new CAnimationController();

@@ -1,120 +1,129 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="소스 파일">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="리소스 파일">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="소스 파일\Framework">
+    <Filter Include="코드">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="코드\Framework">
       <UniqueIdentifier>{c06d9690-da64-4059-9931-fe0c1c4c3a20}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\DDSTextureLoader12">
+    <Filter Include="코드\DDSTextureLoader12">
       <UniqueIdentifier>{d87e9b4f-f65f-4631-a255-da431f0f7a94}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Scene">
+    <Filter Include="코드\Scene">
       <UniqueIdentifier>{fa45ba69-307e-4249-ad18-bcf38fa0052f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Object">
+    <Filter Include="코드\Object">
       <UniqueIdentifier>{325051c0-fe93-413c-ace2-cc7fa04e420c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Camera">
+    <Filter Include="코드\Camera">
       <UniqueIdentifier>{a95bcdb7-ec7b-484b-a0d1-496728d26d95}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Timer">
+    <Filter Include="코드\Timer">
       <UniqueIdentifier>{724f1c7d-729a-42e9-8269-d6f869058188}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\PSO">
+    <Filter Include="코드\PSO">
       <UniqueIdentifier>{1e5b2257-ce89-4e34-9f16-23c090883874}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Object\Texture">
-      <UniqueIdentifier>{ed290333-801a-47c3-8f29-2b6476fafd59}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Object\Mesh">
-      <UniqueIdentifier>{bee88d48-c147-4437-bb83-daea5c947ba5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Object\Importer">
-      <UniqueIdentifier>{2b0ae26b-dcef-46c8-a9f9-528f290e958d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Object\Animation">
-      <UniqueIdentifier>{1ff4ed94-a96e-4405-98cb-7c35cc9ac733}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\AI">
+    <Filter Include="코드\AI">
       <UniqueIdentifier>{cd6268c8-c814-485e-99e5-4678b0462075}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Effect">
+    <Filter Include="코드\Effect">
       <UniqueIdentifier>{6a53693a-9849-445d-b70c-8a5fc5cb69db}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Object\Collider">
+    <Filter Include="코드\Resource">
+      <UniqueIdentifier>{a258ad90-ac84-4bb6-9a21-d70e074e31b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드\Resource\Animation">
+      <UniqueIdentifier>{1ff4ed94-a96e-4405-98cb-7c35cc9ac733}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드\Resource\Importer">
+      <UniqueIdentifier>{2b0ae26b-dcef-46c8-a9f9-528f290e958d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드\Resource\Mesh">
+      <UniqueIdentifier>{bee88d48-c147-4437-bb83-daea5c947ba5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드\Resource\Texture">
+      <UniqueIdentifier>{ed290333-801a-47c3-8f29-2b6476fafd59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드\Collider">
       <UniqueIdentifier>{a4c0ab50-2d1c-4fbc-bcaa-268916efb465}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HLSL">
+      <UniqueIdentifier>{2d1494ee-e4f1-4fc3-b88c-e52a0cf20551}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드\Manager">
+      <UniqueIdentifier>{22036147-4c4a-4a7c-af8e-f8c6ea4ec046}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationController.cpp">
-      <Filter>소스 파일\Object\Animation</Filter>
+      <Filter>코드\Resource\Animation</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
-      <Filter>소스 파일\Camera</Filter>
+      <Filter>코드\Camera</Filter>
     </ClCompile>
     <ClCompile Include="DDSTextureLoader12.cpp">
-      <Filter>소스 파일\DDSTextureLoader12</Filter>
+      <Filter>코드\DDSTextureLoader12</Filter>
     </ClCompile>
     <ClCompile Include="Framework.cpp">
-      <Filter>소스 파일\Framework</Filter>
+      <Filter>코드\Framework</Filter>
     </ClCompile>
     <ClCompile Include="Importer.cpp">
-      <Filter>소스 파일\Object\Importer</Filter>
+      <Filter>코드\Resource\Importer</Filter>
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
-      <Filter>소스 파일\Object\Mesh</Filter>
+      <Filter>코드\Resource\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="Model.cpp">
-      <Filter>소스 파일\Object\Mesh</Filter>
+      <Filter>코드\Resource\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="Object.cpp">
-      <Filter>소스 파일\Object</Filter>
+      <Filter>코드\Object</Filter>
     </ClCompile>
     <ClCompile Include="PSO.cpp">
-      <Filter>소스 파일\PSO</Filter>
+      <Filter>코드\PSO</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
-      <Filter>소스 파일\Scene</Filter>
+      <Filter>코드\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Timer.cpp">
-      <Filter>소스 파일\Timer</Filter>
+      <Filter>코드\Timer</Filter>
     </ClCompile>
     <ClCompile Include="Morphosis.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>코드</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>코드</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
-      <Filter>소스 파일\Object\Texture</Filter>
+      <Filter>코드\Resource\Texture</Filter>
     </ClCompile>
     <ClCompile Include="AI.cpp">
-      <Filter>소스 파일\AI</Filter>
+      <Filter>코드\AI</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
-      <Filter>소스 파일\Object</Filter>
+      <Filter>코드\Object</Filter>
     </ClCompile>
     <ClCompile Include="Projectile.cpp">
-      <Filter>소스 파일\Object</Filter>
+      <Filter>코드\Object</Filter>
     </ClCompile>
     <ClCompile Include="UI.cpp">
-      <Filter>소스 파일\Object</Filter>
-    </ClCompile>
-    <ClCompile Include="ObjectManager.cpp">
-      <Filter>소스 파일\Object</Filter>
+      <Filter>코드\Object</Filter>
     </ClCompile>
     <ClCompile Include="Effect.cpp">
-      <Filter>소스 파일\Effect</Filter>
+      <Filter>코드\Effect</Filter>
     </ClCompile>
     <ClCompile Include="Collider.cpp">
-      <Filter>소스 파일\Object\Collider</Filter>
+      <Filter>코드\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectManager.cpp">
+      <Filter>코드\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -131,91 +140,93 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MathHelper.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Defines.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
     <ClInclude Include="AnimationController.h">
-      <Filter>소스 파일\Object\Animation</Filter>
+      <Filter>코드\Resource\Animation</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
-      <Filter>소스 파일\Camera</Filter>
+      <Filter>코드\Camera</Filter>
     </ClInclude>
     <ClInclude Include="DDSTextureLoader12.h">
-      <Filter>소스 파일\DDSTextureLoader12</Filter>
+      <Filter>코드\DDSTextureLoader12</Filter>
     </ClInclude>
     <ClInclude Include="Framework.h">
-      <Filter>소스 파일\Framework</Filter>
+      <Filter>코드\Framework</Filter>
     </ClInclude>
     <ClInclude Include="Importer.h">
-      <Filter>소스 파일\Object\Importer</Filter>
+      <Filter>코드\Resource\Importer</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
-      <Filter>소스 파일\Object\Mesh</Filter>
+      <Filter>코드\Resource\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
-      <Filter>소스 파일\Object\Mesh</Filter>
+      <Filter>코드\Resource\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="Object.h">
-      <Filter>소스 파일\Object</Filter>
+      <Filter>코드\Object</Filter>
     </ClInclude>
     <ClInclude Include="PSO.h">
-      <Filter>소스 파일\PSO</Filter>
+      <Filter>코드\PSO</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
-      <Filter>소스 파일\Scene</Filter>
+      <Filter>코드\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
-      <Filter>소스 파일\Timer</Filter>
-    </ClInclude>
-    <ClInclude Include="d3dx12.h">
-      <Filter>소스 파일</Filter>
+      <Filter>코드\Timer</Filter>
     </ClInclude>
     <ClInclude Include="Morphosis.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>소스 파일</Filter>
+      <Filter>코드</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
-      <Filter>소스 파일</Filter>
+      <Filter>코드</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
-      <Filter>소스 파일</Filter>
+      <Filter>코드</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
-      <Filter>소스 파일\Object\Texture</Filter>
+      <Filter>코드\Resource\Texture</Filter>
     </ClInclude>
     <ClInclude Include="AI.h">
-      <Filter>소스 파일\AI</Filter>
+      <Filter>코드\AI</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
-      <Filter>소스 파일\Object</Filter>
+      <Filter>코드\Object</Filter>
     </ClInclude>
     <ClInclude Include="Projectile.h">
-      <Filter>소스 파일\Object</Filter>
+      <Filter>코드\Object</Filter>
     </ClInclude>
     <ClInclude Include="UI.h">
-      <Filter>소스 파일\Object</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectManager.h">
-      <Filter>소스 파일\Object</Filter>
+      <Filter>코드\Object</Filter>
     </ClInclude>
     <ClInclude Include="Effect.h">
-      <Filter>소스 파일\Effect</Filter>
+      <Filter>코드\Effect</Filter>
     </ClInclude>
     <ClInclude Include="Collider.h">
-      <Filter>소스 파일\Object\Collider</Filter>
+      <Filter>코드\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>리소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Defines.h" />
+    <ClInclude Include="d3dx12.h" />
+    <ClInclude Include="MathHelper.h" />
+    <ClInclude Include="ObjectManager.h">
+      <Filter>코드\Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="VertexShader.hlsl" />
-    <FxCompile Include="PixelShader.hlsl" />
+    <FxCompile Include="VertexShader.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="PixelShader.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Light.hlsli" />
-    <None Include="Header.hlsli" />
+    <None Include="Light.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
+    <None Include="Header.hlsli">
+      <Filter>HLSL</Filter>
+    </None>
   </ItemGroup>
 </Project>

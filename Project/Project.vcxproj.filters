@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="코드 파일">
+      <UniqueIdentifier>{36721496-4a48-4c48-b7e4-8c2f6be21951}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\Project">
+      <UniqueIdentifier>{7436065c-9c80-415a-adc6-3aea2770ac2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\PCH">
+      <UniqueIdentifier>{6c94eec6-92da-4ccd-8202-a8fb681e26dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\Framework">
+      <UniqueIdentifier>{b4b44476-6390-4ff5-85f4-332f16c4e8dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\Scene">
+      <UniqueIdentifier>{25f015e1-47c0-46cb-8309-7882a20007a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\Camera">
+      <UniqueIdentifier>{c5a895b7-c72f-4eac-8476-8f1d6a9bc28a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\Timer">
+      <UniqueIdentifier>{675dd0a5-9417-4cba-9fa4-54da317c61ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\Scene\TitleScene">
+      <UniqueIdentifier>{346c576a-a858-437b-99a4-dffbf6c25d83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\Scene\LobbyScene">
+      <UniqueIdentifier>{01d8d3a6-a6e2-4e74-8212-6fde701cadbd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\Scene\MainPlayScene">
+      <UniqueIdentifier>{5a23b2f7-c1a3-4551-9b73-ddc241bb8743}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\Scene\ResultScene">
+      <UniqueIdentifier>{cab8ca2b-e68f-4a59-9215-fe0d6bf4db12}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Project.h">
+      <Filter>코드 파일\Project</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>코드 파일\Project</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>코드 파일\PCH</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework.h">
+      <Filter>코드 파일\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>코드 파일\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>코드 파일\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>코드 파일\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="TitleScene.h">
+      <Filter>코드 파일\Scene\TitleScene</Filter>
+    </ClInclude>
+    <ClInclude Include="MainPlayScene.h">
+      <Filter>코드 파일\Scene\MainPlayScene</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Project.cpp">
+      <Filter>코드 파일\Project</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>코드 파일\PCH</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework.cpp">
+      <Filter>코드 파일\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>코드 파일\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>코드 파일\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>코드 파일\Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleScene.cpp">
+      <Filter>코드 파일\Scene\TitleScene</Filter>
+    </ClCompile>
+    <ClCompile Include="MainPlayScene.cpp">
+      <Filter>코드 파일\Scene\MainPlayScene</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Project.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Project.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

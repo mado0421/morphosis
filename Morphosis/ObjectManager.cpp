@@ -495,9 +495,9 @@ void CObjectManager::CreateObjectData()
 		//int nPlayers = 2;
 		//int nFloatingUI = 1;
 		//int nDefaultUI = 1;
-		int nProps = 10;
+		int nProps = 1;
 		int nPlayers = 2;
-		int nFloatingUI = 5;
+		int nFloatingUI = 1;
 		int nDefaultUI = 1;
 		int nProjectiles = nPlayers * g_nProjectilePerPlayer;
 		m_nObjects = nProps + nPlayers + nProjectiles + nFloatingUI + nDefaultUI;

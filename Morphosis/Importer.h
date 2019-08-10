@@ -1,6 +1,12 @@
 #pragma once
 #include "stdafx.h"
 
+class CObject;
+class CTexture;
+class CModel;
+class CAnimationController;
+struct LEVELDATA_DESC;
+
 struct ImportBone {
 	std::string	m_Name;
 	XMFLOAT4X4	m_GlobalTransform;
@@ -34,8 +40,6 @@ struct ImportBone {
 		return *this;
 	}
 };
-
-
 struct ImportCtrlPoint {
 	XMFLOAT3	xmf3Position = XMFLOAT3(0,0,0);
 	XMINT4		xmi4BoneIdx;
@@ -145,13 +149,6 @@ private:
 	ImportMeshData	*m_MeshList;
 	int				m_nMeshList;
 };
-
-class CObject;
-class CTexture;
-class CModel;
-class CAnimationController;
-struct LEVELDATA_DESC;
-
 
 class CImporter {
 	/*********************************************************************
