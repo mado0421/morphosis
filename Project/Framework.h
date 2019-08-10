@@ -31,6 +31,9 @@ private:
 	void CreateRenderTargetViews();
 	void CreateDepthStencilView();
 
+	void CreateRootSignature();
+	void CreatePipelineStateObjects();
+
 private:
 	HINSTANCE					m_hInstance;
 	HWND						m_hWnd;

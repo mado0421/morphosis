@@ -11,9 +11,6 @@
     <Filter Include="코드 파일\Project">
       <UniqueIdentifier>{7436065c-9c80-415a-adc6-3aea2770ac2d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="코드 파일\PCH">
-      <UniqueIdentifier>{6c94eec6-92da-4ccd-8202-a8fb681e26dc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="코드 파일\Framework">
       <UniqueIdentifier>{b4b44476-6390-4ff5-85f4-332f16c4e8dd}</UniqueIdentifier>
     </Filter>
@@ -38,6 +35,12 @@
     <Filter Include="코드 파일\Scene\ResultScene">
       <UniqueIdentifier>{cab8ca2b-e68f-4a59-9215-fe0d6bf4db12}</UniqueIdentifier>
     </Filter>
+    <Filter Include="코드 파일\Project\PCH">
+      <UniqueIdentifier>{6c94eec6-92da-4ccd-8202-a8fb681e26dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\PipelineStateObject">
+      <UniqueIdentifier>{81b34362-1fce-4f2a-a57c-f654371d7565}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Project.h">
@@ -47,7 +50,7 @@
       <Filter>코드 파일\Project</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
-      <Filter>코드 파일\PCH</Filter>
+      <Filter>코드 파일\Project\PCH</Filter>
     </ClInclude>
     <ClInclude Include="Framework.h">
       <Filter>코드 파일\Framework</Filter>
@@ -67,13 +70,16 @@
     <ClInclude Include="MainPlayScene.h">
       <Filter>코드 파일\Scene\MainPlayScene</Filter>
     </ClInclude>
+    <ClInclude Include="PipelineStateObject.h">
+      <Filter>코드 파일\PipelineStateObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Project.cpp">
       <Filter>코드 파일\Project</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
-      <Filter>코드 파일\PCH</Filter>
+      <Filter>코드 파일\Project\PCH</Filter>
     </ClCompile>
     <ClCompile Include="Framework.cpp">
       <Filter>코드 파일\Framework</Filter>
@@ -93,6 +99,9 @@
     <ClCompile Include="MainPlayScene.cpp">
       <Filter>코드 파일\Scene\MainPlayScene</Filter>
     </ClCompile>
+    <ClCompile Include="PipelineStateObject.cpp">
+      <Filter>코드 파일\PipelineStateObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Project.rc">
@@ -106,5 +115,13 @@
     <Image Include="Project.ico">
       <Filter>리소스 파일</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="HLSLHeader.hlsli" />
+    <None Include="Lighting.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="PS.hlsl" />
+    <FxCompile Include="VS.hlsl" />
   </ItemGroup>
 </Project>
