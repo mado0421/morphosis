@@ -18,7 +18,7 @@ CPlayer::CPlayer() : CObject()
 	m_xmf3SpawnPoint = GetPosition();
 	m_HealthPoint = g_DefaultHealthPoint;
 	m_fRemainingTimeOfRespawn = 0.0f;
-	m_rotationInput = 0.0f;
+	m_rotationInput = XMFLOAT2(0,0);
 	for (int i = 0; i < static_cast<int>(Move::count); ++i) m_trigInput[i] = false;
 	m_AIBrain = new CTinMan(new CMoveBehavior(), this);
 }
@@ -33,6 +33,19 @@ void CPlayer::CreateConstantBufferResource(ID3D12Device * pd3dDevice, ID3D12Grap
 		UINT ncbElementBytes = (((sizeof(XMMATRIX) * g_nAnimBone) + 255) & ~255); //256ÀÇ ¹è¼ö
 		m_pd3dcbAnimation = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
 		m_pd3dcbAnimation->Map(0, NULL, (void **)&m_pcbxmAnimation);
+	}
+}
+void CPlayer::UpdateConstantBuffer(ID3D12GraphicsCommandList * pd3dCommandList)
+{
+	if (m_pd3dcbAnimation)
+	{
+		D3D12_GPU_VIRTUAL_ADDRESS d3dcbBoneOffsetsGpuVirtualAddress = m_pd3dcbAnimation->GetGPUVirtualAddress();
+		pd3dCommandList->SetGraphicsRootConstantBufferView(g_RootParameterAnimation, d3dcbBoneOffsetsGpuVirtualAddress);
+
+		for (int i = 0; i < g_nAnimBone; i++)
+		{
+			m_pcbxmAnimation[i] = m_a[i];
+		}
 	}
 }
 void CPlayer::Update(float fTimeElapsed)
@@ -260,8 +273,12 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 	XMFLOAT3 xmf3Up = XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
 	XMFLOAT3 xmf3Look = XMFLOAT3(m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33);
 
-	float rotationAngle = Rotate(fTimeElapsed);
-	XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(rotationAngle));
+	XMFLOAT2 rotationAngle = Rotate(fTimeElapsed);
+	//m_CurXAxisRotation += rotationAngle.y;
+	m_CurXAxisRotation = Clamp(m_CurXAxisRotation + rotationAngle.y, -85, 85);
+	//XMVECTOR rotationVector = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(rotationAngle.x), XMConvertToRadians(rotationAngle.y), 0);
+	XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(rotationAngle.x));
+	//XMMATRIX xmmtxRotate = XMMatrixRotationQuaternion(rotationVector);
 	xmf3Look = Vector3::TransformNormal(xmf3Look, xmmtxRotate);
 	xmf3Right = Vector3::TransformNormal(xmf3Right, xmmtxRotate);
 
@@ -276,7 +293,7 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 	m_xmf4x4World._42 += m_xmf3Move.y;
 	m_xmf4x4World._43 += m_xmf3Move.z;
 
-	XMStoreFloat3(&m_xmf3CameraTargetOffset, XMVector3Rotate(XMLoadFloat3(&m_xmf3CameraTargetOffset), XMQuaternionRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(rotationAngle))));
+	XMStoreFloat3(&m_xmf3CameraFocus, XMVector3Rotate(XMLoadFloat3(&m_xmf3CameraFocus), XMQuaternionRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(rotationAngle.x))));
 
 
 	for (int i = 0; i < m_Collider.size(); ++i) m_Collider[i].Update(GetPosition(), GetQuaternion());
@@ -284,7 +301,7 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 	TriggerOff();
 	if (m_HealthPoint <= 0) CPlayer::Disable();
 }
-void CPlayer::ProcessInput(UCHAR * pKeysBuffer, float mouse)
+void CPlayer::ProcessInput(UCHAR * pKeysBuffer, XMFLOAT2 mouse)
 {
 	if (pKeysBuffer[KEY::W] & 0xF0) m_trigInput[static_cast<int>(Move::W)] = true;
 	if (pKeysBuffer[KEY::A] & 0xF0) m_trigInput[static_cast<int>(Move::A)] = true;
@@ -367,7 +384,7 @@ void CPlayer::ChangeAnimClip()
 void CPlayer::TriggerOff()
 {
 	for (int i = 0; i < static_cast<int>(Move::count); i++) m_trigInput[i] = false;
-	m_rotationInput = 0;
+	m_rotationInput = XMFLOAT2(0,0);
 }
 XMFLOAT3 CPlayer::Move(float fTimeElapsed)
 {
@@ -382,15 +399,16 @@ XMFLOAT3 CPlayer::Move(float fTimeElapsed)
 
 	return Vector3::Multiply(fTimeElapsed * m_fSpeed * m_fSlowFactor, temp);
 }
-float CPlayer::Rotate(float fTimeElapsed)
+XMFLOAT2 CPlayer::Rotate(float fTimeElapsed)
 {
-	float temp = 0;
+	XMFLOAT2 temp{ 0,0 };
 	if (g_IsMouseMode) {
-		temp += m_rotationInput * fTimeElapsed * g_MouseInputSensitivity;
+		temp.x += m_rotationInput.x * fTimeElapsed * g_MouseInputSensitivity;
+		temp.y += m_rotationInput.y * fTimeElapsed * g_MouseInputSensitivity;
 	}
 	else {
-		if (m_trigInput[static_cast<int>(Move::Q)]) temp += fTimeElapsed * m_fSpeed * -1;
-		if (m_trigInput[static_cast<int>(Move::E)]) temp += fTimeElapsed * m_fSpeed;
+		//if (m_trigInput[static_cast<int>(Move::Q)]) temp += fTimeElapsed * m_fSpeed * -1;
+		//if (m_trigInput[static_cast<int>(Move::E)]) temp += fTimeElapsed * m_fSpeed;
 	}
 
 	return temp;

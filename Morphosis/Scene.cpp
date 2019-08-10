@@ -24,12 +24,13 @@ void CSceneMainPlay::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommand
 
 	m_pd3dGraphicsRootSignature = CreateRootSignature(pd3dDevice);
 
-	m_pCamera = new CFollowCamera();
+	m_pCamera = new CCamera();
 	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	m_ObjMng = new CObjectManager(m_pd3dDevice, m_pd3dCommandList, SceneType::MAINPLAY);
 	m_pCamera->SetTarget(m_ObjMng->GetTarget(0));
-	m_pCamera->SetOffset(XMFLOAT3(0, 30, 60));
+	m_pCamera->SetOffset(XMFLOAT3(0, 60, -40));
+	//m_pCamera->SetOffset(XMFLOAT3(0, 0, 0));
 	m_pd3dCbvSrvDescriptorHeap = m_ObjMng->GetDescriptorHeap();
 	CPsoGenerator l_psoGenerator;
 	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoModel());
@@ -62,31 +63,31 @@ void CSceneMainPlay::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommand
 	//	//cout << sec.count() << "sec\n";
 	//}
 
-	g_System->playSound(g_vecSound[static_cast<int>(SOUND::BGM)], 0, false, &g_Channel);
-	g_Channel->setVolume(0.1f);
+	//g_System->playSound(g_vecSound[static_cast<int>(SOUND::BGM)], 0, false, &g_Channel);
+	//g_Channel->setVolume(0.1f);
 }
 
 
 void CSceneMainPlay::ProcessInput(UCHAR * pKeysBuffer)
 {
-	float cxDelta = 0.0f/*, cyDelta = 0.0f*/;
+	XMFLOAT2 cDelta{ 0,0 };
 	POINT ptCursorPos;
-	static float cameraOffsetZ = 60;
-	static float cameraOffsetY = 30;
+	//static float cameraOffsetZ = 60;
+	//static float cameraOffsetY = 30;
 
 	if (pKeysBuffer[KEY::_1] & 0xF0) { g_IsMouseMode = false; }
 	if (pKeysBuffer[KEY::_2] & 0xF0) { g_IsMouseMode = true; }
 
-	if (pKeysBuffer[VK_UP] & 0xF0) { 
-		cameraOffsetY += 0.1f; 
-		m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
-	}
-	if (pKeysBuffer[VK_DOWN] & 0xF0) { cameraOffsetY -= 0.1f; m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
-	}
-	if (pKeysBuffer[VK_LEFT] & 0xF0) { cameraOffsetZ += 0.1f; m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
-	}
-	if (pKeysBuffer[VK_RIGHT] & 0xF0) { cameraOffsetZ -= 0.1f; m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
-	}
+	//if (pKeysBuffer[VK_UP] & 0xF0) { 
+	//	cameraOffsetY += 0.1f; 
+	//	m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+	//}
+	//if (pKeysBuffer[VK_DOWN] & 0xF0) { cameraOffsetY -= 0.1f; m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+	//}
+	//if (pKeysBuffer[VK_LEFT] & 0xF0) { cameraOffsetZ += 0.1f; m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+	//}
+	//if (pKeysBuffer[VK_RIGHT] & 0xF0) { cameraOffsetZ -= 0.1f; m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+	//}
 	
 
 
@@ -96,12 +97,15 @@ void CSceneMainPlay::ProcessInput(UCHAR * pKeysBuffer)
 
 	if (g_IsMouseMode) {
 		GetCursorPos(&ptCursorPos);
-		cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
-		//cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
+		cDelta.x = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
+		//cDelta.x = 0;
+
+		cDelta.y = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
+		//cDelta.y = 0;
 		SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 	}
 
-	m_ObjMng->ProcessInput(pKeysBuffer, cxDelta);
+	m_ObjMng->ProcessInput(pKeysBuffer, cDelta);
 }
 
 CScene::~CScene()
@@ -250,9 +254,9 @@ void CSceneLobby::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLis
 
 	m_pd3dGraphicsRootSignature = CreateRootSignature(pd3dDevice);
 
-	m_pCamera = new CFollowCamera();
+	m_pCamera = new CCamera();
 	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	m_pCamera->SetOffset(XMFLOAT3(0, 100.0f, 100.0f));
+	m_pCamera->SetOffset(XMFLOAT3(0, 100.0f, -100.0f));
 
 	m_ObjMng = new CObjectManager(m_pd3dDevice, m_pd3dCommandList, SceneType::LOBBY);
 	//m_pCamera->SetTarget(m_ObjMng->GetTarget(0));
@@ -267,7 +271,7 @@ void CSceneLobby::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLis
 
 void CSceneLobby::ProcessInput(UCHAR * pKeysBuffer)
 {
-	float cxDelta = 0.0f/*, cyDelta = 0.0f*/;
+	XMFLOAT2 cDelta{ 0,0 };
 	POINT ptCursorPos;
 
 	if (pKeysBuffer[KEY::_1] & 0xF0) { g_IsMouseMode = false; }
@@ -275,10 +279,10 @@ void CSceneLobby::ProcessInput(UCHAR * pKeysBuffer)
 
 	if (g_IsMouseMode) {
 		GetCursorPos(&ptCursorPos);
-		cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
-		//cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
+		cDelta.x = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
+		cDelta.y = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
 		SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 	}
 
-	m_ObjMng->ProcessInput(pKeysBuffer, cxDelta);
+	m_ObjMng->ProcessInput(pKeysBuffer, cDelta);
 }

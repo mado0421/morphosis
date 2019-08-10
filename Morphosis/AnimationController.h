@@ -22,13 +22,6 @@ public:
 
 public:
 	void ImportFile(const char* fileName);
-	//void Display() {
-	//	std::cout << m_AnimName.c_str() << "\n\n";
-
-	//	for (int i = 0; i < m_nBoneList; ++i) {
-	//		std::cout << m_BoneList[i].m_Name.c_str() << "\n\n";
-	//	}
-	//}
 	void SetIsLoop(bool IsLoop) { m_IsLoop = IsLoop; }
 
 public:
@@ -47,20 +40,20 @@ public:
 	~CAnimationController();
 
 public:
-	void		AddAnimData(AnimationClip* animData);
-	XMMATRIX	GetFinalMatrix(int boneIdx, float time);
-	float		GetEndTime();
-	void		ChangeAnimClip(const char* animClipName);
+	virtual void		AddAnimData(AnimationClip* animData);
+	virtual XMMATRIX	GetFinalMatrix(int boneIdx, float time);
+	float				GetEndTime();
+	void				ChangeAnimClip(const char* animClipName);
 
-	void		SetName(const char* name) { m_strName = name; }
+	void				SetName(const char* name) { m_strName = name; }
 
-	bool		IsClipEnd(float time);
-private:
-	XMMATRIX	GetInterpolatedToRootMtx(int boneIdx, float time);
-	XMMATRIX	GetOffset(int boneIdx);
-	int			GetPrevIdx(float time);
-	float		GetNormalizedTime(float time, int boneIdx);
-	float		GetClampTime(float time);
+	bool				IsClipEnd(float time);
+protected:
+	virtual XMMATRIX	GetInterpolatedToRootMtx(int boneIdx, float time);
+	XMMATRIX			GetOffset(int boneIdx);
+	int					GetPrevIdx(float time);
+	float				GetNormalizedTime(float time, int boneIdx);
+	float				GetClampTime(float time);
 
 public:
 	CAnimationController() = default;
@@ -70,4 +63,16 @@ public:
 	int								m_AnimState = 0;
 
 	string							m_strName	= "";
+};
+
+class CHumanoidAnimCtrl : public CAnimationController {
+public:
+	virtual void		AddAnimData(AnimationClip* animData);
+	virtual XMMATRIX	GetFinalMatrix(int boneIdx, float time);
+protected:
+	virtual XMMATRIX	GetInterpolatedToRootMtx(int boneIdx, float time);
+
+public:
+	float m_XAxisRotationAngle = 0;
+	std::vector<float> m_vecRotationAngle;
 };

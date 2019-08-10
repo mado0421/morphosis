@@ -3,6 +3,8 @@
 
 class CTinMan;
 
+
+
 class CPlayer : public CObject {
 public:
 	CPlayer();
@@ -10,11 +12,12 @@ public:
 
 public:
 	virtual void CreateConstantBufferResource(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
+	virtual void UpdateConstantBuffer(ID3D12GraphicsCommandList *pd3dCommandList);
 
 	// 기본적인 작동함수
 	virtual void	Update(float fTimeElapsed) override;
 	virtual void	LateUpdate(float fTimeElapsed) override;
-	virtual void	ProcessInput(UCHAR* pKeysBuffer, float mouse) override;
+	virtual void	ProcessInput(UCHAR* pKeysBuffer, XMFLOAT2 mouse) override;
 
 	const int GetHP() { return m_HealthPoint; }
 
@@ -51,7 +54,7 @@ protected:
 	// 내부 설정 함수
 	void			TriggerOff();
 	XMFLOAT3		Move(float fTimeElapsed);
-	float			Rotate(float fTimeElapsed);
+	XMFLOAT2		Rotate(float fTimeElapsed);
 	void			ChangeAnimClip();
 
 public:
@@ -65,7 +68,8 @@ protected:
 	float			m_fRemainingTimeOfSlow = 0;
 	// 키입력
 	bool			m_trigInput[static_cast<int>(Move::count)];
-	float			m_rotationInput;
+	XMFLOAT2		m_rotationInput;
+	float			m_CurXAxisRotation;
 	// 내부 객체 정보
 	float			m_fRPM;	// 1/Round Per Minute
 	float			m_fRemainingTimeOfFire;

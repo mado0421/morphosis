@@ -110,7 +110,8 @@ constexpr float		g_DefaultProjectileLifeTime = 5.0f;
 *********************************************************************/
 #define CAM_Y_DISTANCE 0
 
-
+#define CAM_MOVE_SPEED		3
+#define CAM_ROTATE_SPEED	3
 
 
 

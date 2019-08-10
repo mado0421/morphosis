@@ -176,29 +176,29 @@ CObject * CObjectManager::GetTarget(int i)
 	else return NULL;
 	//return m_Objects[m_nProps + i];
 }
-void CObjectManager::ProcessInput(UCHAR * pKeysBuffer, float mouse)
+void CObjectManager::ProcessInput(UCHAR * pKeysBuffer, XMFLOAT2 mouse)
 {
 	if (SceneType::MAINPLAY == m_SceneType) {
 
 		if (m_Players[0]->IsAlive()) m_Players[0]->ProcessInput(pKeysBuffer, mouse);
 
-		static float cameraOffsetZ = 23;
-		static float cameraOffsetY = 27;
-		if (pKeysBuffer[VK_RBUTTON] & 0xF0)
-			cout << m_Players[0]->GetPosition().x << ", " << m_Players[0]->GetPosition().y << ", " << m_Players[0]->GetPosition().z << "\n";
+		//static float cameraOffsetZ = 23;
+		//static float cameraOffsetY = 27;
+		//if (pKeysBuffer[VK_RBUTTON] & 0xF0)
+		//	cout << m_Players[0]->GetPosition().x << ", " << m_Players[0]->GetPosition().y << ", " << m_Players[0]->GetPosition().z << "\n";
 
-		if (pKeysBuffer[KEY::I] & 0xF0) {
-			cameraOffsetY += 0.05f; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
-		}
-		if (pKeysBuffer[KEY::K] & 0xF0) {
-			cameraOffsetY -= 0.05f; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
-		}
-		if (pKeysBuffer[KEY::J] & 0xF0) {
-			cameraOffsetZ += 0.05f; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
-		}
-		if (pKeysBuffer[KEY::L] & 0xF0) {
-			cameraOffsetZ -= 0.05f; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
-		}
+		//if (pKeysBuffer[KEY::I] & 0xF0) {
+		//	cameraOffsetY += 0.05f; m_Players[0]->SetCameraFocus(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+		//}
+		//if (pKeysBuffer[KEY::K] & 0xF0) {
+		//	cameraOffsetY -= 0.05f; m_Players[0]->SetCameraFocus(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+		//}
+		//if (pKeysBuffer[KEY::J] & 0xF0) {
+		//	cameraOffsetZ += 0.05f; m_Players[0]->SetCameraFocus(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+		//}
+		//if (pKeysBuffer[KEY::L] & 0xF0) {
+		//	cameraOffsetZ -= 0.05f; m_Players[0]->SetCameraFocus(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+		//}
 
 		if (pKeysBuffer[VK_LBUTTON] & 0xF0) {
 			/*********************************************************************
@@ -215,7 +215,7 @@ void CObjectManager::ProcessInput(UCHAR * pKeysBuffer, float mouse)
 				dynamic_cast<CPlayer*>(m_Players[0])->Shoot();
 				auto iter = find_if(m_Projectiles.begin(), m_Projectiles.end(), [](CObject* p) {return !(p->IsAlive()); });
 				if (iter != m_Projectiles.end()) {
-					dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[0], "Model_PaperBox_box_1", new EDefaultDamage());
+					dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[0], "Model_Bullet001_mesh", new EDefaultDamage());
 					(*iter)->SetAlive(true);
 				}
 			}
@@ -486,8 +486,6 @@ void CObjectManager::CreateObjectData()
 		}
 		g_vecAINode[8]->next = g_vecAINode[0];
 
-		if (_heapchk() != _HEAPOK)
-			DebugBreak();
 		/*********************************************************************
 		2019-06-15
 		서술자 힙을 생성하기 위해 개수들을 정해준다. 지금은 임의로 하지만 나중에는
@@ -497,9 +495,9 @@ void CObjectManager::CreateObjectData()
 		//int nPlayers = 2;
 		//int nFloatingUI = 1;
 		//int nDefaultUI = 1;
-		int nProps = 3;
+		int nProps = 10;
 		int nPlayers = 2;
-		int nFloatingUI = 1;
+		int nFloatingUI = 5;
 		int nDefaultUI = 1;
 		int nProjectiles = nPlayers * g_nProjectilePerPlayer;
 		m_nObjects = nProps + nPlayers + nProjectiles + nFloatingUI + nDefaultUI;
@@ -510,9 +508,6 @@ void CObjectManager::CreateObjectData()
 		m_FloatingUI.resize(nFloatingUI);
 		m_DefaultUI.resize(nDefaultUI);
 
-		if (_heapchk() != _HEAPOK)
-			DebugBreak();
-
 		CreateDescriptorHeap();
 		/*********************************************************************
 		2019-06-15
@@ -522,9 +517,6 @@ void CObjectManager::CreateObjectData()
 		2019-07-21
 		텍스처를 전역 벡터로 관리하기 시작.
 		*********************************************************************/
-
-		if (_heapchk() != _HEAPOK)
-			DebugBreak();
 
 		MemoryClear(g_vecTexture);
 		importer.ImportTexture(L"0615_Box_diff", "Texture_PaperBox");
@@ -537,6 +529,7 @@ void CObjectManager::CreateObjectData()
 		importer.ImportTexture(L"HealthBar", "Texture_HPBar");
 		importer.ImportTexture(L"crosshair", "Texture_Crosshair");
 		importer.ImportTexture(L"TEX_crystal", "Texture_Crystal");
+		importer.ImportTexture(L"Bullet", "Texture_Bullet001");
 		for (int i = 0; i < g_vecTexture.size(); ++i) CreateTextureResourceView(g_vecTexture[i]);
 
 		MemoryClear(g_vecModel);
@@ -553,6 +546,7 @@ void CObjectManager::CreateObjectData()
 		importer.ImportModel("", "Texture_StandardBox", ModelType::FloatingUI, "UI_TEST2");
 		importer.ImportModel("", "Texture_Crosshair", ModelType::FloatingUI, "UI_Crosshair");
 		importer.ImportModel("2b", "Texture_2B", ModelType::DefaultModel, "Model_2B");
+		importer.ImportModel("bullet001", "Texture_Bullet001", ModelType::DefaultModel, "Model_Bullet001");
 		//importer.ImportModel("0723_Box_SN",						"Texture_PaperBox",		ModelType::DefaultModel,	"Model_PaperBox_Resize", 0.5f);
 
 		MemoryClear(g_vecAnimController);
@@ -565,14 +559,8 @@ void CObjectManager::CreateObjectData()
 		importer.ImportAnimClip("0603_CharacterEndJump", "AnimCtrl_Character", false);
 		importer.ImportAnimClip("0603_CharacterDied", "AnimCtrl_Character", false);
 
-		if (_heapchk() != _HEAPOK)
-			DebugBreak();
-
 		CreateConstantBufferResorce();
 		CreateConstantBufferView();
-
-		if (_heapchk() != _HEAPOK)
-			DebugBreak();
 
 		int count = 0;
 		for (int i = 0; i < m_Props.size(); i++) {
@@ -627,7 +615,9 @@ void CObjectManager::CreateObjectData()
 				XMFLOAT3(6, 8, 6),
 				XMFLOAT4(0, 0, 0, 1)
 			);
-			obj->SetCameraTargetOffset(XMFLOAT3(0, 23, 27));
+			//obj->SetCameraFocus(XMFLOAT3(0, 40, 27));
+			obj->SetCameraFocus(XMFLOAT3(0, 50, -60));
+			//0, 50, -60
 
 			obj->SetTeam((i % 2) + 1);
 			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
@@ -639,7 +629,7 @@ void CObjectManager::CreateObjectData()
 		for (int i = 0; i < m_Projectiles.size(); i++) {
 			CProjectile* obj = new CProjectile();
 			obj->SetMng(this);
-			obj->AddModel(GetModelByName("Model_PaperBox_box_1"));
+			obj->AddModel(GetModelByName("Model_Bullet001_mesh"));
 
 			obj->SetAlive(false);
 			obj->AddCollider(XMFLOAT3(0, 0, 0), 10.0f);
@@ -783,16 +773,10 @@ void CObjectManager::CreateObjectData()
 		}
 	}
 
-	if (_heapchk() != _HEAPOK)
-		DebugBreak();
-
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->CreateConstantBufferResource(m_pd3dDevice, m_pd3dCommandList);
 	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->CreateConstantBufferResource(m_pd3dDevice, m_pd3dCommandList);
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->CreateConstantBufferResource(m_pd3dDevice, m_pd3dCommandList);
 	for (int i = 0; i < m_FloatingUI.size(); ++i)	m_FloatingUI[i]->CreateConstantBufferResource(m_pd3dDevice, m_pd3dCommandList);
 	for (int i = 0; i < m_DefaultUI.size(); ++i)	m_DefaultUI[i]->CreateConstantBufferResource(m_pd3dDevice, m_pd3dCommandList);
-
-	if (_heapchk() != _HEAPOK)
-		DebugBreak();
 
 }

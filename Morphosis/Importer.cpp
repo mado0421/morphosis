@@ -213,7 +213,8 @@ void CImporter::ImportTexture(const wchar_t * fileName, const char * textureName
 
 void CImporter::ImportAnimController(const char * animControllerName)
 {
-	CAnimationController* animController = new CAnimationController();
+	//CAnimationController* animController = new CAnimationController();
+	CHumanoidAnimCtrl* animController = new CHumanoidAnimCtrl();
 	animController->SetName(animControllerName);
 
 	g_vecAnimController.push_back(animController);

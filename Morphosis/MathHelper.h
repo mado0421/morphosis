@@ -11,6 +11,11 @@ inline bool IsIn(float target, float min, float max) {
 	if (target > max) return false;
 	return true;
 }
+inline float Clamp(float target, float min, float max) {
+	if (target < min) return min;
+	if (target > max) return max;
+	return target;
+}
 
 const XMFLOAT2 vector2Epsilon{ XMFLOAT2(FLT_EPSILON, FLT_EPSILON) };
 const XMFLOAT3 vector3Epsilon{ XMFLOAT3(FLT_EPSILON, FLT_EPSILON, FLT_EPSILON) };
@@ -72,8 +77,12 @@ namespace Vector4
 	}
 	inline XMFLOAT4 QuatFromMtx(const XMFLOAT4X4& mtx)
 	{
+		XMFLOAT4X4 tempMtx = mtx;
+		tempMtx._41 = 0;
+		tempMtx._42 = 0;
+		tempMtx._43 = 0;
 		XMFLOAT4 quat;
-		XMStoreFloat4(&quat, XMQuaternionRotationMatrix(XMLoadFloat4x4(&mtx)));
+		XMStoreFloat4(&quat, XMQuaternionRotationMatrix(XMLoadFloat4x4(&tempMtx)));
 		return quat;
 	}
 	inline XMFLOAT4 QuatFromAngle(const XMFLOAT3& v) {

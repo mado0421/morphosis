@@ -62,7 +62,7 @@ public:
 	ID3D12DescriptorHeap* GetDescriptorHeap() {
 		return m_pd3dCbvSrvDescriptorHeap;
 	}
-	void ProcessInput(UCHAR* pKeysBuffer, float mouse);
+	void ProcessInput(UCHAR* pKeysBuffer, XMFLOAT2 mouse);
 
 	Collider* GetCollider(Collider& myCollider, ColliderTag targetTag, bool isMakeAlign = false);
 	void ColliderTrigInit(ColliderTag targetTag);

@@ -1,8 +1,7 @@
 #pragma once
 
 #define ASPECT_RATIO				(float(FRAME_BUFFER_WIDTH) / float(FRAME_BUFFER_HEIGHT))
-#define CAM_MOVE_SPEED		3
-#define CAM_ROTATE_SPEED	3
+
 
 class CObject;
 
@@ -33,6 +32,8 @@ protected:
 
 	ID3D12Resource					*m_pd3dcbCamera = NULL;
 	VS_CB_CAMERA_INFO				*m_pcbMappedCamera = NULL;
+
+	CObject							*m_pTarget = NULL;
 
 public:
 	CCamera();
@@ -92,37 +93,9 @@ public:
 		//m_xmf4x4World._31 = xmf3Look.x;		m_xmf4x4World._32 = xmf3Look.y;		m_xmf4x4World._33 = m_xmf3Look.z;
 	
 	}
-	virtual void Update(float fTimeElapsed) { }
-	virtual void SetLookAt(XMFLOAT3& xmf3LookAt) { }
+	virtual void Update(float fTimeElapsed);
+	virtual void SetLookAt(const XMFLOAT3& xmf3LookAt);
 
-	virtual void SetTarget(void *target) {}
-	virtual CObject* GetTarget() { return nullptr; }
-};
-
-class CBoardCamera : public CCamera
-{
-private:
-
-public:
-	CBoardCamera();
-	~CBoardCamera();
-
-public:
-	void GenerateProjectionMatrix(float fNearPlaneDistance, float fFarPlaneDistance);
-};
-
-class CFollowCamera : public CCamera
-{
-private:
-	CObject * m_pTarget = NULL;
-
-public:
-	CFollowCamera();
-	~CFollowCamera();
-
-public:
-	virtual void SetTarget(void *target) override;
-	virtual CObject* GetTarget() override;
-	virtual void Update(float fTimeElapsed) override;
-	virtual void SetLookAt(XMFLOAT3& xmf3LookAt) override;
+	virtual void SetTarget(void *target);
+	virtual CObject* GetTarget();
 };

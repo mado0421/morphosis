@@ -17,7 +17,7 @@ CObject::CObject()
 	m_xmf4x4World = Matrix4x4::Identity();
 	m_IsAlive = true;
 	m_xmf3CollisionOffset = XMFLOAT3(0, 0, 0);
-	m_xmf3CameraTargetOffset = XMFLOAT3(0, 0, 0);
+	m_xmf3CameraFocus = XMFLOAT3(0, 0, 0);
 	m_AnimationState = static_cast<int>(0);
 	m_Team = TEAM_DEFAULT;
 	m_fHeightVelocity = 0.0f;
@@ -75,16 +75,7 @@ void CObject::CreateConstantBufferResource(ID3D12Device * pd3dDevice, ID3D12Grap
 }
 void CObject::UpdateConstantBuffer(ID3D12GraphicsCommandList * pd3dCommandList)
 {
-	if (m_pd3dcbAnimation)
-	{
-		D3D12_GPU_VIRTUAL_ADDRESS d3dcbBoneOffsetsGpuVirtualAddress = m_pd3dcbAnimation->GetGPUVirtualAddress();
-		pd3dCommandList->SetGraphicsRootConstantBufferView(g_RootParameterAnimation, d3dcbBoneOffsetsGpuVirtualAddress);
 
-		for (int i = 0; i < g_nAnimBone; i++)
-		{
-			m_pcbxmAnimation[i] = m_a[i];
-		}
-	}
 }
 void CObject::SetRootParameter(ID3D12GraphicsCommandList * pd3dCommandList)
 {
@@ -182,9 +173,9 @@ void CObject::SetRight(XMFLOAT3 right)
 	m_xmf4x4World._12 = right.y;
 	m_xmf4x4World._13 = right.z;
 }
-void CObject::SetCameraTargetOffset(XMFLOAT3 pos)
+void CObject::SetCameraFocus(XMFLOAT3 pos)
 {
-	m_xmf3CameraTargetOffset = pos;
+	m_xmf3CameraFocus = pos;
 }
 void CObject::SetRotation(const XMFLOAT3& angle)
 {
@@ -215,10 +206,11 @@ void CObject::SetAnimCtrl(CAnimationController * animCtrl)
 {
 	m_AnimationController = animCtrl;
 }
-XMFLOAT3 const CObject::GetCameraTargetPos()
+XMFLOAT3 const CObject::GetCameraFocus()
 {
-	return Vector3::Add(GetPosition(), m_xmf3CameraTargetOffset);
-	//return m_xmf3CameraTargetOffset;
+	return m_xmf3CameraFocus;
+	//return Vector3::Add(GetPosition(), m_xmf3CameraFocus);
+	//return m_xmf3CameraFocus;
 }
 const XMFLOAT4 CObject::GetQuaternion()
 {

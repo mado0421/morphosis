@@ -37,7 +37,7 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL, bool isDebug = false);
 	virtual void Update(float fTimeElapsed) {}
 	virtual void LateUpdate(float fTimeElapsed) {}
-	virtual void ProcessInput(UCHAR* pKeysBuffer, float mouse) {}
+	virtual void ProcessInput(UCHAR* pKeysBuffer, XMFLOAT2 mouse) {}
 	// 외부 설정 함수
 	void AddCollisionEffect(CObject* p);
 
@@ -46,7 +46,7 @@ public:
 	void AddCollider(XMFLOAT3 offset, float radius);
 	void SetColliderTrigOff();
 	void SetPosition(float x, float y, float z);
-	void SetCameraTargetOffset(XMFLOAT3 pos);
+	void SetCameraFocus(XMFLOAT3 pos);
 	void SetPosition(const XMFLOAT3 xmf3Position);
 	void SetRotation(const XMFLOAT3& angle);
 	void AddModel(CModel* model);
@@ -62,7 +62,7 @@ public:
 	const XMFLOAT3	GetUp();
 	const XMFLOAT3	GetRight();
 	const XMMATRIX	GetAnimationMatrix(int boneIdx);
-	const XMFLOAT3	GetCameraTargetPos();
+	const XMFLOAT3	GetCameraFocus();
 	const XMFLOAT4	GetQuaternion();
 	const int		GetNumAnimationBone();
 	const int		GetTeam() const { return m_Team; }
@@ -87,7 +87,7 @@ protected:
 	CB_OBJECT_INFO					*m_pcbMappedObject		= NULL;
 	ID3D12Resource					*m_pd3dcbObject			= NULL;
 	//렌더링
-	XMFLOAT3						m_xmf3CameraTargetOffset;
+	XMFLOAT3						m_xmf3CameraFocus;
 	std::vector<CModel*>			m_ModelList;
 	//이동
 	XMFLOAT3						m_xmf3CollisionOffset;
