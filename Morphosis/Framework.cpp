@@ -1,6 +1,13 @@
 #include "stdafx.h"
 #include "Framework.h"
-#include "PSO.h"
+
+
+std::vector<FMOD::Sound *>	g_vecSound;
+FMOD::System				*g_System;
+FMOD::Channel				*g_Channel = 0;
+//std::vector< FMOD_SOUND *>	g_vecSound;
+//FMOD_SYSTEM * g_System;
+//FMOD_CHANNEL* channel;
 
 
 CFramework::CFramework()
@@ -30,13 +37,13 @@ CFramework::CFramework()
 
 
 	// Note: FMOD 사운드 초기화 및 사운드 로딩
-	//FMOD::System_Create(&g_System);
-	//g_System->init(32, FMOD_INIT_NORMAL, NULL);
+	FMOD::System_Create(&g_System);
+	g_System->init(32, FMOD_INIT_NORMAL, NULL);
 
-	//g_vecSound.resize(2);
+	g_vecSound.resize(2);
 
-	//g_System->createSound("run.wav", FMOD_DEFAULT, 0, &g_vecSound[static_cast<int>(SOUND::BGM)]);
-	//g_System->createSound("382735__schots__gun-shot.mp3", FMOD_DEFAULT, 0, &g_vecSound[static_cast<int>(SOUND::SHOT)]);
+	g_System->createSound("run.wav", FMOD_DEFAULT, 0, &g_vecSound[static_cast<int>(SOUND::BGM)]);
+	g_System->createSound("382735__schots__gun-shot.mp3", FMOD_DEFAULT, 0, &g_vecSound[static_cast<int>(SOUND::SHOT)]);
 	//FMOD_System_Create(&g_System);
 	//FMOD_System_Init(g_System, 32, FMOD_INIT_NORMAL, NULL);
 
@@ -50,14 +57,14 @@ CFramework::CFramework()
 CFramework::~CFramework()
 {
 	// Note: FMOD 해제
-	//for (int i = 0; i < g_vecSound.size(); ++i) g_vecSound[i]->release();
-	//g_System->close();
-	//g_System->release();
+	for (int i = 0; i < g_vecSound.size(); ++i) g_vecSound[i]->release();
+	g_System->close();
+	g_System->release();
 }
 
 void CFramework::Render()
 {
-	if (!m_vecScenes.empty()) m_vecScenes[m_curSceneIdx]->Render(m_pd3dCommandList);
+	if (m_pCurrentScene) m_pCurrentScene->Render(m_pd3dCommandList);
 
 }
 
@@ -72,8 +79,8 @@ void CFramework::Update()
 	// 여기에 Update() 내용을 넣어주세요.
 	// 아래는 Render 관련입니다.
 
-	//if (g_System) g_System->update();
-	if (!m_vecScenes.empty()) m_vecScenes[m_curSceneIdx]->Update(fTimeElapsed);
+	if (g_System) g_System->update();
+	if (m_pCurrentScene) m_pCurrentScene->Update(fTimeElapsed);
 
 	//====================================
 
@@ -143,31 +150,7 @@ bool CFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 
 	m_hFenceEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL); // 얘 추가했음.
 
-	//BOOL bFullScreenState = FALSE;
-	//m_pdxgiSwapChain->GetFullscreenState(&bFullScreenState, NULL);
-	//if (!bFullScreenState)
-	//{
-	//	DXGI_MODE_DESC dxgiTargetParameters;
-	//	dxgiTargetParameters.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	//	dxgiTargetParameters.Width = m_nWndClientWidth;
-	//	dxgiTargetParameters.Height = m_nWndClientHeight;
-	//	dxgiTargetParameters.RefreshRate.Numerator = 60;
-	//	dxgiTargetParameters.RefreshRate.Denominator = 1;
-	//	dxgiTargetParameters.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-	//	dxgiTargetParameters.ScanlineOrdering =
-	//		DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-	//	m_pdxgiSwapChain->ResizeTarget(&dxgiTargetParameters);
-	//}
-	//m_pdxgiSwapChain->SetFullscreenState(!bFullScreenState, NULL);
-	//OnResizeBackBuffers();
-
 	BuildScenes();
-
-	CreateRootSignature(m_pd3dDevice);
-	CreatePipelineStateObject(m_pd3dDevice, new CPsoModel());
-	CreatePipelineStateObject(m_pd3dDevice, new CPsoAnimatedModel());
-	CreatePipelineStateObject(m_pd3dDevice, new CPsoFloatingUI());
-	CreatePipelineStateObject(m_pd3dDevice, new CPsoDefaultUI());
 
 	return true;
 }
@@ -283,7 +266,7 @@ void CFramework::CreateDirect3DDevice()
 	for (UINT i = 0; i < m_nSwapChainBuffers; i++) m_nFenceValues[i] = 1;
 	m_hFenceEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
 
-	::g_nCbvSrvDescriptorIncrementSize = m_pd3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	::gnCbvSrvDescriptorIncrementSize = m_pd3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	if (pd3dAdapter) pd3dAdapter->Release();
 }
@@ -404,9 +387,14 @@ void CFramework::BuildScenes()
 {
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
-	m_vecScenes.push_back(new CSceneMainPlay());
-	m_curSceneIdx = 0;
-	m_vecScenes[m_curSceneIdx]->Initialize(m_pd3dDevice, m_pd3dCommandList);
+	// 이후 Scene 추가할 때 수정할 것
+	m_ppScenes = new CScene*[static_cast<int>(SceneType::count)];
+
+	m_ppScenes[static_cast<int>(SceneType::LOBBY)]		= new CSceneLobby();
+	m_ppScenes[static_cast<int>(SceneType::MAINPLAY)]	= new CSceneMainPlay();
+
+	m_pCurrentScene = m_ppScenes[static_cast<int>(SceneType::MAINPLAY)];
+	m_pCurrentScene->Initialize(m_pd3dDevice, m_pd3dCommandList);
 
 	m_pd3dCommandList->Close();
 	ID3D12CommandList *ppd3dCommandLists[] = { m_pd3dCommandList };
@@ -419,17 +407,17 @@ void CFramework::BuildScenes()
 void CFramework::ChangeScene(SceneType type)
 {
 	 //Scene Change 부분
-	m_vecScenes[m_curSceneIdx]->Release();
+	m_pCurrentScene->Release();
 
 	switch (type)
 	{
-	case SceneType::LOBBY:		m_curSceneIdx = static_cast<int>(SceneType::LOBBY);		break;
-	case SceneType::MAINPLAY:	m_curSceneIdx = static_cast<int>(SceneType::MAINPLAY);	break;
+	case SceneType::LOBBY:		m_pCurrentScene = m_ppScenes[static_cast<int>(SceneType::LOBBY)];		break;
+	case SceneType::MAINPLAY:	m_pCurrentScene = m_ppScenes[static_cast<int>(SceneType::MAINPLAY)];	break;
 	default: break;
 	}
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
-	m_vecScenes[m_curSceneIdx]->Initialize(m_pd3dDevice, m_pd3dCommandList);
+	m_pCurrentScene->Initialize(m_pd3dDevice, m_pd3dCommandList);
 
 	m_pd3dCommandList->Close();
 	ID3D12CommandList *ppd3dCommandLists[] = { m_pd3dCommandList };
@@ -441,19 +429,18 @@ void CFramework::ChangeScene(SceneType type)
 
 void CFramework::ReleaseScenes()
 {
-	for (auto p = m_vecScenes.begin(); p != m_vecScenes.end(); ++p) delete *p;
-	//for (int i = 0; i < static_cast<int>(SceneType::count); ++i) delete m_ppScenes[i];
-	//delete[] m_ppScenes;
+	m_pCurrentScene->Release();
+	delete[] m_ppScenes;
 }
 
 void CFramework::ProcessInput()
 {
 	static UCHAR pKeysBuffer[256];
 	bool bProcessedByScene = false;
-	if (GetKeyboardState(pKeysBuffer)) m_vecScenes[m_curSceneIdx]->ProcessInput(pKeysBuffer);
+	if (GetKeyboardState(pKeysBuffer) && m_pCurrentScene) m_pCurrentScene->ProcessInput(pKeysBuffer);
 
-	//if (pKeysBuffer[KEY::_8] & 0xF0) { if(m_pCurrentScene != m_ppScenes[static_cast<int>(SceneType::LOBBY)]) ChangeScene(SceneType::LOBBY); }
-	//if (pKeysBuffer[KEY::_9] & 0xF0) { if (m_pCurrentScene != m_ppScenes[static_cast<int>(SceneType::MAINPLAY)]) ChangeScene(SceneType::MAINPLAY); }
+	if (pKeysBuffer[KEY::_8] & 0xF0) { if(m_pCurrentScene != m_ppScenes[static_cast<int>(SceneType::LOBBY)]) ChangeScene(SceneType::LOBBY); }
+	if (pKeysBuffer[KEY::_9] & 0xF0) { if (m_pCurrentScene != m_ppScenes[static_cast<int>(SceneType::MAINPLAY)]) ChangeScene(SceneType::MAINPLAY); }
 
 }
 

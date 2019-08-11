@@ -47,11 +47,9 @@ private:
 	/////////////////////////////////////////////////////////////////////////////////////
 	// ±‚≈∏
 	CTimer						m_MainTimer;
-	vector<CScene*>				m_vecScenes;
-	int							m_curSceneIdx;
-	//CScene						**m_ppScenes		= NULL;
-	//CScene						*m_pCurrentScene	= NULL;
-	//int							m_nScenes			= 0;
+	CScene						**m_ppScenes		= NULL;
+	CScene						*m_pCurrentScene	= NULL;
+	int							m_nScenes			= 0;
 
 public:
 	CFramework();

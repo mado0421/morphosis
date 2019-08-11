@@ -19,18 +19,33 @@ float4 PSAnimModelShader(VS_ANIM_OUTPUT input) : SV_TARGET {
 
 	float4 cColor = gtxtTexture.Sample(gSamplerState, input.uv);
 	float4 cLightResult = TestLighting(input.positionW, input.normalW);
-	return (lerp(cColor, cLightResult, 0.5f));
+
+	float3 toEyeW = gvCameraPosition - input.positionW;
+	float distToEye = length(toEyeW);
+
+	cColor = lerp(cColor, cLightResult, 0.5f);
+	cColor = lerp(cColor, float4(0.1, 0.1, 0.1, 1.0), distToEye / 512);
+	return cColor;
+	//return (lerp(cColor, cLightResult, 0.5f));
 }
 
 float4 PSModelShader(VS_MODEL_OUTPUT input) : SV_TARGET {
 	float4 cColor = gtxtTexture.Sample(gSamplerState, input.uv);
 	float4 cLightResult = TestLighting(input.positionW, input.normalW);
-	return (lerp(cColor, cLightResult, 0.5f));
+
+	float3 toEyeW = gvCameraPosition - input.positionW;
+	float distToEye = length(toEyeW);
+
+	cColor = lerp(cColor, cLightResult, 0.5f);
+	cColor = lerp(cColor, float4(0.1, 0.1, 0.1, 1.0), distToEye / 512);
+	return cColor;
+
+	//return (lerp(cColor, cLightResult, 0.5f));
 }
 
 float4 PSDefaultUI(VS_UI_OUTPUT input) : SV_TARGET {
 	float4 cColor = gtxtTexture.Sample(gSamplerState, input.uv);
-	if (cColor.a < 0.9) discard;
+	if (cColor.a < 0.3) discard;
 	return cColor;
 }
 

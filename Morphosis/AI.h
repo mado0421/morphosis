@@ -1,12 +1,9 @@
 #pragma once
 
-class CPlayer;
+class CObject;
 
 
 struct AINode {
-public:
-	AINode() {
-	}
 	XMFLOAT3 m_xmf3Position = XMFLOAT3(0,0,0);
 	AINode* next			= NULL;
 };
@@ -36,8 +33,6 @@ public:
 
 class CMoveBehavior : public CAIBehavior {
 public:
-	CMoveBehavior() {
-	}
 	virtual void Update(CPlayer* obj) override;
 
 private:
@@ -52,8 +47,6 @@ private:
 
 class CDefendBehavior : public CAIBehavior {
 public:
-	CDefendBehavior() {
-	}
 	virtual void Update(CPlayer* obj) override;
 };
 
@@ -69,9 +62,7 @@ public:
 	CTinMan(CAIBehavior* behavior, CPlayer* m_pObject)
 		: m_curBehavior(behavior)
 		, m_pObject(m_pObject)
-	{
-
-	}
+	{}
 	~CTinMan() {
 		if (m_curBehavior) delete m_curBehavior;
 	}

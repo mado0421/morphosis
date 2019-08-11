@@ -111,9 +111,8 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <HeapCommitSize>1,073,741,824</HeapCommitSize>
       <LargeAddressAware>true</LargeAddressAware>
-      <StackCommitSize>1,073,741,824</StackCommitSize>
-      <HeapCommitSize>3,221,225,472</HeapCommitSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -156,12 +155,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AI.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="AI.cpp" />
     <ClCompile Include="AnimationController.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Collider.cpp" />
     <ClCompile Include="DDSTextureLoader12.cpp" />
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="Framework.cpp" />
@@ -170,24 +166,11 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Morphosis.cpp" />
     <ClCompile Include="Object.cpp" />
-    <ClCompile Include="ObjectManager.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Projectile.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="PSO.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Timer.cpp" />
-    <ClCompile Include="UI.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Morphosis.rc" />
@@ -197,12 +180,9 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AI.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
+    <ClInclude Include="AI.h" />
     <ClInclude Include="AnimationController.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="Collider.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DDSTextureLoader12.h" />
     <ClInclude Include="Defines.h" />
@@ -214,15 +194,6 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="Morphosis.h" />
     <ClInclude Include="Object.h" />
-    <ClInclude Include="ObjectManager.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Projectile.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="PSO.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Scene.h" />
@@ -230,10 +201,6 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />
-    <ClInclude Include="UI.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PixelShader.hlsl">

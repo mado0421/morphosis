@@ -10,43 +10,12 @@ CTexture::CTexture( UINT nTextureType)
 	SamplerGpuDescriptorHandles = new D3D12_GPU_DESCRIPTOR_HANDLE();
 }
 
-CTexture::CTexture(const wchar_t * fileName, ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nResourceType)
-{
-	wstring filePath = LASSETPATH;
-	filePath += fileName;
-	filePath += L".dds";
-
-	CTexture* texture = new CTexture(RESOURCE_TEXTURE2D);
-	texture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, filePath.c_str());
-	texture->m_Name = "";
-
-	g_vecTexture.push_back(texture);
-
-
-	TextureType = nResourceType;
-
-	rootArgumentInfo = new SRVROOTARGUMENTINFO();
-	SamplerGpuDescriptorHandles = new D3D12_GPU_DESCRIPTOR_HANDLE();
-}
-
 CTexture::~CTexture()
 {
-	if (texture) {
-		texture->Release();
-		texture = NULL;
-	}
-	if (uploadBuffer) {
-		uploadBuffer->Release();
-		uploadBuffer = NULL;
-	}
-	if (rootArgumentInfo) {
-		delete rootArgumentInfo;
-		rootArgumentInfo = NULL;
-	}
-	if (SamplerGpuDescriptorHandles) {
-		delete SamplerGpuDescriptorHandles;
-		SamplerGpuDescriptorHandles = NULL;
-	}
+	if (texture)						texture->Release();
+	if (uploadBuffer)					uploadBuffer->Release();
+	if (rootArgumentInfo)				delete rootArgumentInfo;
+	if (SamplerGpuDescriptorHandles)	delete SamplerGpuDescriptorHandles;
 }
 
 void CTexture::SetRootArgument(UINT nRootParameterIndex, D3D12_GPU_DESCRIPTOR_HANDLE d3dSrvGpuDescriptorHandle)
