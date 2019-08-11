@@ -23,6 +23,7 @@ ID3D12PipelineState * PipelineStateObject::CreatePipelineStateObject(ID3D12Devic
 	d3dPipelineStateDesc.SampleDesc.Count = 1;
 	d3dPipelineStateDesc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
 	HRESULT hResult = pd3dDevice->CreateGraphicsPipelineState(&d3dPipelineStateDesc, __uuidof(ID3D12PipelineState), (void **)&pd3dPipelineState);
+	HRESULT reason = pd3dDevice->GetDeviceRemovedReason();
 
 
 	if (pd3dVertexShaderBlob) pd3dVertexShaderBlob->Release();

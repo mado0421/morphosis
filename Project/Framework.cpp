@@ -4,10 +4,6 @@
 #include "MainPlayScene.h"
 #include "PipelineStateObject.h"
 
-UINT							g_nCbvSrvDescriptorIncrementSize = 0;
-vector<ID3D12PipelineState*>	g_vecPipelineStateObjects;
-ID3D12RootSignature*			g_pd3dGraphicsRootSignature;
-
 Framework::Framework()
 {
 	m_pdxgiFactory					= NULL;
@@ -152,11 +148,14 @@ bool Framework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	/*======================================================================
 	End Create
 	======================================================================*/
+
 	m_hFenceEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL); 
+
+	BuildScenes();
 
 	CreateRootSignature();
 	CreatePipelineStateObjects();
-	BuildScenes();
+
 
 	return true;
 }
@@ -230,7 +229,7 @@ void Framework::Update()
 	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 	d3dResourceBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 	m_pd3dCommandList->ResourceBarrier(1, &d3dResourceBarrier);
-
+	
 	hResult = m_pd3dCommandList->Close();
 
 	ID3D12CommandList *ppd3dCommandLists[] = { m_pd3dCommandList };
@@ -271,7 +270,7 @@ LRESULT Framework::OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM 
 
 void Framework::BuildScenes()
 {
-	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
+	HRESULT hResult = m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
 	// 여기서 Scene 만들어주세요.
 	// Framework::ReleaseScenes() 에서 해제합니다.
@@ -280,10 +279,11 @@ void Framework::BuildScenes()
 	//m_vecScenes[static_cast<int>(SceneType::LOBBY)]		= new LobbyScene();
 	m_vecScenes[static_cast<int>(SceneType::MAINPLAY)]	= new MainPlayScene();
 	//m_vecScenes[static_cast<int>(SceneType::RESULT)]	= new ResultScene();
-	m_CurSceneIdx = static_cast<int>(SceneType::TITLE);
+	m_CurSceneIdx = static_cast<int>(SceneType::MAINPLAY);
 
+	m_vecScenes[m_CurSceneIdx]->Initialize(m_pd3dDevice, m_pd3dCommandList);
 
-	m_pd3dCommandList->Close();
+	hResult = m_pd3dCommandList->Close();
 	ID3D12CommandList *ppd3dCommandLists[] = { m_pd3dCommandList };
 	m_pd3dCommandQueue->ExecuteCommandLists(1, ppd3dCommandLists);
 

@@ -8,9 +8,6 @@
     <Filter Include="코드 파일">
       <UniqueIdentifier>{36721496-4a48-4c48-b7e4-8c2f6be21951}</UniqueIdentifier>
     </Filter>
-    <Filter Include="코드 파일\Project">
-      <UniqueIdentifier>{7436065c-9c80-415a-adc6-3aea2770ac2d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="코드 파일\Framework">
       <UniqueIdentifier>{b4b44476-6390-4ff5-85f4-332f16c4e8dd}</UniqueIdentifier>
     </Filter>
@@ -35,22 +32,52 @@
     <Filter Include="코드 파일\Scene\ResultScene">
       <UniqueIdentifier>{cab8ca2b-e68f-4a59-9215-fe0d6bf4db12}</UniqueIdentifier>
     </Filter>
-    <Filter Include="코드 파일\Project\PCH">
-      <UniqueIdentifier>{6c94eec6-92da-4ccd-8202-a8fb681e26dc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="코드 파일\PipelineStateObject">
       <UniqueIdentifier>{81b34362-1fce-4f2a-a57c-f654371d7565}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\Object">
+      <UniqueIdentifier>{3fc7b618-09c2-4ce5-b616-be503c7d3bc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\Resource">
+      <UniqueIdentifier>{ac108eb1-d1b4-401a-8ba6-e08b368625dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\Resource\Mesh">
+      <UniqueIdentifier>{0256124d-9da4-4a3e-af49-71344410f3f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\Resource\Importer">
+      <UniqueIdentifier>{8ec42b73-8256-4883-b8c1-4bf1ea88b6ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\Resource\Model">
+      <UniqueIdentifier>{6cd0bd6e-afcb-4448-b086-68761d8848b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\Resource\Texture">
+      <UniqueIdentifier>{b4838cab-b590-4ed6-9863-dfeda4d84d73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\Resource\Vertex">
+      <UniqueIdentifier>{32901576-fd8c-4047-b2c4-bb3f48ff9022}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\PCH">
+      <UniqueIdentifier>{6c94eec6-92da-4ccd-8202-a8fb681e26dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\PCH\Project">
+      <UniqueIdentifier>{7436065c-9c80-415a-adc6-3aea2770ac2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\Object\Collider">
+      <UniqueIdentifier>{3a4009f1-efd6-4012-b868-d370e93554c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\PCH\External">
+      <UniqueIdentifier>{73eaaee1-d45c-4bb4-bdb4-879ef97e16e4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Project.h">
-      <Filter>코드 파일\Project</Filter>
+      <Filter>코드 파일\PCH\Project</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
-      <Filter>코드 파일\Project</Filter>
+      <Filter>코드 파일\PCH\Project</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
-      <Filter>코드 파일\Project\PCH</Filter>
+      <Filter>코드 파일\PCH</Filter>
     </ClInclude>
     <ClInclude Include="Framework.h">
       <Filter>코드 파일\Framework</Filter>
@@ -73,13 +100,40 @@
     <ClInclude Include="PipelineStateObject.h">
       <Filter>코드 파일\PipelineStateObject</Filter>
     </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>코드 파일\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>코드 파일\Resource\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>코드 파일\Resource\Vertex</Filter>
+    </ClInclude>
+    <ClInclude Include="Importer.h">
+      <Filter>코드 파일\Resource\Importer</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>코드 파일\Resource\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>코드 파일\Resource\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>코드 파일\Object\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="DDSTextureLoader12.h">
+      <Filter>코드 파일\PCH\External</Filter>
+    </ClInclude>
+    <ClInclude Include="MathHelper.h">
+      <Filter>코드 파일\PCH</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Project.cpp">
-      <Filter>코드 파일\Project</Filter>
+      <Filter>코드 파일\PCH\Project</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
-      <Filter>코드 파일\Project\PCH</Filter>
+      <Filter>코드 파일\PCH</Filter>
     </ClCompile>
     <ClCompile Include="Framework.cpp">
       <Filter>코드 파일\Framework</Filter>
@@ -101,6 +155,30 @@
     </ClCompile>
     <ClCompile Include="PipelineStateObject.cpp">
       <Filter>코드 파일\PipelineStateObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>코드 파일\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>코드 파일\Resource\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>코드 파일\Resource\Vertex</Filter>
+    </ClCompile>
+    <ClCompile Include="Importer.cpp">
+      <Filter>코드 파일\Resource\Importer</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>코드 파일\Resource\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Collider.cpp">
+      <Filter>코드 파일\Object\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>코드 파일\Resource\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="DDSTextureLoader12.cpp">
+      <Filter>코드 파일\PCH\External</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
