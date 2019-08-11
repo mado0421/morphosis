@@ -1,231 +1,191 @@
 <?xml version="1.0"?>
-<analyzerinfo checksum="1299371455">
-        <error id="operatorEqToSelf" severity="warning" msg="&apos;operator=&apos; should check for assignment to self to avoid problems with dynamic memory." verbose="&apos;operator=&apos; should check for assignment to self to ensure that each block of dynamically allocated memory is owned and managed by only one instance of the class." cwe="398">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Importer\Importer.h" line="21"/>
-        </error>
-        <error id="useInitializationList" severity="performance" msg="Variable &apos;m_xmf3Move&apos; is assigned in constructor body. Consider performing initialization in initialization list." verbose="When an object of a class is created, the constructors of all member variables are called consecutively in the order the variables are declared, even if you don&apos;t explicitly write them to the initialization list. You could avoid assigning &apos;m_xmf3Move&apos; a value by passing the value to the constructor in the initialization list." cwe="398">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" line="187"/>
-            <symbol>m_xmf3Move</symbol>
-        </error>
-        <error id="useInitializationList" severity="performance" msg="Variable &apos;m_xmf3Direction&apos; is assigned in constructor body. Consider performing initialization in initialization list." verbose="When an object of a class is created, the constructors of all member variables are called consecutively in the order the variables are declared, even if you don&apos;t explicitly write them to the initialization list. You could avoid assigning &apos;m_xmf3Direction&apos; a value by passing the value to the constructor in the initialization list." cwe="398">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" line="416"/>
-            <symbol>m_xmf3Direction</symbol>
-        </error>
-        <error id="noCopyConstructor" severity="warning" msg="Class &apos;Collider&apos; does not have a copy constructor which is recommended since it has dynamic memory/resource allocation(s)." verbose="Class &apos;Collider&apos; does not have a copy constructor which is recommended since it has dynamic memory/resource allocation(s)." cwe="398">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" line="923"/>
-            <symbol>Collider</symbol>
-        </error>
-        <error id="noOperatorEq" severity="warning" msg="Class &apos;Collider&apos; does not have a operator= which is recommended since it has dynamic memory/resource allocation(s)." verbose="Class &apos;Collider&apos; does not have a operator= which is recommended since it has dynamic memory/resource allocation(s)." cwe="398">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" line="923"/>
-            <symbol>Collider</symbol>
-        </error>
+<analyzerinfo checksum="2553149127">
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;CD3DX12_SHADER_BYTECODE&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;CD3DX12_SHADER_BYTECODE&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\d3dx12.h" line="520"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\d3dx12.h" line="520"/>
             <symbol>CD3DX12_SHADER_BYTECODE</symbol>
         </error>
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;CD3DX12_SHADER_BYTECODE&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;CD3DX12_SHADER_BYTECODE&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\d3dx12.h" line="526"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\d3dx12.h" line="526"/>
             <symbol>CD3DX12_SHADER_BYTECODE</symbol>
         </error>
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;CD3DX12_TEXTURE_COPY_LOCATION&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;CD3DX12_TEXTURE_COPY_LOCATION&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\d3dx12.h" line="739"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\d3dx12.h" line="739"/>
             <symbol>CD3DX12_TEXTURE_COPY_LOCATION</symbol>
         </error>
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;CD3DX12_ROOT_DESCRIPTOR&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;CD3DX12_ROOT_DESCRIPTOR&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\d3dx12.h" line="873"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\d3dx12.h" line="873"/>
             <symbol>CD3DX12_ROOT_DESCRIPTOR</symbol>
         </error>
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;CD3DX12_STATIC_SAMPLER_DESC&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;CD3DX12_STATIC_SAMPLER_DESC&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\d3dx12.h" line="1007"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\d3dx12.h" line="1007"/>
             <symbol>CD3DX12_STATIC_SAMPLER_DESC</symbol>
         </error>
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;CD3DX12_ROOT_SIGNATURE_DESC&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;CD3DX12_ROOT_SIGNATURE_DESC&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\d3dx12.h" line="1118"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\d3dx12.h" line="1118"/>
             <symbol>CD3DX12_ROOT_SIGNATURE_DESC</symbol>
         </error>
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;CD3DX12_ROOT_DESCRIPTOR1&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;CD3DX12_ROOT_DESCRIPTOR1&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\d3dx12.h" line="1237"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\d3dx12.h" line="1237"/>
             <symbol>CD3DX12_ROOT_DESCRIPTOR1</symbol>
         </error>
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\d3dx12.h" line="1412"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\d3dx12.h" line="1412"/>
             <symbol>CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC</symbol>
         </error>
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;CD3DX12_CPU_DESCRIPTOR_HANDLE&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;CD3DX12_CPU_DESCRIPTOR_HANDLE&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\d3dx12.h" line="1477"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\d3dx12.h" line="1477"/>
             <symbol>CD3DX12_CPU_DESCRIPTOR_HANDLE</symbol>
         </error>
         <error id="noExplicitConstructor" severity="style" msg="Struct &apos;CD3DX12_GPU_DESCRIPTOR_HANDLE&apos; has a constructor with 1 argument that is not explicit." verbose="Struct &apos;CD3DX12_GPU_DESCRIPTOR_HANDLE&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\d3dx12.h" line="1538"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\d3dx12.h" line="1538"/>
             <symbol>CD3DX12_GPU_DESCRIPTOR_HANDLE</symbol>
         </error>
-        <error id="noExplicitConstructor" severity="style" msg="Class &apos;CVertex&apos; has a constructor with 1 argument that is not explicit." verbose="Class &apos;CVertex&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="17"/>
-            <symbol>CVertex</symbol>
+        <error id="missingOverride" severity="style" msg="The function &apos;AddAnimData&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;AddAnimData&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\AnimationController.h" line="77" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\AnimationController.h" line="46" info="Virtual function in base class"/>
+            <symbol>AddAnimData</symbol>
         </error>
-        <error id="noExplicitConstructor" severity="style" msg="Class &apos;CTexturedVertex&apos; has a constructor with 1 argument that is not explicit." verbose="Class &apos;CTexturedVertex&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="36"/>
-            <symbol>CTexturedVertex</symbol>
+        <error id="missingOverride" severity="style" msg="The function &apos;GetFinalMatrix&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;GetFinalMatrix&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\AnimationController.h" line="78" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\AnimationController.h" line="47" info="Virtual function in base class"/>
+            <symbol>GetFinalMatrix</symbol>
         </error>
-        <error id="noExplicitConstructor" severity="style" msg="Class &apos;CIlluminatedVertex&apos; has a constructor with 1 argument that is not explicit." verbose="Class &apos;CIlluminatedVertex&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="56"/>
-            <symbol>CIlluminatedVertex</symbol>
-        </error>
-        <error id="noExplicitConstructor" severity="style" msg="Class &apos;CIlluminatedTexturedVertex&apos; has a constructor with 1 argument that is not explicit." verbose="Class &apos;CIlluminatedTexturedVertex&apos; has a constructor with 1 argument that is not explicit. Such constructors should in general be explicit for type safety reasons. Using the explicit keyword in the constructor means some mistakes when using the class can be avoided." cwe="398">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="76"/>
-            <symbol>CIlluminatedTexturedVertex</symbol>
-        </error>
-        <error id="missingOverride" severity="style" msg="The function &apos;Render&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;Render&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="200" info="Function in derived class"/>
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="153" info="Virtual function in base class"/>
-            <symbol>Render</symbol>
-        </error>
-        <error id="missingOverride" severity="style" msg="The function &apos;SetAnimatedMatrix&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;SetAnimatedMatrix&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="217" info="Function in derived class"/>
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="157" info="Virtual function in base class"/>
-            <symbol>SetAnimatedMatrix</symbol>
+        <error id="missingOverride" severity="style" msg="The function &apos;GetInterpolatedToRootMtx&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;GetInterpolatedToRootMtx&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\AnimationController.h" line="80" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\AnimationController.h" line="55" info="Virtual function in base class"/>
+            <symbol>GetInterpolatedToRootMtx</symbol>
         </error>
         <error id="missingOverride" severity="style" msg="The function &apos;CreateConstantBufferResource&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;CreateConstantBufferResource&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="218" info="Function in derived class"/>
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="158" info="Virtual function in base class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Player.h" line="14" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.h" line="31" info="Virtual function in base class"/>
             <symbol>CreateConstantBufferResource</symbol>
         </error>
         <error id="missingOverride" severity="style" msg="The function &apos;UpdateConstantBuffer&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;UpdateConstantBuffer&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="219" info="Function in derived class"/>
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Mesh\Mesh.h" line="159" info="Virtual function in base class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Player.h" line="15" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.h" line="32" info="Virtual function in base class"/>
             <symbol>UpdateConstantBuffer</symbol>
         </error>
-        <error id="uninitvar" severity="error" msg="Uninitialized variable: pDevice" verbose="Uninitialized variable: pDevice" cwe="908">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\d3dx12.h" line="1771"/>
+        <error id="missingOverride" severity="style" msg="The function &apos;ChangeAnimClip&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;ChangeAnimClip&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Player.h" line="58" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.h" line="78" info="Virtual function in base class"/>
+            <symbol>ChangeAnimClip</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;Act&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;Act&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Effect.h" line="16" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Effect.h" line="7" info="Virtual function in base class"/>
+            <symbol>Act</symbol>
+        </error>
+        <error id="missingOverride" severity="style" msg="The function &apos;Act&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier." verbose="The function &apos;Act&apos; overrides a function in a base class but is not marked with a &apos;override&apos; specifier.">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Effect.h" line="25" info="Function in derived class"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Effect.h" line="7" info="Virtual function in base class"/>
+            <symbol>Act</symbol>
+        </error>
+        <error id="nullPointer" severity="error" msg="Null pointer dereference: pDevice" verbose="Null pointer dereference: pDevice" cwe="476">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\d3dx12.h" line="1771" info="Null pointer dereference"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\d3dx12.h" line="1770" info="Assignment &apos;pDevice=NULL&apos;, assigned value is 0"/>
             <symbol>pDevice</symbol>
         </error>
-        <error id="uninitvar" severity="error" msg="Uninitialized variable: pDevice" verbose="Uninitialized variable: pDevice" cwe="908">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\d3dx12.h" line="1865"/>
+        <error id="nullPointer" severity="error" msg="Null pointer dereference: pDevice" verbose="Null pointer dereference: pDevice" cwe="476">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\d3dx12.h" line="1865" info="Null pointer dereference"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\d3dx12.h" line="1864" info="Assignment &apos;pDevice=NULL&apos;, assigned value is 0"/>
             <symbol>pDevice</symbol>
         </error>
-        <error id="uninitvar" severity="error" msg="Uninitialized variable: pDevice" verbose="Uninitialized variable: pDevice" cwe="908">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\d3dx12.h" line="1893"/>
+        <error id="nullPointer" severity="error" msg="Null pointer dereference: pDevice" verbose="Null pointer dereference: pDevice" cwe="476">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\d3dx12.h" line="1893" info="Null pointer dereference"/>
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\d3dx12.h" line="1892" info="Assignment &apos;pDevice=NULL&apos;, assigned value is 0"/>
             <symbol>pDevice</symbol>
         </error>
-        <error id="unreadVariable" severity="style" msg="Variable &apos;result&apos; is assigned a value that is never used." verbose="Variable &apos;result&apos; is assigned a value that is never used." cwe="563">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" line="621"/>
-            <symbol>result</symbol>
-        </error>
-        <error id="unreadVariable" severity="style" msg="Variable &apos;reason&apos; is assigned a value that is never used." verbose="Variable &apos;reason&apos; is assigned a value that is never used." cwe="563">
-            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\SourceFile\Object\Object.cpp" line="622"/>
-            <symbol>reason</symbol>
+        <error id="unusedVariable" severity="style" msg="Unused variable: empty" verbose="Unused variable: empty" cwe="563">
+            <location file0="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" file="C:\Users\Mado\Documents\GitHub\Morphosis\Morphosis\Object.cpp" line="33"/>
+            <symbol>empty</symbol>
         </error>
   <FileInfo check="ctu">
-<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:772:17" call-funcname="Init" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="769" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:783:24" call-funcname="Init" call-argnr="5" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="780" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:846:17" call-funcname="Init" call-argnr="3" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="843" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:854:24" call-funcname="Init" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="851" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:880:17" call-funcname="Init" call-argnr="2" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="877" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:887:24" call-funcname="Init" call-argnr="3" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="884" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:913:24" call-funcname="InitAsConstants" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="972" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:925:24" call-funcname="InitAsConstantBufferView" call-argnr="3" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="980" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:936:24" call-funcname="InitAsShaderResourceView" call-argnr="3" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="988" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:947:24" call-funcname="InitAsUnorderedAccessView" call-argnr="3" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="996" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1068:17" call-funcname="Init" call-argnr="6" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1022" call-argexpr="mipLODBias" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1068:17" call-funcname="Init" call-argnr="13" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1022" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1038:24" call-funcname="Init" call-argnr="7" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1083" call-argexpr="mipLODBias" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1038:24" call-funcname="Init" call-argnr="14" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1083" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1168:17" call-funcname="Init" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1165" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1180:24" call-funcname="Init" call-argnr="5" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1177" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1245:17" call-funcname="Init" call-argnr="2" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1242" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1253:24" call-funcname="Init" call-argnr="3" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1250" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1284:24" call-funcname="InitAsConstants" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1346" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1296:24" call-funcname="InitAsConstantBufferView" call-argnr="3" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1355" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1308:24" call-funcname="InitAsShaderResourceView" call-argnr="3" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1364" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1320:24" call-funcname="InitAsUnorderedAccessView" call-argnr="3" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1373" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="9" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1658" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="2" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1666" call-argexpr="alignment" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="9" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1666" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="2" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1678" call-argexpr="alignment" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="6" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1678" call-argexpr="mipLevels" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="9" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1678" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="2" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1693" call-argexpr="alignment" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="6" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1693" call-argexpr="mipLevels" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="9" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1693" call-argexpr="sampleQuality" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="2" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1706" call-argexpr="alignment" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="6" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1706" call-argexpr="mipLevels" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="9" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1706" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:107:7" call-funcname="SetAlive" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h" linenr="106" call-argexpr="false" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1608:14" call-funcname="D3D12GetFormatPlaneCount" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1714" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1713:18" my-argnr="1"/>
-<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1713:18" call-funcname="PlaneCount" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1716" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1715:17" my-argnr="1"/>
-<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:284:14" call-funcname="ToTransform" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="293" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:291:14" my-argnr="1"/>
-<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:336:7" call-funcname="IsAnotherTeam" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h" linenr="333" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:331:7" my-argnr="1"/>
-<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Mesh/Mesh.h:219:15" call-funcname="UpdateConstantBuffer" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Mesh/Mesh.h" linenr="202" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Mesh/Mesh.h:200:15" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:772:17" call-funcname="Init" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="769" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:783:24" call-funcname="Init" call-argnr="5" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="780" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:846:17" call-funcname="Init" call-argnr="3" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="843" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:854:24" call-funcname="Init" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="851" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:880:17" call-funcname="Init" call-argnr="2" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="877" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:887:24" call-funcname="Init" call-argnr="3" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="884" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:913:24" call-funcname="InitAsConstants" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="972" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:925:24" call-funcname="InitAsConstantBufferView" call-argnr="3" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="980" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:936:24" call-funcname="InitAsShaderResourceView" call-argnr="3" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="988" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:947:24" call-funcname="InitAsUnorderedAccessView" call-argnr="3" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="996" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1068:17" call-funcname="Init" call-argnr="6" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1022" call-argexpr="mipLODBias" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1068:17" call-funcname="Init" call-argnr="13" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1022" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1038:24" call-funcname="Init" call-argnr="7" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1083" call-argexpr="mipLODBias" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1038:24" call-funcname="Init" call-argnr="14" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1083" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1168:17" call-funcname="Init" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1165" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1180:24" call-funcname="Init" call-argnr="5" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1177" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1245:17" call-funcname="Init" call-argnr="2" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1242" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1253:24" call-funcname="Init" call-argnr="3" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1250" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1284:24" call-funcname="InitAsConstants" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1346" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1296:24" call-funcname="InitAsConstantBufferView" call-argnr="3" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1355" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1308:24" call-funcname="InitAsShaderResourceView" call-argnr="3" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1364" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1320:24" call-funcname="InitAsUnorderedAccessView" call-argnr="3" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1373" call-argexpr="registerSpace" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="9" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1658" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="2" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1666" call-argexpr="alignment" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="9" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1666" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="2" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1678" call-argexpr="alignment" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="6" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1678" call-argexpr="mipLevels" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="9" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1678" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="2" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1693" call-argexpr="alignment" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="6" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1693" call-argexpr="mipLevels" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="9" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1693" call-argexpr="sampleQuality" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="2" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1706" call-argexpr="alignment" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="6" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1706" call-argexpr="mipLevels" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1629:5" call-funcname="CD3DX12_RESOURCE_DESC" call-argnr="9" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1706" call-argexpr="0" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.h:27:19" call-funcname="FMOD_Debug_Initialize" call-argnr="3" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.hpp" linenr="38" call-argexpr="callback" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.h:27:19" call-funcname="FMOD_Debug_Initialize" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.hpp" linenr="38" call-argexpr="filename" call-argvaluetype="0" call-argvalue="0" warning="true"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/Object.h:55:7" call-funcname="SetAlive" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/Object.cpp" linenr="241" call-argexpr="false" call-argvaluetype="0" call-argvalue="0"/><function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1608:14" call-funcname="D3D12GetFormatPlaneCount" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1714" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1713:18" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1713:18" call-funcname="PlaneCount" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1716" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1715:17" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.h:25:19" call-funcname="FMOD_Memory_Initialize" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.hpp" linenr="36" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.hpp:36:24" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.h:25:19" call-funcname="FMOD_Memory_Initialize" call-argnr="3" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.hpp" linenr="36" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.hpp:36:24" my-argnr="3"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.h:25:19" call-funcname="FMOD_Memory_Initialize" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.hpp" linenr="36" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.hpp:36:24" my-argnr="4"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.h:25:19" call-funcname="FMOD_Memory_Initialize" call-argnr="5" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.hpp" linenr="36" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.hpp:36:24" my-argnr="5"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.h:26:19" call-funcname="FMOD_Memory_GetStats" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.hpp" linenr="37" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.hpp:37:24" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.h:26:19" call-funcname="FMOD_Memory_GetStats" call-argnr="2" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.hpp" linenr="37" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.hpp:37:24" my-argnr="2"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.h:27:19" call-funcname="FMOD_Debug_Initialize" call-argnr="3" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.hpp" linenr="38" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.hpp:38:24" my-argnr="3"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.h:27:19" call-funcname="FMOD_Debug_Initialize" call-argnr="4" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.hpp" linenr="38" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.hpp:38:24" my-argnr="4"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.h:29:19" call-funcname="FMOD_File_GetDiskBusy" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.hpp" linenr="40" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/fmod.hpp:40:24" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:297:14" call-funcname="ToTransform" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="306" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:304:14" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/ObjectManager.h:88:7" call-funcname="IsAnotherTeam" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/ObjectManager.h" linenr="85" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/ObjectManager.h:83:7" my-argnr="1"/>
+<function-call call-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/Object.h:32:15" call-funcname="UpdateConstantBuffer" call-argnr="1" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/Object.cpp" linenr="95" my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/Object.h:37:15" my-argnr="1"/>
   </FileInfo>
   <FileInfo check="Null pointer">
     <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:8:13" my-argnr="1" my-argname="pfS" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="8" value="0"/>
     <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:8:13" my-argnr="2" my-argname="pfT" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="8" value="0"/>
-    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:298:14" my-argnr="1" my-argname="pOutputMtx" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="306" value="0"/>
-    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:79:7" my-argnr="1" my-argname="model" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h" linenr="80" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:311:14" my-argnr="1" my-argname="pOutputMtx" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="319" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/AnimationController.h:51:10" my-argnr="1" my-argname="name" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/AnimationController.h" linenr="51" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/Model.h:20:7" my-argnr="1" my-argname="name" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/Model.h" linenr="20" value="0"/>
   </FileInfo>
   <FileInfo check="Uninitialized variables">
-    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:79:14" my-argnr="1" my-argname="pResource" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="87" value="0"/>
-    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:520:5" my-argnr="1" my-argname="pShaderBlob" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="523" value="0"/>
-    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1608:14" my-argnr="1" my-argname="pDevice" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1614" value="0"/>
-    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1762:15" my-argnr="1" my-argname="pDestinationResource" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1767" value="0"/>
-    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1780:15" my-argnr="2" my-argname="pDestinationResource" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1794" value="0"/>
-    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1780:15" my-argnr="3" my-argname="pIntermediate" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1793" value="0"/>
-    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h:1877:15" my-argnr="2" my-argname="pDestinationResource" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/d3dx12.h" linenr="1891" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:79:14" my-argnr="1" my-argname="pResource" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="87" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:520:5" my-argnr="1" my-argname="pShaderBlob" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="523" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1608:14" my-argnr="1" my-argname="pDevice" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1614" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1762:15" my-argnr="1" my-argname="pDestinationResource" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1767" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1780:15" my-argnr="2" my-argname="pDestinationResource" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1794" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1780:15" my-argnr="3" my-argname="pIntermediate" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1793" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h:1877:15" my-argnr="2" my-argname="pDestinationResource" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/d3dx12.h" linenr="1891" value="0"/>
     <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:8:13" my-argnr="1" my-argname="pfS" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="8" value="0"/>
     <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h:8:13" my-argnr="2" my-argname="pfT" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/MathHelper.h" linenr="8" value="0"/>
-    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:79:7" my-argnr="1" my-argname="model" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h" linenr="80" value="0"/>
-    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:331:7" my-argnr="2" my-argname="dst" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h" linenr="332" value="0"/>
-    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:336:7" my-argnr="1" my-argname="src" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h" linenr="336" value="0"/>
-    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:336:7" my-argnr="2" my-argname="dst" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h" linenr="336" value="0"/>
-    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:73:15" my-argnr="1" my-argname="pd3dCommandList" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.cpp" linenr="29" value="0"/>
-    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:175:15" my-argnr="1" my-argname="pKeysBuffer" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.cpp" linenr="317" value="0"/>
-    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:258:9" my-argnr="1" my-argname="obj" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.cpp" linenr="433" value="0"/>
-    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.h:328:7" my-argnr="1" my-argname="pTexture" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/SourceFile/Object/Object.cpp" linenr="692" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/ObjectManager.h:83:7" my-argnr="2" my-argname="dst" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/ObjectManager.h" linenr="84" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/ObjectManager.h:88:7" my-argnr="1" my-argname="src" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/ObjectManager.h" linenr="88" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/ObjectManager.h:88:7" my-argnr="2" my-argname="dst" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/ObjectManager.h" linenr="88" value="0"/>
+    <unsafe-usage my-id="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/Object.h:35:15" my-argnr="1" my-argname="pd3dCommandList" filename="C:/Users/Mado/Documents/GitHub/Morphosis/Morphosis/Object.cpp" linenr="84" value="0"/>
   </FileInfo>
   <FileInfo check="CheckUnusedFunctions">
-    <functiondecl functionName="SetRootParameter" lineNumber="27"/>
-    <functiondecl functionName="Render" lineNumber="31"/>
-    <functiondecl functionName="Update" lineNumber="42"/>
-    <functiondecl functionName="LateUpdate" lineNumber="58"/>
-    <functiondecl functionName="AddAnimClip" lineNumber="62"/>
-    <functiondecl functionName="AddCollider" lineNumber="72"/>
-    <functiondecl functionName="AddCollider" lineNumber="76"/>
-    <functiondecl functionName="ChangeAnimClip" lineNumber="80"/>
-    <functiondecl functionName="SetPosition" lineNumber="84"/>
-    <functiondecl functionName="SetPosition" lineNumber="90"/>
-    <functiondecl functionName="GetPosition" lineNumber="94"/>
-    <functiondecl functionName="GetLook" lineNumber="99"/>
-    <functiondecl functionName="GetUp" lineNumber="104"/>
-    <functiondecl functionName="GetRight" lineNumber="109"/>
-    <functiondecl functionName="GetAnimationMatrix" lineNumber="114"/>
-    <functiondecl functionName="GetNumAnimationBone" lineNumber="119"/>
-    <functiondecl functionName="SetLook" lineNumber="127"/>
-    <functiondecl functionName="SetUp" lineNumber="133"/>
-    <functiondecl functionName="SetRight" lineNumber="139"/>
-    <functiondecl functionName="SetCameraTargetOffset" lineNumber="145"/>
-    <functiondecl functionName="GetCameraTargetPos" lineNumber="149"/>
-    <functiondecl functionName="GetQuaternion" lineNumber="154"/>
-    <functiondecl functionName="IsCollide" lineNumber="158"/>
-    <functiondecl functionName="ProcessInput" lineNumber="169"/>
-    <functiondecl functionName="AddCollideInfo" lineNumber="172"/>
-    <functiondecl functionName="Update" lineNumber="195"/>
-    <functiondecl functionName="LateUpdate" lineNumber="286"/>
-    <functiondecl functionName="ProcessInput" lineNumber="315"/>
-    <functiondecl functionName="Enable" lineNumber="330"/>
-    <functiondecl functionName="Disable" lineNumber="346"/>
-    <functiondecl functionName="Shoot" lineNumber="351"/>
-    <functiondecl functionName="IsShootable" lineNumber="357"/>
-    <functiondecl functionName="GetHandMatrix" lineNumber="361"/>
-    <functiondecl functionName="TriggerOff" lineNumber="365"/>
-    <functiondecl functionName="Move" lineNumber="370"/>
-    <functiondecl functionName="Rotate" lineNumber="383"/>
-    <functiondecl functionName="SetHandMatrix" lineNumber="396"/>
-    <functiondecl functionName="RestorePosition" lineNumber="401"/>
-    <functiondecl functionName="Initialize" lineNumber="422"/>
-    <functiondecl functionName="Update" lineNumber="474"/>
-    <functiondecl functionName="LateUpdate" lineNumber="501"/>
-    <functiondecl functionName="Damage" lineNumber="506"/>
-    <functiondecl functionName="Render" lineNumber="529"/>
-    <functiondecl functionName="Update" lineNumber="572"/>
-    <functiondecl functionName="ProcessInput" lineNumber="580"/>
-    <functiondecl functionName="LateUpdate" lineNumber="605"/>
-    <functiondecl functionName="CreateDescriptorHeap" lineNumber="613"/>
-    <functiondecl functionName="CreateConstantBufferResorce" lineNumber="629"/>
-    <functiondecl functionName="CreateConstantBufferView" lineNumber="646"/>
-    <functiondecl functionName="CreateTextureResourceView" lineNumber="688"/>
-    <functiondecl functionName="CreateObjectData" lineNumber="702"/>
-    <functiondecl functionName="CollisionCheck" lineNumber="839"/>
-    <functiondecl functionName="Update" lineNumber="941"/>
-    <functiondecl functionName="IsCollide" lineNumber="947"/>
-    <functiondecl functionName="GetRotatedOffset" lineNumber="966"/>
-    <functiondecl functionName="SetPosition" lineNumber="973"/>
-    <functiondecl functionName="SetRotation" lineNumber="979"/>
+    <functiondecl functionName="AddCollisionEffect" lineNumber="56"/>
+    <functiondecl functionName="SetMng" lineNumber="62"/>
+    <functiondecl functionName="SetAnimatedMatrix" lineNumber="66"/>
+    <functiondecl functionName="CreateConstantBufferResource" lineNumber="75"/>
+    <functiondecl functionName="UpdateConstantBuffer" lineNumber="78"/>
+    <functiondecl functionName="SetRootParameter" lineNumber="82"/>
+    <functiondecl functionName="Render" lineNumber="86"/>
+    <functiondecl functionName="AddCollider" lineNumber="103"/>
+    <functiondecl functionName="AddCollider" lineNumber="108"/>
+    <functiondecl functionName="SetColliderTrigOff" lineNumber="113"/>
+    <functiondecl functionName="SetPosition" lineNumber="117"/>
+    <functiondecl functionName="SetPosition" lineNumber="123"/>
+    <functiondecl functionName="GetPosition" lineNumber="127"/>
+    <functiondecl functionName="GetLook" lineNumber="132"/>
+    <functiondecl functionName="GetUp" lineNumber="137"/>
+    <functiondecl functionName="GetRight" lineNumber="142"/>
+    <functiondecl functionName="GetAnimationMatrix" lineNumber="147"/>
+    <functiondecl functionName="GetNumAnimationBone" lineNumber="152"/>
+    <functiondecl functionName="SetLook" lineNumber="160"/>
+    <functiondecl functionName="SetUp" lineNumber="166"/>
+    <functiondecl functionName="SetRight" lineNumber="172"/>
+    <functiondecl functionName="SetCameraFocus" lineNumber="178"/>
+    <functiondecl functionName="SetRotation" lineNumber="182"/>
+    <functiondecl functionName="AddModel" lineNumber="203"/>
+    <functiondecl functionName="SetAnimCtrl" lineNumber="207"/>
+    <functiondecl functionName="GetCameraFocus" lineNumber="211"/>
+    <functiondecl functionName="GetQuaternion" lineNumber="217"/>
+    <functiondecl functionName="IsCollide" lineNumber="221"/>
+    <functiondecl functionName="IsCollide" lineNumber="232"/>
+    <functiondecl functionName="Disable" lineNumber="239"/>
+    <functiondecl functionName="GetCollisionCollider" lineNumber="245"/>
     <functioncall functionName="A"/>
+    <functioncall functionName="Act"/>
     <functioncall functionName="Add"/>
-    <functioncall functionName="AddAnimData"/>
-    <functioncall functionName="AddCollideInfo"/>
-    <functioncall functionName="AddCollider"/>
     <functioncall functionName="Alignment"/>
     <functioncall functionName="Angle"/>
     <functioncall functionName="AngleFromQuat"/>
-    <functioncall functionName="AnimName"/>
+    <functioncall functionName="AnimatedModel"/>
     <functioncall functionName="AnimationClip"/>
     <functioncall functionName="ArraySize"/>
     <functioncall functionName="ArraySlice"/>
     <functioncall functionName="AspectRatio"/>
     <functioncall functionName="B"/>
+    <functioncall functionName="BGM"/>
     <functioncall functionName="Back"/>
     <functioncall functionName="BaseShaderRegister"/>
     <functioncall functionName="Bottom"/>
     <functioncall functionName="C"/>
-    <functioncall functionName="CAnimVertex"/>
-    <functioncall functionName="CAnimatedMesh"/>
-    <functioncall functionName="CAnimationController"/>
     <functioncall functionName="CB_OBJECT_INFO"/>
     <functioncall functionName="CD3DX12_BLEND_DESC"/>
     <functioncall functionName="CD3DX12_BOX"/>
@@ -263,37 +223,26 @@
     <functioncall functionName="CD3DX12_TILE_SHAPE"/>
     <functioncall functionName="CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC"/>
     <functioncall functionName="CD3DX12_VIEWPORT"/>
-    <functioncall functionName="CIlluminatedMesh"/>
-    <functioncall functionName="CIlluminatedTexturedMesh"/>
-    <functioncall functionName="CIlluminatedTexturedVertex"/>
-    <functioncall functionName="CIlluminatedVertex"/>
-    <functioncall functionName="CImporter"/>
-    <functioncall functionName="CMesh"/>
+    <functioncall functionName="CHumanoidAnimCtrl"/>
+    <functioncall functionName="CLICKED"/>
+    <functioncall functionName="CModel"/>
     <functioncall functionName="CObject"/>
     <functioncall functionName="CObjectManager"/>
-    <functioncall functionName="CPlayer"/>
-    <functioncall functionName="CProjectile"/>
-    <functioncall functionName="CTestMesh"/>
-    <functioncall functionName="CTexture"/>
-    <functioncall functionName="CTexturedMesh"/>
-    <functioncall functionName="CTexturedVertex"/>
-    <functioncall functionName="CVertex"/>
+    <functioncall functionName="Center"/>
     <functioncall functionName="ChangeAnimClip"/>
-    <functioncall functionName="ChangeZSign"/>
+    <functioncall functionName="Channel"/>
+    <functioncall functionName="ChannelControl"/>
+    <functioncall functionName="ChannelGroup"/>
     <functioncall functionName="CheckFeatureSupport"/>
     <functioncall functionName="Collider"/>
-    <functioncall functionName="CollisionCheck"/>
+    <functioncall functionName="CollisionPosition"/>
+    <functioncall functionName="CollisionRotation"/>
+    <functioncall functionName="CollisionScale"/>
     <functioncall functionName="Color"/>
     <functioncall functionName="Constants"/>
     <functioncall functionName="CopyBufferRegion"/>
     <functioncall functionName="CopyTextureRegion"/>
-    <functioncall functionName="CreateBufferResource"/>
-    <functioncall functionName="CreateConstantBufferResorce"/>
-    <functioncall functionName="CreateConstantBufferView"/>
-    <functioncall functionName="CreateDescriptorHeap"/>
     <functioncall functionName="CreateObjectData"/>
-    <functioncall functionName="CreateShaderResourceView"/>
-    <functioncall functionName="CreateTextureResourceView"/>
     <functioncall functionName="CrossProduct"/>
     <functioncall functionName="D"/>
     <functioncall functionName="D3D12CalcSubresource"/>
@@ -323,8 +272,6 @@
     <functioncall functionName="D3D12_DEFAULT_STENCIL_WRITE_MASK"/>
     <functioncall functionName="D3D12_DEPTH_STENCIL_DESC"/>
     <functioncall functionName="D3D12_DEPTH_WRITE_MASK_ALL"/>
-    <functioncall functionName="D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE"/>
-    <functioncall functionName="D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV"/>
     <functioncall functionName="D3D12_DESCRIPTOR_RANGE"/>
     <functioncall functionName="D3D12_DESCRIPTOR_RANGE1"/>
     <functioncall functionName="D3D12_DESCRIPTOR_RANGE_FLAG_NONE"/>
@@ -401,13 +348,16 @@
     <functioncall functionName="D3D12_TILE_SHAPE"/>
     <functioncall functionName="D3D12_VERSIONED_ROOT_SIGNATURE_DESC"/>
     <functioncall functionName="D3D12_VIEWPORT"/>
-    <functioncall functionName="D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST"/>
     <functioncall functionName="D3D_ROOT_SIGNATURE_VERSION_1"/>
     <functioncall functionName="D3D_ROOT_SIGNATURE_VERSION_1_0"/>
     <functioncall functionName="D3D_ROOT_SIGNATURE_VERSION_1_1"/>
     <functioncall functionName="DIE"/>
+    <functioncall functionName="DSP"/>
+    <functioncall functionName="DSPConnection"/>
     <functioncall functionName="DXGI_FORMAT_UNKNOWN"/>
-    <functioncall functionName="Damage"/>
+    <functioncall functionName="Debug"/>
+    <functioncall functionName="DefaultModel"/>
+    <functioncall functionName="DefaultUI"/>
     <functioncall functionName="Depth"/>
     <functioncall functionName="DepthOrArraySize"/>
     <functioncall functionName="Desc"/>
@@ -418,64 +368,616 @@
     <functioncall functionName="DescriptorTable"/>
     <functioncall functionName="DestData"/>
     <functioncall functionName="Dimension"/>
-    <functioncall functionName="Disable"/>
-    <functioncall functionName="DrawIndexedInstanced"/>
-    <functioncall functionName="DrawInstanced"/>
     <functioncall functionName="Dst"/>
     <functioncall functionName="E"/>
+    <functioncall functionName="EDefaultDamage"/>
     <functioncall functionName="ENDJUMP"/>
-    <functioncall functionName="Enable"/>
+    <functioncall functionName="ESlow"/>
+    <functioncall functionName="ETC"/>
     <functioncall functionName="F"/>
     <functioncall functionName="FALSE"/>
     <functioncall functionName="FIRE"/>
     <functioncall functionName="FLT_EPSILON"/>
+    <functioncall functionName="FMOD_CHANNELCONTROL_CALLBACK_END"/>
+    <functioncall functionName="FMOD_CHANNELCONTROL_CALLBACK_MAX"/>
+    <functioncall functionName="FMOD_CHANNELCONTROL_CALLBACK_OCCLUSION"/>
+    <functioncall functionName="FMOD_CHANNELCONTROL_CALLBACK_SYNCPOINT"/>
+    <functioncall functionName="FMOD_CHANNELCONTROL_CALLBACK_VIRTUALVOICE"/>
+    <functioncall functionName="FMOD_CHANNELCONTROL_CHANNEL"/>
+    <functioncall functionName="FMOD_CHANNELCONTROL_CHANNELGROUP"/>
+    <functioncall functionName="FMOD_CHANNELCONTROL_MAX"/>
+    <functioncall functionName="FMOD_CHANNELORDER_ALLMONO"/>
+    <functioncall functionName="FMOD_CHANNELORDER_ALLSTEREO"/>
+    <functioncall functionName="FMOD_CHANNELORDER_ALSA"/>
+    <functioncall functionName="FMOD_CHANNELORDER_DEFAULT"/>
+    <functioncall functionName="FMOD_CHANNELORDER_MAX"/>
+    <functioncall functionName="FMOD_CHANNELORDER_PROTOOLS"/>
+    <functioncall functionName="FMOD_CHANNELORDER_WAVEFORMAT"/>
+    <functioncall functionName="FMOD_DEBUG_MODE_CALLBACK"/>
+    <functioncall functionName="FMOD_DEBUG_MODE_FILE"/>
+    <functioncall functionName="FMOD_DEBUG_MODE_TTY"/>
+    <functioncall functionName="FMOD_DSPCONNECTION_TYPE_MAX"/>
+    <functioncall functionName="FMOD_DSPCONNECTION_TYPE_SEND"/>
+    <functioncall functionName="FMOD_DSPCONNECTION_TYPE_SEND_SIDECHAIN"/>
+    <functioncall functionName="FMOD_DSPCONNECTION_TYPE_SIDECHAIN"/>
+    <functioncall functionName="FMOD_DSPCONNECTION_TYPE_STANDARD"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH0"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH1"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH10"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH11"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH12"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH13"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH14"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH15"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH16"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH17"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH18"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH19"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH2"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH20"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH21"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH22"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH23"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH24"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH25"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH26"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH27"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH28"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH29"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH3"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH30"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH31"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH4"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH5"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH6"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH7"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH8"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_GAIN_CH9"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUTGROUPING"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_ALL5POINT1"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_ALL7POINT1"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_ALL7POINT1POINT4"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_ALLLFE"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_ALLMONO"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_ALLQUAD"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_ALLSTEREO"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH0"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH1"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH10"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH11"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH12"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH13"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH14"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH15"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH16"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH17"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH18"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH19"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH2"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH20"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH21"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH22"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH23"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH24"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH25"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH26"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH27"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH28"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH29"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH3"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH30"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH31"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH4"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH5"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH6"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH7"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH8"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_CH9"/>
+    <functioncall functionName="FMOD_DSP_CHANNELMIX_OUTPUT_DEFAULT"/>
+    <functioncall functionName="FMOD_DSP_CHORUS_DEPTH"/>
+    <functioncall functionName="FMOD_DSP_CHORUS_MIX"/>
+    <functioncall functionName="FMOD_DSP_CHORUS_RATE"/>
+    <functioncall functionName="FMOD_DSP_COMPRESSOR_ATTACK"/>
+    <functioncall functionName="FMOD_DSP_COMPRESSOR_GAINMAKEUP"/>
+    <functioncall functionName="FMOD_DSP_COMPRESSOR_LINKED"/>
+    <functioncall functionName="FMOD_DSP_COMPRESSOR_RATIO"/>
+    <functioncall functionName="FMOD_DSP_COMPRESSOR_RELEASE"/>
+    <functioncall functionName="FMOD_DSP_COMPRESSOR_THRESHOLD"/>
+    <functioncall functionName="FMOD_DSP_COMPRESSOR_USESIDECHAIN"/>
+    <functioncall functionName="FMOD_DSP_CONVOLUTION_REVERB_PARAM_DRY"/>
+    <functioncall functionName="FMOD_DSP_CONVOLUTION_REVERB_PARAM_IR"/>
+    <functioncall functionName="FMOD_DSP_CONVOLUTION_REVERB_PARAM_LINKED"/>
+    <functioncall functionName="FMOD_DSP_CONVOLUTION_REVERB_PARAM_WET"/>
+    <functioncall functionName="FMOD_DSP_DELAY_CH0"/>
+    <functioncall functionName="FMOD_DSP_DELAY_CH1"/>
+    <functioncall functionName="FMOD_DSP_DELAY_CH10"/>
+    <functioncall functionName="FMOD_DSP_DELAY_CH11"/>
+    <functioncall functionName="FMOD_DSP_DELAY_CH12"/>
+    <functioncall functionName="FMOD_DSP_DELAY_CH13"/>
+    <functioncall functionName="FMOD_DSP_DELAY_CH14"/>
+    <functioncall functionName="FMOD_DSP_DELAY_CH15"/>
+    <functioncall functionName="FMOD_DSP_DELAY_CH2"/>
+    <functioncall functionName="FMOD_DSP_DELAY_CH3"/>
+    <functioncall functionName="FMOD_DSP_DELAY_CH4"/>
+    <functioncall functionName="FMOD_DSP_DELAY_CH5"/>
+    <functioncall functionName="FMOD_DSP_DELAY_CH6"/>
+    <functioncall functionName="FMOD_DSP_DELAY_CH7"/>
+    <functioncall functionName="FMOD_DSP_DELAY_CH8"/>
+    <functioncall functionName="FMOD_DSP_DELAY_CH9"/>
+    <functioncall functionName="FMOD_DSP_DELAY_MAXDELAY"/>
+    <functioncall functionName="FMOD_DSP_DISTORTION_LEVEL"/>
+    <functioncall functionName="FMOD_DSP_ECHO_DELAY"/>
+    <functioncall functionName="FMOD_DSP_ECHO_DRYLEVEL"/>
+    <functioncall functionName="FMOD_DSP_ECHO_FEEDBACK"/>
+    <functioncall functionName="FMOD_DSP_ECHO_WETLEVEL"/>
+    <functioncall functionName="FMOD_DSP_ENVELOPEFOLLOWER_ATTACK"/>
+    <functioncall functionName="FMOD_DSP_ENVELOPEFOLLOWER_ENVELOPE"/>
+    <functioncall functionName="FMOD_DSP_ENVELOPEFOLLOWER_RELEASE"/>
+    <functioncall functionName="FMOD_DSP_ENVELOPEFOLLOWER_USESIDECHAIN"/>
+    <functioncall functionName="FMOD_DSP_FADER_GAIN"/>
+    <functioncall functionName="FMOD_DSP_FADER_OVERALL_GAIN"/>
+    <functioncall functionName="FMOD_DSP_FFT_DOMINANT_FREQ"/>
+    <functioncall functionName="FMOD_DSP_FFT_SPECTRUMDATA"/>
+    <functioncall functionName="FMOD_DSP_FFT_WINDOWSIZE"/>
+    <functioncall functionName="FMOD_DSP_FFT_WINDOWTYPE"/>
+    <functioncall functionName="FMOD_DSP_FFT_WINDOW_BLACKMAN"/>
+    <functioncall functionName="FMOD_DSP_FFT_WINDOW_BLACKMANHARRIS"/>
+    <functioncall functionName="FMOD_DSP_FFT_WINDOW_HAMMING"/>
+    <functioncall functionName="FMOD_DSP_FFT_WINDOW_HANNING"/>
+    <functioncall functionName="FMOD_DSP_FFT_WINDOW_RECT"/>
+    <functioncall functionName="FMOD_DSP_FFT_WINDOW_TRIANGLE"/>
+    <functioncall functionName="FMOD_DSP_FLANGE_DEPTH"/>
+    <functioncall functionName="FMOD_DSP_FLANGE_MIX"/>
+    <functioncall functionName="FMOD_DSP_FLANGE_RATE"/>
+    <functioncall functionName="FMOD_DSP_HIGHPASS_CUTOFF"/>
+    <functioncall functionName="FMOD_DSP_HIGHPASS_RESONANCE"/>
+    <functioncall functionName="FMOD_DSP_HIGHPASS_SIMPLE_CUTOFF"/>
+    <functioncall functionName="FMOD_DSP_ITECHO_FEEDBACK"/>
+    <functioncall functionName="FMOD_DSP_ITECHO_LEFTDELAY"/>
+    <functioncall functionName="FMOD_DSP_ITECHO_PANDELAY"/>
+    <functioncall functionName="FMOD_DSP_ITECHO_RIGHTDELAY"/>
+    <functioncall functionName="FMOD_DSP_ITECHO_WETDRYMIX"/>
+    <functioncall functionName="FMOD_DSP_ITLOWPASS_CUTOFF"/>
+    <functioncall functionName="FMOD_DSP_ITLOWPASS_RESONANCE"/>
+    <functioncall functionName="FMOD_DSP_LIMITER_CEILING"/>
+    <functioncall functionName="FMOD_DSP_LIMITER_MAXIMIZERGAIN"/>
+    <functioncall functionName="FMOD_DSP_LIMITER_MODE"/>
+    <functioncall functionName="FMOD_DSP_LIMITER_RELEASETIME"/>
+    <functioncall functionName="FMOD_DSP_LOWPASS_CUTOFF"/>
+    <functioncall functionName="FMOD_DSP_LOWPASS_RESONANCE"/>
+    <functioncall functionName="FMOD_DSP_LOWPASS_SIMPLE_CUTOFF"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_A_FILTER"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_A_FREQUENCY"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_A_GAIN"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_A_Q"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_B_FILTER"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_B_FREQUENCY"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_B_GAIN"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_B_Q"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_C_FILTER"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_C_FREQUENCY"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_C_GAIN"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_C_Q"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_D_FILTER"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_D_FREQUENCY"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_D_GAIN"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_D_Q"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_E_FILTER"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_E_FREQUENCY"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_E_GAIN"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_E_Q"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_FILTER_ALLPASS"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_FILTER_BANDPASS"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_FILTER_DISABLED"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_FILTER_HIGHPASS_12DB"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_FILTER_HIGHPASS_24DB"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_FILTER_HIGHPASS_48DB"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_FILTER_HIGHSHELF"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_FILTER_LOWPASS_12DB"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_FILTER_LOWPASS_24DB"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_FILTER_LOWPASS_48DB"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_FILTER_LOWSHELF"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_FILTER_NOTCH"/>
+    <functioncall functionName="FMOD_DSP_MULTIBAND_EQ_FILTER_PEAKING"/>
+    <functioncall functionName="FMOD_DSP_NORMALIZE_FADETIME"/>
+    <functioncall functionName="FMOD_DSP_NORMALIZE_MAXAMP"/>
+    <functioncall functionName="FMOD_DSP_NORMALIZE_THRESHHOLD"/>
+    <functioncall functionName="FMOD_DSP_OBJECTPAN_3D_EXTENT_MODE"/>
+    <functioncall functionName="FMOD_DSP_OBJECTPAN_3D_MAX_DISTANCE"/>
+    <functioncall functionName="FMOD_DSP_OBJECTPAN_3D_MIN_DISTANCE"/>
+    <functioncall functionName="FMOD_DSP_OBJECTPAN_3D_MIN_EXTENT"/>
+    <functioncall functionName="FMOD_DSP_OBJECTPAN_3D_POSITION"/>
+    <functioncall functionName="FMOD_DSP_OBJECTPAN_3D_ROLLOFF"/>
+    <functioncall functionName="FMOD_DSP_OBJECTPAN_3D_SOUND_SIZE"/>
+    <functioncall functionName="FMOD_DSP_OBJECTPAN_OUTPUTGAIN"/>
+    <functioncall functionName="FMOD_DSP_OBJECTPAN_OVERALL_GAIN"/>
+    <functioncall functionName="FMOD_DSP_OSCILLATOR_RATE"/>
+    <functioncall functionName="FMOD_DSP_OSCILLATOR_TYPE"/>
+    <functioncall functionName="FMOD_DSP_PAN_2D_DIRECTION"/>
+    <functioncall functionName="FMOD_DSP_PAN_2D_EXTENT"/>
+    <functioncall functionName="FMOD_DSP_PAN_2D_HEIGHT_BLEND"/>
+    <functioncall functionName="FMOD_DSP_PAN_2D_LFE_LEVEL"/>
+    <functioncall functionName="FMOD_DSP_PAN_2D_ROTATION"/>
+    <functioncall functionName="FMOD_DSP_PAN_2D_STEREO_AXIS"/>
+    <functioncall functionName="FMOD_DSP_PAN_2D_STEREO_MODE"/>
+    <functioncall functionName="FMOD_DSP_PAN_2D_STEREO_MODE_DISCRETE"/>
+    <functioncall functionName="FMOD_DSP_PAN_2D_STEREO_MODE_DISTRIBUTED"/>
+    <functioncall functionName="FMOD_DSP_PAN_2D_STEREO_POSITION"/>
+    <functioncall functionName="FMOD_DSP_PAN_2D_STEREO_SEPARATION"/>
+    <functioncall functionName="FMOD_DSP_PAN_3D_EXTENT_MODE"/>
+    <functioncall functionName="FMOD_DSP_PAN_3D_EXTENT_MODE_AUTO"/>
+    <functioncall functionName="FMOD_DSP_PAN_3D_EXTENT_MODE_OFF"/>
+    <functioncall functionName="FMOD_DSP_PAN_3D_EXTENT_MODE_USER"/>
+    <functioncall functionName="FMOD_DSP_PAN_3D_MAX_DISTANCE"/>
+    <functioncall functionName="FMOD_DSP_PAN_3D_MIN_DISTANCE"/>
+    <functioncall functionName="FMOD_DSP_PAN_3D_MIN_EXTENT"/>
+    <functioncall functionName="FMOD_DSP_PAN_3D_PAN_BLEND"/>
+    <functioncall functionName="FMOD_DSP_PAN_3D_POSITION"/>
+    <functioncall functionName="FMOD_DSP_PAN_3D_ROLLOFF"/>
+    <functioncall functionName="FMOD_DSP_PAN_3D_ROLLOFF_CUSTOM"/>
+    <functioncall functionName="FMOD_DSP_PAN_3D_ROLLOFF_INVERSE"/>
+    <functioncall functionName="FMOD_DSP_PAN_3D_ROLLOFF_INVERSETAPERED"/>
+    <functioncall functionName="FMOD_DSP_PAN_3D_ROLLOFF_LINEAR"/>
+    <functioncall functionName="FMOD_DSP_PAN_3D_ROLLOFF_LINEARSQUARED"/>
+    <functioncall functionName="FMOD_DSP_PAN_3D_SOUND_SIZE"/>
+    <functioncall functionName="FMOD_DSP_PAN_ENABLED_SPEAKERS"/>
+    <functioncall functionName="FMOD_DSP_PAN_LFE_UPMIX_ENABLED"/>
+    <functioncall functionName="FMOD_DSP_PAN_MODE"/>
+    <functioncall functionName="FMOD_DSP_PAN_MODE_MONO"/>
+    <functioncall functionName="FMOD_DSP_PAN_MODE_STEREO"/>
+    <functioncall functionName="FMOD_DSP_PAN_MODE_SURROUND"/>
+    <functioncall functionName="FMOD_DSP_PAN_OVERALL_GAIN"/>
+    <functioncall functionName="FMOD_DSP_PAN_SURROUND_SPEAKER_MODE"/>
+    <functioncall functionName="FMOD_DSP_PARAMEQ_BANDWIDTH"/>
+    <functioncall functionName="FMOD_DSP_PARAMEQ_CENTER"/>
+    <functioncall functionName="FMOD_DSP_PARAMEQ_GAIN"/>
+    <functioncall functionName="FMOD_DSP_PARAMETER_FLOAT_MAPPING_TYPE_AUTO"/>
+    <functioncall functionName="FMOD_DSP_PARAMETER_FLOAT_MAPPING_TYPE_LINEAR"/>
+    <functioncall functionName="FMOD_DSP_PARAMETER_FLOAT_MAPPING_TYPE_PIECEWISE_LINEAR"/>
+    <functioncall functionName="FMOD_DSP_PARAMETER_TYPE_BOOL"/>
+    <functioncall functionName="FMOD_DSP_PARAMETER_TYPE_DATA"/>
+    <functioncall functionName="FMOD_DSP_PARAMETER_TYPE_FLOAT"/>
+    <functioncall functionName="FMOD_DSP_PARAMETER_TYPE_INT"/>
+    <functioncall functionName="FMOD_DSP_PARAMETER_TYPE_MAX"/>
+    <functioncall functionName="FMOD_DSP_PITCHSHIFT_FFTSIZE"/>
+    <functioncall functionName="FMOD_DSP_PITCHSHIFT_MAXCHANNELS"/>
+    <functioncall functionName="FMOD_DSP_PITCHSHIFT_OVERLAP"/>
+    <functioncall functionName="FMOD_DSP_PITCHSHIFT_PITCH"/>
+    <functioncall functionName="FMOD_DSP_PROCESS_PERFORM"/>
+    <functioncall functionName="FMOD_DSP_PROCESS_QUERY"/>
+    <functioncall functionName="FMOD_DSP_RESAMPLER_CUBIC"/>
+    <functioncall functionName="FMOD_DSP_RESAMPLER_DEFAULT"/>
+    <functioncall functionName="FMOD_DSP_RESAMPLER_LINEAR"/>
+    <functioncall functionName="FMOD_DSP_RESAMPLER_MAX"/>
+    <functioncall functionName="FMOD_DSP_RESAMPLER_NOINTERP"/>
+    <functioncall functionName="FMOD_DSP_RESAMPLER_SPLINE"/>
+    <functioncall functionName="FMOD_DSP_RETURN_ID"/>
+    <functioncall functionName="FMOD_DSP_RETURN_INPUT_SPEAKER_MODE"/>
+    <functioncall functionName="FMOD_DSP_SEND_LEVEL"/>
+    <functioncall functionName="FMOD_DSP_SEND_RETURNID"/>
+    <functioncall functionName="FMOD_DSP_SFXREVERB_DECAYTIME"/>
+    <functioncall functionName="FMOD_DSP_SFXREVERB_DENSITY"/>
+    <functioncall functionName="FMOD_DSP_SFXREVERB_DIFFUSION"/>
+    <functioncall functionName="FMOD_DSP_SFXREVERB_DRYLEVEL"/>
+    <functioncall functionName="FMOD_DSP_SFXREVERB_EARLYDELAY"/>
+    <functioncall functionName="FMOD_DSP_SFXREVERB_EARLYLATEMIX"/>
+    <functioncall functionName="FMOD_DSP_SFXREVERB_HFDECAYRATIO"/>
+    <functioncall functionName="FMOD_DSP_SFXREVERB_HFREFERENCE"/>
+    <functioncall functionName="FMOD_DSP_SFXREVERB_HIGHCUT"/>
+    <functioncall functionName="FMOD_DSP_SFXREVERB_LATEDELAY"/>
+    <functioncall functionName="FMOD_DSP_SFXREVERB_LOWSHELFFREQUENCY"/>
+    <functioncall functionName="FMOD_DSP_SFXREVERB_LOWSHELFGAIN"/>
+    <functioncall functionName="FMOD_DSP_SFXREVERB_WETLEVEL"/>
+    <functioncall functionName="FMOD_DSP_THREE_EQ_CROSSOVERSLOPE"/>
+    <functioncall functionName="FMOD_DSP_THREE_EQ_CROSSOVERSLOPE_12DB"/>
+    <functioncall functionName="FMOD_DSP_THREE_EQ_CROSSOVERSLOPE_24DB"/>
+    <functioncall functionName="FMOD_DSP_THREE_EQ_CROSSOVERSLOPE_48DB"/>
+    <functioncall functionName="FMOD_DSP_THREE_EQ_HIGHCROSSOVER"/>
+    <functioncall functionName="FMOD_DSP_THREE_EQ_HIGHGAIN"/>
+    <functioncall functionName="FMOD_DSP_THREE_EQ_LOWCROSSOVER"/>
+    <functioncall functionName="FMOD_DSP_THREE_EQ_LOWGAIN"/>
+    <functioncall functionName="FMOD_DSP_THREE_EQ_MIDGAIN"/>
+    <functioncall functionName="FMOD_DSP_TRANSCEIVER_CHANNEL"/>
+    <functioncall functionName="FMOD_DSP_TRANSCEIVER_GAIN"/>
+    <functioncall functionName="FMOD_DSP_TRANSCEIVER_SPEAKERMODE_STEREO"/>
+    <functioncall functionName="FMOD_DSP_TRANSCEIVER_SPEAKERMODE_SURROUND"/>
+    <functioncall functionName="FMOD_DSP_TRANSCEIVER_TRANSMIT"/>
+    <functioncall functionName="FMOD_DSP_TRANSCEIVER_TRANSMITSPEAKERMODE"/>
+    <functioncall functionName="FMOD_DSP_TREMOLO_DEPTH"/>
+    <functioncall functionName="FMOD_DSP_TREMOLO_DUTY"/>
+    <functioncall functionName="FMOD_DSP_TREMOLO_FREQUENCY"/>
+    <functioncall functionName="FMOD_DSP_TREMOLO_PHASE"/>
+    <functioncall functionName="FMOD_DSP_TREMOLO_SHAPE"/>
+    <functioncall functionName="FMOD_DSP_TREMOLO_SKEW"/>
+    <functioncall functionName="FMOD_DSP_TREMOLO_SPREAD"/>
+    <functioncall functionName="FMOD_DSP_TREMOLO_SQUARE"/>
+    <functioncall functionName="FMOD_DSP_TYPE_CHANNELMIX"/>
+    <functioncall functionName="FMOD_DSP_TYPE_CHORUS"/>
+    <functioncall functionName="FMOD_DSP_TYPE_COMPRESSOR"/>
+    <functioncall functionName="FMOD_DSP_TYPE_CONVOLUTIONREVERB"/>
+    <functioncall functionName="FMOD_DSP_TYPE_DELAY"/>
+    <functioncall functionName="FMOD_DSP_TYPE_DISTORTION"/>
+    <functioncall functionName="FMOD_DSP_TYPE_ECHO"/>
+    <functioncall functionName="FMOD_DSP_TYPE_ENVELOPEFOLLOWER"/>
+    <functioncall functionName="FMOD_DSP_TYPE_FADER"/>
+    <functioncall functionName="FMOD_DSP_TYPE_FFT"/>
+    <functioncall functionName="FMOD_DSP_TYPE_FLANGE"/>
+    <functioncall functionName="FMOD_DSP_TYPE_HIGHPASS"/>
+    <functioncall functionName="FMOD_DSP_TYPE_HIGHPASS_SIMPLE"/>
+    <functioncall functionName="FMOD_DSP_TYPE_ITECHO"/>
+    <functioncall functionName="FMOD_DSP_TYPE_ITLOWPASS"/>
+    <functioncall functionName="FMOD_DSP_TYPE_LADSPAPLUGIN"/>
+    <functioncall functionName="FMOD_DSP_TYPE_LIMITER"/>
+    <functioncall functionName="FMOD_DSP_TYPE_LOUDNESS_METER"/>
+    <functioncall functionName="FMOD_DSP_TYPE_LOWPASS"/>
+    <functioncall functionName="FMOD_DSP_TYPE_LOWPASS_SIMPLE"/>
+    <functioncall functionName="FMOD_DSP_TYPE_MAX"/>
+    <functioncall functionName="FMOD_DSP_TYPE_MIXER"/>
+    <functioncall functionName="FMOD_DSP_TYPE_MULTIBAND_EQ"/>
+    <functioncall functionName="FMOD_DSP_TYPE_NORMALIZE"/>
+    <functioncall functionName="FMOD_DSP_TYPE_OBJECTPAN"/>
+    <functioncall functionName="FMOD_DSP_TYPE_OSCILLATOR"/>
+    <functioncall functionName="FMOD_DSP_TYPE_PAN"/>
+    <functioncall functionName="FMOD_DSP_TYPE_PARAMEQ"/>
+    <functioncall functionName="FMOD_DSP_TYPE_PITCHSHIFT"/>
+    <functioncall functionName="FMOD_DSP_TYPE_RETURN"/>
+    <functioncall functionName="FMOD_DSP_TYPE_SEND"/>
+    <functioncall functionName="FMOD_DSP_TYPE_SFXREVERB"/>
+    <functioncall functionName="FMOD_DSP_TYPE_THREE_EQ"/>
+    <functioncall functionName="FMOD_DSP_TYPE_TRANSCEIVER"/>
+    <functioncall functionName="FMOD_DSP_TYPE_TREMOLO"/>
+    <functioncall functionName="FMOD_DSP_TYPE_UNKNOWN"/>
+    <functioncall functionName="FMOD_DSP_TYPE_VSTPLUGIN"/>
+    <functioncall functionName="FMOD_DSP_TYPE_WINAMPPLUGIN"/>
+    <functioncall functionName="FMOD_Debug_Initialize"/>
+    <functioncall functionName="FMOD_ERRORCALLBACK_INSTANCETYPE_CHANNEL"/>
+    <functioncall functionName="FMOD_ERRORCALLBACK_INSTANCETYPE_CHANNELCONTROL"/>
+    <functioncall functionName="FMOD_ERRORCALLBACK_INSTANCETYPE_CHANNELGROUP"/>
+    <functioncall functionName="FMOD_ERRORCALLBACK_INSTANCETYPE_DSP"/>
+    <functioncall functionName="FMOD_ERRORCALLBACK_INSTANCETYPE_DSPCONNECTION"/>
+    <functioncall functionName="FMOD_ERRORCALLBACK_INSTANCETYPE_GEOMETRY"/>
+    <functioncall functionName="FMOD_ERRORCALLBACK_INSTANCETYPE_NONE"/>
+    <functioncall functionName="FMOD_ERRORCALLBACK_INSTANCETYPE_REVERB3D"/>
+    <functioncall functionName="FMOD_ERRORCALLBACK_INSTANCETYPE_SOUND"/>
+    <functioncall functionName="FMOD_ERRORCALLBACK_INSTANCETYPE_SOUNDGROUP"/>
+    <functioncall functionName="FMOD_ERRORCALLBACK_INSTANCETYPE_STUDIO_BANK"/>
+    <functioncall functionName="FMOD_ERRORCALLBACK_INSTANCETYPE_STUDIO_BUS"/>
+    <functioncall functionName="FMOD_ERRORCALLBACK_INSTANCETYPE_STUDIO_COMMANDREPLAY"/>
+    <functioncall functionName="FMOD_ERRORCALLBACK_INSTANCETYPE_STUDIO_EVENTDESCRIPTION"/>
+    <functioncall functionName="FMOD_ERRORCALLBACK_INSTANCETYPE_STUDIO_EVENTINSTANCE"/>
+    <functioncall functionName="FMOD_ERRORCALLBACK_INSTANCETYPE_STUDIO_PARAMETERINSTANCE"/>
+    <functioncall functionName="FMOD_ERRORCALLBACK_INSTANCETYPE_STUDIO_SYSTEM"/>
+    <functioncall functionName="FMOD_ERRORCALLBACK_INSTANCETYPE_STUDIO_VCA"/>
+    <functioncall functionName="FMOD_ERRORCALLBACK_INSTANCETYPE_SYSTEM"/>
+    <functioncall functionName="FMOD_ERR_ALREADY_LOCKED"/>
+    <functioncall functionName="FMOD_ERR_BADCOMMAND"/>
+    <functioncall functionName="FMOD_ERR_CHANNEL_ALLOC"/>
+    <functioncall functionName="FMOD_ERR_CHANNEL_STOLEN"/>
+    <functioncall functionName="FMOD_ERR_DMA"/>
+    <functioncall functionName="FMOD_ERR_DSP_CONNECTION"/>
+    <functioncall functionName="FMOD_ERR_DSP_DONTPROCESS"/>
+    <functioncall functionName="FMOD_ERR_DSP_FORMAT"/>
+    <functioncall functionName="FMOD_ERR_DSP_INUSE"/>
+    <functioncall functionName="FMOD_ERR_DSP_NOTFOUND"/>
+    <functioncall functionName="FMOD_ERR_DSP_RESERVED"/>
+    <functioncall functionName="FMOD_ERR_DSP_SILENCE"/>
+    <functioncall functionName="FMOD_ERR_DSP_TYPE"/>
+    <functioncall functionName="FMOD_ERR_EVENT_ALREADY_LOADED"/>
+    <functioncall functionName="FMOD_ERR_EVENT_LIVEUPDATE_BUSY"/>
+    <functioncall functionName="FMOD_ERR_EVENT_LIVEUPDATE_MISMATCH"/>
+    <functioncall functionName="FMOD_ERR_EVENT_LIVEUPDATE_TIMEOUT"/>
+    <functioncall functionName="FMOD_ERR_EVENT_NOTFOUND"/>
+    <functioncall functionName="FMOD_ERR_FILE_BAD"/>
+    <functioncall functionName="FMOD_ERR_FILE_COULDNOTSEEK"/>
+    <functioncall functionName="FMOD_ERR_FILE_DISKEJECTED"/>
+    <functioncall functionName="FMOD_ERR_FILE_ENDOFDATA"/>
+    <functioncall functionName="FMOD_ERR_FILE_EOF"/>
+    <functioncall functionName="FMOD_ERR_FILE_NOTFOUND"/>
+    <functioncall functionName="FMOD_ERR_FORMAT"/>
+    <functioncall functionName="FMOD_ERR_HEADER_MISMATCH"/>
+    <functioncall functionName="FMOD_ERR_HTTP"/>
+    <functioncall functionName="FMOD_ERR_HTTP_ACCESS"/>
+    <functioncall functionName="FMOD_ERR_HTTP_PROXY_AUTH"/>
+    <functioncall functionName="FMOD_ERR_HTTP_SERVER_ERROR"/>
+    <functioncall functionName="FMOD_ERR_HTTP_TIMEOUT"/>
+    <functioncall functionName="FMOD_ERR_INITIALIZATION"/>
+    <functioncall functionName="FMOD_ERR_INITIALIZED"/>
+    <functioncall functionName="FMOD_ERR_INTERNAL"/>
+    <functioncall functionName="FMOD_ERR_INVALID_FLOAT"/>
+    <functioncall functionName="FMOD_ERR_INVALID_HANDLE"/>
+    <functioncall functionName="FMOD_ERR_INVALID_PARAM"/>
+    <functioncall functionName="FMOD_ERR_INVALID_POSITION"/>
+    <functioncall functionName="FMOD_ERR_INVALID_SPEAKER"/>
+    <functioncall functionName="FMOD_ERR_INVALID_STRING"/>
+    <functioncall functionName="FMOD_ERR_INVALID_SYNCPOINT"/>
+    <functioncall functionName="FMOD_ERR_INVALID_THREAD"/>
+    <functioncall functionName="FMOD_ERR_INVALID_VECTOR"/>
+    <functioncall functionName="FMOD_ERR_MAXAUDIBLE"/>
+    <functioncall functionName="FMOD_ERR_MEMORY"/>
+    <functioncall functionName="FMOD_ERR_MEMORY_CANTPOINT"/>
+    <functioncall functionName="FMOD_ERR_NEEDS3D"/>
+    <functioncall functionName="FMOD_ERR_NEEDSHARDWARE"/>
+    <functioncall functionName="FMOD_ERR_NET_CONNECT"/>
+    <functioncall functionName="FMOD_ERR_NET_SOCKET_ERROR"/>
+    <functioncall functionName="FMOD_ERR_NET_URL"/>
+    <functioncall functionName="FMOD_ERR_NET_WOULD_BLOCK"/>
+    <functioncall functionName="FMOD_ERR_NOTREADY"/>
+    <functioncall functionName="FMOD_ERR_NOT_LOCKED"/>
+    <functioncall functionName="FMOD_ERR_OUTPUT_ALLOCATED"/>
+    <functioncall functionName="FMOD_ERR_OUTPUT_CREATEBUFFER"/>
+    <functioncall functionName="FMOD_ERR_OUTPUT_DRIVERCALL"/>
+    <functioncall functionName="FMOD_ERR_OUTPUT_FORMAT"/>
+    <functioncall functionName="FMOD_ERR_OUTPUT_INIT"/>
+    <functioncall functionName="FMOD_ERR_OUTPUT_NODRIVERS"/>
+    <functioncall functionName="FMOD_ERR_PLUGIN"/>
+    <functioncall functionName="FMOD_ERR_PLUGIN_MISSING"/>
+    <functioncall functionName="FMOD_ERR_PLUGIN_RESOURCE"/>
+    <functioncall functionName="FMOD_ERR_PLUGIN_VERSION"/>
+    <functioncall functionName="FMOD_ERR_RECORD"/>
+    <functioncall functionName="FMOD_ERR_RECORD_DISCONNECTED"/>
+    <functioncall functionName="FMOD_ERR_REVERB_CHANNELGROUP"/>
+    <functioncall functionName="FMOD_ERR_REVERB_INSTANCE"/>
+    <functioncall functionName="FMOD_ERR_STUDIO_NOT_LOADED"/>
+    <functioncall functionName="FMOD_ERR_STUDIO_UNINITIALIZED"/>
+    <functioncall functionName="FMOD_ERR_SUBSOUNDS"/>
+    <functioncall functionName="FMOD_ERR_SUBSOUND_ALLOCATED"/>
+    <functioncall functionName="FMOD_ERR_SUBSOUND_CANTMOVE"/>
+    <functioncall functionName="FMOD_ERR_TAGNOTFOUND"/>
+    <functioncall functionName="FMOD_ERR_TOOMANYCHANNELS"/>
+    <functioncall functionName="FMOD_ERR_TOOMANYSAMPLES"/>
+    <functioncall functionName="FMOD_ERR_TRUNCATED"/>
+    <functioncall functionName="FMOD_ERR_UNIMPLEMENTED"/>
+    <functioncall functionName="FMOD_ERR_UNINITIALIZED"/>
+    <functioncall functionName="FMOD_ERR_UNSUPPORTED"/>
+    <functioncall functionName="FMOD_ERR_VERSION"/>
+    <functioncall functionName="FMOD_File_GetDiskBusy"/>
+    <functioncall functionName="FMOD_File_SetDiskBusy"/>
+    <functioncall functionName="FMOD_Memory_GetStats"/>
+    <functioncall functionName="FMOD_Memory_Initialize"/>
+    <functioncall functionName="FMOD_OK"/>
+    <functioncall functionName="FMOD_OPENSTATE_BUFFERING"/>
+    <functioncall functionName="FMOD_OPENSTATE_CONNECTING"/>
+    <functioncall functionName="FMOD_OPENSTATE_ERROR"/>
+    <functioncall functionName="FMOD_OPENSTATE_LOADING"/>
+    <functioncall functionName="FMOD_OPENSTATE_MAX"/>
+    <functioncall functionName="FMOD_OPENSTATE_PLAYING"/>
+    <functioncall functionName="FMOD_OPENSTATE_READY"/>
+    <functioncall functionName="FMOD_OPENSTATE_SEEKING"/>
+    <functioncall functionName="FMOD_OPENSTATE_SETPOSITION"/>
+    <functioncall functionName="FMOD_OUTPUTTYPE_AAUDIO"/>
+    <functioncall functionName="FMOD_OUTPUTTYPE_ALSA"/>
+    <functioncall functionName="FMOD_OUTPUTTYPE_ASIO"/>
+    <functioncall functionName="FMOD_OUTPUTTYPE_AUDIO3D"/>
+    <functioncall functionName="FMOD_OUTPUTTYPE_AUDIOOUT"/>
+    <functioncall functionName="FMOD_OUTPUTTYPE_AUDIOTRACK"/>
+    <functioncall functionName="FMOD_OUTPUTTYPE_AUTODETECT"/>
+    <functioncall functionName="FMOD_OUTPUTTYPE_COREAUDIO"/>
+    <functioncall functionName="FMOD_OUTPUTTYPE_MAX"/>
+    <functioncall functionName="FMOD_OUTPUTTYPE_NNAUDIO"/>
+    <functioncall functionName="FMOD_OUTPUTTYPE_NOSOUND"/>
+    <functioncall functionName="FMOD_OUTPUTTYPE_NOSOUND_NRT"/>
+    <functioncall functionName="FMOD_OUTPUTTYPE_OPENSL"/>
+    <functioncall functionName="FMOD_OUTPUTTYPE_PULSEAUDIO"/>
+    <functioncall functionName="FMOD_OUTPUTTYPE_UNKNOWN"/>
+    <functioncall functionName="FMOD_OUTPUTTYPE_WASAPI"/>
+    <functioncall functionName="FMOD_OUTPUTTYPE_WAVWRITER"/>
+    <functioncall functionName="FMOD_OUTPUTTYPE_WAVWRITER_NRT"/>
+    <functioncall functionName="FMOD_OUTPUTTYPE_WEBAUDIO"/>
+    <functioncall functionName="FMOD_OUTPUTTYPE_WINSONIC"/>
+    <functioncall functionName="FMOD_PLUGINTYPE_CODEC"/>
+    <functioncall functionName="FMOD_PLUGINTYPE_DSP"/>
+    <functioncall functionName="FMOD_PLUGINTYPE_MAX"/>
+    <functioncall functionName="FMOD_PLUGINTYPE_OUTPUT"/>
+    <functioncall functionName="FMOD_SOUNDGROUP_BEHAVIOR_FAIL"/>
+    <functioncall functionName="FMOD_SOUNDGROUP_BEHAVIOR_MAX"/>
+    <functioncall functionName="FMOD_SOUNDGROUP_BEHAVIOR_MUTE"/>
+    <functioncall functionName="FMOD_SOUNDGROUP_BEHAVIOR_STEALLOWEST"/>
+    <functioncall functionName="FMOD_SOUND_FORMAT_BITSTREAM"/>
+    <functioncall functionName="FMOD_SOUND_FORMAT_MAX"/>
+    <functioncall functionName="FMOD_SOUND_FORMAT_NONE"/>
+    <functioncall functionName="FMOD_SOUND_FORMAT_PCM16"/>
+    <functioncall functionName="FMOD_SOUND_FORMAT_PCM24"/>
+    <functioncall functionName="FMOD_SOUND_FORMAT_PCM32"/>
+    <functioncall functionName="FMOD_SOUND_FORMAT_PCM8"/>
+    <functioncall functionName="FMOD_SOUND_FORMAT_PCMFLOAT"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_AIFF"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_ASF"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_AT9"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_AUDIOQUEUE"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_DLS"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_FADPCM"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_FLAC"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_FSB"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_IT"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_MAX"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_MEDIACODEC"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_MEDIA_FOUNDATION"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_MIDI"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_MOD"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_MPEG"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_OGGVORBIS"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_PLAYLIST"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_RAW"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_S3M"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_UNKNOWN"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_USER"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_VORBIS"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_WAV"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_XM"/>
+    <functioncall functionName="FMOD_SOUND_TYPE_XMA"/>
+    <functioncall functionName="FMOD_SPEAKERMODE_5POINT1"/>
+    <functioncall functionName="FMOD_SPEAKERMODE_7POINT1"/>
+    <functioncall functionName="FMOD_SPEAKERMODE_7POINT1POINT4"/>
+    <functioncall functionName="FMOD_SPEAKERMODE_DEFAULT"/>
+    <functioncall functionName="FMOD_SPEAKERMODE_MAX"/>
+    <functioncall functionName="FMOD_SPEAKERMODE_MONO"/>
+    <functioncall functionName="FMOD_SPEAKERMODE_QUAD"/>
+    <functioncall functionName="FMOD_SPEAKERMODE_RAW"/>
+    <functioncall functionName="FMOD_SPEAKERMODE_STEREO"/>
+    <functioncall functionName="FMOD_SPEAKERMODE_SURROUND"/>
+    <functioncall functionName="FMOD_SPEAKER_BACK_LEFT"/>
+    <functioncall functionName="FMOD_SPEAKER_BACK_RIGHT"/>
+    <functioncall functionName="FMOD_SPEAKER_FRONT_CENTER"/>
+    <functioncall functionName="FMOD_SPEAKER_FRONT_RIGHT"/>
+    <functioncall functionName="FMOD_SPEAKER_LOW_FREQUENCY"/>
+    <functioncall functionName="FMOD_SPEAKER_MAX"/>
+    <functioncall functionName="FMOD_SPEAKER_SURROUND_LEFT"/>
+    <functioncall functionName="FMOD_SPEAKER_SURROUND_RIGHT"/>
+    <functioncall functionName="FMOD_SPEAKER_TOP_BACK_LEFT"/>
+    <functioncall functionName="FMOD_SPEAKER_TOP_BACK_RIGHT"/>
+    <functioncall functionName="FMOD_SPEAKER_TOP_FRONT_LEFT"/>
+    <functioncall functionName="FMOD_SPEAKER_TOP_FRONT_RIGHT"/>
+    <functioncall functionName="FMOD_System_Create"/>
+    <functioncall functionName="FMOD_TAGDATATYPE_BINARY"/>
+    <functioncall functionName="FMOD_TAGDATATYPE_FLOAT"/>
+    <functioncall functionName="FMOD_TAGDATATYPE_INT"/>
+    <functioncall functionName="FMOD_TAGDATATYPE_MAX"/>
+    <functioncall functionName="FMOD_TAGDATATYPE_STRING"/>
+    <functioncall functionName="FMOD_TAGDATATYPE_STRING_UTF16"/>
+    <functioncall functionName="FMOD_TAGDATATYPE_STRING_UTF16BE"/>
+    <functioncall functionName="FMOD_TAGDATATYPE_STRING_UTF8"/>
+    <functioncall functionName="FMOD_TAGTYPE_ASF"/>
+    <functioncall functionName="FMOD_TAGTYPE_FMOD"/>
+    <functioncall functionName="FMOD_TAGTYPE_ICECAST"/>
+    <functioncall functionName="FMOD_TAGTYPE_ID3V1"/>
+    <functioncall functionName="FMOD_TAGTYPE_ID3V2"/>
+    <functioncall functionName="FMOD_TAGTYPE_MAX"/>
+    <functioncall functionName="FMOD_TAGTYPE_MIDI"/>
+    <functioncall functionName="FMOD_TAGTYPE_PLAYLIST"/>
+    <functioncall functionName="FMOD_TAGTYPE_SHOUTCAST"/>
+    <functioncall functionName="FMOD_TAGTYPE_UNKNOWN"/>
+    <functioncall functionName="FMOD_TAGTYPE_USER"/>
+    <functioncall functionName="FMOD_TAGTYPE_VORBISCOMMENT"/>
     <functioncall functionName="FarZ"/>
     <functioncall functionName="FirstSubresource"/>
     <functioncall functionName="Flags"/>
+    <functioncall functionName="FloatingUI"/>
     <functioncall functionName="Footprint"/>
     <functioncall functionName="Format"/>
     <functioncall functionName="FovAngleY"/>
     <functioncall functionName="Front"/>
     <functioncall functionName="G"/>
+    <functioncall functionName="Geometry"/>
     <functioncall functionName="GetBufferPointer"/>
     <functioncall functionName="GetBufferSize"/>
-    <functioncall functionName="GetCPUDescriptorHandleForHeapStart"/>
     <functioncall functionName="GetCopyableFootprints"/>
     <functioncall functionName="GetDesc"/>
     <functioncall functionName="GetDevice"/>
-    <functioncall functionName="GetDeviceRemovedReason"/>
     <functioncall functionName="GetFinalMatrix"/>
-    <functioncall functionName="GetGPUDescriptorHandleForHeapStart"/>
-    <functioncall functionName="GetGPUVirtualAddress"/>
     <functioncall functionName="GetLook"/>
+    <functioncall functionName="GetOrientation"/>
     <functioncall functionName="GetPosition"/>
-    <functioncall functionName="GetPositionOfBone"/>
     <functioncall functionName="GetProcessHeap"/>
     <functioncall functionName="GetQuaternion"/>
-    <functioncall functionName="GetRight"/>
-    <functioncall functionName="GetRotatedOffset"/>
-    <functioncall functionName="GetShaderResourceViewDesc"/>
     <functioncall functionName="GetTeam"/>
-    <functioncall functionName="GetTexture"/>
-    <functioncall functionName="GetTextureType"/>
     <functioncall functionName="GetUp"/>
     <functioncall functionName="H"/>
     <functioncall functionName="HeapAlloc"/>
     <functioncall functionName="HeapFree"/>
     <functioncall functionName="Height"/>
     <functioncall functionName="I"/>
-    <functioncall functionName="IASetIndexBuffer"/>
-    <functioncall functionName="IASetPrimitiveTopology"/>
-    <functioncall functionName="IASetVertexBuffers"/>
-    <functioncall functionName="ID3D12DescriptorHeap"/>
     <functioncall functionName="IDLE"/>
     <functioncall functionName="Identity"/>
-    <functioncall functionName="ImportAnimClip"/>
-    <functioncall functionName="ImportBone"/>
-    <functioncall functionName="ImportCtrlPoint"/>
-    <functioncall functionName="ImportLevel"/>
-    <functioncall functionName="ImportModel"/>
-    <functioncall functionName="ImportVertex"/>
     <functioncall functionName="Init"/>
     <functioncall functionName="InitAsConstantBufferView"/>
     <functioncall functionName="InitAsConstants"/>
@@ -485,41 +987,34 @@
     <functioncall functionName="InitOffsetted"/>
     <functioncall functionName="Init_1_0"/>
     <functioncall functionName="Init_1_1"/>
-    <functioncall functionName="Initialize"/>
     <functioncall functionName="IntermediateOffset"/>
     <functioncall functionName="InterpolateMtx"/>
-    <functioncall functionName="Intersects"/>
     <functioncall functionName="IsAlive"/>
     <functioncall functionName="IsAnotherTeam"/>
     <functioncall functionName="IsCPUAccessible"/>
-    <functioncall functionName="IsClipEnd"/>
-    <functioncall functionName="IsCollidable"/>
     <functioncall functionName="IsCollide"/>
-    <functioncall functionName="IsExpired"/>
-    <functioncall functionName="IsMoving"/>
-    <functioncall functionName="IsShootable"/>
+    <functioncall functionName="IsLoop"/>
     <functioncall functionName="IsZero"/>
     <functioncall functionName="J"/>
     <functioncall functionName="K"/>
     <functioncall functionName="L"/>
-    <functioncall functionName="LateUpdate"/>
+    <functioncall functionName="LOBBY"/>
     <functioncall functionName="Layouts"/>
     <functioncall functionName="Left"/>
     <functioncall functionName="Lerp"/>
-    <functioncall functionName="LoadTextureFromFile"/>
     <functioncall functionName="M"/>
+    <functioncall functionName="MAINPLAY"/>
     <functioncall functionName="Map"/>
     <functioncall functionName="MaxDepth"/>
     <functioncall functionName="MaxSubresources"/>
     <functioncall functionName="MaxVersion"/>
     <functioncall functionName="MemToAlloc"/>
     <functioncall functionName="MemcpySubresource"/>
+    <functioncall functionName="MemoryClear"/>
     <functioncall functionName="MipLevels"/>
     <functioncall functionName="MipSlice"/>
-    <functioncall functionName="ModelName"/>
-    <functioncall functionName="Move"/>
-    <functioncall functionName="Multiply"/>
     <functioncall functionName="N"/>
+    <functioncall functionName="NONE"/>
     <functioncall functionName="NULL"/>
     <functioncall functionName="NearZ"/>
     <functioncall functionName="Normalize"/>
@@ -531,18 +1026,18 @@
     <functioncall functionName="NumStaticSamplers"/>
     <functioncall functionName="NumSubresources"/>
     <functioncall functionName="O"/>
+    <functioncall functionName="OVER"/>
     <functioncall functionName="Offset"/>
     <functioncall functionName="OffsetInDescriptorsFromTableStart"/>
     <functioncall functionName="P"/>
+    <functioncall functionName="PLAYER"/>
+    <functioncall functionName="PROJECTILE"/>
+    <functioncall functionName="PROP"/>
     <functioncall functionName="ParameterType"/>
     <functioncall functionName="ParametersSize"/>
     <functioncall functionName="PlaneCount"/>
     <functioncall functionName="PlaneSlice"/>
-    <functioncall functionName="Player"/>
     <functioncall functionName="PosFromMtx"/>
-    <functioncall functionName="ProcessInput"/>
-    <functioncall functionName="Projectile"/>
-    <functioncall functionName="Prop"/>
     <functioncall functionName="Q"/>
     <functioncall functionName="QuatFromMtx"/>
     <functioncall functionName="QuatSlerp"/>
@@ -553,58 +1048,54 @@
     <functioncall functionName="Release"/>
     <functioncall functionName="Render"/>
     <functioncall functionName="RequiredSize"/>
-    <functioncall functionName="RestorePosition"/>
+    <functioncall functionName="Reverb3D"/>
     <functioncall functionName="Right"/>
-    <functioncall functionName="Rotate"/>
     <functioncall functionName="RowPitch"/>
     <functioncall functionName="RowSizeInBytes"/>
     <functioncall functionName="RowSizesInBytes"/>
     <functioncall functionName="S"/>
+    <functioncall functionName="SHOT"/>
+    <functioncall functionName="SPACE"/>
+    <functioncall functionName="SPHERE"/>
     <functioncall functionName="STARTJUMP"/>
     <functioncall functionName="S_OK"/>
     <functioncall functionName="SetAlive"/>
     <functioncall functionName="SetAnimatedMatrix"/>
-    <functioncall functionName="SetCameraTargetOffset"/>
-    <functioncall functionName="SetCbvGPUDescriptorHandlePtr"/>
     <functioncall functionName="SetGraphicsRootDescriptorTable"/>
-    <functioncall functionName="SetHandMatrix"/>
     <functioncall functionName="SetLook"/>
-    <functioncall functionName="SetPipelineState"/>
+    <functioncall functionName="SetOrientation"/>
     <functioncall functionName="SetPosition"/>
     <functioncall functionName="SetRight"/>
-    <functioncall functionName="SetRootArgument"/>
-    <functioncall functionName="SetRotation"/>
-    <functioncall functionName="SetSpawnPoint"/>
-    <functioncall functionName="SetTeam"/>
     <functioncall functionName="SetUp"/>
     <functioncall functionName="ShaderRegister"/>
     <functioncall functionName="ShaderVisibility"/>
-    <functioncall functionName="Shoot"/>
     <functioncall functionName="SizeInBytes"/>
+    <functioncall functionName="Sound"/>
+    <functioncall functionName="SoundGroup"/>
     <functioncall functionName="Src"/>
     <functioncall functionName="SrcBox"/>
     <functioncall functionName="Sub"/>
     <functioncall functionName="SubresourceHeight"/>
     <functioncall functionName="SubresourceWidth"/>
     <functioncall functionName="Subtract"/>
+    <functioncall functionName="System"/>
     <functioncall functionName="T"/>
     <functioncall functionName="TEAM_DEFAULT"/>
-    <functioncall functionName="TEST"/>
     <functioncall functionName="TRUE"/>
-    <functioncall functionName="TakeDamage"/>
-    <functioncall functionName="TextureType"/>
+    <functioncall functionName="Team1SpawnPointPosition"/>
+    <functioncall functionName="Team1SpawnPointRotation"/>
+    <functioncall functionName="Team2SpawnPointPosition"/>
+    <functioncall functionName="Team2SpawnPointRotation"/>
     <functioncall functionName="ToTransform"/>
     <functioncall functionName="Top"/>
     <functioncall functionName="TransformCoord"/>
     <functioncall functionName="TransformNormal"/>
-    <functioncall functionName="TriggerOff"/>
     <functioncall functionName="U"/>
     <functioncall functionName="Unmap"/>
     <functioncall functionName="Update"/>
     <functioncall functionName="UpdateConstantBuffer"/>
     <functioncall functionName="UpdateSubresources"/>
     <functioncall functionName="V"/>
-    <functioncall functionName="VK_LBUTTON"/>
     <functioncall functionName="Version"/>
     <functioncall functionName="ViewHeight"/>
     <functioncall functionName="ViewWidth"/>
@@ -616,14 +1107,12 @@
     <functioncall functionName="XMConvertToRadians"/>
     <functioncall functionName="XMFLOAT2"/>
     <functioncall functionName="XMFLOAT3"/>
-    <functioncall functionName="XMFLOAT4"/>
-    <functioncall functionName="XMFLOAT4X4"/>
-    <functioncall functionName="XMINT4"/>
     <functioncall functionName="XMLoadFloat2"/>
     <functioncall functionName="XMLoadFloat3"/>
     <functioncall functionName="XMLoadFloat4"/>
     <functioncall functionName="XMLoadFloat4x4"/>
     <functioncall functionName="XMMATRIX"/>
+    <functioncall functionName="XMMatrixDeterminant"/>
     <functioncall functionName="XMMatrixIdentity"/>
     <functioncall functionName="XMMatrixInverse"/>
     <functioncall functionName="XMMatrixLookAtLH"/>
@@ -634,7 +1123,6 @@
     <functioncall functionName="XMMatrixRotationRollPitchYaw"/>
     <functioncall functionName="XMMatrixTranspose"/>
     <functioncall functionName="XMQuaternionIdentity"/>
-    <functioncall functionName="XMQuaternionRotationAxis"/>
     <functioncall functionName="XMQuaternionRotationMatrix"/>
     <functioncall functionName="XMQuaternionRotationRollPitchYaw"/>
     <functioncall functionName="XMQuaternionSlerp"/>
@@ -648,7 +1136,6 @@
     <functioncall functionName="XMVector3Length"/>
     <functioncall functionName="XMVector3NearEqual"/>
     <functioncall functionName="XMVector3Normalize"/>
-    <functioncall functionName="XMVector3Rotate"/>
     <functioncall functionName="XMVector3TransformCoord"/>
     <functioncall functionName="XMVector3TransformNormal"/>
     <functioncall functionName="XMVectorGetX"/>
@@ -686,17 +1173,16 @@
     <functioncall functionName="_pParameters"/>
     <functioncall functionName="_pShaderBytecode"/>
     <functioncall functionName="_pStaticSamplers"/>
+    <functioncall functionName="a"/>
     <functioncall functionName="addressU"/>
     <functioncall functionName="addressV"/>
     <functioncall functionName="addressW"/>
     <functioncall functionName="alignment"/>
-    <functioncall functionName="animClip"/>
-    <functioncall functionName="animClipName"/>
+    <functioncall functionName="animCtrl"/>
     <functioncall functionName="antialiasedLineEnable"/>
     <functioncall functionName="arraySize"/>
     <functioncall functionName="asinf"/>
     <functioncall functionName="atan2f"/>
-    <functioncall functionName="b"/>
     <functioncall functionName="bNormalize"/>
     <functioncall functionName="back"/>
     <functioncall functionName="backStencilDepthFailOp"/>
@@ -706,32 +1192,25 @@
     <functioncall functionName="base"/>
     <functioncall functionName="baseShaderRegister"/>
     <functioncall functionName="begin"/>
-    <functioncall functionName="binary"/>
+    <functioncall functionName="blocking"/>
     <functioncall functionName="boneIdx"/>
     <functioncall functionName="borderColor"/>
     <functioncall functionName="break"/>
+    <functioncall functionName="busy"/>
     <functioncall functionName="bytecodeLength"/>
-    <functioncall functionName="c_str"/>
-    <functioncall functionName="center"/>
-    <functioncall functionName="close"/>
+    <functioncall functionName="callback"/>
+    <functioncall functionName="clear"/>
     <functioncall functionName="color"/>
     <functioncall functionName="comparisonFunc"/>
     <functioncall functionName="conservativeRaster"/>
     <functioncall functionName="const_cast"/>
-    <functioncall functionName="continue"/>
-    <functioncall functionName="copy_n"/>
     <functioncall functionName="count"/>
     <functioncall functionName="cpuPageProperty"/>
     <functioncall functionName="creationNodeMask"/>
     <functioncall functionName="cullMode"/>
-    <functioncall functionName="d3dCBVDesc"/>
-    <functioncall functionName="d3dCbvCPUDescriptorHandle"/>
+    <functioncall functionName="currentalloced"/>
     <functioncall functionName="d3dCbvGPUDescriptorHandle"/>
-    <functioncall functionName="d3dDescriptorHeapDesc"/>
-    <functioncall functionName="d3dResourceDesc"/>
     <functioncall functionName="d3dShaderResourceViewDesc"/>
-    <functioncall functionName="d3dSrvCPUDescriptorHandle"/>
-    <functioncall functionName="d3dSrvGPUDescriptorHandle"/>
     <functioncall functionName="default"/>
     <functioncall functionName="defaultRenderTargetBlendDesc"/>
     <functioncall functionName="defaultStencilOp"/>
@@ -748,28 +1227,24 @@
     <functioncall functionName="depthWriteMask"/>
     <functioncall functionName="desc_1_0"/>
     <functioncall functionName="descriptorIncrementSize"/>
+    <functioncall functionName="det"/>
     <functioncall functionName="dimension"/>
-    <functioncall functionName="double"/>
     <functioncall functionName="dst"/>
     <functioncall functionName="dynamic_cast"/>
     <functioncall functionName="emplace_back"/>
     <functioncall functionName="empty"/>
     <functioncall functionName="end"/>
-    <functioncall functionName="erase"/>
     <functioncall functionName="extents"/>
     <functioncall functionName="fB"/>
     <functioncall functionName="fTemp"/>
-    <functioncall functionName="fTime"/>
-    <functioncall functionName="fTimeElapsed"/>
     <functioncall functionName="fTimeLag"/>
     <functioncall functionName="fValue"/>
     <functioncall functionName="fYaw"/>
     <functioncall functionName="fabsf"/>
     <functioncall functionName="false"/>
-    <functioncall functionName="fileName"/>
+    <functioncall functionName="filename"/>
     <functioncall functionName="fillMode"/>
     <functioncall functionName="filter"/>
-    <functioncall functionName="find_if"/>
     <functioncall functionName="flags"/>
     <functioncall functionName="for"/>
     <functioncall functionName="forcedSampleCount"/>
@@ -781,117 +1256,73 @@
     <functioncall functionName="frontStencilFailOp"/>
     <functioncall functionName="frontStencilFunc"/>
     <functioncall functionName="frontStencilPassOp"/>
-    <functioncall functionName="g_DefaultDamage"/>
-    <functioncall functionName="g_DefaultHealthPoint"/>
-    <functioncall functionName="g_DefaultProjectileLifeTime"/>
-    <functioncall functionName="g_DefaultRPM"/>
-    <functioncall functionName="g_IsMouseMode"/>
-    <functioncall functionName="g_NumAnimationBone"/>
-    <functioncall functionName="g_PlayerDefaultSpeed"/>
-    <functioncall functionName="g_ProjectileDefaultSpeed"/>
-    <functioncall functionName="g_RespawnDelay"/>
     <functioncall functionName="g_RootParameterObject"/>
-    <functioncall functionName="g_RootParameterTexture"/>
-    <functioncall functionName="gnCbvSrvDescriptorIncrementSize"/>
+    <functioncall functionName="g_nAnimBone"/>
     <functioncall functionName="height"/>
     <functioncall functionName="heightInTexels"/>
     <functioncall functionName="heightInTiles"/>
     <functioncall functionName="hr"/>
     <functioncall functionName="i"/>
     <functioncall functionName="if"/>
-    <functioncall functionName="importer"/>
-    <functioncall functionName="indexBufferView"/>
     <functioncall functionName="int"/>
     <functioncall functionName="isDebug"/>
+    <functioncall functionName="isMakeAlign"/>
     <functioncall functionName="j"/>
     <functioncall functionName="layout"/>
     <functioncall functionName="lhs"/>
     <functioncall functionName="long"/>
+    <functioncall functionName="m"/>
     <functioncall functionName="m_AnimName"/>
     <functioncall functionName="m_AnimationController"/>
-    <functioncall functionName="m_BaseDamage"/>
+    <functioncall functionName="m_AnimationTime"/>
     <functioncall functionName="m_BoneList"/>
-    <functioncall functionName="m_CtrlPointList"/>
-    <functioncall functionName="m_GlobalTransform"/>
     <functioncall functionName="m_IsAlive"/>
-    <functioncall functionName="m_IsGround"/>
+    <functioncall functionName="m_IsLoop"/>
     <functioncall functionName="m_KeyTime"/>
-    <functioncall functionName="m_LevelDataDesc"/>
-    <functioncall functionName="m_MeshList"/>
-    <functioncall functionName="m_ModelName"/>
-    <functioncall functionName="m_Name"/>
-    <functioncall functionName="m_Tag"/>
-    <functioncall functionName="m_VertexList"/>
+    <functioncall functionName="m_SceneType"/>
     <functioncall functionName="m_d3dCbvGPUDescriptorHandle"/>
-    <functioncall functionName="m_d3dScissorRect"/>
-    <functioncall functionName="m_d3dSrvCPUDescriptorStartHandle"/>
-    <functioncall functionName="m_d3dSrvGPUDescriptorStartHandle"/>
-    <functioncall functionName="m_d3dViewport"/>
-    <functioncall functionName="m_fRPM"/>
-    <functioncall functionName="m_fSpeed"/>
     <functioncall functionName="m_fTimeLag"/>
     <functioncall functionName="m_nBoneList"/>
-    <functioncall functionName="m_nCtrlPointList"/>
     <functioncall functionName="m_nKeyTime"/>
-    <functioncall functionName="m_nKeyframe"/>
-    <functioncall functionName="m_nMeshList"/>
-    <functioncall functionName="m_nObjects"/>
-    <functioncall functionName="m_nPlayers"/>
-    <functioncall functionName="m_nProjectiles"/>
-    <functioncall functionName="m_nProps"/>
-    <functioncall functionName="m_nVertexList"/>
-    <functioncall functionName="m_pBox"/>
-    <functioncall functionName="m_pCBMappedPlayers"/>
-    <functioncall functionName="m_pCBMappedProjectiles"/>
-    <functioncall functionName="m_pCBMappedPropObjects"/>
-    <functioncall functionName="m_pSphere"/>
-    <functioncall functionName="m_pToRootTransforms"/>
-    <functioncall functionName="m_pd3dCbvSrvDescriptorHeap"/>
+    <functioncall functionName="m_pcbMappedObject"/>
+    <functioncall functionName="m_pcbxmAnimation"/>
     <functioncall functionName="m_pd3dCommandList"/>
     <functioncall functionName="m_pd3dDevice"/>
-    <functioncall functionName="m_xmf2TexCoord"/>
-    <functioncall functionName="m_xmf2UV"/>
-    <functioncall functionName="m_xmf3CameraTargetOffset"/>
-    <functioncall functionName="m_xmf3Direction"/>
+    <functioncall functionName="m_pd3dcbAnimation"/>
+    <functioncall functionName="m_pd3dcbObject"/>
+    <functioncall functionName="m_vecEffects"/>
     <functioncall functionName="m_xmf3Look"/>
     <functioncall functionName="m_xmf3LookAtWorld"/>
     <functioncall functionName="m_xmf3Normal"/>
     <functioncall functionName="m_xmf3Offset"/>
     <functioncall functionName="m_xmf3Position"/>
     <functioncall functionName="m_xmf3Right"/>
-    <functioncall functionName="m_xmf3SpawnPoint"/>
     <functioncall functionName="m_xmf3Up"/>
-    <functioncall functionName="m_xmf4Weight"/>
-    <functioncall functionName="m_xmf4x4Projection"/>
-    <functioncall functionName="m_xmf4x4View"/>
     <functioncall functionName="m_xmf4x4World"/>
-    <functioncall functionName="m_xmi4BoneIdx"/>
     <functioncall functionName="maxAnisotropy"/>
     <functioncall functionName="maxDepth"/>
     <functioncall functionName="maxLOD"/>
+    <functioncall functionName="maxalloced"/>
     <functioncall functionName="memcpy"/>
     <functioncall functionName="memoryPoolPreference"/>
     <functioncall functionName="memset"/>
+    <functioncall functionName="memtypeflags"/>
     <functioncall functionName="mesh"/>
     <functioncall functionName="minDepth"/>
     <functioncall functionName="minLOD"/>
     <functioncall functionName="mipLODBias"/>
     <functioncall functionName="mipLevels"/>
-    <functioncall functionName="mouse"/>
+    <functioncall functionName="mng"/>
+    <functioncall functionName="mode"/>
+    <functioncall functionName="model"/>
     <functioncall functionName="mtx"/>
     <functioncall functionName="mtx0"/>
     <functioncall functionName="mtx1"/>
     <functioncall functionName="multisampleEnable"/>
     <functioncall functionName="n"/>
     <functioncall functionName="nCbvGPUDescriptorHandlePtr"/>
-    <functioncall functionName="nCollisionMaps"/>
-    <functioncall functionName="nIndices"/>
-    <functioncall functionName="nReflection"/>
     <functioncall functionName="nTextureType"/>
-    <functioncall functionName="nVertices"/>
     <functioncall functionName="name"/>
-    <functioncall functionName="ncbElementBytes"/>
-    <functioncall functionName="new_pToRootTransforms"/>
     <functioncall functionName="nodeMask"/>
     <functioncall functionName="nullptr"/>
     <functioncall functionName="num32BitValues"/>
@@ -904,13 +1335,11 @@
     <functioncall functionName="numTiles"/>
     <functioncall functionName="numTilesForPackedMips"/>
     <functioncall functionName="o"/>
-    <functioncall functionName="obj"/>
     <functioncall functionName="objPos"/>
     <functioncall functionName="offset"/>
     <functioncall functionName="offsetInDescriptors"/>
     <functioncall functionName="offsetInDescriptorsFromTableStart"/>
     <functioncall functionName="offsetScaledByIncrementSize"/>
-    <functioncall functionName="open"/>
     <functioncall functionName="operatorconstD3D12_BLEND_DESC&amp;"/>
     <functioncall functionName="operatorconstD3D12_BOX&amp;"/>
     <functioncall functionName="operatorconstD3D12_CLEAR_VALUE&amp;"/>
@@ -940,10 +1369,7 @@
     <functioncall functionName="pDescriptorRanges_1_0"/>
     <functioncall functionName="pDestinationResource"/>
     <functioncall functionName="pDevice"/>
-    <functioncall functionName="pIndexBuffer"/>
-    <functioncall functionName="pIndexUploadBuffer"/>
     <functioncall functionName="pIntermediate"/>
-    <functioncall functionName="pKeysBuffer"/>
     <functioncall functionName="pLayouts"/>
     <functioncall functionName="pMem"/>
     <functioncall functionName="pNumRows"/>
@@ -956,26 +1382,19 @@
     <functioncall functionName="pResourceBefore"/>
     <functioncall functionName="pRootSignatureDesc"/>
     <functioncall functionName="pRowSizesInBytes"/>
-    <functioncall functionName="pShaderResource"/>
     <functioncall functionName="pSrcData"/>
     <functioncall functionName="pStaticSamplers"/>
-    <functioncall functionName="pVertexBuffer"/>
-    <functioncall functionName="pVertexUploadBuffer"/>
-    <functioncall functionName="pbMappedcbObject"/>
     <functioncall functionName="pd3dCommandList"/>
     <functioncall functionName="pd3dDevice"/>
-    <functioncall functionName="pop"/>
+    <functioncall functionName="point"/>
+    <functioncall functionName="poollen"/>
+    <functioncall functionName="poolmem"/>
     <functioncall functionName="pos"/>
-    <functioncall functionName="position"/>
     <functioncall functionName="pp"/>
     <functioncall functionName="ppBlob"/>
     <functioncall functionName="ppErrorBlob"/>
-    <functioncall functionName="primitiveTopology"/>
     <functioncall functionName="properties"/>
-    <functioncall functionName="pso"/>
     <functioncall functionName="ptr"/>
-    <functioncall functionName="public:"/>
-    <functioncall functionName="push"/>
     <functioncall functionName="push_back"/>
     <functioncall functionName="q0"/>
     <functioncall functionName="q1"/>
@@ -984,18 +1403,15 @@
     <functioncall functionName="quaternion"/>
     <functioncall functionName="radius"/>
     <functioncall functionName="rangeType"/>
-    <functioncall functionName="read"/>
     <functioncall functionName="registerSpace"/>
     <functioncall functionName="reinterpret_cast"/>
     <functioncall functionName="result"/>
     <functioncall functionName="return"/>
     <functioncall functionName="rhs"/>
-    <functioncall functionName="rotatedOffset"/>
-    <functioncall functionName="rotation"/>
-    <functioncall functionName="rotationAngle"/>
     <functioncall functionName="rowPitch"/>
     <functioncall functionName="sampleCount"/>
     <functioncall functionName="sampleQuality"/>
+    <functioncall functionName="sceneType"/>
     <functioncall functionName="shaderRegister"/>
     <functioncall functionName="shaderVisibility"/>
     <functioncall functionName="size"/>
@@ -1014,44 +1430,43 @@
     <functioncall functionName="stencilReadMask"/>
     <functioncall functionName="stencilWriteMask"/>
     <functioncall functionName="subresource"/>
+    <functioncall functionName="swap"/>
     <functioncall functionName="switch"/>
+    <functioncall functionName="system"/>
     <functioncall functionName="t"/>
+    <functioncall functionName="target"/>
     <functioncall functionName="team"/>
-    <functioncall functionName="temp"/>
+    <functioncall functionName="tempMtx"/>
     <functioncall functionName="texture"/>
-    <functioncall functionName="this"/>
+    <functioncall functionName="time"/>
     <functioncall functionName="tmp"/>
     <functioncall functionName="topLeftX"/>
     <functioncall functionName="topLeftY"/>
     <functioncall functionName="true"/>
     <functioncall functionName="type"/>
-    <functioncall functionName="u"/>
     <functioncall functionName="useBox"/>
-    <functioncall functionName="uv"/>
+    <functioncall functionName="useralloc"/>
+    <functioncall functionName="userfree"/>
+    <functioncall functionName="userrealloc"/>
     <functioncall functionName="v0"/>
     <functioncall functionName="v1"/>
+    <functioncall functionName="vec"/>
     <functioncall functionName="vector"/>
     <functioncall functionName="vector2Epsilon"/>
     <functioncall functionName="vector3Epsilon"/>
-    <functioncall functionName="vertexBufferView"/>
     <functioncall functionName="visibility"/>
     <functioncall functionName="w"/>
-    <functioncall functionName="weights"/>
-    <functioncall functionName="while"/>
     <functioncall functionName="width"/>
     <functioncall functionName="widthInTexels"/>
     <functioncall functionName="widthInTiles"/>
     <functioncall functionName="x"/>
     <functioncall functionName="xmf2Result"/>
-    <functioncall functionName="xmf2TexCoord"/>
     <functioncall functionName="xmf2Vector1"/>
     <functioncall functionName="xmf2Vector2"/>
     <functioncall functionName="xmf3EyePosition"/>
     <functioncall functionName="xmf3Look"/>
     <functioncall functionName="xmf3LookAtPosition"/>
     <functioncall functionName="xmf3LookAtWorld"/>
-    <functioncall functionName="xmf3Move"/>
-    <functioncall functionName="xmf3Normal"/>
     <functioncall functionName="xmf3Offset"/>
     <functioncall functionName="xmf3Position"/>
     <functioncall functionName="xmf3Result"/>
@@ -1061,8 +1476,6 @@
     <functioncall functionName="xmf3Vector"/>
     <functioncall functionName="xmf3Vector1"/>
     <functioncall functionName="xmf3Vector2"/>
-    <functioncall functionName="xmf4Albedo"/>
-    <functioncall functionName="xmf4BoneWeight"/>
     <functioncall functionName="xmf4Result"/>
     <functioncall functionName="xmf4Vector"/>
     <functioncall functionName="xmf4Vector1"/>
@@ -1070,7 +1483,6 @@
     <functioncall functionName="xmf4x4Mtx0"/>
     <functioncall functionName="xmf4x4Mtx1"/>
     <functioncall functionName="xmf4x4OutputMtx"/>
-    <functioncall functionName="xmi4BoneIdx"/>
     <functioncall functionName="xmmtx4x4Matrix"/>
     <functioncall functionName="xmmtx4x4Matrix1"/>
     <functioncall functionName="xmmtx4x4Matrix2"/>

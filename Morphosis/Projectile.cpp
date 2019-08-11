@@ -9,7 +9,6 @@ CProjectile
 *********************************************************************/
 CProjectile::CProjectile() : CObject()
 {
-	cout << "CProjectile »ý¼º - " << sizeof(CProjectile) << "\n";
 
 	m_IsAlive = false;
 	m_xmf3Direction = XMFLOAT3(0, 0, 0);
@@ -81,8 +80,8 @@ void CProjectile::Initialize(CObject * obj, const char * modelName, Effect * eff
 	for (int i = 0; i < m_Collider.size(); ++i) m_Collider[i].Update(GetPosition(), GetQuaternion());
 
 
-	m_ModelList.clear();
-	AddModel(GetModelByName(modelName));
+	m_vecModelIdx.clear();
+	AddModel(modelName);
 	m_vecEffects.push_back(effect);
 
 	SetLook(obj->GetLook());

@@ -4,7 +4,6 @@
 
 CUI::CUI()
 {
-	cout << "CUI »ý¼º - " << sizeof(CUI) << "\n";
 
 
 	m_xmf2Size = XMFLOAT2(0, 0);
@@ -21,16 +20,12 @@ void CUI::SetRootParameter(ID3D12GraphicsCommandList * pd3dCommandList)
 void CUI::Render(ID3D12GraphicsCommandList * pd3dCommandList, CCamera * pCamera, bool isDebug)
 {
 	if (!m_IsAlive) return;
-	if (!m_ModelList.empty()) {
-		if (m_AnimationController) {
-			ChangeAnimClip();
-			SetAnimatedMatrix(m_AnimationTime);
-		}
+	if (!m_vecModelIdx.empty()) {
 		UpdateConstantBuffer(pd3dCommandList);
-		for (auto p = m_ModelList.begin(); p != m_ModelList.end(); ++p) {
+		for (auto p = m_vecModelIdx.begin(); p != m_vecModelIdx.end(); ++p) {
 
 			pd3dCommandList->SetGraphicsRootDescriptorTable(g_RootParameterUI, m_d3dCbvGPUDescriptorHandle);
-			(*p)->Render(pd3dCommandList, isDebug);
+			g_vecModel[(*p)]->Render(pd3dCommandList);
 		}
 	}
 }

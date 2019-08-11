@@ -32,13 +32,7 @@ CObjectManager::~CObjectManager()
 	for (int i = 0; i < g_vecModel.size(); ++i) delete g_vecModel[i];
 	for (int i = 0; i < g_vecAINode.size(); ++i) delete g_vecAINode[i];
 	for (int i = 0; i < g_vecTexture.size(); ++i) delete g_vecTexture[i];
-	for (int i = 0; i < g_vecAnimController.size(); ++i) delete g_vecAnimController[i];
-
-
-	MemoryClear(g_vecAINode);
-	MemoryClear(g_vecTexture);
-	MemoryClear(g_vecModel);
-	MemoryClear(g_vecAnimController);
+	for (int i = 0; i < g_vecAnimCtrl.size(); ++i) delete g_vecAnimCtrl[i];
 
 
 	//m_LevelDataDesc
@@ -113,17 +107,17 @@ void CObjectManager::Render()
 		pbMappedcbui->m_xmf2Size = m_DefaultUI[i]->GetSize();
 	}
 
-	m_pd3dCommandList->SetPipelineState(g_vecPSO[static_cast<int>(PSO::DefaultModel)]);
+	m_pd3dCommandList->SetPipelineState(g_vecPipelineStateObject[static_cast<int>(PSO::DefaultModel)]);
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Render(m_pd3dCommandList);
 	for (int i = 0; i < m_Projectiles.size(); ++i)	m_Projectiles[i]->Render(m_pd3dCommandList);
 
-	m_pd3dCommandList->SetPipelineState(g_vecPSO[static_cast<int>(PSO::AnimatedModel)]);
+	m_pd3dCommandList->SetPipelineState(g_vecPipelineStateObject[static_cast<int>(PSO::AnimatedModel)]);
 	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->Render(m_pd3dCommandList);
 
-	m_pd3dCommandList->SetPipelineState(g_vecPSO[static_cast<int>(PSO::FloatingUI)]);
+	m_pd3dCommandList->SetPipelineState(g_vecPipelineStateObject[static_cast<int>(PSO::FloatingUI)]);
 	for (int i = 0; i < m_FloatingUI.size(); ++i)			m_FloatingUI[i]->Render(m_pd3dCommandList);
 	// 여기에 PSO 변경하는거 넣어
-	m_pd3dCommandList->SetPipelineState(g_vecPSO[static_cast<int>(PSO::DefaultUI)]);
+	m_pd3dCommandList->SetPipelineState(g_vecPipelineStateObject[static_cast<int>(PSO::DefaultUI)]);
 	for (int i = 0; i < m_DefaultUI.size(); ++i)			m_DefaultUI[i]->Render(m_pd3dCommandList);
 
 }
@@ -319,8 +313,8 @@ void CObjectManager::CreateDescriptorHeap()
 
 	m_d3dCbvCPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	m_d3dCbvGPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart();
-	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (m_nObjects));
-	m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (m_nObjects));
+	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::g_nCbvSrvDescriptorIncrementSize * (m_nObjects));
+	m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::g_nCbvSrvDescriptorIncrementSize * (m_nObjects));
 }
 void CObjectManager::CreateConstantBufferResorce()
 {
@@ -376,7 +370,7 @@ void CObjectManager::CreateConstantBufferView()
 		for (int i = 0; i < m_Props.size(); i++) {
 			d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * i);
 			D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
-			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * count++);
+			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::g_nCbvSrvDescriptorIncrementSize * count++);
 			m_pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
 		}
 	}
@@ -385,7 +379,7 @@ void CObjectManager::CreateConstantBufferView()
 		for (int i = 0; i < m_Players.size(); i++) {
 			d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * i);
 			D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
-			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * count++);
+			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::g_nCbvSrvDescriptorIncrementSize * count++);
 			m_pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
 		}
 	}
@@ -394,7 +388,7 @@ void CObjectManager::CreateConstantBufferView()
 		for (int i = 0; i < m_Projectiles.size(); i++) {
 			d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * i);
 			D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
-			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * count++);
+			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::g_nCbvSrvDescriptorIncrementSize * count++);
 			m_pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
 		}
 	}
@@ -407,7 +401,7 @@ void CObjectManager::CreateConstantBufferView()
 		for (int i = 0; i < m_FloatingUI.size(); i++) {
 			d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * i);
 			D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
-			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * count++);
+			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::g_nCbvSrvDescriptorIncrementSize * count++);
 			m_pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
 		}
 	}
@@ -416,7 +410,7 @@ void CObjectManager::CreateConstantBufferView()
 		for (int i = 0; i < m_DefaultUI.size(); i++) {
 			d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (ncbElementBytes * i);
 			D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
-			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * count++);
+			d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::g_nCbvSrvDescriptorIncrementSize * count++);
 			m_pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
 		}
 	}
@@ -430,10 +424,10 @@ void CObjectManager::CreateTextureResourceView(CTexture * pTexture)
 	D3D12_RESOURCE_DESC d3dResourceDesc = pShaderResource->GetDesc();
 	D3D12_SHADER_RESOURCE_VIEW_DESC d3dShaderResourceViewDesc = GetShaderResourceViewDesc(d3dResourceDesc, nTextureType);
 	m_pd3dDevice->CreateShaderResourceView(pShaderResource, &d3dShaderResourceViewDesc, d3dSrvCPUDescriptorHandle);
-	m_d3dSrvCPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
+	m_d3dSrvCPUDescriptorStartHandle.ptr += ::g_nCbvSrvDescriptorIncrementSize;
 
 	pTexture->SetRootArgument(g_RootParameterTexture, d3dSrvGPUDescriptorHandle);
-	m_d3dSrvGPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
+	m_d3dSrvGPUDescriptorStartHandle.ptr += ::g_nCbvSrvDescriptorIncrementSize;
 }
 void CObjectManager::CreateObjectData()
 {
@@ -474,7 +468,6 @@ void CObjectManager::CreateObjectData()
 
 
 
-		MemoryClear(g_vecAINode);
 		for (int i = 0; i < 9; ++i) {
 			AINode* tempNode = new AINode();
 			tempNode->m_xmf3Position = nodePositions[i];
@@ -517,46 +510,50 @@ void CObjectManager::CreateObjectData()
 		텍스처를 전역 벡터로 관리하기 시작.
 		*********************************************************************/
 
-		MemoryClear(g_vecTexture);
-		importer.ImportTexture(L"0615_Box_diff", "Texture_PaperBox");
-		importer.ImportTexture(L"character_2_diff_test3", "Texture_Character");
-		importer.ImportTexture(L"0618_LevelTest_diff", "Texture_Level");
-		importer.ImportTexture(L"box_diff", "Texture_StandardBox");
-		importer.ImportTexture(L"2B_diff", "Texture_2B");
-		importer.ImportTexture(L"DefaultMaterial_albedo", "Texture_Bench");
-		importer.ImportTexture(L"spotlight_BaseColor", "Texture_Spotlight");
-		importer.ImportTexture(L"HealthBar", "Texture_HPBar");
-		importer.ImportTexture(L"crosshair", "Texture_Crosshair");
-		importer.ImportTexture(L"TEX_crystal", "Texture_Crystal");
-		importer.ImportTexture(L"Bullet", "Texture_Bullet001");
+		importer.ImportTexture(L"0615_Box_diff",			"Texture_PaperBox");
+		importer.ImportTexture(L"character_2_diff_test3",	"Texture_Character");
+		importer.ImportTexture(L"0618_LevelTest_diff",		"Texture_Level");
+		importer.ImportTexture(L"HealthBar",				"Texture_HPBar");
+		importer.ImportTexture(L"crosshair",				"Texture_Crosshair");
+		importer.ImportTexture(L"TEX_crystal",				"Texture_Crystal");
 		for (int i = 0; i < g_vecTexture.size(); ++i) CreateTextureResourceView(g_vecTexture[i]);
 
-		MemoryClear(g_vecModel);
-		importer.ImportModel("0730_LevelTest", "Texture_Level", ModelType::DefaultModel, "Model_Level");
-		importer.ImportModel("0725_Character", "Texture_Character", ModelType::DefaultModel, "Model_CharacterStatic", 2.0f);
-		importer.ImportModel("0725_Character", "Texture_Character", ModelType::AnimatedModel, "Model_Character");
-		importer.ImportModel("0725_PaperBox_NoSpitPerVertexNormal", "Texture_PaperBox", ModelType::DefaultModel, "Model_PaperBox");
-		importer.ImportModel("box", "Texture_StandardBox", ModelType::DefaultModel, "Model_Box1");
-		importer.ImportModel("box2", "Texture_StandardBox", ModelType::DefaultModel, "Model_Box2");
-		importer.ImportModel("crystal", "Texture_Crystal", ModelType::DefaultModel, "Model_Crystal");
-		importer.ImportModel("Bench", "Texture_Bench", ModelType::DefaultModel, "Model_Bench", 2.0f);
-		importer.ImportModel("Spotlight", "Texture_Spotlight", ModelType::DefaultModel, "Model_Spotlight", 1.1f);
-		importer.ImportModel("", "Texture_HPBar", ModelType::FloatingUI, "UI_TEST");
-		importer.ImportModel("", "Texture_StandardBox", ModelType::FloatingUI, "UI_TEST2");
-		importer.ImportModel("", "Texture_Crosshair", ModelType::FloatingUI, "UI_Crosshair");
-		importer.ImportModel("2b", "Texture_2B", ModelType::DefaultModel, "Model_2B");
-		importer.ImportModel("bullet001", "Texture_Bullet001", ModelType::DefaultModel, "Model_Bullet001");
-		//importer.ImportModel("0723_Box_SN",						"Texture_PaperBox",		ModelType::DefaultModel,	"Model_PaperBox_Resize", 0.5f);
+		importer.ImportMesh("0730_LevelTest_mesh",							"Model_Level",		MeshType::DefaulModel);
+		importer.ImportMesh("0725_Character_mesh",							"Model_Character",	MeshType::AnimatedModel);
+		importer.ImportMesh("0725_PaperBox_NoSpitPerVertexNormal_mesh",		"Model_PaperBox",	MeshType::DefaulModel);
 
-		MemoryClear(g_vecAnimController);
-		importer.ImportAnimController("AnimCtrl_Character");
+		CreateUIMesh("UI_TEST", m_pd3dDevice, m_pd3dCommandList);
+		CreateUIMesh("UI_TEST2", m_pd3dDevice, m_pd3dCommandList);
+		CreateUIMesh("UI_Crosshair", m_pd3dDevice, m_pd3dCommandList);
 
-		importer.ImportAnimClip("0603_CharacterIdle", "AnimCtrl_Character", true);
-		importer.ImportAnimClip("0603_CharacterRun", "AnimCtrl_Character", true);
-		importer.ImportAnimClip("0603_CharacterFire", "AnimCtrl_Character", false);
-		importer.ImportAnimClip("0603_CharacterStartJump", "AnimCtrl_Character", false);
-		importer.ImportAnimClip("0603_CharacterEndJump", "AnimCtrl_Character", false);
-		importer.ImportAnimClip("0603_CharacterDied", "AnimCtrl_Character", false);
+		CreateModel("Model_Level_Box042", "Texture_Level", "Model_Level_1");
+		CreateModel("Model_Level_Box045", "Texture_Level", "Model_Level_2");
+		CreateModel("Model_Level_Box047", "Texture_Level", "Model_Level_3");
+
+		CreateModel("Model_Character_body", "Texture_Character",	"Model_Character_1");
+		CreateModel("Model_Character_jumper", "Texture_Character",	"Model_Character_2");
+		CreateModel("Model_Character_mask", "Texture_Character",	"Model_Character_3");
+
+		CreateModel("Model_PaperBox", "Texture_PaperBox", "Model_PaperBox");
+
+		CreateModel("UI_TEST",		"Texture_HPBar",		"UI_TEST");
+		CreateModel("UI_Crosshair", "Texture_Crosshair",	"UI_Crosshair");
+
+		CreateAnimCtrl("AnimCtrl_Character");
+
+		importer.ImportAnimClip("0603_CharacterIdle_anim",		"CharacterIdle", true);
+		importer.ImportAnimClip("0603_CharacterRun_anim",		"CharacterRun", true);
+		importer.ImportAnimClip("0603_CharacterFire_anim",		"CharacterFire", false);
+		importer.ImportAnimClip("0603_CharacterStartJump_anim", "CharacterStartJump", false);
+		importer.ImportAnimClip("0603_CharacterEndJump_anim",	"CharacterEndJump", false);
+		importer.ImportAnimClip("0603_CharacterDied_anim",		"CharacterDied", false);
+
+		AddAnimClipToCtrl("AnimCtrl_Character", "CharacterIdle");
+		AddAnimClipToCtrl("AnimCtrl_Character", "CharacterRun");
+		AddAnimClipToCtrl("AnimCtrl_Character", "CharacterFire");
+		AddAnimClipToCtrl("AnimCtrl_Character", "CharacterStartJump");
+		AddAnimClipToCtrl("AnimCtrl_Character", "CharacterEndJump");
+		AddAnimClipToCtrl("AnimCtrl_Character", "CharacterDied");
 
 		CreateConstantBufferResorce();
 		CreateConstantBufferView();
@@ -566,9 +563,9 @@ void CObjectManager::CreateObjectData()
 			CObject* obj = new CObject();
 			obj->SetMng(this);
 			if (0 == i) {
-				obj->AddModel(GetModelByName("Model_Level_Box042"));
-				obj->AddModel(GetModelByName("Model_Level_Box045"));
-				obj->AddModel(GetModelByName("Model_Level_Box047"));
+				obj->AddModel("Model_Level_1");
+				obj->AddModel("Model_Level_2");
+				obj->AddModel("Model_Level_3");
 				for (int j = 0; j < m_LevelDataDesc.nCollisionMaps; ++j) {
 					obj->AddCollider(
 						m_LevelDataDesc.CollisionPosition[j],
@@ -576,36 +573,18 @@ void CObjectManager::CreateObjectData()
 						m_LevelDataDesc.CollisionRotation[j]);
 				}
 			}
-			//else if (1 == i) {
-			//	obj->AddModel(GetModelByName("Model_Bench_Cube.005"));
-			//	obj->SetPosition(0.0f, 0.0f, 70.0f);
-			//	obj->SetRotation(XMFLOAT3(0, 35, 0));
-			//}
-			//else {
-			//	obj->AddModel(GetModelByName("Model_Spotlight_Spotlight"));
-			//	obj->SetPosition(30.0f, 0.0f, 0.0f);
-			//	obj->SetRotation(XMFLOAT3(0, 80, 0));
-			//}
-			///else {
-			///	//obj->AddModel(importer.GetModelByName("Model_Box2_Box001"));
-			///	obj->AddModel(GetModelByName("Model_2B_body"));
-			///	//obj->AddModel(GetModelByName("Model_CharacterStatic_body"));
-			///	//obj->AddModel(GetModelByName("Model_CharacterStatic_jumper"));
-			///	//obj->AddModel(GetModelByName("Model_CharacterStatic_mask"));
-			///	obj->SetPosition(0.0f, 0.0f, 0.0f);
-			///}
 
-			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
+			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::g_nCbvSrvDescriptorIncrementSize) * count++);
 			m_Props[i] = obj;
 		}
 		for (int i = 0; i < m_Players.size(); i++) {
 			CPlayer* obj = new CPlayer();
 			obj->SetMng(this);
-			obj->AddModel(GetModelByName("Model_Character_body"));
-			obj->AddModel(GetModelByName("Model_Character_jumper"));
-			obj->AddModel(GetModelByName("Model_Character_mask"));
+			obj->AddModel("Model_Character_1");
+			obj->AddModel("Model_Character_2");
+			obj->AddModel("Model_Character_3");
 
-			obj->SetAnimCtrl(GetAnimCtrlByName("AnimCtrl_Character"));
+			obj->SetAnimCtrl("AnimCtrl_Character");
 
 			obj->SetPosition(0, 100, i * g_fDefaultUnitScale * 3);
 			obj->SetSpawnPoint(obj->GetPosition());
@@ -619,7 +598,7 @@ void CObjectManager::CreateObjectData()
 			//0, 50, -60
 
 			obj->SetTeam((i % 2) + 1);
-			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
+			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::g_nCbvSrvDescriptorIncrementSize) * count++);
 
 			if (i >= 1) obj->m_AIBrain->PowerOn();
 
@@ -628,11 +607,11 @@ void CObjectManager::CreateObjectData()
 		for (int i = 0; i < m_Projectiles.size(); i++) {
 			CProjectile* obj = new CProjectile();
 			obj->SetMng(this);
-			obj->AddModel(GetModelByName("Model_Bullet001_mesh"));
+			obj->AddModel("Model_PaperBox");
 
 			obj->SetAlive(false);
 			obj->AddCollider(XMFLOAT3(0, 0, 0), 10.0f);
-			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
+			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::g_nCbvSrvDescriptorIncrementSize) * count++);
 			m_Projectiles[i] = obj;
 		}
 		for (int i = 0; i < m_FloatingUI.size(); i++) {
@@ -640,137 +619,116 @@ void CObjectManager::CreateObjectData()
 			obj->SetMng(this);
 
 			if (0 == i) {
-				obj->AddModel(GetModelByName("UI_TEST"));
+				obj->AddModel("UI_TEST");
 				obj->SetPosition(0.0f, 50.0f, 0.0f);
 				obj->Initialize(XMFLOAT2(50, 50));
 			}
-			else if (1 == i) {
-				obj->AddModel(GetModelByName("UI_TEST2"));
-				obj->SetPosition(0.0f, 0.0f, 0.0f);
-				obj->Initialize(XMFLOAT2(50, 1));
-			}
-			else if (2 == i) {
-				obj->AddModel(GetModelByName("UI_TEST2"));
-				obj->SetPosition(0.0f, 0.0f, 0.0f);
-				obj->Initialize(XMFLOAT2(50 / 3.0f, 50 / 3.0f));
-			}
-			else if (3 == i) {
-				obj->AddModel(GetModelByName("UI_TEST2"));
-				obj->SetPosition(0.0f, 0.0f, 0.0f);
-				obj->Initialize(XMFLOAT2(50 / 3.0f, 50 / 3.0f));
-			}
-			else if (4 == i) {
-				obj->AddModel(GetModelByName("UI_TEST2"));
-				obj->SetPosition(0.0f, 0.0f, 0.0f);
-				obj->Initialize(XMFLOAT2(50 / 3.0f, 50 / 3.0f));
-			}
 
 
-
-			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
+			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::g_nCbvSrvDescriptorIncrementSize) * count++);
 			m_FloatingUI[i] = obj;
 		}
 		for (int i = 0; i < m_DefaultUI.size(); i++) {
 			CUI* obj = new CUI();
 			obj->SetMng(this);
-			obj->AddModel(GetModelByName("UI_Crosshair"));
+			obj->AddModel("UI_Crosshair");
 			obj->SetPosition(0.5f, 0.35f, 0.0f);
 			obj->Initialize(XMFLOAT2(50, 50));
 
-			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
+			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::g_nCbvSrvDescriptorIncrementSize) * count++);
 			m_DefaultUI[i] = obj;
 		}
 
 	}
-	else if (SceneType::LOBBY == m_SceneType)
-	{
-		importer.ImportLevel("LevelData_TestMap", m_LevelDataDesc);
+	//else if (SceneType::LOBBY == m_SceneType)
+	//{
+	//	importer.ImportLevel("LevelData_TestMap", m_LevelDataDesc);
 
-		XMFLOAT3 nodePositions[9] = {
-			XMFLOAT3(0,0,0),
-			XMFLOAT3(-200,0,88),
-			XMFLOAT3(-200,0,230),
-			XMFLOAT3(-139,0,257),
-			XMFLOAT3(-127,0,341),
-			XMFLOAT3(-42,0,387),
-			XMFLOAT3(-18,0,297),
-			XMFLOAT3(73,0,270),
-			XMFLOAT3(56,0,137)
-		};
+	//	XMFLOAT3 nodePositions[9] = {
+	//		XMFLOAT3(0,0,0),
+	//		XMFLOAT3(-200,0,88),
+	//		XMFLOAT3(-200,0,230),
+	//		XMFLOAT3(-139,0,257),
+	//		XMFLOAT3(-127,0,341),
+	//		XMFLOAT3(-42,0,387),
+	//		XMFLOAT3(-18,0,297),
+	//		XMFLOAT3(73,0,270),
+	//		XMFLOAT3(56,0,137)
+	//	};
 
-		for (int i = 0; i < 9; ++i) {
-			AINode* tempNode = new AINode();
-			tempNode->m_xmf3Position = nodePositions[i];
-			g_vecAINode.push_back(tempNode);
-		}
-		for (int i = 0; i < 8; ++i) {
-			g_vecAINode[i]->next = g_vecAINode[i + 1];
-		}
-		g_vecAINode[8]->next = g_vecAINode[0];
-
-
-		/*********************************************************************
-		2019-06-15
-		서술자 힙을 생성하기 위해 개수들을 정해준다. 지금은 임의로 하지만 나중에는
-		m_nProps는 LevelData에서 읽어오고, 나머지는 Defines.h에서 가져올 것.
-		*********************************************************************/
-		int nProps = 0;
-		int nPlayers = 0;
-		int nFloatingUI = 0;
-		int nDefaultUI = 1;
-		int nProjectiles = nPlayers * g_nProjectilePerPlayer;
-		m_nObjects = nProps + nPlayers + nProjectiles + nFloatingUI + nDefaultUI;
-
-		m_Props.resize(nProps);
-		m_Players.resize(nPlayers);
-		m_Projectiles.resize(nProjectiles);
-		m_FloatingUI.resize(nFloatingUI);
-		m_DefaultUI.resize(nDefaultUI);
+	//	for (int i = 0; i < 9; ++i) {
+	//		AINode* tempNode = new AINode();
+	//		tempNode->m_xmf3Position = nodePositions[i];
+	//		g_vecAINode.push_back(tempNode);
+	//	}
+	//	for (int i = 0; i < 8; ++i) {
+	//		g_vecAINode[i]->next = g_vecAINode[i + 1];
+	//	}
+	//	g_vecAINode[8]->next = g_vecAINode[0];
 
 
-		CreateDescriptorHeap();
-		/*********************************************************************
-		2019-06-15
-		텍스처도 여기서 넣어야 할 것 같음. 텍스처를 먼저 만들어둔다.
-		텍스처는 서술자 힙 만들고 나서 해야 되는거 아냐?
+	//	/*********************************************************************
+	//	2019-06-15
+	//	서술자 힙을 생성하기 위해 개수들을 정해준다. 지금은 임의로 하지만 나중에는
+	//	m_nProps는 LevelData에서 읽어오고, 나머지는 Defines.h에서 가져올 것.
+	//	*********************************************************************/
+	//	int nProps = 0;
+	//	int nPlayers = 0;
+	//	int nFloatingUI = 0;
+	//	int nDefaultUI = 1;
+	//	int nProjectiles = nPlayers * g_nProjectilePerPlayer;
+	//	m_nObjects = nProps + nPlayers + nProjectiles + nFloatingUI + nDefaultUI;
 
-		2019-07-21
-		텍스처를 전역 벡터로 관리하기 시작.
-		*********************************************************************/
+	//	m_Props.resize(nProps);
+	//	m_Players.resize(nPlayers);
+	//	m_Projectiles.resize(nProjectiles);
+	//	m_FloatingUI.resize(nFloatingUI);
+	//	m_DefaultUI.resize(nDefaultUI);
 
-		g_vecTexture.clear();
-		importer.ImportTexture(L"TitleImg_Test", "Texture_TitleImg");
-		for (int i = 0; i < g_vecTexture.size(); ++i) CreateTextureResourceView(g_vecTexture[i]);
 
-		importer.ImportModel("", "Texture_TitleImg", ModelType::FloatingUI, "UI_TitleImg");
+	//	CreateDescriptorHeap();
+	//	/*********************************************************************
+	//	2019-06-15
+	//	텍스처도 여기서 넣어야 할 것 같음. 텍스처를 먼저 만들어둔다.
+	//	텍스처는 서술자 힙 만들고 나서 해야 되는거 아냐?
 
-		CreateConstantBufferResorce();
-		CreateConstantBufferView();
+	//	2019-07-21
+	//	텍스처를 전역 벡터로 관리하기 시작.
+	//	*********************************************************************/
 
-		int count = 0;
-		for (int i = 0; i < m_Props.size(); i++) {
+	//	g_vecTexture.clear();
+	//	importer.ImportTexture(L"TitleImg_Test", "Texture_TitleImg");
+	//	for (int i = 0; i < g_vecTexture.size(); ++i) CreateTextureResourceView(g_vecTexture[i]);
 
-		}
-		for (int i = 0; i < m_Players.size(); i++) {
+	//	importer.ImportModel("", "Texture_TitleImg", ModelType::FloatingUI, "UI_TitleImg");
 
-		}
-		for (int i = 0; i < m_Projectiles.size(); i++) {
+	//	CreateConstantBufferResorce();
+	//	CreateConstantBufferView();
 
-		}
-		for (int i = 0; i < m_FloatingUI.size(); i++) {
+	//	int count = 0;
+	//	for (int i = 0; i < m_Props.size(); i++) {
 
-		}
-		for (int i = 0; i < m_DefaultUI.size(); i++) {
-			CUI* obj = new CUI();
-			obj->SetMng(this);
-			obj->AddModel(GetModelByName("UI_TitleImg"));
-			obj->SetPosition(0.5, 0.5, 0.0f);
-			obj->Initialize(XMFLOAT2(1920, 1080));
+	//	}
+	//	for (int i = 0; i < m_Players.size(); i++) {
 
-			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
-			m_DefaultUI[i] = obj;
-		}
-	}
+	//	}
+	//	for (int i = 0; i < m_Projectiles.size(); i++) {
+
+	//	}
+	//	for (int i = 0; i < m_FloatingUI.size(); i++) {
+
+	//	}
+	//	for (int i = 0; i < m_DefaultUI.size(); i++) {
+	//		CUI* obj = new CUI();
+	//		obj->SetMng(this);
+	//		obj->AddModel(GetModelByName("UI_TitleImg"));
+	//		obj->SetPosition(0.5, 0.5, 0.0f);
+	//		obj->Initialize(XMFLOAT2(1920, 1080));
+
+	//		obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::g_nCbvSrvDescriptorIncrementSize) * count++);
+	//		m_DefaultUI[i] = obj;
+	//	}
+	//}
 
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->CreateConstantBufferResource(m_pd3dDevice, m_pd3dCommandList);
 	for (int i = 0; i < m_Players.size(); ++i)		m_Players[i]->CreateConstantBufferResource(m_pd3dDevice, m_pd3dCommandList);

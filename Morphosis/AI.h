@@ -6,7 +6,6 @@ class CPlayer;
 struct AINode {
 public:
 	AINode() {
-		cout << "AINode 持失 - " << sizeof(AINode) << "\n";
 	}
 	XMFLOAT3 m_xmf3Position = XMFLOAT3(0,0,0);
 	AINode* next			= NULL;
@@ -38,7 +37,6 @@ public:
 class CMoveBehavior : public CAIBehavior {
 public:
 	CMoveBehavior() {
-		cout << "CMoveBehavior 持失 - " << sizeof(CMoveBehavior) << "\n";
 	}
 	virtual void Update(CPlayer* obj) override;
 
@@ -55,7 +53,6 @@ private:
 class CDefendBehavior : public CAIBehavior {
 public:
 	CDefendBehavior() {
-		cout << "CDefendBehavior 持失 - " << sizeof(CDefendBehavior) << "\n";
 	}
 	virtual void Update(CPlayer* obj) override;
 };
@@ -73,7 +70,6 @@ public:
 		: m_curBehavior(behavior)
 		, m_pObject(m_pObject)
 	{
-		cout << "CTinMan 持失 - " << sizeof(CTinMan) << "\n";
 
 	}
 	~CTinMan() {

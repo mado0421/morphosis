@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "PSO.h"
 
-std::vector<ID3D12PipelineState*>	g_vecPSO;
 
 void CPipelineStateObject::CreatePipelineStateDesc(ID3D12Device * pd3dDevice, ID3D12RootSignature * pd3dGraphicsRootSignature)
 {
+	ID3D12PipelineState * m_pd3dPipelineState = NULL;
 	ID3DBlob *pd3dVertexShaderBlob = NULL, *pd3dPixelShaderBlob = NULL;
 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC d3dPipelineStateDesc;
@@ -31,6 +31,7 @@ void CPipelineStateObject::CreatePipelineStateDesc(ID3D12Device * pd3dDevice, ID
 
 	if (d3dPipelineStateDesc.InputLayout.pInputElementDescs) delete[] d3dPipelineStateDesc.InputLayout.pInputElementDescs;
 
+	g_vecPipelineStateObject.push_back(m_pd3dPipelineState);
 }
 
 D3D12_INPUT_LAYOUT_DESC CPipelineStateObject::CreateInputLayout()
@@ -125,33 +126,16 @@ D3D12_SHADER_BYTECODE CPipelineStateObject::CompileShaderFromFile(const WCHAR * 
 {
 	UINT nCompileFlags = 0;
 
-	if (_heapchk() != _HEAPOK)
-		DebugBreak();
-
 	ID3DBlob *pd3dErrorBlob = NULL;
 	HRESULT result = ::D3DCompileFromFile(pszFileName, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, pszShaderName, pszShaderProfile, nCompileFlags, 0, ppd3dShaderBlob, &pd3dErrorBlob);
 	char *pErrorString = NULL;
 	if (pd3dErrorBlob)pErrorString = (char *)pd3dErrorBlob->GetBufferPointer();
-
-	if (_heapchk() != _HEAPOK)
-		DebugBreak();
 
 	D3D12_SHADER_BYTECODE d3dShaderByteCode;
 	d3dShaderByteCode.BytecodeLength = (*ppd3dShaderBlob)->GetBufferSize();
 	d3dShaderByteCode.pShaderBytecode = (*ppd3dShaderBlob)->GetBufferPointer();
 
 	return(d3dShaderByteCode);
-}
-
-ID3D12PipelineState * CPipelineStateObject::GetPipelineState()
-{
-	return m_pd3dPipelineState;
-}
-
-
-void CPipelineStateObject::Initialize(ID3D12Device * pd3dDevice, ID3D12RootSignature * pd3dGraphicsRootSignature)
-{
-	CreatePipelineStateDesc(pd3dDevice, pd3dGraphicsRootSignature);
 }
 
 
@@ -212,12 +196,6 @@ D3D12_SHADER_BYTECODE CPsoAnimatedModel::CreatePixelShader(ID3DBlob ** ppd3dShad
 
 }
 
-void CPsoGenerator::Init(ID3D12Device * pd3dDevice, ID3D12RootSignature * pd3dGraphicsRootSignature, CPipelineStateObject * psoType)
-{
-	psoType->Initialize(pd3dDevice, pd3dGraphicsRootSignature);
-	g_vecPSO.push_back(psoType->GetPipelineState());
-	delete psoType;
-}
 
 D3D12_INPUT_LAYOUT_DESC CPsoFloatingUI::CreateInputLayout()
 {

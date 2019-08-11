@@ -2,7 +2,6 @@
 #include "Player.h"
 #include "AI.h"
 
-std::vector<AINode*>					g_vecAINode;
 
 void CMoveBehavior::Update(CPlayer * obj)
 {

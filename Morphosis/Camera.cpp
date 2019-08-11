@@ -16,7 +16,6 @@ CCamera::CCamera()
 	, m_fTimeLag(0.0f)
 	, m_xmf3LookAtWorld(XMFLOAT3(0.0f, 0.0f, 0.0f))
 {
-	cout << "CCamera 생성 - " << sizeof(CCamera) << "\n";
 
 	SetTimeLag(0.1f);
 	SetOffset(XMFLOAT3(0.0f, 30.0f, -80.0f));	// 플레이어 시점 높이에 따라 정할 필요 있음
@@ -86,26 +85,26 @@ void CCamera::Update(float fTimeElapsed)
 {
 	if (m_pTarget) {
 		
-		XMFLOAT3 result;
-		XMStoreFloat3(&result, XMVector3Rotate(XMLoadFloat3(&m_xmf3Offset), XMLoadFloat4(&m_pTarget->GetQuaternion())));
-		SetPosition(Vector3::Add(m_pTarget->GetPosition(), result));
-		//XMStoreFloat3(&result, XMVector3Rotate(XMLoadFloat3(&m_pTarget->GetCameraFocus()), XMLoadFloat4(&m_pTarget->GetQuaternion())));
-		//result = Vector3::Add(m_pTarget->GetPosition(), result);
-		//result.y += 1;
-		result = Vector3::Add(Vector3::Multiply(40, m_pTarget->GetLook()), m_pTarget->GetPosition());
-		result = Vector3::Add(  Vector3::Multiply(20, m_pTarget->GetUp()) , result) ;
-		SetLookAt(result);
+		//XMFLOAT3 result;
+		//XMStoreFloat3(&result, XMVector3Rotate(XMLoadFloat3(&m_xmf3Offset), XMLoadFloat4(&m_pTarget->GetQuaternion())));
+		//SetPosition(Vector3::Add(m_pTarget->GetPosition(), result));
+		////XMStoreFloat3(&result, XMVector3Rotate(XMLoadFloat3(&m_pTarget->GetCameraFocus()), XMLoadFloat4(&m_pTarget->GetQuaternion())));
+		////result = Vector3::Add(m_pTarget->GetPosition(), result);
+		////result.y += 1;
+		//result = Vector3::Add(Vector3::Multiply(40, m_pTarget->GetLook()), m_pTarget->GetPosition());
+		//result = Vector3::Add(  Vector3::Multiply(20, m_pTarget->GetUp()) , result) ;
+		//SetLookAt(result);
 
-		/*
-				result.x = m_pTarget->GetPosition().x;
-		result.z = m_pTarget->GetPosition().z;
-		SetLookAt(result);
-		*/
+		///*
+		//		result.x = m_pTarget->GetPosition().x;
+		//result.z = m_pTarget->GetPosition().z;
+		//SetLookAt(result);
+		//*/
 
-		//XMFLOAT3 targetPos = m_pTarget->GetPosition();
-		//XMFLOAT3 focus = m_pTarget->GetCameraFocus();
-		//SetPosition(Vector3::Add(targetPos, m_xmf3Offset));
-		//SetLookAt(Vector3::Add(targetPos, focus));
+		////XMFLOAT3 targetPos = m_pTarget->GetPosition();
+		////XMFLOAT3 focus = m_pTarget->GetCameraFocus();
+		////SetPosition(Vector3::Add(targetPos, m_xmf3Offset));
+		////SetLookAt(Vector3::Add(targetPos, focus));
 
 
 	}
@@ -200,7 +199,9 @@ void CCamera::Update(float fTimeElapsed)
 
 void CCamera::SetLookAt(const XMFLOAT3 & xmf3LookAt)
 {
-	XMFLOAT3 up = m_pTarget->GetUp();
+	XMFLOAT3 up;
+	if(m_pTarget) up = m_pTarget->GetUp();
+	else up = XMFLOAT3(0,1,0);
 	//여기서 포지션이랑 LookAt이랑 같으면 EyeDir이 0, 0, 0이라고 에러 뜸
 
 	XMFLOAT4X4 mtxLookAt = Matrix4x4::LookAtLH(m_xmf3Position, xmf3LookAt, up);
@@ -211,14 +212,14 @@ void CCamera::SetLookAt(const XMFLOAT3 & xmf3LookAt)
 
 void CCamera::SetTarget(void * target)
 {
-	m_pTarget = static_cast<CObject*>(target);
-	XMFLOAT3 result;
-	XMStoreFloat3(&result, XMVector3Rotate(XMLoadFloat3(&m_pTarget->GetCameraFocus()), XMLoadFloat4(&m_pTarget->GetQuaternion())));
-	XMFLOAT3 pos = Vector3::Add( m_pTarget->GetPosition(), result)   ;
-	/*포지션을 정하고 오프셋을 주어 포지션을 변경 시킨 뒤에 LookAt을 하지 않으면
-	눈의 위치와 바라보려는 곳이 겹치면서 바라보는 방향 벡터가 (0, 0, 0)이 되기 때문에
-	문제가 생김*/
-	SetLookAt(pos);
+	//m_pTarget = static_cast<CObject*>(target);
+	//XMFLOAT3 result;
+	//XMStoreFloat3(&result, XMVector3Rotate(XMLoadFloat3(&m_pTarget->GetCameraFocus()), XMLoadFloat4(&m_pTarget->GetQuaternion())));
+	//XMFLOAT3 pos = Vector3::Add( m_pTarget->GetPosition(), result)   ;
+	///*포지션을 정하고 오프셋을 주어 포지션을 변경 시킨 뒤에 LookAt을 하지 않으면
+	//눈의 위치와 바라보려는 곳이 겹치면서 바라보는 방향 벡터가 (0, 0, 0)이 되기 때문에
+	//문제가 생김*/
+	//SetLookAt(pos);
 }
 
 CObject * CCamera::GetTarget()

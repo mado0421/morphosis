@@ -11,7 +11,6 @@ CPlayer
 *********************************************************************/
 CPlayer::CPlayer() : CObject()
 {
-	cout << "CPlayer 생성 - " << sizeof(CPlayer) << "\n";
 
 	m_fSpeed = g_fDefaultPlayerSpeed;
 	m_fRemainingTimeOfFire = 0.0f;
@@ -30,7 +29,7 @@ CPlayer::~CPlayer()
 }
 void CPlayer::CreateConstantBufferResource(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
 {
-	if (m_AnimationController) {
+	if (-1 != m_AnimCtrlIdx) {
 
 		UINT ncbElementBytes = (((sizeof(XMMATRIX) * g_nAnimBone) + 255) & ~255); //256의 배수
 		m_pd3dcbAnimation = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
@@ -73,7 +72,7 @@ void CPlayer::Update(float fTimeElapsed)
 	if (m_fRemainingTimeOfSlow > 0) m_fRemainingTimeOfSlow -= fTimeElapsed;
 	else m_fSlowFactor = 1.0f;
 
-	if (m_AnimationController) {
+	if (-1 != m_AnimCtrlIdx) {
 		m_AnimationTime += fTimeElapsed;
 
 		if (static_cast<int>(AnimationState::IDLE) == m_AnimationState) {
@@ -90,14 +89,14 @@ void CPlayer::Update(float fTimeElapsed)
 		}
 		else if (static_cast<int>(AnimationState::FIRE) == m_AnimationState) {
 			//m_AnimationController->ChangeAnimClip("PlayerFire");
-			if (m_AnimationController->IsClipEnd(m_AnimationTime)) {
+			if (g_vecAnimCtrl[m_AnimCtrlIdx]->IsClipEnd(m_AnimationTime)) {
 				m_AnimationState = static_cast<int>(AnimationState::IDLE);
 				m_AnimationTime = 0;
 			}
 		}
 		else if (static_cast<int>(AnimationState::ENDJUMP) == m_AnimationState) {
 			//m_AnimationController->ChangeAnimClip("PlayerFire");
-			if (m_AnimationController->IsClipEnd(m_AnimationTime)) {
+			if (g_vecAnimCtrl[m_AnimCtrlIdx]->IsClipEnd(m_AnimationTime)) {
 				m_AnimationState = static_cast<int>(AnimationState::IDLE);
 				m_AnimationTime = 0;
 			}
@@ -373,15 +372,15 @@ bool CPlayer::IsSkillUseable(int idx)
 void CPlayer::ChangeAnimClip()
 {
 	if (static_cast<int>(AnimationState::IDLE) == m_AnimationState)
-		m_AnimationController->ChangeAnimClip("PlayerIdle");
+		g_vecAnimCtrl[m_AnimCtrlIdx]->ChangeAnimClip("PlayerIdle");
 	if (static_cast<int>(AnimationState::FIRE) == m_AnimationState)
-		m_AnimationController->ChangeAnimClip("PlayerFire");
+		g_vecAnimCtrl[m_AnimCtrlIdx]->ChangeAnimClip("PlayerFire");
 	if (static_cast<int>(AnimationState::RUN) == m_AnimationState)
-		m_AnimationController->ChangeAnimClip("PlayerRun");
+		g_vecAnimCtrl[m_AnimCtrlIdx]->ChangeAnimClip("PlayerRun");
 	if (static_cast<int>(AnimationState::STARTJUMP) == m_AnimationState)
-		m_AnimationController->ChangeAnimClip("PlayerStartJump");
+		g_vecAnimCtrl[m_AnimCtrlIdx]->ChangeAnimClip("PlayerStartJump");
 	if (static_cast<int>(AnimationState::ENDJUMP) == m_AnimationState)
-		m_AnimationController->ChangeAnimClip("PlayerEndJump");
+		g_vecAnimCtrl[m_AnimCtrlIdx]->ChangeAnimClip("PlayerEndJump");
 }
 void CPlayer::TriggerOff()
 {
