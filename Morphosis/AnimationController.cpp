@@ -135,40 +135,40 @@ AnimationClip::~AnimationClip()
 
 void AnimationClip::ImportFile(const char * fileName)
 {
-			std::ifstream in;
+	std::ifstream in;
 
-		in.open(fileName, std::ios::in | std::ios::binary);
-		char AnimName[32];
-		in.read((char*)AnimName, sizeof(AnimName));
-		m_AnimName = AnimName;
+	in.open(fileName, std::ios::in | std::ios::binary);
+	char AnimName[32];
+	in.read((char*)AnimName, sizeof(AnimName));
+	m_AnimName = AnimName;
 
-		m_nKeyTime = 0;
-		in.read((char*)&m_nKeyTime, sizeof(int));
-		m_KeyTime = new double[m_nKeyTime];
-		in.read((char*)m_KeyTime, sizeof(double) * m_nKeyTime);
+	m_nKeyTime = 0;
+	in.read((char*)&m_nKeyTime, sizeof(int));
+	m_KeyTime = new double[m_nKeyTime];
+	in.read((char*)m_KeyTime, sizeof(double) * m_nKeyTime);
 
-		in.read((char*)&m_nBoneList, sizeof(int));
-		m_BoneList = new ImportBone[m_nBoneList];
+	in.read((char*)&m_nBoneList, sizeof(int));
+	m_BoneList = new ImportBone[m_nBoneList];
 
-		for (int i = 0; i < m_nBoneList; ++i) {
-			char name[32];
-			in.read((char*)name, sizeof(name));
-			m_BoneList[i].m_Name = name;
+	for (int i = 0; i < m_nBoneList; ++i) {
+		char name[32];
+		in.read((char*)name, sizeof(name));
+		m_BoneList[i].m_Name = name;
 
-			in.read((char*)&m_BoneList[i].m_GlobalTransform, sizeof(XMFLOAT4X4));
+		in.read((char*)&m_BoneList[i].m_GlobalTransform, sizeof(XMFLOAT4X4));
+	}
+
+	for (int i = 0; i < m_nBoneList; ++i) {
+		m_BoneList[i].m_nKeyframe = m_nKeyTime;
+		m_BoneList[i].m_pToRootTransforms = new XMFLOAT4X4[m_nKeyTime];
+		for (int j = 0; j < m_nKeyTime; ++j) {
+			in.read((char*)&m_BoneList[i].m_pToRootTransforms[j], sizeof(XMFLOAT4X4));
 		}
-
-		for (int i = 0; i < m_nBoneList; ++i) {
-			m_BoneList[i].m_nKeyframe = m_nKeyTime;
-			m_BoneList[i].m_pToRootTransforms = new XMFLOAT4X4[m_nKeyTime];
-			for (int j = 0; j < m_nKeyTime; ++j) {
-				in.read((char*)&m_BoneList[i].m_pToRootTransforms[j], sizeof(XMFLOAT4X4));
-			}
-		}
+	}
 
 
 
-		in.close();
+	in.close();
 }
 
 void CHumanoidAnimCtrl::AddAnimData(AnimationClip * animData)

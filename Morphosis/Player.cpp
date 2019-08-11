@@ -11,6 +11,8 @@ CPlayer
 *********************************************************************/
 CPlayer::CPlayer() : CObject()
 {
+	cout << "CPlayer »ý¼º - " << sizeof(CPlayer) << "\n";
+
 	m_fSpeed = g_fDefaultPlayerSpeed;
 	m_fRemainingTimeOfFire = 0.0f;
 	m_fRPM = (1 / static_cast<float>(g_DefaultRPM)) * 60.0f;

@@ -4,6 +4,8 @@
 
 CTexture::CTexture( UINT nTextureType)
 {
+	cout << "CTexture »ý¼º - " << sizeof(CTexture) << "\n";
+
 	TextureType = nTextureType;
 
 	rootArgumentInfo = new SRVROOTARGUMENTINFO();

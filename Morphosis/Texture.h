@@ -3,6 +3,10 @@
 
 struct SRVROOTARGUMENTINFO
 {
+	SRVROOTARGUMENTINFO() {
+		cout << "SRVROOTARGUMENTINFO »ý¼º - " << sizeof(SRVROOTARGUMENTINFO) << "\n";
+
+	}
 	UINT							m_nRootParameterIndex = 0;
 	D3D12_GPU_DESCRIPTOR_HANDLE		m_d3dSrvGpuDescriptorHandle;
 };

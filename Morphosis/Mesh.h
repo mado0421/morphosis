@@ -9,21 +9,28 @@ class CVertex {
 public:
 	XMFLOAT3	m_xmf3Position;
 public:
-	CVertex() = default;
-	CVertex(XMFLOAT3 position) :m_xmf3Position(position) {}
+	CVertex() {
+		cout << "CVertex 持失 - " << sizeof(CVertex) << "\n";
+
+	}
+	CVertex(XMFLOAT3 position) :m_xmf3Position(position) { cout << "CVertex 持失 - " << sizeof(CVertex) << "\n"; }
 };
 class CModelVertex : public CVertex {
 public:
 	XMFLOAT3	m_xmf3Normal;
 	XMFLOAT2	m_xmf2TexCoord;
 public:
-	CModelVertex() = default;
+	CModelVertex() {
+		cout << "CModelVertex 持失 - " << sizeof(CModelVertex) << "\n";
+	}
 	CModelVertex(XMFLOAT3 position,
 				 XMFLOAT3 normal,
 				 XMFLOAT2 texcoord) 
 				 : CVertex(position)
 				 , m_xmf3Normal(normal)
-				 , m_xmf2TexCoord(texcoord) {}
+				 , m_xmf2TexCoord(texcoord) {
+		cout << "CModelVertex 持失 - " << sizeof(CModelVertex) << "\n";
+	}
 };
 class CAnimatedVertex : public CVertex {
 public:
@@ -33,7 +40,9 @@ public:
 	XMFLOAT4	m_xmf4BoneWeight;
 	XMINT4		m_xmi4BoneIdx;
 public:
-	CAnimatedVertex() = default;
+	CAnimatedVertex() {
+		cout << "CAnimatedVertex 持失 - " << sizeof(CAnimatedVertex) << "\n";
+	}
 	CAnimatedVertex(XMFLOAT3 position,
 					XMFLOAT3 normal,
 					XMFLOAT3 tangent,
@@ -45,17 +54,24 @@ public:
 					, m_xmf3Tangent(tangent)
 					, m_xmf2TexCoord(texcoord)
 					, m_xmf4BoneWeight(BoneWeight)
-					, m_xmi4BoneIdx(BoneIdx) {}
+					, m_xmi4BoneIdx(BoneIdx) {
+		cout << "CAnimatedVertex 持失 - " << sizeof(CAnimatedVertex) << "\n";
+	}
 };
 class CUIVertex : public CVertex {
 public:
 	XMFLOAT2	m_xmf2TexCoord;
 public:
-	CUIVertex() = default;
+	CUIVertex() {
+		cout << "CUIVertex 持失 - " << sizeof(CUIVertex) << "\n";
+	}
 	CUIVertex(XMFLOAT3 position,
 			  XMFLOAT2 texcoord)
 			  : CVertex(position)
-			  , m_xmf2TexCoord(texcoord) {}
+			  , m_xmf2TexCoord(texcoord) {
+		cout << "CUIVertex 持失 - " << sizeof(CUIVertex) << "\n";
+
+	}
 };
 
 

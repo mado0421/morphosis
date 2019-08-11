@@ -157,6 +157,8 @@ CModelMesh::CModelMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3d
 }
 CModelMesh::CModelMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ImportMeshData & m, float scale) : CMesh(pd3dDevice, pd3dCommandList)
 {
+	cout << "CModelMesh 생성 - " << sizeof(CModelMesh) << "\n";
+
 	int nCtrlPoint = static_cast<int>(m.m_nCtrlPointList);
 	int nPolyongVertex = static_cast<int>(m.m_nVertexList);
 
@@ -708,6 +710,9 @@ CModelMesh::CModelMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd
 
 CAnimatedModelMesh::CAnimatedModelMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ImportMeshData & m) : CMesh(pd3dDevice, pd3dCommandList)
 {
+	cout << "CAnimatedModelMesh 생성 - " << sizeof(CAnimatedModelMesh) << "\n";
+
+
 	int nCtrlPoint = static_cast<int>(m.m_nCtrlPointList);
 	int nPolyongVertex = static_cast<int>(m.m_nVertexList);
 
@@ -772,6 +777,8 @@ CAnimatedModelMesh::CAnimatedModelMesh(ID3D12Device * pd3dDevice, ID3D12Graphics
 
 CUIMesh::CUIMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, float width, float height) : CMesh(pd3dDevice, pd3dCommandList)
 {
+	cout << "CUIMesh 생성 - " << sizeof(CUIMesh) << "\n";
+
 	m_nStride = sizeof(CUIVertex);
 	m_nVertices = 6;
 	int i = 0;

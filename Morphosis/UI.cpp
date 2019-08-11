@@ -4,6 +4,9 @@
 
 CUI::CUI()
 {
+	cout << "CUI »ý¼º - " << sizeof(CUI) << "\n";
+
+
 	m_xmf2Size = XMFLOAT2(0, 0);
 	m_xmf2Scale = XMFLOAT2(1.0f, 1.0f);
 	m_MouseState = MouseState::NONE;

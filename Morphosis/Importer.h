@@ -18,7 +18,9 @@ struct ImportBone {
 		, m_GlobalTransform(Matrix4x4::Identity())
 		, m_pToRootTransforms(NULL)
 		, m_nKeyframe(0)
-	{}
+	{
+		cout << "ImportBone 持失 - " << sizeof(ImportBone) << "\n";
+	}
 
 	~ImportBone() {
 		if (NULL != m_pToRootTransforms) delete[] m_pToRootTransforms;
@@ -48,9 +50,14 @@ struct ImportCtrlPoint {
 	ImportCtrlPoint()
 		: xmi4BoneIdx(0, 0, 0, 0)
 		, xmf4BoneWeight(0, 0, 0, 0)
-	{}
+	{
+		cout << "ImportCtrlPoint 持失 - " << sizeof(ImportCtrlPoint) << "\n";
+	}
 };
 struct ImportVertex {
+	ImportVertex() {
+		cout << "ImportVertex 持失 - " << sizeof(ImportVertex) << "\n";
+	}
 	int			ctrlPointIdx;
 	XMFLOAT3	xmf3Normal;
 	XMFLOAT3	xmf3BiNormal;
@@ -58,6 +65,11 @@ struct ImportVertex {
 	XMFLOAT2	xmf2UV;
 };
 struct ImportMeshData {
+
+	ImportMeshData() {
+		cout << "ImportMeshData 持失 - " << sizeof(ImportMeshData) << "\n";
+
+	}
 	~ImportMeshData() {
 		if (m_CtrlPointList) delete[] m_CtrlPointList;
 		if (m_VertexList) delete[] m_VertexList;

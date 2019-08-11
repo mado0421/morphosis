@@ -10,6 +10,9 @@ struct CB_OBJECT_INFO;
 class CScene
 {
 public:
+	CScene() {
+		cout << "CScene 持失 - " << sizeof(CScene) << "\n";
+	}
 	~CScene();
 protected:
 	ID3D12RootSignature				*m_pd3dGraphicsRootSignature	= NULL;
@@ -38,12 +41,19 @@ protected:
 
 class CSceneMainPlay : public CScene {
 public:
+	CSceneMainPlay() {
+		cout << "CSceneMainPlay 持失 - " << sizeof(CSceneMainPlay) << "\n";
+
+	}
 	virtual void Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList);
 	virtual void ProcessInput(UCHAR * pKeysBuffer);
 };
 
 class CSceneLobby : public CScene {
 public:
+	CSceneLobby() {
+		cout << "CSceneLobby 持失 - " << sizeof(CSceneLobby) << "\n";
+	}
 	virtual void Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList);
 	virtual void ProcessInput(UCHAR * pKeysBuffer);
 };

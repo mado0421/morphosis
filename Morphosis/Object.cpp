@@ -13,6 +13,8 @@ CObject
 *********************************************************************/
 CObject::CObject()
 {
+	cout << "CObject »ý¼º - " << sizeof(CObject) << "\n";
+	
 	SetPosition(XMFLOAT3(0, 0, 0));
 	m_xmf4x4World = Matrix4x4::Identity();
 	m_IsAlive = true;

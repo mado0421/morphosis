@@ -38,6 +38,9 @@ void CSceneMainPlay::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommand
 	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoFloatingUI());
 	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoDefaultUI());
 
+	
+
+
 	//int i = 0;
 	//while (i < 100) {
 	//	//std::chrono::system_clock::time_point start = std::chrono::system_clock::now();

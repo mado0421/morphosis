@@ -9,6 +9,8 @@ CProjectile
 *********************************************************************/
 CProjectile::CProjectile() : CObject()
 {
+	cout << "CProjectile »ý¼º - " << sizeof(CProjectile) << "\n";
+
 	m_IsAlive = false;
 	m_xmf3Direction = XMFLOAT3(0, 0, 0);
 	m_fSpeed = g_fDefaultProjectileSpeed;

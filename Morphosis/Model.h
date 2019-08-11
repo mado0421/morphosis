@@ -7,6 +7,10 @@ class CTexture;
 class CModel
 {
 public:
+	CModel() {
+		cout << "CModel »ý¼º - " << sizeof(CModel) << "\n";
+
+	}
 	~CModel();
 public:
 	void Render(ID3D12GraphicsCommandList *pd3dCommandList, bool isDebug = false);

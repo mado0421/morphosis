@@ -16,7 +16,10 @@ public:
 		, m_BoneList(NULL)
 		, m_KeyTime(NULL)
 		, m_IsLoop(false)
-	{}
+	{
+		cout << "AnimationClip 持失 - " << sizeof(AnimationClip) << "\n";
+
+	}
 	AnimationClip(const AnimationClip& a);
 	~AnimationClip();
 
@@ -67,6 +70,10 @@ public:
 
 class CHumanoidAnimCtrl : public CAnimationController {
 public:
+	CHumanoidAnimCtrl() {
+		cout << "CHumanoidAnimCtrl 持失 - " << sizeof(CHumanoidAnimCtrl) << "\n";
+
+	}
 	virtual void		AddAnimData(AnimationClip* animData);
 	virtual XMMATRIX	GetFinalMatrix(int boneIdx, float time);
 protected:

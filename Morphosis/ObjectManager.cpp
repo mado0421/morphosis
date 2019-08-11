@@ -454,7 +454,6 @@ void CObjectManager::CreateObjectData()
 
 
 
-
 	if (SceneType::MAINPLAY == m_SceneType) {
 
 

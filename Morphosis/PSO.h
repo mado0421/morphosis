@@ -24,6 +24,11 @@ public:
 class CPsoModel : public CPipelineStateObject
 {
 public:
+	CPsoModel() {
+		cout << "CPsoModel 持失 - " << sizeof(CPsoModel) << "\n";
+
+	}
+
 	virtual D3D12_INPUT_LAYOUT_DESC		CreateInputLayout();
 
 	virtual D3D12_SHADER_BYTECODE		CreateVertexShader(ID3DBlob **ppd3dShaderBlob);
@@ -33,6 +38,10 @@ public:
 class CPsoAnimatedModel : public CPipelineStateObject
 {
 public:
+	CPsoAnimatedModel() {
+		cout << "CPsoAnimatedModel 持失 - " << sizeof(CPsoAnimatedModel) << "\n";
+
+	}
 	virtual D3D12_INPUT_LAYOUT_DESC		CreateInputLayout();
 
 	virtual D3D12_SHADER_BYTECODE		CreateVertexShader(ID3DBlob **ppd3dShaderBlob);
@@ -42,6 +51,10 @@ public:
 class CPsoFloatingUI : public CPipelineStateObject
 {
 public:
+	CPsoFloatingUI() {
+		cout << "CPsoFloatingUI 持失 - " << sizeof(CPsoFloatingUI) << "\n";
+
+	}
 	virtual D3D12_INPUT_LAYOUT_DESC		CreateInputLayout();
 
 	virtual D3D12_SHADER_BYTECODE		CreateVertexShader(ID3DBlob **ppd3dShaderBlob);
@@ -50,7 +63,11 @@ public:
 
 class CPsoDefaultUI : public CPipelineStateObject
 {
-public:
+public:	
+	CPsoDefaultUI() {
+	cout << "CPsoDefaultUI 持失 - " << sizeof(CPsoDefaultUI) << "\n";
+
+}
 	virtual D3D12_INPUT_LAYOUT_DESC		CreateInputLayout();
 
 	virtual D3D12_SHADER_BYTECODE		CreateVertexShader(ID3DBlob **ppd3dShaderBlob);

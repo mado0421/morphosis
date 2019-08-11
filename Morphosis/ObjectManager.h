@@ -50,6 +50,8 @@ public:
 		, m_pd3dCommandList(pd3dCommandList)
 		, m_SceneType(sceneType)
 	{
+		cout << "CObjectManager »ý¼º - " << sizeof(CObjectManager) << "\n";
+
 		CreateObjectData();
 	}
 	~CObjectManager();
