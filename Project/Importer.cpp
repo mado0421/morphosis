@@ -2,6 +2,7 @@
 #include "Importer.h"
 #include "Mesh.h"
 #include "Texture.h"
+#include "AnimCtrl.h"
 
 Importer::Importer(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
 	: m_pd3dDevice(pd3dDevice)
@@ -85,4 +86,56 @@ void Importer::ImportTexture(const wchar_t * fileName, const char * textureName)
 	texture->m_textureName = textureName;
 
 	g_vecTexture.push_back(texture);
+}
+
+void Importer::ImportAnimClip(const char * fileName, const char * animClipName, bool IsLoop)
+{
+	string meshDataName = ASSET_PATH;
+	meshDataName += fileName;
+	meshDataName += ".dat";
+
+	AnimClip* clip = new AnimClip();
+
+
+	std::ifstream in;
+
+	in.open(meshDataName, std::ios::in | std::ios::binary);
+	char AnimName[32];
+	in.read((char*)AnimName, sizeof(AnimName));
+	clip->m_AnimName = AnimName;
+
+	int nKeyTime;
+	in.read((char*)&nKeyTime, sizeof(int));
+	clip->m_vecKeyTime.resize(nKeyTime);
+	for (int i = 0; i < nKeyTime; ++i) {
+		double temp;
+		in.read((char*)&temp, sizeof(double));
+		clip->m_vecKeyTime[i] = temp;
+	}
+
+	int nBoneList;
+	in.read((char*)&nBoneList, sizeof(int));
+	clip->m_vecBone.resize(nBoneList);
+
+	
+	for (int i = 0; i < nBoneList; ++i) {
+		char name[32];
+		in.read((char*)name, sizeof(name));
+		clip->m_vecBone[i].m_BoneName = name;
+
+		in.read((char*)&clip->m_vecBone[i].m_xmf4x4GlobalTransform, sizeof(XMFLOAT4X4));
+	}
+
+	for (int i = 0; i < nBoneList; ++i) {
+		clip->m_vecBone[i].m_vecToRootTransform.resize(nKeyTime);
+		for (int j = 0; j < nKeyTime; ++j) {
+			in.read((char*)&clip->m_vecBone[i].m_vecToRootTransform[j], sizeof(XMFLOAT4X4));
+		}
+	}
+
+	in.close();
+
+	clip->m_IsLoop = IsLoop;
+	clip->m_AnimName = animClipName;
+	g_vecAnimClip.push_back(clip);
 }

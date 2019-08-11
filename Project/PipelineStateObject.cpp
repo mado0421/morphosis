@@ -164,3 +164,34 @@ D3D12_SHADER_BYTECODE ModelPipelineStateObject::CreatePixelShader(ID3DBlob ** pp
 	return(CompileShaderFromFile(L"PS.hlsl", "PSModel", "ps_5_1", ppd3dShaderBlob));
 
 }
+
+D3D12_INPUT_LAYOUT_DESC AnimatedModelPipelineStateObject::CreateInputLayout()
+{
+	UINT nInputElementDescs = 6;
+	D3D12_INPUT_ELEMENT_DESC *pd3dInputElementDescs = new D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
+
+	pd3dInputElementDescs[0] = { "POSITION",	0, DXGI_FORMAT_R32G32B32_FLOAT,		0, 0,	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[1] = { "NORMAL",		0, DXGI_FORMAT_R32G32B32_FLOAT,		0, 12,	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[2] = { "TANGENT",		0, DXGI_FORMAT_R32G32B32_FLOAT,		0, 24,	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[3] = { "TEXCOORD",	0, DXGI_FORMAT_R32G32_FLOAT,		0, 36,	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[4] = { "BLENDWEIGHT",	0, DXGI_FORMAT_R32G32B32A32_FLOAT,	0, 44,	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[5] = { "BLENDINDICES",0, DXGI_FORMAT_R32G32B32A32_UINT,	0, 60,	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+
+	D3D12_INPUT_LAYOUT_DESC d3dInputLayoutDesc;
+	d3dInputLayoutDesc.pInputElementDescs = pd3dInputElementDescs;
+	d3dInputLayoutDesc.NumElements = nInputElementDescs;
+
+	return(d3dInputLayoutDesc);
+}
+
+D3D12_SHADER_BYTECODE AnimatedModelPipelineStateObject::CreateVertexShader(ID3DBlob ** ppd3dShaderBlob)
+{
+	return(CompileShaderFromFile(L"VS.hlsl", "VSAnimModel", "vs_5_1", ppd3dShaderBlob));
+
+}
+
+D3D12_SHADER_BYTECODE AnimatedModelPipelineStateObject::CreatePixelShader(ID3DBlob ** ppd3dShaderBlob)
+{
+	return(CompileShaderFromFile(L"PS.hlsl", "PSAnimModel", "ps_5_1", ppd3dShaderBlob));
+
+}

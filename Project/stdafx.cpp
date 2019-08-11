@@ -2,6 +2,7 @@
 #include "Model.h"
 #include "Mesh.h"
 #include "Texture.h"
+#include "AnimCtrl.h"
 
 UINT							g_nCbvSrvDescriptorIncrementSize = 0;
 vector<ID3D12PipelineState*>	g_vecPipelineStateObjects;
@@ -9,6 +10,8 @@ ID3D12RootSignature*			g_pd3dGraphicsRootSignature;
 vector<Mesh*>					g_vecMesh;
 vector<Texture*>				g_vecTexture;
 vector<Model*>					g_vecModel;
+vector<AnimClip*>				g_vecAnimClip;
+vector<AnimCtrl*>				g_vecAnimCtrl;
 
 void CreateModel(const char * meshName, const char * textureName, const char* modelName)
 {
@@ -24,6 +27,23 @@ void CreateModel(const char * meshName, const char * textureName, const char* mo
 
 	g_vecModel.push_back(model);
 }
+
+void CreateAnimCtrl(const char * animCtrlName)
+{
+	AnimCtrl* ctrl = new AnimCtrl();
+	ctrl->m_AnimCtrlName = animCtrlName;
+	g_vecAnimCtrl.push_back(ctrl);
+}
+
+void AddAnimClipToCtrl(const char * animCtrlName, const char * animClipName)
+{
+	for (int i = 0; i < g_vecAnimCtrl.size(); ++i) {
+		if (g_vecAnimCtrl[i]->m_AnimCtrlName == animCtrlName) {
+			g_vecAnimCtrl[i]->AddAnimClip(animClipName);
+		}
+	}
+}
+
 
 ID3D12Resource * CreateBufferResource(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, void * pData, UINT nBytes, D3D12_HEAP_TYPE d3dHeapType, D3D12_RESOURCE_STATES d3dResourceStates, ID3D12Resource ** ppd3dUploadBuffer)
 {

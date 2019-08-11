@@ -2,8 +2,10 @@
 #include "Scene.h"
 
 class Object;
+class PlayerObject;
 
 class MainPlayScene : public Scene {
+public:
 	~MainPlayScene();
 
 public:
@@ -18,5 +20,6 @@ protected:
 	virtual void CreateConstantBufferResorceAndView();
 
 private:
-	vector<Object*> m_vecObject;
+	vector<Object*>			m_vecObject;
+	vector<PlayerObject*>	m_vecPlayerObject;
 };

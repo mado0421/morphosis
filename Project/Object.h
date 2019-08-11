@@ -1,7 +1,9 @@
 #pragma once
+#include "AnimCtrl.h"
 
 class Model;
 class Collider;
+//class AnimCtrl;
 
 struct CB_OBJECT_INFO {
 	XMFLOAT4X4	m_xmf4x4World;
@@ -60,5 +62,19 @@ class ProjectileObject : public MovableObject {
 };
 
 class PlayerObject : public MovableObject {
+public:
+	virtual void CreateConstantBufferResourceAndView(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorStartHandle, int offset);
+	virtual void UpdateConstantBuffer(ID3D12GraphicsCommandList *pd3dCommandList);
 
+	virtual void Update(float elapsedTime) override;
+	virtual void LateUpdate(float elapsedTime) override;
+
+public:
+	void SetAnimCtrl(const char* AnimCtrlName);
+
+protected:
+	int				m_AnimCtrlIdx		= -1;
+	float			m_fAnimTime			= 0;
+	ID3D12Resource	*m_pd3dcbAnimation	= NULL;
+	XMMATRIX		*m_pcbxmAnimation	= NULL;
 };

@@ -544,7 +544,9 @@ void Framework::CreateRootSignature()
 void Framework::CreatePipelineStateObjects()
 {
 	ModelPipelineStateObject modelPSO;
+	AnimatedModelPipelineStateObject animModelPSO;
 
 	g_vecPipelineStateObjects.resize(static_cast<int> (PSO::count));
 	g_vecPipelineStateObjects[static_cast<int> (PSO::MODEL)] = modelPSO.CreatePipelineStateObject(m_pd3dDevice);
+	g_vecPipelineStateObjects[static_cast<int> (PSO::ANIMATEDMODEL)] = animModelPSO.CreatePipelineStateObject(m_pd3dDevice);
 }

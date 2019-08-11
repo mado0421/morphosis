@@ -68,6 +68,12 @@
     <Filter Include="코드 파일\PCH\External">
       <UniqueIdentifier>{73eaaee1-d45c-4bb4-bdb4-879ef97e16e4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="코드 파일\Resource\Anim">
+      <UniqueIdentifier>{c7ae3074-6173-4cb1-be30-b5797eefd511}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="코드 파일\Resource\Anim\AnimCtrl">
+      <UniqueIdentifier>{d2de2d52-5d2f-4804-ae26-5e1507d4317e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Project.h">
@@ -127,6 +133,9 @@
     <ClInclude Include="MathHelper.h">
       <Filter>코드 파일\PCH</Filter>
     </ClInclude>
+    <ClInclude Include="AnimCtrl.h">
+      <Filter>코드 파일\Resource\Anim\AnimCtrl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Project.cpp">
@@ -179,6 +188,9 @@
     </ClCompile>
     <ClCompile Include="DDSTextureLoader12.cpp">
       <Filter>코드 파일\PCH\External</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimCtrl.cpp">
+      <Filter>코드 파일\Resource\Anim\AnimCtrl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
