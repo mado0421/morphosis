@@ -21,6 +21,8 @@ protected:
 
 public:
 	// Scene의 기본적인 함수들
+	void SetFramework(CFramework*);
+
 	virtual void Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList) = 0;
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
 	virtual void Update(float fTimeElapsed);

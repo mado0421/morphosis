@@ -130,6 +130,7 @@ void CSceneMainPlay::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommand
 	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	m_ObjMng = new CObjectManager(m_pd3dDevice, m_pd3dCommandList, SceneType::MAINPLAY);
+	m_ObjMng->SetFramework(m_pFramework);
 	m_pCamera->SetTarget(m_ObjMng->GetTarget(0));
 	m_pCamera->SetOffset(XMFLOAT3(0, 60, -60));
 	m_pd3dCbvSrvDescriptorHeap = m_ObjMng->GetDescriptorHeap();
@@ -148,23 +149,23 @@ void CSceneMainPlay::ProcessInput(UCHAR * pKeysBuffer)
 {
 	float cxDelta = 0.0f/*, cyDelta = 0.0f*/;
 	POINT ptCursorPos;
-	static float cameraOffsetZ = 60;
-	static float cameraOffsetY = 30;
+	//static float cameraOffsetZ = 60;
+	//static float cameraOffsetY = 30;
 
 	if (pKeysBuffer[KEY::_1] & 0xF0) { g_IsMouseMode = false; }
 	if (pKeysBuffer[KEY::_2] & 0xF0) { g_IsMouseMode = true; }
 
-	if (pKeysBuffer[VK_UP] & 0xF0) { 
-		cameraOffsetY += 0.1; 
-		m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
-	}
-	if (pKeysBuffer[VK_DOWN] & 0xF0) { cameraOffsetY -= 0.1; m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
-	}
-	if (pKeysBuffer[VK_LEFT] & 0xF0) { cameraOffsetZ += 0.1; m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
-	}
-	if (pKeysBuffer[VK_RIGHT] & 0xF0) { cameraOffsetZ -= 0.1; m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
-	}
-	
+	//if (pKeysBuffer[VK_UP] & 0xF0) { 
+	//	cameraOffsetY += 0.1f; 
+	//	m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+	//}
+	//if (pKeysBuffer[VK_DOWN] & 0xF0) { cameraOffsetY -= 0.1f; m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+	//}
+	//if (pKeysBuffer[VK_LEFT] & 0xF0) { cameraOffsetZ += 0.1f; m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+	//}
+	//if (pKeysBuffer[VK_RIGHT] & 0xF0) { cameraOffsetZ -= 0.1f; m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+	//}
+	//
 
 
 	if (pKeysBuffer[KEY::_3] & 0xF0) { m_ObjMng->GetTarget(0)->Enable(); }
@@ -179,6 +180,11 @@ void CSceneMainPlay::ProcessInput(UCHAR * pKeysBuffer)
 	}
 
 	m_ObjMng->ProcessInput(pKeysBuffer, cxDelta);
+}
+
+void CScene::SetFramework(CFramework * p)
+{
+	m_pFramework = p;
 }
 
 void CScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
@@ -332,6 +338,7 @@ void CSceneLobby::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLis
 	m_ObjMng = new CObjectManager(m_pd3dDevice, m_pd3dCommandList, SceneType::LOBBY);
 	//m_pCamera->SetTarget(m_ObjMng->GetTarget(0));
 	m_pd3dCbvSrvDescriptorHeap = m_ObjMng->GetDescriptorHeap();
+	m_ObjMng->SetFramework(m_pFramework);
 
 	CPsoGenerator l_psoGenerator;
 	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoModel());

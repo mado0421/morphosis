@@ -7,6 +7,10 @@
 #include "Effect.h"
 #include "AI.h"
 #include "PSO.h"
+#include "Framework.h"
+
+PlayerStats			g_player0Info;
+std::queue<Request> g_queueRequest;
 
 /*********************************************************************
 2019-06-17
@@ -106,14 +110,14 @@ void CObject::Render(ID3D12GraphicsCommandList * pd3dCommandList, CCamera * pCam
 		}
 	}
 }
-void CObject::AddCollider(XMFLOAT3 offset, XMFLOAT3 extents, XMFLOAT4 quaternion)
+void CObject::AddCollider(XMFLOAT3 offset, XMFLOAT3 extents, XMFLOAT4 quaternion, bool trig)
 {
-	m_Collider.emplace_back(offset, extents, quaternion);
+	m_Collider.emplace_back(offset, extents, quaternion, trig);
 	m_Collider[m_Collider.size() - 1].Update(GetPosition(), GetQuaternion());
 }
-void CObject::AddCollider(XMFLOAT3 offset, float radius)
+void CObject::AddCollider(XMFLOAT3 offset, float radius, bool trig)
 {
-	m_Collider.emplace_back(offset, radius);
+	m_Collider.emplace_back(offset, radius, trig);
 	m_Collider[m_Collider.size() - 1].Update(GetPosition(), GetQuaternion());
 }
 void CObject::SetPosition(float x, float y, float z)
@@ -211,21 +215,36 @@ const XMFLOAT4 CObject::GetQuaternion()
 {
 	return Vector4::QuatFromMtx(m_xmf4x4World);
 }
-const bool CObject::IsCollide(const CObject& other)
+const bool CObject::IsCollide(const CObject& other, bool trig)
 {
 	/*********************************************************************
 	2019-06-18
 	other의 충돌체들과 내 충돌체들을 전부 비교해야 함.
 	*********************************************************************/
-	for (int i = 0; i < m_Collider.size(); ++i)
-		for (int j = 0; j < other.m_Collider.size(); ++j) if (m_Collider[i].IsCollide(other.m_Collider[j])) return true;
+	if (trig) {
+		for (int i = 0; i < m_Collider.size(); ++i)
+			for (int j = 0; j < other.m_Collider.size(); ++j)
+				if (m_Collider[i].TriggerCheck(other.m_Collider[j])) return true;
+	}
+	else {
+
+		for (int i = 0; i < m_Collider.size(); ++i)
+			for (int j = 0; j < other.m_Collider.size(); ++j)
+				if (m_Collider[i].IsCollide(other.m_Collider[j])) return true;
+	}
 
 	return false;
 }
-const bool CObject::IsCollide(const Collider & other)
+const bool CObject::IsCollide(const Collider & other, bool trig)
 {
+	if (trig) {
+		for (int i = 0; i < m_Collider.size(); ++i)
+			if (m_Collider[i].TriggerCheck(other)) return true;
+	}
+	else {
 	for (int i = 0; i < m_Collider.size(); ++i)
 		if (m_Collider[i].IsCollide(other)) return true;
+	}
 
 	return false;
 }
@@ -338,7 +357,7 @@ void CPlayer::Update(float fTimeElapsed)
 		}
 		else if (static_cast<int>(AnimationState::DIE) == m_AnimationState) {
 			if (!m_IsDied) {
-				m_AnimationState = static_cast<int>(AnimationState::IDLE);
+				m_AnimationState = static_cast<int>(AnimationState::STARTJUMP);
 				m_AnimationTime = 0;
 			}
 		}
@@ -379,7 +398,7 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 
 	while (true) {
 		Collider DetailedGroundCollider(XMFLOAT3(0, 0, 0), radius);
-		DetailedGroundCollider.Update(Vector3::Add(GetPosition(), m_xmf3Move), XMFLOAT4(0, 0, 0, 1));
+		DetailedGroundCollider.Update(Vector3::Add(XMFLOAT3(0, 8, 0),  Vector3::Add(GetPosition(), m_xmf3Move)), XMFLOAT4(0, 0, 0, 1));
 		Collider* collider = m_pObjMng->GetCollider(DetailedGroundCollider, ColliderTag::PROP, false);
 		if (NULL == collider) break;
 
@@ -554,11 +573,6 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 }
 void CPlayer::ProcessInput(UCHAR * pKeysBuffer, float mouse)
 {
-	if (pKeysBuffer[KEY::W] & 0xF0) m_trigInput[static_cast<int>(Move::W)] = true;
-	if (pKeysBuffer[KEY::A] & 0xF0) m_trigInput[static_cast<int>(Move::A)] = true;
-	if (pKeysBuffer[KEY::S] & 0xF0) m_trigInput[static_cast<int>(Move::S)] = true;
-	if (pKeysBuffer[KEY::D] & 0xF0) m_trigInput[static_cast<int>(Move::D)] = true;
-	if (pKeysBuffer[VK_SPACE] & 0xF0) m_trigInput[static_cast<int>(Move::SPACE)] = true;
 
 	if (g_IsMouseMode) {
 		m_rotationInput = mouse;
@@ -567,6 +581,15 @@ void CPlayer::ProcessInput(UCHAR * pKeysBuffer, float mouse)
 		if (pKeysBuffer[KEY::Q] & 0xF0) m_trigInput[static_cast<int>(Move::Q)] = true;
 		if (pKeysBuffer[KEY::E] & 0xF0) m_trigInput[static_cast<int>(Move::E)] = true;
 	}
+	if (m_IsDied) return;
+
+	if (pKeysBuffer[KEY::W] & 0xF0) m_trigInput[static_cast<int>(Move::W)] = true;
+	if (pKeysBuffer[KEY::A] & 0xF0) m_trigInput[static_cast<int>(Move::A)] = true;
+	if (pKeysBuffer[KEY::S] & 0xF0) m_trigInput[static_cast<int>(Move::S)] = true;
+	if (pKeysBuffer[KEY::D] & 0xF0) m_trigInput[static_cast<int>(Move::D)] = true;
+	if (pKeysBuffer[VK_SPACE] & 0xF0) m_trigInput[static_cast<int>(Move::SPACE)] = true;
+
+
 }
 void CPlayer::Enable()
 {
@@ -596,12 +619,16 @@ void CPlayer::Disable()
 }
 void CPlayer::Shoot()
 {
+	if (m_IsDied) return;
+
 	m_AnimationState = static_cast<int>(AnimationState::FIRE);
 	m_AnimationTime = 0;
 	m_fRemainingTimeOfFire = m_fRPM;
 }
 void CPlayer::Skill(int idx)
 {
+	if (m_IsDied) return;
+
 	m_AnimationState = static_cast<int>(AnimationState::FIRE);
 	m_AnimationTime = 0;
 	m_fRemainingTimeOfSkill1 = 0.5f;
@@ -613,10 +640,12 @@ void CPlayer::Slow()
 }
 bool CPlayer::IsShootable()
 {
+	if (m_IsDied) return false;
 	return m_fRemainingTimeOfFire <= 0;
 }
 bool CPlayer::IsSkillUseable(int idx)
 {
+	if (m_IsDied) return false;
 	return m_fRemainingTimeOfSkill1 <= 0;
 }
 void CPlayer::ChangeAnimClip()
@@ -742,11 +771,11 @@ void CProjectile::Initialize(CObject * obj)
 void CProjectile::Initialize(CObject * obj, const char * modelName, Effect * effect)
 {
 	XMFLOAT3 pos = obj->GetPosition();
-	pos.y += 10;
+	pos.y += 25;
 	SetPosition(pos);
 	for (int i = 0; i < m_Collider.size(); ++i) m_Collider[i].Update(GetPosition(), GetQuaternion());
 
-
+	fallingVelocity = 0;
 	m_ModelList.clear();
 	AddModel(GetModelByName(modelName));
 	m_vecEffects.push_back(effect);
@@ -758,11 +787,14 @@ void CProjectile::Initialize(CObject * obj, const char * modelName, Effect * eff
 	SetTeam(obj->GetTeam());
 
 	m_xmf3Direction = Vector3::Normalize(obj->GetLook());
+	m_xmf3Direction.y += 0.1f;
+	m_xmf3Direction = Vector3::Normalize(m_xmf3Direction);
 	m_fLifeTime = g_DefaultProjectileLifeTime;
 }
 void CProjectile::Update(float fTimeElapsed)
 {
 	if (!m_IsAlive) return;
+	
 	/*********************************************************************
 	2019-06-18
 	LifeTime 관리
@@ -773,6 +805,10 @@ void CProjectile::Update(float fTimeElapsed)
 	XMFLOAT3 xmf3Move = m_xmf3Direction;
 	xmf3Move = Vector3::Multiply(m_fSpeed, xmf3Move);
 	xmf3Move = Vector3::Multiply(fTimeElapsed, xmf3Move);
+
+	fallingVelocity -= fTimeElapsed * 0.2;
+	m_xmf3Direction.y += fallingVelocity;
+	m_xmf3Direction = Vector3::Normalize(m_xmf3Direction);
 
 	m_xmf4x4World._41 += xmf3Move.x;
 	m_xmf4x4World._42 += xmf3Move.y;
@@ -916,8 +952,51 @@ void CObjectManager::Render()
 }
 void CObjectManager::Update(float fTime)
 {
-
+	static float waitForNextScene = 0;
+	if (m_Pause) {
+		m_DefaultUI[5]->Enable();
+		waitForNextScene += fTime;
+		if (waitForNextScene > 3) {
+			waitForNextScene = 0;
+			m_Pause = false;
+			m_pFramework->ChangeScene(SceneType::LOBBY);
+		}
+		return;
+	}
 	if (SceneType::MAINPLAY == m_SceneType) {
+
+		while (!g_queueRequest.empty()) {
+			Request temp = g_queueRequest.front();
+			if (RequestType::Shoot == temp.type) {
+				if (m_Players[temp.playerIdx]->IsShootable()) {
+					m_Players[temp.playerIdx]->Shoot();
+					auto iter = find_if(m_Projectiles.begin(), m_Projectiles.end(), [](CObject* p) {return !(p->IsAlive()); });
+					if (iter != m_Projectiles.end()) {
+						dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[temp.playerIdx], "Model_PaperBox_box_1", new EDefaultDamage());
+						(*iter)->SetAlive(true);
+						g_System->playSound(g_vecSound[static_cast<int>(SOUND::SHOT)], 0, false, &g_Channel);
+
+					}
+				}
+			}
+			else if (RequestType::Skill0 == temp.type) {
+				if (m_Players[temp.playerIdx]->IsSkillUseable()) {
+					m_Players[temp.playerIdx]->Skill();
+					auto iter = find_if(m_Projectiles.begin(), m_Projectiles.end(), [](CObject* p) {return !(p->IsAlive()); });
+					if (iter != m_Projectiles.end()) {
+						dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[temp.playerIdx], "Model_Crystal_default", new ESlow());
+						(*iter)->SetAlive(true);
+						g_System->playSound(g_vecSound[static_cast<int>(SOUND::SHOT)], 0, false, &g_Channel);
+
+					}
+				}
+			}
+			else if (RequestType::MoveForward == temp.type) {
+				m_Players[temp.playerIdx]->MoveForwardTrigOn();
+			}
+			g_queueRequest.pop();
+		}
+
 
 		//int hp = m_Players[1]->GetHP();
 
@@ -972,6 +1051,10 @@ void CObjectManager::ProcessInput(UCHAR * pKeysBuffer, float mouse)
 		}
 
 		if (pKeysBuffer[VK_LBUTTON] & 0xF0) {
+			Request temp;
+			temp.playerIdx = 0;
+			temp.type = RequestType::Shoot;
+			g_queueRequest.push(temp);
 			/*********************************************************************
 			2019-06-17
 			마우스를 클릭하면 해줘야 하는 것들.
@@ -982,25 +1065,17 @@ void CObjectManager::ProcessInput(UCHAR * pKeysBuffer, float mouse)
 
 			Render와 Update는 IsAlive가 true 일 때만 되게 해야 한다.
 			*********************************************************************/
-			if (dynamic_cast<CPlayer*>(m_Players[0])->IsShootable()) {
-				dynamic_cast<CPlayer*>(m_Players[0])->Shoot();
-				auto iter = find_if(m_Projectiles.begin(), m_Projectiles.end(), [](CObject* p) {return !(p->IsAlive()); });
-				if (iter != m_Projectiles.end()) {
-					dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[0], "Model_PaperBox_box_1", new EDefaultDamage());
-					(*iter)->SetAlive(true);
-				}
-			}
+
 		}
 		if (pKeysBuffer[VK_RBUTTON] & 0xF0) {
-			if (dynamic_cast<CPlayer*>(m_Players[0])->IsSkillUseable()) {
-				dynamic_cast<CPlayer*>(m_Players[0])->Skill();
-				auto iter = find_if(m_Projectiles.begin(), m_Projectiles.end(), [](CObject* p) {return !(p->IsAlive()); });
-				if (iter != m_Projectiles.end()) {
-					dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[0], "Model_Crystal_default", new ESlow());
-					(*iter)->SetAlive(true);
-				}
-			}
+			Request temp;
+			temp.playerIdx = 0;
+			temp.type = RequestType::Skill0;
+			g_queueRequest.push(temp);
 		}
+	}
+	else if (SceneType::LOBBY == m_SceneType) {
+		if (pKeysBuffer[VK_RETURN] & 0xF0) m_pFramework->ChangeScene(SceneType::MAINPLAY);
 	}
 }
 Collider * CObjectManager::GetCollider(Collider & myCollider, ColliderTag targetTag, bool isMakeAlign)
@@ -1058,16 +1133,57 @@ void CObjectManager::ColliderTrigInit(ColliderTag targetTag)
 	default:break;
 	}
 }
+void CObjectManager::SetFramework(CFramework * p)
+{
+	m_pFramework = p;
+}
 void CObjectManager::LateUpdate(float fTime)
 {
-	for (auto projectile = m_Projectiles.begin(); projectile != m_Projectiles.end(); ++projectile)
+	for (auto projectile = m_Projectiles.begin(); projectile != m_Projectiles.end(); ++projectile) {
+
 		for (auto player = m_Players.begin(); player != m_Players.end(); ++player)
-			if ((*player)->IsAlive())
+			if ((*player)->IsAlive() && !(*player)->m_IsDied)
 				if (IsCollidable((*player), (*projectile)))
 					if ((*player)->IsCollide(*(*projectile))) {
 						(*projectile)->AddCollisionEffect((*player));
 						(*projectile)->Disable();
 					}
+		for (auto prop = m_Props.begin(); prop != m_Props.end(); ++prop) {
+			if ((*prop)->IsCollide(*(*projectile))) {
+				(*projectile)->Disable();
+			}
+		}
+	}
+
+	if (SceneType::MAINPLAY == m_SceneType) {
+		g_player0Info.pos = m_Players[0]->GetPosition();
+		g_player0Info.isDied = m_Players[0]->m_IsDied;
+
+		static float progress = 0;
+
+		if (!m_Players[0]->m_IsDied && m_Players[0]->IsCollide(*m_Props[1], true)) {
+			progress += fTime * 0.05f;
+			if (progress > 1) {
+				progress = 0;
+				m_Pause = true;
+				m_DefaultUI[0]->Disable();
+				m_DefaultUI[1]->Disable();
+				m_DefaultUI[2]->Disable();
+				m_DefaultUI[3]->Disable();
+				return;
+			}
+			m_DefaultUI[1]->Enable();
+			m_DefaultUI[2]->Enable();
+			m_DefaultUI[1]->SetScale(XMFLOAT2(progress, 1.0f));
+			m_DefaultUI[3]->Enable();
+		}
+		else {
+			m_DefaultUI[1]->Disable();
+			m_DefaultUI[2]->Disable();
+			m_DefaultUI[3]->Disable();
+		}
+
+	}
 
 
 
@@ -1231,22 +1347,33 @@ void CObjectManager::CreateObjectData()
 			XMFLOAT3(73,0,270),
 			XMFLOAT3(56,0,137)
 		};
+		int nodeNextIdx[9] = {
+			-1,
+			0,
+			1,
+			2,
+			3,
+			4,
+			7,
+			8,
+			0
+		};
 
 		for (int i = 0; i < 9; ++i) {
 			AINode* tempNode = new AINode();
 			tempNode->m_xmf3Position = nodePositions[i];
 			g_vecAINode.push_back(tempNode);
 		}
-		for (int i = 0; i < 8; ++i) {
-			g_vecAINode[i]->next = g_vecAINode[i + 1];
+		for (int i = 0; i < 9; ++i) {
+			if(-1 != nodeNextIdx[i]) g_vecAINode[i]->next = g_vecAINode[nodeNextIdx[i]];
+			else g_vecAINode[i]->next = NULL;
 		}
-		g_vecAINode[8]->next = g_vecAINode[0];
 
 		if (_heapchk() != _HEAPOK)
 			DebugBreak();
 
-		int nProps = 3;
-		int nPlayers = 2;
+		int nProps = 2;
+		int nPlayers = 3;
 		int nFloatingUI = 5;
 		int nDefaultUI = 6;
 		int nProjectiles = nPlayers * g_nProjectilePerPlayer;
@@ -1264,6 +1391,8 @@ void CObjectManager::CreateObjectData()
 		importer.ImportTexture(L"0618_LevelTest_diff", "Texture_Level");
 		importer.ImportTexture(L"box_diff", "Texture_StandardBox");
 		importer.ImportTexture(L"HealthBar", "Texture_HPBar");
+		importer.ImportTexture(L"DefaultMaterial_albedo", "Texture_Chair");
+		importer.ImportTexture(L"spotlight_BaseColor", "Texture_Spotlight");
 
 		importer.ImportTexture(L"Bar_ProgressBar", "Texture_ProgressBar");
 		importer.ImportTexture(L"Bar_Capturing", "Texture_CapturingPoint");
@@ -1293,6 +1422,8 @@ void CObjectManager::CreateObjectData()
 		importer.ImportModel("0725_Character", "Texture_Character", ModelType::AnimatedModel, "Model_Character");
 		importer.ImportModel("0725_PaperBox_NoSpitPerVertexNormal", "Texture_PaperBox", ModelType::DefaultModel, "Model_PaperBox");
 		importer.ImportModel("crystal", "Texture_Crystal", ModelType::DefaultModel, "Model_Crystal");
+		importer.ImportModel("Bench", "Texture_Chair", ModelType::DefaultModel, "Model_Bench");
+		importer.ImportModel("Spotlight", "Texture_Crystal", ModelType::DefaultModel, "Model_Spotlight");
 		importer.ImportModel("", "Texture_HPBar", ModelType::FloatingUI, "UI_TEST");
 		importer.ImportModel("", "Texture_StandardBox", ModelType::FloatingUI, "UI_TEST2");
 		importer.ImportModel("", "Texture_Crosshair", ModelType::FloatingUI, "UI_Crosshair");
@@ -1336,6 +1467,12 @@ void CObjectManager::CreateObjectData()
 						m_LevelDataDesc.CollisionRotation[j]);
 				}
 			}
+			else if (1 == i) {
+				obj->AddCollider( XMFLOAT3(0, 0, 0), 100, true);
+			}
+			else if (2 == i) {
+
+			}
 			//else if (1 == i) {
 			//	obj->AddModel(GetModelByName("Model_Bench_Cube.005"));
 			//	obj->SetPosition(0.0f, 0.0f, 70.0f);
@@ -1367,16 +1504,35 @@ void CObjectManager::CreateObjectData()
 
 			obj->SetAnimCtrl(GetAnimCtrlByName("AnimCtrl_Character"));
 
-			obj->SetPosition(0, 100, i * g_fDefaultUnitScale * 3);
-			obj->SetSpawnPoint(obj->GetPosition());
+			obj->playerId = i;
+
+			//obj->SetPosition(0, 100, i * g_fDefaultUnitScale * 3);
 			obj->AddCollider(
-				XMFLOAT3(0, 8, 0),
+				XMFLOAT3(0, 14, 0),
 				XMFLOAT3(6, 8, 6),
 				XMFLOAT4(0, 0, 0, 1)
 			);
 			obj->SetCameraTargetOffset(XMFLOAT3(0, 23, 27));
 
-			obj->SetTeam((i % 2) + 1);
+			if (i == 0) {
+				obj->SetTeam(0);
+				XMFLOAT3 temp = m_LevelDataDesc.Team1SpawnPointPosition[2]; temp.y += 100;
+				obj->SetPosition(temp);
+				obj->SetRotation(XMFLOAT3(0, 180, 0));
+			}
+			else if(i == 1){
+				obj->SetTeam(1);
+				XMFLOAT3 temp = m_LevelDataDesc.Team2SpawnPointPosition[0]; temp.y += 50;
+				obj->SetPosition(temp);
+			}
+			else if (i == 2) {
+				obj->SetTeam(1);
+				XMFLOAT3 temp = m_LevelDataDesc.Team2SpawnPointPosition[1]; temp.y += 100;
+				obj->SetPosition(temp);
+			}
+			obj->SetSpawnPoint(obj->GetPosition());
+
+
 			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 
 			if (i >= 1) obj->m_AIBrain->PowerOn();
@@ -1389,7 +1545,7 @@ void CObjectManager::CreateObjectData()
 			obj->AddModel(GetModelByName("Model_PaperBox_box_1"));
 
 			obj->SetAlive(false);
-			obj->AddCollider(XMFLOAT3(0, 0, 0), 10.0f);
+			obj->AddCollider(XMFLOAT3(0, 0, 0), 20.0f);
 			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 			m_Projectiles[i] = obj;
 		}
@@ -1444,34 +1600,35 @@ void CObjectManager::CreateObjectData()
 				obj->Initialize(XMFLOAT2(50, 50));
 			}
 			else if (1 == i) {
+				obj->AddModel(GetModelByName("ProgressBarFrnt"));
+				obj->SetPosition(0.5, 0.25, 0.0f);
+				obj->Initialize(XMFLOAT2(475, 8));
+				obj->Disable();
+			}
+			else if (2 == i) {
 				obj->AddModel(GetModelByName("ProgressBarBack"));
 				obj->SetPosition(0.5, 0.25, 0.0f);
 				obj->Initialize(XMFLOAT2(500, 500));
-			}
-			else if (2 == i) {
-				obj->AddModel(GetModelByName("ProgressBarFrnt"));
-				obj->SetPosition(0.5, 0.25, 0.0f);
-				obj->Initialize(XMFLOAT2(500, 10));
 				obj->Disable();
 
 			}
 			else if (3 == i) {
 				obj->AddModel(GetModelByName("Text_Capturing"));
-				obj->SetPosition(0.5, 0.35, 0.0f);
-				obj->Initialize(XMFLOAT2(50, 50));
+				obj->SetPosition(0.5, 0.1, 0.0f);
+				obj->Initialize(XMFLOAT2(300, 300));
 				obj->Disable();
 			}
 			else if (4 == i) {
 				obj->AddModel(GetModelByName("Text_Defeat"));
-				obj->SetPosition(0.5, 0.35, 0.0f);
-				obj->Initialize(XMFLOAT2(50, 50));
+				obj->SetPosition(0.5, 0.4, 0.0f);
+				obj->Initialize(XMFLOAT2(500, 500));
 				obj->Disable();
 
 			}
 			else if (5 == i) {
 				obj->AddModel(GetModelByName("Text_Victory"));
-				obj->SetPosition(0.5, 0.35, 0.0f);
-				obj->Initialize(XMFLOAT2(50, 50));
+				obj->SetPosition(0.5, 0.4, 0.0f);
+				obj->Initialize(XMFLOAT2(500, 500));
 				obj->Disable();
 
 			}
@@ -1484,28 +1641,6 @@ void CObjectManager::CreateObjectData()
 	else if (SceneType::LOBBY == m_SceneType)
 	{
 		importer.ImportLevel("LevelData_TestMap", m_LevelDataDesc);
-
-		XMFLOAT3 nodePositions[9] = {
-			XMFLOAT3(0,0,0),
-			XMFLOAT3(-200,0,88),
-			XMFLOAT3(-200,0,230),
-			XMFLOAT3(-139,0,257),
-			XMFLOAT3(-127,0,341),
-			XMFLOAT3(-42,0,387),
-			XMFLOAT3(-18,0,297),
-			XMFLOAT3(73,0,270),
-			XMFLOAT3(56,0,137)
-		};
-
-		for (int i = 0; i < 9; ++i) {
-			AINode* tempNode = new AINode();
-			tempNode->m_xmf3Position = nodePositions[i];
-			g_vecAINode.push_back(tempNode);
-		}
-		for (int i = 0; i < 8; ++i) {
-			g_vecAINode[i]->next = g_vecAINode[i + 1];
-		}
-		g_vecAINode[8]->next = g_vecAINode[0];
 
 
 		/*********************************************************************
@@ -1527,7 +1662,6 @@ void CObjectManager::CreateObjectData()
 		m_DefaultUI.resize(nDefaultUI);
 
 
-		CreateDescriptorHeap();
 		/*********************************************************************
 		2019-06-15
 		텍스처도 여기서 넣어야 할 것 같음. 텍스처를 먼저 만들어둔다.
@@ -1538,7 +1672,8 @@ void CObjectManager::CreateObjectData()
 		*********************************************************************/
 
 		g_vecTexture.clear();
-		importer.ImportTexture(L"TitleImg_Test", "Texture_TitleImg");
+		importer.ImportTexture(L"TitleImg_001", "Texture_TitleImg");
+		CreateDescriptorHeap();
 		for (int i = 0; i < g_vecTexture.size(); ++i) CreateTextureResourceView(g_vecTexture[i]);
 
 		importer.ImportModel("", "Texture_TitleImg", ModelType::FloatingUI, "UI_TitleImg");
@@ -1564,7 +1699,7 @@ void CObjectManager::CreateObjectData()
 			obj->SetMng(this);
 			obj->AddModel(GetModelByName("UI_TitleImg"));
 			obj->SetPosition(0.5, 0.5, 0.0f);
-			obj->Initialize(XMFLOAT2(1920, 1080));
+			obj->Initialize(XMFLOAT2(960, 540));
 
 			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 			m_DefaultUI[i] = obj;
@@ -1666,19 +1801,21 @@ Collider::Collider()
 자체의 회전각과 주인 객체의 회전각이 더해져야 하는데 이건 어떻게 만들거?
 Quaternion 더하는 함수가 있나?
 *********************************************************************/
-Collider::Collider(XMFLOAT3 offset, XMFLOAT3 extents, XMFLOAT4 quaternion)
+Collider::Collider(XMFLOAT3 offset, XMFLOAT3 extents, XMFLOAT4 quaternion, bool trig)
 	: m_xmf3Offset(offset)
 	, m_Box(BoundingOrientedBox(XMFLOAT3(0, 0, 0), extents, XMFLOAT4(0, 0, 0, 0)))
 	, m_Type(ColliderType::BOX)
 	, m_xmf4OrigOrientaion(quaternion)
+	, m_IsTrigger(trig)
 {
 
 }
 
-Collider::Collider(XMFLOAT3 offset, float radius)
+Collider::Collider(XMFLOAT3 offset, float radius, bool trig)
 	: m_xmf3Offset(offset)
 	, m_Type(ColliderType::SPHERE)
 	, m_Sphere(BoundingSphere(XMFLOAT3(0, 0, 0), radius))
+	, m_IsTrigger(trig)
 {
 
 }
@@ -1691,6 +1828,7 @@ void Collider::Update(XMFLOAT3 position, XMFLOAT4 rotation)
 
 bool Collider::IsCollide(const Collider & other)
 {
+	if (m_IsTrigger) return false;
 	/*********************************************************************
 	2019-07-05
 	조기리턴문을 쓰고 싶다!
@@ -1711,6 +1849,19 @@ bool Collider::IsCollide(const Collider & other)
 void Collider::SetOrientation(const XMFLOAT4 & orientation)
 {
 	if (m_Type == ColliderType::BOX)	m_Box.Orientation = orientation;
+}
+
+bool Collider::TriggerCheck(const Collider & other)
+{
+	if (m_Type == ColliderType::BOX) {
+		if (other.m_Type == ColliderType::BOX)  return m_Box.Intersects(other.m_Box);
+		else									return m_Box.Intersects(other.m_Sphere);
+	}
+	else {
+		if (other.m_Type == ColliderType::BOX)  return m_Sphere.Intersects(other.m_Box);
+		else									return m_Sphere.Intersects(other.m_Sphere);
+	}
+	return false;
 }
 
 XMFLOAT3 Collider::GetLook()

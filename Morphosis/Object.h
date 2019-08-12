@@ -9,6 +9,7 @@ class Collider;
 class Effect;
 class CTinMan;
 struct AnimationClip;
+class CFramework;
 // AB 순서로 넣으면 A에서 B로 가는 벡터 반환
 XMFLOAT3 GetBetweenVector(const Collider& A, const Collider& B);
 
@@ -60,12 +61,14 @@ struct LEVELDATA_DESC {
 class Collider {
 public:
 	Collider();
-	Collider(XMFLOAT3 offset, XMFLOAT3 extents, XMFLOAT4 quaternion);
-	Collider(XMFLOAT3 offset, float radius);
+	Collider(XMFLOAT3 offset, XMFLOAT3 extents, XMFLOAT4 quaternion, bool trig = false);
+	Collider(XMFLOAT3 offset, float radius, bool trig = false);
 	void Update(XMFLOAT3 position, XMFLOAT4 rotation);
 	bool IsCollide(const Collider& other);
 	void TriggerOff() { m_trigCollided = false; }
 	void SetOrientation(const XMFLOAT4& orientation);
+
+	bool TriggerCheck(const Collider& other);
 
 	XMFLOAT3 GetLook();
 	XMFLOAT3 GetUp();
@@ -78,6 +81,7 @@ public:
 	ColliderType		m_Type;
 	bool				m_trigCollided = false;
 
+	bool				m_IsTrigger;
 private:
 	XMFLOAT3 GetRotatedOffset(XMFLOAT4 rotation);
 	void SetPosition(XMFLOAT3 position, XMFLOAT3 rotatedOffset);
@@ -125,8 +129,8 @@ public:
 	void AddCollisionEffect(CObject* p);
 
 	void SetMng(CObjectManager* mng);
-	void AddCollider(XMFLOAT3 offset, XMFLOAT3 extents, XMFLOAT4 quaternion);
-	void AddCollider(XMFLOAT3 offset, float radius);
+	void AddCollider(XMFLOAT3 offset, XMFLOAT3 extents, XMFLOAT4 quaternion, bool trig = false);
+	void AddCollider(XMFLOAT3 offset, float radius, bool trig = false);
 	void SetColliderTrigOff() { for (int i = 0; i < m_Collider.size(); ++i) m_Collider[i].m_trigCollided = false; }
 	void SetPosition(float x, float y, float z);
 	void SetCameraTargetOffset(XMFLOAT3 pos);
@@ -153,8 +157,8 @@ public:
 	const int		GetNumAnimationBone();
 	const int		GetTeam() const { return m_Team; }
 	// 조건 함수
-	const bool IsCollide(const CObject& other);
-	const bool IsCollide(const Collider& other);
+	const bool IsCollide(const CObject& other, bool trig = false);
+	const bool IsCollide(const Collider& other, bool trig = false);
 	const bool IsAlive() const { return m_IsAlive; }
 protected:
 	// 내부 설정 함수
@@ -238,10 +242,20 @@ public:
 			if (m_trigInput[i]) return true;
 		return false;
 	}
+
+
 	bool			IsJump();
 	bool			IsOnAir();
 	bool			IsShot();
 	bool			IsDied();
+
+	//void			Stun();
+	//void			Heal();
+	//void			Push();
+	//void			MakeGrenade(vector<Component*>);
+
+
+
 
 
 protected:
@@ -251,11 +265,15 @@ protected:
 	float			Rotate(float fTimeElapsed);
 	void			ChangeAnimClip();
 
+
+
 public:
 	CTinMan*		m_AIBrain = NULL;
+	int				playerId = 0;
 
-protected:
+	//CSkill			*m_Skill0 = NULL;
 	bool			m_IsDied = false;
+protected:
 
 
 	// 이동
@@ -284,6 +302,7 @@ public:
 public:
 	void			Initialize(CObject* obj);
 	void			Initialize(CObject* obj, const char* modelName, Effect* effect);
+	//void			Initialize(CObject* obj, const char* modelName, CSkill* skill);
 	virtual void	Update(float fTimeElapsed) override;
 	virtual void	LateUpdate(float fTimeElapsed) override;
 	void			Damage(CObject* obj);
@@ -296,6 +315,9 @@ protected:
 	float			m_fSpeed;
 	float			m_fLifeTime;
 	float			m_BaseDamage;
+	float			fallingVelocity = 0;
+
+	//CSkill			*m_Skill = NULL;
 };
 
 class CUI : public CObject {
@@ -350,6 +372,7 @@ public:
 	Collider* GetCollider(Collider& myCollider, ColliderTag targetTag, bool isMakeAlign = false);
 	void ColliderTrigInit(ColliderTag targetTag);
 
+	void SetFramework(CFramework*p);
 
 
 private:
@@ -370,8 +393,10 @@ private:
 	//void CollisionCheck();
 
 private:
+	bool							m_Pause = false;
 	SceneType						m_SceneType;
 
+	CFramework						*m_pFramework				= NULL;
 	ID3D12Device					*m_pd3dDevice				= NULL;
 	ID3D12GraphicsCommandList		*m_pd3dCommandList			= NULL;
 	ID3D12DescriptorHeap			*m_pd3dCbvSrvDescriptorHeap = NULL;

@@ -42,8 +42,8 @@ CFramework::CFramework()
 
 	g_vecSound.resize(2);
 
-	g_System->createSound("run.wav", FMOD_DEFAULT, 0, &g_vecSound[static_cast<int>(SOUND::BGM)]);
-	g_System->createSound("382735__schots__gun-shot.mp3", FMOD_DEFAULT, 0, &g_vecSound[static_cast<int>(SOUND::SHOT)]);
+	g_System->createSound("Assets/run.wav", FMOD_LOOP_NORMAL, 0,	&g_vecSound[static_cast<int>(SOUND::BGM)]);
+	g_System->createSound("Assets/shot.mp3", FMOD_DEFAULT, 0,	&g_vecSound[static_cast<int>(SOUND::SHOT)]);
 	//FMOD_System_Create(&g_System);
 	//FMOD_System_Init(g_System, 32, FMOD_INIT_NORMAL, NULL);
 
@@ -151,6 +151,25 @@ bool CFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	m_hFenceEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL); // ¾ê Ãß°¡ÇßÀ½.
 
 	BuildScenes();
+
+	BOOL bFullScreenState = FALSE;
+	m_pdxgiSwapChain->GetFullscreenState(&bFullScreenState, NULL);
+	if (!bFullScreenState)
+	{
+		DXGI_MODE_DESC dxgiTargetParameters;
+		dxgiTargetParameters.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		dxgiTargetParameters.Width = m_nWndClientWidth;
+		dxgiTargetParameters.Height = m_nWndClientHeight;
+		dxgiTargetParameters.RefreshRate.Numerator = 60;
+		dxgiTargetParameters.RefreshRate.Denominator = 1;
+		dxgiTargetParameters.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+		dxgiTargetParameters.ScanlineOrdering =
+			DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+		m_pdxgiSwapChain->ResizeTarget(&dxgiTargetParameters);
+	}
+	m_pdxgiSwapChain->SetFullscreenState(!bFullScreenState, NULL);
+
+	OnResizeBackBuffers();
 
 	return true;
 }
@@ -393,7 +412,10 @@ void CFramework::BuildScenes()
 	m_ppScenes[static_cast<int>(SceneType::LOBBY)]		= new CSceneLobby();
 	m_ppScenes[static_cast<int>(SceneType::MAINPLAY)]	= new CSceneMainPlay();
 
-	m_pCurrentScene = m_ppScenes[static_cast<int>(SceneType::MAINPLAY)];
+	m_ppScenes[static_cast<int>(SceneType::LOBBY)]->SetFramework(this);
+	m_ppScenes[static_cast<int>(SceneType::MAINPLAY)]->SetFramework(this);
+
+	m_pCurrentScene = m_ppScenes[static_cast<int>(SceneType::LOBBY)];
 	m_pCurrentScene->Initialize(m_pd3dDevice, m_pd3dCommandList);
 
 	m_pd3dCommandList->Close();
@@ -439,8 +461,8 @@ void CFramework::ProcessInput()
 	bool bProcessedByScene = false;
 	if (GetKeyboardState(pKeysBuffer) && m_pCurrentScene) m_pCurrentScene->ProcessInput(pKeysBuffer);
 
-	if (pKeysBuffer[KEY::_8] & 0xF0) { if(m_pCurrentScene != m_ppScenes[static_cast<int>(SceneType::LOBBY)]) ChangeScene(SceneType::LOBBY); }
-	if (pKeysBuffer[KEY::_9] & 0xF0) { if (m_pCurrentScene != m_ppScenes[static_cast<int>(SceneType::MAINPLAY)]) ChangeScene(SceneType::MAINPLAY); }
+	//if (pKeysBuffer[KEY::_8] & 0xF0) { if(m_pCurrentScene != m_ppScenes[static_cast<int>(SceneType::LOBBY)]) ChangeScene(SceneType::LOBBY); }
+	//if (pKeysBuffer[KEY::_9] & 0xF0) { if (m_pCurrentScene != m_ppScenes[static_cast<int>(SceneType::MAINPLAY)]) ChangeScene(SceneType::MAINPLAY); }
 
 }
 

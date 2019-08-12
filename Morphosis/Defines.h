@@ -55,11 +55,20 @@ class CModel;
 struct ID3D12PipelineState;
 class CAnimationController;
 struct AINode;
+
+struct Request;
+struct PlayerStats {
+	XMFLOAT3 pos;
+	bool isDied;
+};
+
 extern std::vector<CTexture*>				g_vecTexture;
 extern std::vector<CModel*>					g_vecModel;
 extern std::vector<CAnimationController*>	g_vecAnimController;
 extern std::vector<AINode*>					g_vecAINode;
 extern std::vector<ID3D12PipelineState*>	g_vecPSO;
+extern PlayerStats							g_player0Info;
+extern std::queue<Request>					g_queueRequest;
 
 class FMOD::Sound;
 class FMOD::System;
@@ -87,7 +96,7 @@ constexpr float		g_fDefaultUnitScale			= 25.0f;
 
 extern unsigned int	gnCbvSrvDescriptorIncrementSize;
 constexpr float		g_fDefaultPlayerSpeed		= g_fDefaultUnitScale * 6;
-constexpr float		g_fDefaultProjectileSpeed	= g_fDefaultPlayerSpeed * 3.0f;
+constexpr float		g_fDefaultProjectileSpeed	= g_fDefaultPlayerSpeed * 5.0f;
 constexpr int		g_nAnimBone					= 64;
 constexpr int		g_nProjectilePerPlayer		= 30;
 constexpr float		TIMER_ATT					= 0.05f;
@@ -137,6 +146,12 @@ constexpr float		g_MouseInputSensitivity = 50.0f;
 extern bool			g_IsMouseMode;
 
 
+enum class RequestType { MoveForward, Shoot, Skill0, Skill1, Jump, MoveBackward };
+enum class CastType {SELFCAST, AROUND, HIT, PROJECTILE };
+struct Request {
+	int			playerIdx;
+	RequestType type;
+};
 enum class ColliderTag {
 	PROP,
 	PROJECTILE,

@@ -46,9 +46,9 @@ XMMATRIX CAnimationController::GetInterpolatedToRootMtx(int boneIdx, float time)
 	int maxIdx = (PrevIdx + 1 > m_AnimData[m_AnimState]->m_nKeyTime) ? PrevIdx : PrevIdx + 1;
 	normalizedTime = GetNormalizedTime(l_time, PrevIdx);
 
-	XMFLOAT4X4 result;
+	//XMFLOAT4X4 result;
 
-	Matrix4x4::InterpolateMtx(&result, m_AnimData[m_AnimState]->m_BoneList[boneIdx].m_pToRootTransforms[PrevIdx], m_AnimData[m_AnimState]->m_BoneList[boneIdx].m_pToRootTransforms[maxIdx], normalizedTime);
+	//Matrix4x4::InterpolateMtx(&result, m_AnimData[m_AnimState]->m_BoneList[boneIdx].m_pToRootTransforms[PrevIdx], m_AnimData[m_AnimState]->m_BoneList[boneIdx].m_pToRootTransforms[maxIdx], normalizedTime);
 
 	// return XMLoadFloat4x4(&result);
 	return XMLoadFloat4x4(&m_AnimData[m_AnimState]->m_BoneList[boneIdx].m_pToRootTransforms[PrevIdx]);
