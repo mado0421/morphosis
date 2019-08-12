@@ -95,7 +95,7 @@ enum class SOUND {
 constexpr float		g_fDefaultUnitScale			= 25.0f;
 
 extern unsigned int	gnCbvSrvDescriptorIncrementSize;
-constexpr float		g_fDefaultPlayerSpeed		= g_fDefaultUnitScale * 6;
+constexpr float		g_fDefaultPlayerSpeed		= g_fDefaultUnitScale * 10;
 constexpr float		g_fDefaultProjectileSpeed	= g_fDefaultPlayerSpeed * 5.0f;
 constexpr int		g_nAnimBone					= 64;
 constexpr int		g_nProjectilePerPlayer		= 30;
