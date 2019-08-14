@@ -207,6 +207,12 @@ void CScene::Update(float fTimeElapsed)
 
 void CScene::Release()
 {
+
+
+
+
+
+
 	g_vecAnimController.clear();
 	g_vecModel.clear();
 	g_vecModel.clear();
