@@ -147,7 +147,7 @@ void CSceneMainPlay::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommand
 
 void CSceneMainPlay::ProcessInput(UCHAR * pKeysBuffer)
 {
-	float cxDelta = 0.0f/*, cyDelta = 0.0f*/;
+	XMFLOAT2 cDelta = XMFLOAT2(0,0);
 	POINT ptCursorPos;
 	//static float cameraOffsetZ = 60;
 	//static float cameraOffsetY = 30;
@@ -174,12 +174,12 @@ void CSceneMainPlay::ProcessInput(UCHAR * pKeysBuffer)
 
 	if (g_IsMouseMode) {
 		GetCursorPos(&ptCursorPos);
-		cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
-		//cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
+		cDelta.x = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
+		cDelta.y = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
 		SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 	}
 
-	m_ObjMng->ProcessInput(pKeysBuffer, cxDelta);
+	m_ObjMng->ProcessInput(pKeysBuffer, cDelta);
 }
 
 void CScene::SetFramework(CFramework * p)
@@ -355,18 +355,18 @@ void CSceneLobby::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandLis
 
 void CSceneLobby::ProcessInput(UCHAR * pKeysBuffer)
 {
-	float cxDelta = 0.0f/*, cyDelta = 0.0f*/;
+	XMFLOAT2 cDelta = XMFLOAT2(0, 0);
 	POINT ptCursorPos;
-
 	if (pKeysBuffer[KEY::_1] & 0xF0) { g_IsMouseMode = false; }
 	if (pKeysBuffer[KEY::_2] & 0xF0) { g_IsMouseMode = true; }
+	if (pKeysBuffer[KEY::_3] & 0xF0) { m_ObjMng->GetTarget(0)->Enable(); }
 
 	if (g_IsMouseMode) {
 		GetCursorPos(&ptCursorPos);
-		cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
-		//cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
+		cDelta.x = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
+		cDelta.y = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
 		SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 	}
 
-	m_ObjMng->ProcessInput(pKeysBuffer, cxDelta);
+	m_ObjMng->ProcessInput(pKeysBuffer, cDelta);
 }

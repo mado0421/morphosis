@@ -275,7 +275,7 @@ CPlayer::CPlayer() : CObject()
 	m_xmf3SpawnPoint = GetPosition();
 	m_HealthPoint = g_DefaultHealthPoint;
 	m_fRemainingTimeOfRespawn = 0.0f;
-	m_rotationInput = 0.0f;
+	m_rotationInput = XMFLOAT2(0.0f, 0.0f);
 	for (int i = 0; i < static_cast<int>(Move::count); ++i) m_trigInput[i] = false;
 	m_AIBrain = new CTinMan(new CMoveBehavior(), this);
 }
@@ -538,8 +538,16 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 	XMFLOAT3 xmf3Up = XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
 	XMFLOAT3 xmf3Look = XMFLOAT3(m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33);
 
-	float rotationAngle = Rotate(fTimeElapsed);
-	XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(rotationAngle));
+	XMFLOAT2 rotationAngle = Rotate(fTimeElapsed);
+
+	// X축 기준 회전값은 저장해서 관리하기.
+	m_fXAxisRotation += rotationAngle.y;
+	if (m_fXAxisRotation > 85) 
+		m_fXAxisRotation = 85;
+	if (m_fXAxisRotation < -70) 
+		m_fXAxisRotation = -70;
+
+	XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(rotationAngle.x));
 	xmf3Look = Vector3::TransformNormal(xmf3Look, xmmtxRotate);
 	xmf3Right = Vector3::TransformNormal(xmf3Right, xmmtxRotate);
 
@@ -554,7 +562,19 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 	m_xmf4x4World._42 += m_xmf3Move.y;
 	m_xmf4x4World._43 += m_xmf3Move.z;
 
-	XMStoreFloat3(&m_xmf3CameraTargetOffset, XMVector3Rotate(XMLoadFloat3(&m_xmf3CameraTargetOffset), XMQuaternionRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(rotationAngle))));
+	xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Right), XMConvertToRadians(m_fXAxisRotation));
+	xmf3Look	= Vector3::TransformNormal(xmf3Look, xmmtxRotate);
+	xmf3Up		= Vector3::TransformNormal(xmf3Up, xmmtxRotate);
+
+	xmf3Look = Vector3::Normalize(xmf3Look);
+	xmf3Right = Vector3::CrossProduct(xmf3Up, xmf3Look, true);
+	xmf3Up = Vector3::CrossProduct(xmf3Look, xmf3Right, true);
+
+	m_xmf2RotatedLook	= xmf3Look;
+	m_xmf2RotatedUp		= xmf3Up;
+
+
+	XMStoreFloat3(&m_xmf3CameraTargetOffset, XMVector3Rotate(XMLoadFloat3(&m_xmf3CameraTargetOffset), XMQuaternionRotationAxis(XMLoadFloat3(&xmf3Up), XMConvertToRadians(rotationAngle.x))));
 
 
 	for (int i = 0; i < m_Collider.size(); ++i) m_Collider[i].Update(GetPosition(), GetQuaternion());
@@ -571,7 +591,7 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 		//CPlayer::Disable();
 	}
 }
-void CPlayer::ProcessInput(UCHAR * pKeysBuffer, float mouse)
+void CPlayer::ProcessInput(UCHAR * pKeysBuffer, XMFLOAT2 mouse)
 {
 
 	if (g_IsMouseMode) {
@@ -648,6 +668,25 @@ bool CPlayer::IsSkillUseable(int idx)
 	if (m_IsDied) return false;
 	return m_fRemainingTimeOfSkill1 <= 0;
 }
+const XMFLOAT3 CPlayer::GetLook()
+{
+
+	return m_xmf2RotatedLook;
+}
+const XMFLOAT3 CPlayer::GetUp()
+{
+	return m_xmf2RotatedUp;
+}
+const XMFLOAT3 CPlayer::GetUnRotatedLook()
+{
+	XMFLOAT3 vector = { m_xmf4x4World._31, m_xmf4x4World._32, m_xmf4x4World._33 };
+	return Vector3::Normalize(vector);
+}
+const XMFLOAT3 CPlayer::GetUnRotatedUp()
+{
+	XMFLOAT3 vector = { m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23 };
+	return Vector3::Normalize(vector);
+}
 void CPlayer::ChangeAnimClip()
 {
 	if (static_cast<int>(AnimationState::IDLE) == m_AnimationState)
@@ -666,14 +705,15 @@ void CPlayer::ChangeAnimClip()
 void CPlayer::TriggerOff()
 {
 	for (int i = 0; i < static_cast<int>(Move::count); i++) m_trigInput[i] = false;
-	m_rotationInput = 0;
+	m_rotationInput.x = 0;
+	m_rotationInput.y = 0;
 }
 XMFLOAT3 CPlayer::Move(float fTimeElapsed)
 {
 	XMFLOAT3 temp(0, 0, 0);
-	if (m_trigInput[static_cast<int>(Move::W)]) { temp = Vector3::Add(temp, Vector3::Normalize(GetLook())); }
+	if (m_trigInput[static_cast<int>(Move::W)]) { temp = Vector3::Add(temp, Vector3::Normalize(GetUnRotatedLook())); }
 	if (m_trigInput[static_cast<int>(Move::A)]) { temp = Vector3::Add(temp, Vector3::Normalize(Vector3::Multiply(-1, GetRight()))); }
-	if (m_trigInput[static_cast<int>(Move::S)]) { temp = Vector3::Add(temp, Vector3::Normalize(Vector3::Multiply(-1, GetLook()))); }
+	if (m_trigInput[static_cast<int>(Move::S)]) { temp = Vector3::Add(temp, Vector3::Normalize(Vector3::Multiply(-1, GetUnRotatedLook()))); }
 	if (m_trigInput[static_cast<int>(Move::D)]) { temp = Vector3::Add(temp, Vector3::Normalize(GetRight())); }
 	temp = Vector3::Normalize(temp);
 
@@ -681,16 +721,17 @@ XMFLOAT3 CPlayer::Move(float fTimeElapsed)
 
 	return Vector3::Multiply(fTimeElapsed * m_fSpeed * m_fSlowFactor, temp);
 }
-float CPlayer::Rotate(float fTimeElapsed)
+XMFLOAT2 CPlayer::Rotate(float fTimeElapsed)
 {
-	float temp = 0;
-	if (g_IsMouseMode) {
-		temp += m_rotationInput * fTimeElapsed * g_MouseInputSensitivity;
-	}
-	else {
-		if (m_trigInput[static_cast<int>(Move::Q)]) temp += fTimeElapsed * m_fSpeed * -1;
-		if (m_trigInput[static_cast<int>(Move::E)]) temp += fTimeElapsed * m_fSpeed;
-	}
+	XMFLOAT2 temp = XMFLOAT2(0,0);
+	//if (g_IsMouseMode) {
+		temp.x += m_rotationInput.x * fTimeElapsed * g_MouseInputSensitivity;
+		temp.y += m_rotationInput.y * fTimeElapsed * 10.0f;
+	//}
+	//else {
+	//	if (m_trigInput[static_cast<int>(Move::Q)]) temp += fTimeElapsed * m_fSpeed * -1;
+	//	if (m_trigInput[static_cast<int>(Move::E)]) temp += fTimeElapsed * m_fSpeed;
+	//}
 
 	return temp;
 }
@@ -1026,7 +1067,7 @@ void CObjectManager::Update(float fTime)
 
 	LateUpdate(fTime);
 }
-void CObjectManager::ProcessInput(UCHAR * pKeysBuffer, float mouse)
+void CObjectManager::ProcessInput(UCHAR * pKeysBuffer, XMFLOAT2 mouse)
 {
 	if (SceneType::MAINPLAY == m_SceneType) {
 
@@ -1414,6 +1455,16 @@ void CObjectManager::CreateObjectData()
 		importer.ImportTexture(L"city_lf", "Texture_SkyBox_lf");
 		importer.ImportTexture(L"city_rt", "Texture_SkyBox_rt");
 		importer.ImportTexture(L"city_up", "Texture_SkyBox_up");
+		importer.ImportTexture(L"Text_0", "Texture_Text_0");
+		importer.ImportTexture(L"Text_1", "Texture_Text_1");
+		importer.ImportTexture(L"Text_2", "Texture_Text_2");
+		importer.ImportTexture(L"Text_3", "Texture_Text_3");
+		importer.ImportTexture(L"Text_4", "Texture_Text_4");
+		importer.ImportTexture(L"Text_5", "Texture_Text_5");
+		importer.ImportTexture(L"Text_6", "Texture_Text_6");
+		importer.ImportTexture(L"Text_7", "Texture_Text_7");
+		importer.ImportTexture(L"Text_8", "Texture_Text_8");
+		importer.ImportTexture(L"Text_9", "Texture_Text_9");
 
 		CreateDescriptorHeap();
 
@@ -1719,6 +1770,30 @@ void CObjectManager::CreateObjectData()
 		DebugBreak();
 
 }
+void CObjectManager::MakeDamageUI(int damage, CObject *obj)
+{
+	vector<int> vec;
+	float meshSize = damage * 0.1f;
+	while (damage != 0) {
+		vec.push_back( damage % 10 );
+		damage %= 10;
+	}
+	for (int i = 0; i < vec.size(); ++i) {
+		for (int j = 0; j < m_DamageUI.size(); ++j) {
+			if (!m_DamageUI[j]->IsAlive()) {
+
+				m_DamageUI[j]->Initialize(XMFLOAT2(meshSize, meshSize), vec[i]);
+				XMFLOAT3 pos = obj->GetPosition();
+				pos.x -= meshSize * i;
+				m_DamageUI[j]->SetPosition(pos);
+				continue;
+			}
+		}
+	}
+
+
+
+}
 //void CObjectManager::CollisionCheck()
 //{
 //	/*********************************************************************
@@ -1982,4 +2057,34 @@ void CUI::SetScale(XMFLOAT2 scale)
 const XMFLOAT2 CUI::GetSize()
 {
 	return XMFLOAT2(m_xmf2Size.x * m_xmf2Scale.x, m_xmf2Size.y * m_xmf2Scale.y);
+}
+
+// Size는 Damege와 비례하게 넣고 내부에서 Scale로 크기 변경
+void CDamageUI::Initialize(XMFLOAT2 size, int num)
+{
+	SetAlive(true);
+	m_xmf2Size = size;
+	m_fLifeTime = 1.0f;
+}
+
+void CDamageUI::Update(float fTimeElapsed)
+{
+	/*
+	생성되고 위로 살짝 올라가다가 아래로 이동
+	생성되고 살짝 커졌다가 작아져서 소멸
+	0.2초에 정점, 1.0초에 소멸
+
+	계속 플레이어 위치를 보게 해야 하는데 그건 어떻게 할 것인지
+	이건 추후 업데이트에서 하도록 하자.
+	*/
+	//static float time[3] = { 0.0f, 0.2f, 1.0f };
+	//static float scale[3] = { 0.5f, 1.0f, 0.0f };
+	//float curTime = 1.0f - m_fLifeTime;
+	//for (int i = 0; i < 2; i++) {
+	//}
+
+	m_fLifeTime -= fTimeElapsed;
+	if (m_fLifeTime <= 0.0f) Disable();
+
+
 }

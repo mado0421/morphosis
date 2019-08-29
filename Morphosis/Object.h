@@ -124,7 +124,7 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL, bool isDebug = false);
 	virtual void Update(float fTimeElapsed) {}
 	virtual void LateUpdate(float fTimeElapsed) {}
-	virtual void ProcessInput(UCHAR* pKeysBuffer, float mouse) {}
+	virtual void ProcessInput(UCHAR* pKeysBuffer, XMFLOAT2 mouse) {}
 	// 외부 설정 함수
 	void AddCollisionEffect(CObject* p);
 
@@ -148,9 +148,9 @@ public:
 	// 외부 접근 함수
 	Collider* const GetCollisionCollider(Collider& other, bool isMakeAlign);
 	const XMFLOAT3	GetPosition();
-	const XMFLOAT3	GetLook();
-	const XMFLOAT3	GetUp();
-	const XMFLOAT3	GetRight();
+	virtual const XMFLOAT3	GetLook();
+	virtual const XMFLOAT3	GetUp();
+	virtual const XMFLOAT3	GetRight();
 	const XMMATRIX	GetAnimationMatrix(int boneIdx);
 	const XMFLOAT3	GetCameraTargetPos();
 	const XMFLOAT4	GetQuaternion();
@@ -215,7 +215,7 @@ public:
 	// 기본적인 작동함수
 	virtual void	Update(float fTimeElapsed) override;
 	virtual void	LateUpdate(float fTimeElapsed) override;
-	virtual void	ProcessInput(UCHAR* pKeysBuffer, float mouse) override;
+	virtual void	ProcessInput(UCHAR* pKeysBuffer, XMFLOAT2 mouse) override;
 
 	const int GetHP() { return m_HealthPoint; }
 
@@ -242,7 +242,10 @@ public:
 			if (m_trigInput[i]) return true;
 		return false;
 	}
-
+	virtual const XMFLOAT3	GetLook()override;
+	virtual const XMFLOAT3	GetUp()override;
+	const XMFLOAT3 GetUnRotatedLook();
+	const XMFLOAT3 GetUnRotatedUp();
 
 	bool			IsJump();
 	bool			IsOnAir();
@@ -262,7 +265,7 @@ protected:
 	// 내부 설정 함수
 	void			TriggerOff();
 	XMFLOAT3		Move(float fTimeElapsed);
-	float			Rotate(float fTimeElapsed);
+	XMFLOAT2			Rotate(float fTimeElapsed);
 	void			ChangeAnimClip();
 
 
@@ -278,12 +281,15 @@ protected:
 
 	// 이동
 	XMFLOAT3		m_xmf3Move;
+	XMFLOAT3		m_xmf2RotatedLook = XMFLOAT3(0,0,1);
+	XMFLOAT3		m_xmf2RotatedUp = XMFLOAT3(0,1,0);
 	float			m_fSpeed;
 	float			m_fSlowFactor = 1.0f;
 	float			m_fRemainingTimeOfSlow = 0;
+	float			m_fXAxisRotation = 0;
 	// 키입력
 	bool			m_trigInput[static_cast<int>(Move::count)];
-	float			m_rotationInput;
+	XMFLOAT2		m_rotationInput;
 	// 내부 객체 정보
 	float			m_fRPM;	// 1/Round Per Minute
 	float			m_fRemainingTimeOfFire;
@@ -327,7 +333,7 @@ public:
 	virtual void SetRootParameter(ID3D12GraphicsCommandList *pd3dCommandList);
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL, bool isDebug = false);
 
-	void	Initialize(XMFLOAT2 size);
+	virtual void	Initialize(XMFLOAT2 size);
 	void	SetScale(XMFLOAT2 scale);
 
 	const XMFLOAT2 GetSize();
@@ -341,6 +347,21 @@ private:
 	XMFLOAT2	m_xmf2Size;
 	XMFLOAT2	m_xmf2Scale;
 	MouseState	m_MouseState;
+};
+
+class CDamageUI : public CUI {
+public:
+
+public:
+	virtual void	Initialize(XMFLOAT2 size, int num);
+	virtual void	Update(float fTimeElapsed) override;
+
+
+private:
+	XMFLOAT2	m_xmf2Size;
+	XMFLOAT2	m_xmf2Scale;
+	MouseState	m_MouseState;
+	float		m_fLifeTime = 1.0f;
 };
 
 class CObjectManager {
@@ -367,7 +388,7 @@ public:
 	ID3D12DescriptorHeap* GetDescriptorHeap() {
 		return m_pd3dCbvSrvDescriptorHeap;
 	}
-	void ProcessInput(UCHAR* pKeysBuffer, float mouse);
+	void ProcessInput(UCHAR* pKeysBuffer, XMFLOAT2 mouse);
 
 	Collider* GetCollider(Collider& myCollider, ColliderTag targetTag, bool isMakeAlign = false);
 	void ColliderTrigInit(ColliderTag targetTag);
@@ -391,6 +412,8 @@ private:
 	}
 	bool IsAnotherTeam(CObject* src, CObject* dst) const { return src->GetTeam() != dst->GetTeam(); }
 	//void CollisionCheck();
+
+	void MakeDamageUI(int damage, CObject *obj);
 
 private:
 	bool							m_Pause = false;
@@ -438,6 +461,7 @@ private:
 	vector<CPlayer*>		m_Players;
 	vector<CProjectile*>	m_Projectiles;
 	vector<CUI*>			m_FloatingUI;
+	vector<CDamageUI*>		m_DamageUI;
 	vector<CUI*>			m_DefaultUI;
 
 	/*********************************************************************
