@@ -114,19 +114,19 @@ public:
 	void SetCbvGPUDescriptorHandle(D3D12_GPU_DESCRIPTOR_HANDLE d3dCbvGPUDescriptorHandle)	{ m_d3dCbvGPUDescriptorHandle = d3dCbvGPUDescriptorHandle; }
 	void SetCbvGPUDescriptorHandlePtr(UINT64 nCbvGPUDescriptorHandlePtr)					{ m_d3dCbvGPUDescriptorHandle.ptr = nCbvGPUDescriptorHandlePtr; }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetCbvGPUDescriptorHandle()									{ return(m_d3dCbvGPUDescriptorHandle); }
-	virtual void SetAnimatedMatrix(CAnimationController* a, float time);
 	virtual void CreateConstantBufferResource(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
+	virtual void CreateConstantBufferView(ID3D12Device*, D3D12_CPU_DESCRIPTOR_HANDLE, int&);
 	virtual void UpdateConstantBuffer(ID3D12GraphicsCommandList *pd3dCommandList);
 
 	// RootParameter를 정하는 함수
 	virtual void SetRootParameter(ID3D12GraphicsCommandList *pd3dCommandList);
 	// 기본적인 작동함수
-	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL, bool isDebug = false);
+	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
 	virtual void Update(float fTimeElapsed) {}
 	virtual void LateUpdate(float fTimeElapsed) {}
 	virtual void ProcessInput(UCHAR* pKeysBuffer, XMFLOAT2 mouse) {}
 	// 외부 설정 함수
-	void AddCollisionEffect(CObject* p);
+	//void AddCollisionEffect(CObject* p);
 
 	void SetMng(CObjectManager* mng);
 	void AddCollider(XMFLOAT3 offset, XMFLOAT3 extents, XMFLOAT4 quaternion, bool trig = false);
@@ -137,7 +137,6 @@ public:
 	void SetPosition(const XMFLOAT3 xmf3Position);
 	void SetRotation(const XMFLOAT3& angle);
 	void AddModel(CModel* model)						{	m_ModelList.push_back(model); 	}
-	void SetAnimCtrl(CAnimationController* animCtrl)	{ m_AnimationController = animCtrl; }
 	void SetTeam(int team)								{ m_Team = team; }
 	void SetAlive(bool state)							{ m_IsAlive = state; }
 	virtual void Enable()								{ SetAlive(true); }
@@ -151,10 +150,9 @@ public:
 	virtual const XMFLOAT3	GetLook();
 	virtual const XMFLOAT3	GetUp();
 	virtual const XMFLOAT3	GetRight();
-	const XMMATRIX	GetAnimationMatrix(int boneIdx);
+
 	const XMFLOAT3	GetCameraTargetPos();
 	const XMFLOAT4	GetQuaternion();
-	const int		GetNumAnimationBone();
 	const int		GetTeam() const { return m_Team; }
 	// 조건 함수
 	const bool IsCollide(const CObject& other, bool trig = false);
@@ -165,7 +163,6 @@ protected:
 	void SetLook(XMFLOAT3 look);
 	void SetUp(XMFLOAT3 up);
 	void SetRight(XMFLOAT3 right);
-	virtual void ChangeAnimClip() {}
 
 public:
 	// 월드 변환 행렬
@@ -183,13 +180,7 @@ protected:
 	XMFLOAT3						m_xmf3CollisionOffset;
 	float							m_fHeightVelocity;
 	bool							m_IsGround;
-	//애니메이션
-	CAnimationController			*m_AnimationController	= NULL;
-	float							m_AnimationTime			= 0;
-	int								m_AnimationState;
-	ID3D12Resource					*m_pd3dcbAnimation		= NULL;
-	XMMATRIX						*m_pcbxmAnimation		= NULL;
-	XMMATRIX						m_a[g_nAnimBone];
+
 
 	//충돌체
 	std::vector<Collider>			m_Collider;
@@ -216,6 +207,12 @@ public:
 	virtual void	Update(float fTimeElapsed) override;
 	virtual void	LateUpdate(float fTimeElapsed) override;
 	virtual void	ProcessInput(UCHAR* pKeysBuffer, XMFLOAT2 mouse) override;
+	virtual void	UpdateConstantBuffer(ID3D12GraphicsCommandList *pd3dCommandList);
+	virtual void	Render(ID3D12GraphicsCommandList *pd3dCommandList);
+	const XMMATRIX	GetAnimationMatrix(int boneIdx);
+	const int		GetNumAnimationBone();
+	void			SetAnimCtrl(CAnimationController* animCtrl) { m_AnimationController = animCtrl; }
+	virtual void	SetAnimatedMatrix(CAnimationController* a, float time);
 
 	const int GetHP() { return m_HealthPoint; }
 
@@ -277,7 +274,13 @@ public:
 	//CSkill			*m_Skill0 = NULL;
 	bool			m_IsDied = false;
 protected:
-
+	//애니메이션
+	CAnimationController			*m_AnimationController = NULL;
+	float							m_AnimationTime = 0;
+	int								m_AnimationState;
+	ID3D12Resource					*m_pd3dcbAnimation = NULL;
+	XMMATRIX						*m_pcbxmAnimation = NULL;
+	XMMATRIX						m_a[g_nAnimBone];
 
 	// 이동
 	XMFLOAT3		m_xmf3Move;
@@ -330,8 +333,11 @@ class CUI : public CObject {
 public:
 	CUI();
 public:
+	virtual void CreateConstantBufferResource(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
+	virtual void CreateConstantBufferView(ID3D12Device*, D3D12_CPU_DESCRIPTOR_HANDLE, int&);
 	virtual void SetRootParameter(ID3D12GraphicsCommandList *pd3dCommandList);
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL, bool isDebug = false);
+	virtual void UpdateConstantBuffer(ID3D12GraphicsCommandList *pd3dCommandList);
 
 	virtual void	Initialize(XMFLOAT2 size);
 	void	SetScale(XMFLOAT2 scale);
@@ -440,18 +446,6 @@ private:
 	m_nAnimationMatrix는 m_nObject * g_nAnimBone를 한 값.
 	*********************************************************************/
 	int		m_nObjects									= 0;
-	
-	ID3D12Resource*		m_pd3dCBPropResource			= NULL;
-	ID3D12Resource*		m_pd3dCBPlayersResource			= NULL;
-	ID3D12Resource*		m_pd3dCBProjectilesResource		= NULL;
-	ID3D12Resource*		m_pd3dCBFloatingUIsResource		= NULL;
-	ID3D12Resource*		m_pd3dCBDefaultUIsResource		= NULL;
-
-	CB_OBJECT_INFO*		m_pCBMappedPropObjects			= NULL;
-	CB_OBJECT_INFO*		m_pCBMappedPlayers				= NULL;
-	CB_OBJECT_INFO*		m_pCBMappedProjectiles			= NULL;
-	CB_UI_INFO*			m_pCBMappedFloatingUIs			= NULL;
-	CB_UI_INFO*			m_pCBMappedDefaultUIs			= NULL;
 
 	/*********************************************************************
 	2019-06-15

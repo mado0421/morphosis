@@ -3,15 +3,15 @@
 #include "Object.h"
 
 
-void EDefaultDamage::Act(CPlayer * p)
-{
-	p->TakeDamage(8);
-}
-
-void ESlow::Act(CPlayer * p)
-{
-	p->Slow();
-}
+//void EDefaultDamage::Act(CPlayer * p)
+//{
+//	p->TakeDamage(8);
+//}
+//
+//void ESlow::Act(CPlayer * p)
+//{
+//	p->Slow();
+//}
 
 //void Stun::MainEffect(CPlayer * target, CastType type)
 //{

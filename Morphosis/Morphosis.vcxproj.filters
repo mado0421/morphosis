@@ -48,6 +48,9 @@
     <Filter Include="소스 파일\Effect">
       <UniqueIdentifier>{6a53693a-9849-445d-b70c-8a5fc5cb69db}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Skill">
+      <UniqueIdentifier>{75d17732-4c94-4072-8b98-2fcc6e2d997b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationController.cpp">
@@ -97,6 +100,9 @@
     </ClCompile>
     <ClCompile Include="Effect.cpp">
       <Filter>소스 파일\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Skill.cpp">
+      <Filter>소스 파일\Skill</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +181,9 @@
     </ClInclude>
     <ClInclude Include="Effect.h">
       <Filter>소스 파일\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Skill.h">
+      <Filter>소스 파일\Skill</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
