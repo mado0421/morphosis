@@ -73,8 +73,26 @@ void CObject::SetAnimatedMatrix(CAnimationController * a, float time)
 		m_a[i] = XMMatrixTranspose(a->GetFinalMatrix(i, time));
 	}
 }
-void CObject::CreateConstantBufferResource(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
+void CObject::CreateConstantBufferResourceAndView(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorStartHandle, int& offset)
 {
+	D3D12_GPU_VIRTUAL_ADDRESS		d3dGpuVirtualAddress;
+	D3D12_CONSTANT_BUFFER_VIEW_DESC d3dCBVDesc;
+
+	UINT ncbElementBytes;
+	ncbElementBytes = ((sizeof(CB_OBJECT_INFO) + 255) & ~255);
+
+	m_pd3dCBResource = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes,
+		D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+
+	if (nullptr != m_pd3dCBResource) {
+		m_pd3dCBResource->Map(0, NULL, (void **)&m_pCBMappedObjects);
+		d3dGpuVirtualAddress = m_pd3dCBResource->GetGPUVirtualAddress();
+		d3dCBVDesc.SizeInBytes = ncbElementBytes;
+		d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress;
+		D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
+		d3dCbvCPUDescriptorHandle.ptr = d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * offset++);
+		pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
+	}
 }
 void CObject::UpdateConstantBuffer(ID3D12GraphicsCommandList * pd3dCommandList)
 {
