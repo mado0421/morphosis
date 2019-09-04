@@ -282,6 +282,7 @@ public:
 
 	//CSkill			*m_Skill0 = NULL;
 	bool			m_IsDied = false;
+	float			m_fRemainingTimeOfSkill1;
 protected:
 
 
@@ -302,7 +303,6 @@ protected:
 	XMFLOAT3		m_xmf3SpawnPoint;
 	float			m_HealthPoint;
 	float			m_fRemainingTimeOfRespawn;
-	float			m_fRemainingTimeOfSkill1;
 	bool			m_IsOnGround = false;
 
 

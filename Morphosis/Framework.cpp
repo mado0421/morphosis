@@ -415,7 +415,7 @@ void CFramework::BuildScenes()
 	m_ppScenes[static_cast<int>(SceneType::LOBBY)]->SetFramework(this);
 	m_ppScenes[static_cast<int>(SceneType::MAINPLAY)]->SetFramework(this);
 
-	m_pCurrentScene = m_ppScenes[static_cast<int>(SceneType::LOBBY)];
+	m_pCurrentScene = m_ppScenes[static_cast<int>(SceneType::MAINPLAY)];
 	m_pCurrentScene->Initialize(m_pd3dDevice, m_pd3dCommandList);
 
 	m_pd3dCommandList->Close();

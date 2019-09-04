@@ -664,7 +664,7 @@ void CPlayer::Skill(int idx)
 
 	m_AnimationState = static_cast<int>(AnimationState::FIRE);
 	m_AnimationTime = 0;
-	m_fRemainingTimeOfSkill1 = 0.5f;
+	m_fRemainingTimeOfSkill1 = 2.0f;
 }
 void CPlayer::Slow()
 {
@@ -1158,6 +1158,13 @@ void CObjectManager::Update(float fTime)
 			}
 		}
 
+		float f = m_Players[0]->GetHP();
+		m_DefaultUI[8]->SetScale(XMFLOAT2(f / 100, 1));
+		f = m_Players[0]->m_fRemainingTimeOfSkill1;
+		m_DefaultUI[7]->SetScale(XMFLOAT2((2-f) / 2.0f, 1));
+
+
+
 	}
 
 	for (int i = 0; i < m_Props.size(); ++i)		m_Props[i]->Update(fTime);
@@ -1594,7 +1601,7 @@ void CObjectManager::CreateObjectData()
 		int nProps = 2;
 		int nPlayers = 3;
 		int nFloatingUI = 5 + 10 + 1;
-		int nDefaultUI = 6;
+		int nDefaultUI = 6 + 1 + 1 + 1;
 		int nProjectiles = nPlayers * g_nProjectilePerPlayer;
 		m_nObjects = nProps + nPlayers + nProjectiles + nFloatingUI + nDefaultUI;
 
@@ -1645,7 +1652,8 @@ void CObjectManager::CreateObjectData()
 		importer.ImportTexture(L"Text_9", "Texture_Text_9");
 		importer.ImportTexture(L"smoke", "Effect_Smoke");
 		importer.ImportTexture(L"ring", "Effect_Ring");
-
+		importer.ImportTexture(L"Info", "Info_Infobar");
+		importer.ImportTexture(L"Skillbar", "Info_Skillbar");
 		CreateDescriptorHeap();
 
 		for (int i = 0; i < g_vecTexture.size(); ++i) CreateTextureResourceView(g_vecTexture[i]);
@@ -1666,6 +1674,8 @@ void CObjectManager::CreateObjectData()
 		importer.ImportModel("", "Texture_SkyBox_up", ModelType::FloatingUI, "SkyBox_up");
 		importer.ImportModel("", "Effect_Smoke", ModelType::FloatingUI, "Effect_Smoke");
 		importer.ImportModel("", "Effect_Ring", ModelType::FloatingUI, "Effect_Ring");
+		importer.ImportModel("", "Info_Infobar", ModelType::FloatingUI, "Info_Infobar");
+		importer.ImportModel("", "Info_Skillbar", ModelType::FloatingUI, "Info_Skillbar");
 
 		importer.ImportModel("", "Texture_ProgressBar", ModelType::FloatingUI, "ProgressBarBack");
 		importer.ImportModel("", "Texture_CapturingPoint", ModelType::FloatingUI, "ProgressBarFrnt");
@@ -1745,7 +1755,7 @@ void CObjectManager::CreateObjectData()
 				XMFLOAT3(6, 8, 6),
 				XMFLOAT4(0, 0, 0, 1)
 			);
-			obj->SetCameraTargetOffset(XMFLOAT3(0, 23, 27));
+			obj->SetCameraTargetOffset(XMFLOAT3(0, 50, 0));
 
 			if (i == 0) {
 				obj->SetTeam(0);
@@ -1877,6 +1887,24 @@ void CObjectManager::CreateObjectData()
 				obj->SetPosition(0.5, 0.4, 0.0f);
 				obj->Initialize(XMFLOAT2(500, 500));
 				obj->Disable();
+
+			}
+			else if (6 == i) {
+				obj->AddModel(GetModelByName("Info_Infobar"));
+				obj->SetPosition(0.8, 0.8, 0.0f);
+				obj->Initialize(XMFLOAT2(250, 250));
+
+			}
+			else if (7 == i) {
+				obj->AddModel(GetModelByName("Info_Skillbar"));
+				obj->SetPosition(0.82, 0.8, 0.0f);
+				obj->Initialize(XMFLOAT2(200, 20));
+
+			}
+			else if (8 == i) {
+				obj->AddModel(GetModelByName("UI_TEST"));
+				obj->SetPosition(0.82, 0.75, 0.0f);
+				obj->Initialize(XMFLOAT2(200, 20));
 
 			}
 
