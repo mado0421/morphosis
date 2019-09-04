@@ -331,3 +331,6 @@ namespace Matrix4x4
 inline XMMATRIX XMMatrixRotationRollPitchYawDegree(float x, float y, float z) {
 	return XMMatrixRotationRollPitchYaw(XMConvertToRadians(x), XMConvertToRadians(y), XMConvertToRadians(z));
 }
+inline float GetDistance(XMFLOAT3 a, XMFLOAT3 b) {
+	return Vector3::Length(Vector3::Subtract(b, a));
+}

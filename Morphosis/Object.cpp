@@ -59,9 +59,7 @@ CObject::~CObject()
 }
 void CObject::AddCollisionEffect(CObject * p)
 {
-	for (int i = 0; i < m_vecEffects.size(); ++i) {
-		m_vecEffects[i]->Act(dynamic_cast<CPlayer*>(p));
-	}
+
 }
 void CObject::SetMng(CObjectManager * mng)
 {
@@ -298,6 +296,8 @@ void CPlayer::Update(float fTimeElapsed)
 		- 리스폰까지 남은 시간을 흐른 시간만큼 감소
 		- 만약 리스폰까지 남은 시간이 0보다 작다면 플레이어를 다시 소생*/
 	m_AnimationTime += fTimeElapsed;
+
+
 	if (m_IsDied) {
 		m_fRemainingTimeOfRespawn -= fTimeElapsed;
 		if (m_fRemainingTimeOfRespawn <= 0.0f) {
@@ -310,7 +310,24 @@ void CPlayer::Update(float fTimeElapsed)
 		return;
 	}
 
-	m_AIBrain->Update();
+	if (stuntime > 0) {
+		stuntime -= fTimeElapsed;
+	}
+	else {
+		stuntime = 0;
+		m_AIBrain->Update();
+	}
+
+	if (dottime > 0) {
+		dottime -= fTimeElapsed;
+		m_HealthPoint -= 5 * fTimeElapsed;
+	}
+	else {
+		dottime = 0;
+	}
+
+
+
 
 
 
@@ -392,7 +409,6 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 	float radius = g_fDefaultUnitScale / 2.0f;
 
 	/* For Test */
-	static std::vector< Test > t;
 	int s = 0;
 
 
@@ -404,9 +420,6 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 
 		s++;
 		if (s > 10) collider->m_trigCollided = true;
-		Test a;
-		a.col = collider;
-		a.prevMove = m_xmf3Move;
 
 		XMFLOAT3 look = collider->GetLook();
 		XMFLOAT3 up = collider->GetUp();
@@ -523,16 +536,11 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 		xmf3MyExtents.x = abs(xmf3MyExtents.x);
 		xmf3MyExtents.y = abs(xmf3MyExtents.y);
 		xmf3MyExtents.z = abs(xmf3MyExtents.z);
-		a.different = Vector3::Subtract(xmf3MyExtents, colliderExtents);
-		a.nextMove = m_xmf3Move;
-
-		t.push_back(a);
 
 	}
 	m_pObjMng->ColliderTrigInit(ColliderTag::PROP);
 
 	/* For Test */
-	while (t.size() > 100) { t.erase(t.begin()); }
 
 	XMFLOAT3 xmf3Right = XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13);
 	XMFLOAT3 xmf3Up = XMFLOAT3(m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23);
@@ -586,6 +594,8 @@ void CPlayer::LateUpdate(float fTimeElapsed)
 		m_fRemainingTimeOfSlow = 0;
 		m_fRemainingTimeOfFire = 0;
 		m_fRemainingTimeOfSkill1 = 0;
+		stuntime = 0;
+		dottime = 0;
 		m_AnimationState = static_cast<int>(AnimationState::DIE);
 		m_AnimationTime = 0;
 		//CPlayer::Disable();
@@ -617,7 +627,8 @@ void CPlayer::Enable()
 	SetPosition(m_xmf3SpawnPoint);
 	m_fHeightVelocity = 0;
 	m_AIBrain->ChangeBehavior(new CMoveBehavior());
-
+	stuntime = 0;
+	dottime = 0;
 	/*********************************************************************
 	2019-07-03
 	위치를 초기화시킬 때, 플레이어의 위치에 오프셋만큼 더해서(상대좌표 개념) 옮겨준다.
@@ -634,6 +645,8 @@ void CPlayer::Disable()
 	m_fRemainingTimeOfSlow = 0;
 	m_fRemainingTimeOfFire = 0;
 	m_fRemainingTimeOfSkill1 = 0;
+	stuntime = 0;
+	dottime = 0;
 
 	CObject::Disable();
 }
@@ -686,6 +699,14 @@ const XMFLOAT3 CPlayer::GetUnRotatedUp()
 {
 	XMFLOAT3 vector = { m_xmf4x4World._21, m_xmf4x4World._22, m_xmf4x4World._23 };
 	return Vector3::Normalize(vector);
+}
+void CPlayer::Stun()
+{
+	stuntime = 3;
+}
+void CPlayer::DOT()
+{
+	dottime = 3;
 }
 void CPlayer::ChangeAnimClip()
 {
@@ -809,7 +830,30 @@ void CProjectile::Initialize(CObject * obj)
 	//SetUp(xmf3Up);
 	//SetRight(xmf3Right);
 }
-void CProjectile::Initialize(CObject * obj, const char * modelName, Effect * effect)
+//void CProjectile::Initialize(CObject * obj, const char * modelName, Effect * effect)
+//{
+//	XMFLOAT3 pos = obj->GetPosition();
+//	pos.y += 25;
+//	SetPosition(pos);
+//	for (int i = 0; i < m_Collider.size(); ++i) m_Collider[i].Update(GetPosition(), GetQuaternion());
+//
+//	fallingVelocity = 0;
+//	m_ModelList.clear();
+//	AddModel(GetModelByName(modelName));
+//	m_vecEffects.push_back(effect);
+//
+//	SetLook(obj->GetLook());
+//	SetUp(obj->GetUp());
+//	SetRight(obj->GetRight());
+//
+//	SetTeam(obj->GetTeam());
+//
+//	m_xmf3Direction = Vector3::Normalize(obj->GetLook());
+//	m_xmf3Direction.y += 0.1f;
+//	m_xmf3Direction = Vector3::Normalize(m_xmf3Direction);
+//	m_fLifeTime = g_DefaultProjectileLifeTime;
+//}
+void CProjectile::Initialize(CObject * obj, const char * modelName, bool isSkill)
 {
 	XMFLOAT3 pos = obj->GetPosition();
 	pos.y += 25;
@@ -819,7 +863,13 @@ void CProjectile::Initialize(CObject * obj, const char * modelName, Effect * eff
 	fallingVelocity = 0;
 	m_ModelList.clear();
 	AddModel(GetModelByName(modelName));
-	m_vecEffects.push_back(effect);
+
+	m_IsSkill = isSkill;
+
+	if (!isSkill) {
+		m_vecEffects.push_back(new EDefaultDamage());
+	}
+
 
 	SetLook(obj->GetLook());
 	SetUp(obj->GetUp());
@@ -828,9 +878,14 @@ void CProjectile::Initialize(CObject * obj, const char * modelName, Effect * eff
 	SetTeam(obj->GetTeam());
 
 	m_xmf3Direction = Vector3::Normalize(obj->GetLook());
-	m_xmf3Direction.y += 0.1f;
-	m_xmf3Direction = Vector3::Normalize(m_xmf3Direction);
+	if (isSkill) {
+		if (!g_SkillData.m_IsActivated[SkillType::STRAIGHT] && !g_SkillData.m_IsActivated[SkillType::AROUND]) {
+			m_xmf3Direction.y += 0.1f;
+			m_xmf3Direction = Vector3::Normalize(m_xmf3Direction);
+		}
+	}
 	m_fLifeTime = g_DefaultProjectileLifeTime;
+
 }
 void CProjectile::Update(float fTimeElapsed)
 {
@@ -847,9 +902,13 @@ void CProjectile::Update(float fTimeElapsed)
 	xmf3Move = Vector3::Multiply(m_fSpeed, xmf3Move);
 	xmf3Move = Vector3::Multiply(fTimeElapsed, xmf3Move);
 
-	fallingVelocity -= fTimeElapsed * 0.2;
-	m_xmf3Direction.y += fallingVelocity;
-	m_xmf3Direction = Vector3::Normalize(m_xmf3Direction);
+	if (m_IsSkill) {
+		if (!g_SkillData.m_IsActivated[SkillType::STRAIGHT] && !g_SkillData.m_IsActivated[SkillType::AROUND]) {
+			fallingVelocity -= fTimeElapsed * 0.2;
+			m_xmf3Direction.y += fallingVelocity;
+			m_xmf3Direction = Vector3::Normalize(m_xmf3Direction);
+		}
+	}
 
 	m_xmf4x4World._41 += xmf3Move.x;
 	m_xmf4x4World._42 += xmf3Move.y;
@@ -873,6 +932,17 @@ void CProjectile::LateUpdate(float fTimeElapsed)
 void CProjectile::Damage(CObject* obj)
 {
 	dynamic_cast<CPlayer*>(obj)->TakeDamage(static_cast<int>(m_BaseDamage));
+}
+
+void CProjectile::AddCollisionEffect(CObject * p)
+{
+	if (!m_IsSkill) {
+		for (int i = 0; i < m_vecEffects.size(); ++i) {
+			m_vecEffects[i]->Act(dynamic_cast<CPlayer*>(p));
+		}
+	}
+
+
 }
 
 /*********************************************************************
@@ -970,11 +1040,14 @@ void CObjectManager::Render()
 		pbMappedcbui = (CB_UI_INFO *)((UINT8 *)m_pCBMappedFloatingUIs + (i * ncbElementBytes));
 		XMStoreFloat4x4(&pbMappedcbui->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_FloatingUI[i]->m_xmf4x4World)));
 		pbMappedcbui->m_xmf2Size = m_FloatingUI[i]->GetSize();
+		pbMappedcbui->m_fAlpha = m_FloatingUI[i]->GetAlpha();
 	}
 	for (int i = 0; i < m_DefaultUI.size(); i++) {
 		pbMappedcbui = (CB_UI_INFO *)((UINT8 *)m_pCBMappedDefaultUIs + (i * ncbElementBytes));
 		XMStoreFloat4x4(&pbMappedcbui->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_DefaultUI[i]->m_xmf4x4World)));
 		pbMappedcbui->m_xmf2Size = m_DefaultUI[i]->GetSize();
+		pbMappedcbui->m_fAlpha = m_DefaultUI[i]->GetAlpha();
+
 	}
 
 	m_pd3dCommandList->SetPipelineState(g_vecPSO[static_cast<int>(PSO::DefaultModel)]);
@@ -1013,7 +1086,7 @@ void CObjectManager::Update(float fTime)
 					m_Players[temp.playerIdx]->Shoot();
 					auto iter = find_if(m_Projectiles.begin(), m_Projectiles.end(), [](CObject* p) {return !(p->IsAlive()); });
 					if (iter != m_Projectiles.end()) {
-						dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[temp.playerIdx], "Model_PaperBox_box_1", new EDefaultDamage());
+						dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[temp.playerIdx], "Model_PaperBox_box_1");
 						(*iter)->SetAlive(true);
 						g_System->playSound(g_vecSound[static_cast<int>(SOUND::SHOT)], 0, false, &g_Channel);
 
@@ -1021,15 +1094,13 @@ void CObjectManager::Update(float fTime)
 				}
 			}
 			else if (RequestType::Skill0 == temp.type) {
-				if (m_Players[temp.playerIdx]->IsSkillUseable()) {
-					m_Players[temp.playerIdx]->Skill();
-					auto iter = find_if(m_Projectiles.begin(), m_Projectiles.end(), [](CObject* p) {return !(p->IsAlive()); });
-					if (iter != m_Projectiles.end()) {
-						dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[temp.playerIdx], "Model_Crystal_default", new ESlow());
-						(*iter)->SetAlive(true);
-						g_System->playSound(g_vecSound[static_cast<int>(SOUND::SHOT)], 0, false, &g_Channel);
+				auto iter = find_if(m_Projectiles.begin(), m_Projectiles.end(), [](CObject* p) {return !(p->IsAlive()); });
+				if (iter != m_Projectiles.end()) {
+					dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[temp.playerIdx], "Model_Crystal_default", true);
+					(*iter)->SetAlive(true);
+					g_System->playSound(g_vecSound[static_cast<int>(SOUND::SHOT)], 0, false, &g_Channel);
 
-					}
+
 				}
 			}
 			else if (RequestType::MoveForward == temp.type) {
@@ -1055,7 +1126,37 @@ void CObjectManager::Update(float fTime)
 		//pos = Vector3::Add(pos, Vector3::Multiply(10, m_Players[0]->GetLook()));
 		//m_FloatingUI[1]->SetPosition(pos);
 
+		//static float f;
+		//if (f > 1) f = 0;
+		//f += fTime;
+		//for (int i = 0; i < m_DefaultUI.size(); ++i) m_DefaultUI[i]->SetAlpha(f);
 
+		for (int i = 5; i < 5 + 10; ++i)
+			if (m_FloatingUI[i]->IsAlive()) {
+				m_FloatingUI[i]->lifetime -= fTime;
+				if (m_FloatingUI[i]->lifetime <= 0) {
+					m_FloatingUI[i]->SetAlive(false);
+					continue;
+				}
+				m_FloatingUI[i]->SetLookAt(m_Players[0]->GetPosition());
+			}
+		if (m_FloatingUI[15]->IsAlive()) {
+			m_FloatingUI[15]->lifetime -= fTime;
+			if (m_FloatingUI[15]->lifetime <= 0) {
+				m_FloatingUI[15]->SetAlive(false);
+			}
+			else {
+				float temp = 0.5 - m_FloatingUI[15]->lifetime;
+				temp *= 2;
+				m_FloatingUI[15]->SetScale(XMFLOAT2(temp, temp));
+
+				XMFLOAT3 pos = m_Players[0]->GetPosition();
+				pos.x -= m_FloatingUI[15]->GetSize().x * 0.5;
+				pos.z += m_FloatingUI[15]->GetSize().y * 0.5;
+				m_FloatingUI[15]->SetPosition(pos);
+
+			}
+		}
 
 	}
 
@@ -1073,23 +1174,23 @@ void CObjectManager::ProcessInput(UCHAR * pKeysBuffer, XMFLOAT2 mouse)
 
 		if (m_Players[0]->IsAlive()) m_Players[0]->ProcessInput(pKeysBuffer, mouse);
 
-		static float cameraOffsetZ = 23;
-		static float cameraOffsetY = 27;
-		if (pKeysBuffer[VK_RBUTTON] & 0xF0)
-			cout << m_Players[0]->GetPosition().x << ", " << m_Players[0]->GetPosition().y << ", " << m_Players[0]->GetPosition().z << "\n";
+		//static float cameraOffsetZ = 23;
+		//static float cameraOffsetY = 27;
+		//if (pKeysBuffer[VK_RBUTTON] & 0xF0)
+		//	cout << m_Players[0]->GetPosition().x << ", " << m_Players[0]->GetPosition().y << ", " << m_Players[0]->GetPosition().z << "\n";
 
-		if (pKeysBuffer[KEY::I] & 0xF0) {
-			cameraOffsetY += 0.05f; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
-		}
-		if (pKeysBuffer[KEY::K] & 0xF0) {
-			cameraOffsetY -= 0.05f; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
-		}
-		if (pKeysBuffer[KEY::J] & 0xF0) {
-			cameraOffsetZ += 0.05f; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
-		}
-		if (pKeysBuffer[KEY::L] & 0xF0) {
-			cameraOffsetZ -= 0.05f; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
-		}
+		//if (pKeysBuffer[KEY::I] & 0xF0) {
+		//	cameraOffsetY += 0.05f; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+		//}
+		//if (pKeysBuffer[KEY::K] & 0xF0) {
+		//	cameraOffsetY -= 0.05f; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+		//}
+		//if (pKeysBuffer[KEY::J] & 0xF0) {
+		//	cameraOffsetZ += 0.05f; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+		//}
+		//if (pKeysBuffer[KEY::L] & 0xF0) {
+		//	cameraOffsetZ -= 0.05f; m_Players[0]->SetCameraTargetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
+		//}
 
 		if (pKeysBuffer[VK_LBUTTON] & 0xF0) {
 			Request temp;
@@ -1109,10 +1210,21 @@ void CObjectManager::ProcessInput(UCHAR * pKeysBuffer, XMFLOAT2 mouse)
 
 		}
 		if (pKeysBuffer[VK_RBUTTON] & 0xF0) {
-			Request temp;
-			temp.playerIdx = 0;
-			temp.type = RequestType::Skill0;
-			g_queueRequest.push(temp);
+			if (m_Players[0]->IsSkillUseable()) {
+				m_Players[0]->Skill();
+				g_SkillData.Act(m_Players);
+				if (g_SkillData.m_IsActivated[SkillType::AROUND]) {
+					m_FloatingUI[15]->SetAlive(true);
+					m_FloatingUI[15]->SetScale(XMFLOAT2(0, 0));
+					m_FloatingUI[15]->lifetime = 0.5;
+					m_FloatingUI[15]->SetPosition(m_Players[0]->GetPosition());
+				}
+			}
+
+			//Request temp;
+			//temp.playerIdx = 0;
+			//temp.type = RequestType::Skill0;
+			//g_queueRequest.push(temp);
 		}
 	}
 	else if (SceneType::LOBBY == m_SceneType) {
@@ -1187,16 +1299,79 @@ void CObjectManager::LateUpdate(float fTime)
 				if (IsCollidable((*player), (*projectile)))
 					if ((*player)->IsCollide(*(*projectile))) {
 						(*projectile)->AddCollisionEffect((*player));
+
+						for (int i = 5; i < 5 + 10; ++i) {
+							if (!m_FloatingUI[i]->IsAlive()) {
+								m_FloatingUI[i]->SetAlive(true);
+								m_FloatingUI[i]->lifetime = 0.5;
+								XMFLOAT3 pos = (*projectile)->GetPosition();
+								pos.y += 16;
+								pos.x -= 16;
+								m_FloatingUI[i]->SetPosition(pos);
+								break;
+							}
+						}
+
+
+						if ((*projectile)->m_IsSkill) {
+							if (!g_SkillData.m_IsActivated[SkillType::AROUND]) {
+
+								if (!g_SkillData.m_IsActivated[SkillType::RANGE1] && !g_SkillData.m_IsActivated[SkillType::RANGE2]) {
+									vector<CPlayer*> temp;
+									temp.push_back((*player));
+									g_SkillData.GetTarget(temp);
+								}
+								else {
+									g_SkillData.trigFindTarget = true;
+									g_SkillData.trigPosition = (*projectile)->GetPosition();
+								}
+							}
+						}
 						(*projectile)->Disable();
 					}
 		for (auto prop = m_Props.begin(); prop != m_Props.end(); ++prop) {
 			if ((*prop)->IsCollide(*(*projectile))) {
+				if (!g_SkillData.m_IsActivated[SkillType::AROUND]) {
+
+					if (!g_SkillData.m_IsActivated[SkillType::RANGE1] && !g_SkillData.m_IsActivated[SkillType::RANGE2]) {
+					}
+					else {
+						g_SkillData.trigFindTarget = true;
+						g_SkillData.trigPosition = (*projectile)->GetPosition();
+					}
+				}
 				(*projectile)->Disable();
 			}
 		}
 	}
 
+	if (g_SkillData.trigFindTarget) {
+		vector<CPlayer*> temp;
+		float range = 0;
+		if (g_SkillData.m_IsActivated[SkillType::RANGE1]) range += 100;
+		if (g_SkillData.m_IsActivated[SkillType::RANGE2]) range += 200;
+
+		for (int i = 1; i < m_Players.size(); ++i) {
+			if (GetDistance(g_SkillData.trigPosition, m_Players[i]->GetPosition()) < range) {
+				temp.push_back(m_Players[i]);
+			}
+		}
+
+		g_SkillData.GetTarget(temp);
+
+
+		g_SkillData.trigFindTarget = false;
+	}
+
+	g_SkillData.AffectToTarget();
+
+
+
 	if (SceneType::MAINPLAY == m_SceneType) {
+
+		if (m_Players[0]->GetHP() <= 0) m_Players[0]->TakeDamage(-1);
+
+
 		g_player0Info.pos = m_Players[0]->GetPosition();
 		g_player0Info.isDied = m_Players[0]->m_IsDied;
 
@@ -1373,6 +1548,9 @@ void CObjectManager::CreateObjectData()
 {
 	CImporter importer(m_pd3dDevice, m_pd3dCommandList);
 
+	//m_SkillData = new CSkill();
+
+
 	if (SceneType::MAINPLAY == m_SceneType) {
 
 		importer.ImportLevel("LevelData_TestMap", m_LevelDataDesc);
@@ -1415,7 +1593,7 @@ void CObjectManager::CreateObjectData()
 
 		int nProps = 2;
 		int nPlayers = 3;
-		int nFloatingUI = 5;
+		int nFloatingUI = 5 + 10 + 1;
 		int nDefaultUI = 6;
 		int nProjectiles = nPlayers * g_nProjectilePerPlayer;
 		m_nObjects = nProps + nPlayers + nProjectiles + nFloatingUI + nDefaultUI;
@@ -1465,6 +1643,8 @@ void CObjectManager::CreateObjectData()
 		importer.ImportTexture(L"Text_7", "Texture_Text_7");
 		importer.ImportTexture(L"Text_8", "Texture_Text_8");
 		importer.ImportTexture(L"Text_9", "Texture_Text_9");
+		importer.ImportTexture(L"smoke", "Effect_Smoke");
+		importer.ImportTexture(L"ring", "Effect_Ring");
 
 		CreateDescriptorHeap();
 
@@ -1484,6 +1664,8 @@ void CObjectManager::CreateObjectData()
 		importer.ImportModel("", "Texture_SkyBox_lf", ModelType::FloatingUI, "SkyBox_lf");
 		importer.ImportModel("", "Texture_SkyBox_rt", ModelType::FloatingUI, "SkyBox_rt");
 		importer.ImportModel("", "Texture_SkyBox_up", ModelType::FloatingUI, "SkyBox_up");
+		importer.ImportModel("", "Effect_Smoke", ModelType::FloatingUI, "Effect_Smoke");
+		importer.ImportModel("", "Effect_Ring", ModelType::FloatingUI, "Effect_Ring");
 
 		importer.ImportModel("", "Texture_ProgressBar", ModelType::FloatingUI, "ProgressBarBack");
 		importer.ImportModel("", "Texture_CapturingPoint", ModelType::FloatingUI, "ProgressBarFrnt");
@@ -1570,6 +1752,9 @@ void CObjectManager::CreateObjectData()
 				XMFLOAT3 temp = m_LevelDataDesc.Team1SpawnPointPosition[2]; temp.y += 100;
 				obj->SetPosition(temp);
 				obj->SetRotation(XMFLOAT3(0, 180, 0));
+
+				//obj->m_SkillData->m_IsActivated[SkillType::]
+
 			}
 			else if(i == 1){
 				obj->SetTeam(1);
@@ -1596,7 +1781,7 @@ void CObjectManager::CreateObjectData()
 			obj->AddModel(GetModelByName("Model_PaperBox_box_1"));
 
 			obj->SetAlive(false);
-			obj->AddCollider(XMFLOAT3(0, 0, 0), 20.0f);
+			obj->AddCollider(XMFLOAT3(0, 0, 0), 10.0f);
 			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 			m_Projectiles[i] = obj;
 		}
@@ -1637,7 +1822,18 @@ void CObjectManager::CreateObjectData()
 				obj->SetRotation(XMFLOAT3(90, 0, 0));
 
 			}
+			else if (4 < i && i < 4 + 10) {
+				obj->SetAlive(false);
+				obj->AddModel(GetModelByName("Effect_Smoke"));
+				obj->Initialize(XMFLOAT2(32, 32));
+			}
+			else {
+				obj->SetAlive(false);
 
+				obj->AddModel(GetModelByName("Effect_Ring"));
+				obj->Initialize(XMFLOAT2(512, 512));
+				obj->SetRotation(XMFLOAT3(90, 0, 0));
+			}
 
 			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 			m_FloatingUI[i] = obj;
@@ -2019,6 +2215,7 @@ CUI::CUI()
 	m_xmf2Size = XMFLOAT2(0, 0);
 	m_xmf2Scale = XMFLOAT2(1.0f, 1.0f);
 	m_MouseState = MouseState::NONE;
+	m_fAlpha = 1.0f;
 }
 
 void CUI::SetRootParameter(ID3D12GraphicsCommandList * pd3dCommandList)

@@ -7,6 +7,7 @@ class CTexture;
 class CObjectManager;
 class Collider;
 class Effect;
+class CSkill;
 class CTinMan;
 struct AnimationClip;
 class CFramework;
@@ -21,6 +22,7 @@ struct CB_OBJECT_INFO {
 struct CB_UI_INFO {
 	XMFLOAT4X4	m_xmf4x4World;
 	XMFLOAT2	m_xmf2Size;
+	float		m_fAlpha;
 };
 
 struct LEVELDATA_DESC {
@@ -126,7 +128,7 @@ public:
 	virtual void LateUpdate(float fTimeElapsed) {}
 	virtual void ProcessInput(UCHAR* pKeysBuffer, XMFLOAT2 mouse) {}
 	// 외부 설정 함수
-	void AddCollisionEffect(CObject* p);
+	virtual void	AddCollisionEffect(CObject * p);
 
 	void SetMng(CObjectManager* mng);
 	void AddCollider(XMFLOAT3 offset, XMFLOAT3 extents, XMFLOAT4 quaternion, bool trig = false);
@@ -160,6 +162,13 @@ public:
 	const bool IsCollide(const CObject& other, bool trig = false);
 	const bool IsCollide(const Collider& other, bool trig = false);
 	const bool IsAlive() const { return m_IsAlive; }
+
+	void			SetLookAt(const XMFLOAT3& point) {
+		SetLook(Vector3::Normalize(Vector3::Subtract(point, GetPosition())));
+		SetUp(XMFLOAT3(0, 1, 0));
+		SetRight(Vector3::Normalize(Vector3::CrossProduct(GetUp(), GetLook())));
+	}
+
 protected:
 	// 내부 설정 함수
 	void SetLook(XMFLOAT3 look);
@@ -217,17 +226,13 @@ public:
 	virtual void	LateUpdate(float fTimeElapsed) override;
 	virtual void	ProcessInput(UCHAR* pKeysBuffer, XMFLOAT2 mouse) override;
 
-	const int GetHP() { return m_HealthPoint; }
+	const float GetHP() { return m_HealthPoint; }
 
 	// 외부 설정 함수
 	virtual void	Enable()override;
 	virtual void	Disable()override;
 	void			SetSpawnPoint(const XMFLOAT3& pos) { m_xmf3SpawnPoint = pos; }
-	void			SetLookAt(const XMFLOAT3& point) {
-		SetLook(Vector3::Normalize(Vector3::Subtract(point, GetPosition())));
-		SetUp(XMFLOAT3(0, 1, 0));
-		SetRight(Vector3::Normalize(Vector3::CrossProduct(GetUp(), GetLook())));
-	}
+
 	// 외부 작동 함수
 	void			MoveForwardTrigOn() { m_trigInput[static_cast<int>(Move::W)] = true; }
 	void			Shoot();
@@ -252,7 +257,8 @@ public:
 	bool			IsShot();
 	bool			IsDied();
 
-	//void			Stun();
+	void			Stun();
+	void			DOT();
 	//void			Heal();
 	//void			Push();
 	//void			MakeGrenade(vector<Component*>);
@@ -265,7 +271,7 @@ protected:
 	// 내부 설정 함수
 	void			TriggerOff();
 	XMFLOAT3		Move(float fTimeElapsed);
-	XMFLOAT2			Rotate(float fTimeElapsed);
+	XMFLOAT2		Rotate(float fTimeElapsed);
 	void			ChangeAnimClip();
 
 
@@ -294,10 +300,15 @@ protected:
 	float			m_fRPM;	// 1/Round Per Minute
 	float			m_fRemainingTimeOfFire;
 	XMFLOAT3		m_xmf3SpawnPoint;
-	int				m_HealthPoint;
+	float			m_HealthPoint;
 	float			m_fRemainingTimeOfRespawn;
 	float			m_fRemainingTimeOfSkill1;
 	bool			m_IsOnGround = false;
+
+
+	float stuntime = 0;
+	float dottime = 0;
+
 };
 
 class CProjectile : public CObject {
@@ -307,11 +318,15 @@ public:
 
 public:
 	void			Initialize(CObject* obj);
-	void			Initialize(CObject* obj, const char* modelName, Effect* effect);
+	//void			Initialize(CObject* obj, const char* modelName, Effect* effect);
+	void			Initialize(CObject* obj, const char* modelName, bool isSkill = false);
 	//void			Initialize(CObject* obj, const char* modelName, CSkill* skill);
 	virtual void	Update(float fTimeElapsed) override;
 	virtual void	LateUpdate(float fTimeElapsed) override;
 	void			Damage(CObject* obj);
+	virtual void	AddCollisionEffect(CObject * p);
+
+	bool				m_IsSkill;
 
 private:
 	bool			IsExpired() const { return m_fLifeTime <= 0; }
@@ -322,6 +337,7 @@ protected:
 	float			m_fLifeTime;
 	float			m_BaseDamage;
 	float			fallingVelocity = 0;
+
 
 	//CSkill			*m_Skill = NULL;
 };
@@ -337,16 +353,21 @@ public:
 	void	SetScale(XMFLOAT2 scale);
 
 	const XMFLOAT2 GetSize();
+	const float GetAlpha() { return m_fAlpha; }
+	void SetAlpha(float a) { m_fAlpha = a; }
 
 	bool	IsMouseEnter();
 	bool	IsMouseOver();
 	bool	IsMouseLeave();
 	bool	IsClicked();
 
+	float lifetime;
+
 private:
 	XMFLOAT2	m_xmf2Size;
 	XMFLOAT2	m_xmf2Scale;
 	MouseState	m_MouseState;
+	float		m_fAlpha;
 };
 
 class CDamageUI : public CUI {
@@ -373,6 +394,11 @@ public:
 		, m_SceneType(sceneType)
 	{
 		CreateObjectData();
+
+		g_SkillData.m_IsActivated[SkillType::AROUND] = true;
+		g_SkillData.m_IsActivated[SkillType::DOT] = true;
+		g_SkillData.m_IsActivated[SkillType::STUN] = true;
+
 	}
 	~CObjectManager();
 
@@ -468,6 +494,6 @@ private:
 	2019-07-01
 	LevelData 관리를 위한 설명 구조체
 	*********************************************************************/
-	LEVELDATA_DESC m_LevelDataDesc;
+	LEVELDATA_DESC	m_LevelDataDesc;
 };
 

@@ -45,6 +45,7 @@ float4 PSModelShader(VS_MODEL_OUTPUT input) : SV_TARGET {
 
 float4 PSDefaultUI(VS_UI_OUTPUT input) : SV_TARGET {
 	float4 cColor = gtxtTexture.Sample(gSamplerState, input.uv);
+	//cColor.a *= 1.0f;
 	if (cColor.a < 0.3) discard;
 	return cColor;
 }

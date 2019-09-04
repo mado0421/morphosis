@@ -8,9 +8,7 @@ struct AINode {
 	AINode* next			= NULL;
 };
 
-inline float GetDistance(XMFLOAT3 a, XMFLOAT3 b) {
-	return Vector3::Length(Vector3::Subtract(b, a));
-}
+
 
 /*
 	MOVE: 

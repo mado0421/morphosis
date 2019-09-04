@@ -20,6 +20,7 @@ cbuffer cbUIInfo						: register(b4)
 {
 	matrix		gmtxUI					: packoffset(c0);
 	float2		gf2Size					: packoffset(c4);
+	float		gfAlpha					: packoffset(c8);
 
 };
 //cbuffer cbMaterialInfo					: register(b4)

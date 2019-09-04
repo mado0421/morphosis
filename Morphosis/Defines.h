@@ -62,6 +62,9 @@ struct PlayerStats {
 	bool isDied;
 };
 
+
+
+
 extern std::vector<CTexture*>				g_vecTexture;
 extern std::vector<CModel*>					g_vecModel;
 extern std::vector<CAnimationController*>	g_vecAnimController;
