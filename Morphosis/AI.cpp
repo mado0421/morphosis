@@ -71,7 +71,7 @@ void CAttackhavior::Update(CPlayer * obj)
 	nextPos.y = obj->GetPosition().y;
 
 	obj->SetLookAt(nextPos);
-	if (GetDistance(obj->GetPosition(), g_player0Info.pos) < 100) {
+	if (GetDistance(obj->GetPosition(), g_player0Info.pos) < 50) {
 		Request temp;
 		temp.playerIdx = obj->playerId;
 		temp.type = RequestType::Shoot;

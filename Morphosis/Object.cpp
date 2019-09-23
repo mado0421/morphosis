@@ -1149,11 +1149,19 @@ void CObjectManager::Update(float fTime)
 				float temp = 0.5 - m_FloatingUI[15]->lifetime;
 				temp *= 2;
 				m_FloatingUI[15]->SetScale(XMFLOAT2(temp, temp));
+				if (g_SkillData.m_IsActivated[SkillType::AROUND]) {
 
 				XMFLOAT3 pos = m_Players[0]->GetPosition();
 				pos.x -= m_FloatingUI[15]->GetSize().x * 0.5;
 				pos.z += m_FloatingUI[15]->GetSize().y * 0.5;
 				m_FloatingUI[15]->SetPosition(pos);
+				}
+				else {
+					XMFLOAT3 pos = g_SkillData.trigPosition;
+					pos.x -= m_FloatingUI[15]->GetSize().x * 0.5;
+					pos.z += m_FloatingUI[15]->GetSize().y * 0.5;
+					m_FloatingUI[15]->SetPosition(pos);
+				}
 
 			}
 		}
@@ -1232,10 +1240,71 @@ void CObjectManager::ProcessInput(UCHAR * pKeysBuffer, XMFLOAT2 mouse)
 			//temp.playerIdx = 0;
 			//temp.type = RequestType::Skill0;
 			//g_queueRequest.push(temp);
+
 		}
 	}
 	else if (SceneType::LOBBY == m_SceneType) {
 		if (pKeysBuffer[VK_RETURN] & 0xF0) m_pFramework->ChangeScene(SceneType::MAINPLAY);
+
+		if (pKeysBuffer[KEY::Q] & 0xF0) {
+			g_SkillData.m_IsActivated[SkillType::AROUND] = true;
+			m_DefaultUI[7]->SetAlive(true);
+		}
+		if (pKeysBuffer[KEY::W] & 0xF0) {
+			g_SkillData.m_IsActivated[SkillType::STRAIGHT] = true;
+			m_DefaultUI[8]->SetAlive(true);
+
+		}
+		if (pKeysBuffer[KEY::E] & 0xF0) {
+			g_SkillData.m_IsActivated[SkillType::RANGE1] = true;
+			m_DefaultUI[9]->SetAlive(true);
+
+		}
+		if (pKeysBuffer[KEY::R] & 0xF0) {
+			g_SkillData.m_IsActivated[SkillType::POWER1] = true;
+			m_DefaultUI[10]->SetAlive(true);
+
+		}
+		if (pKeysBuffer[KEY::T] & 0xF0) {
+			g_SkillData.m_IsActivated[SkillType::STUN] = true;
+			m_DefaultUI[11]->SetAlive(true);
+
+		}
+		if (pKeysBuffer[KEY::Y] & 0xF0) {
+			g_SkillData.m_IsActivated[SkillType::DOT] = true;
+			m_DefaultUI[0]->SetAlive(true);
+
+		}
+		if (pKeysBuffer[KEY::A] & 0xF0) {
+			g_SkillData.m_IsActivated[SkillType::AROUND] = false;
+			m_DefaultUI[7]->SetAlive(false);
+
+		}
+		if (pKeysBuffer[KEY::S] & 0xF0) {
+			g_SkillData.m_IsActivated[SkillType::STRAIGHT] = false;
+			m_DefaultUI[8]->SetAlive(false);
+
+		}
+		if (pKeysBuffer[KEY::D] & 0xF0) {
+			g_SkillData.m_IsActivated[SkillType::RANGE1] = false;
+			m_DefaultUI[9]->SetAlive(false);
+
+		}
+		if (pKeysBuffer[KEY::F] & 0xF0) {
+			g_SkillData.m_IsActivated[SkillType::POWER1] = false;
+			m_DefaultUI[10]->SetAlive(false);
+
+		}
+		if (pKeysBuffer[KEY::G] & 0xF0) {
+			g_SkillData.m_IsActivated[SkillType::STUN] = false;
+			m_DefaultUI[11]->SetAlive(false);
+
+		}
+		if (pKeysBuffer[KEY::H] & 0xF0) {
+			g_SkillData.m_IsActivated[SkillType::DOT] = false;
+			m_DefaultUI[0]->SetAlive(false);
+
+		}
 	}
 }
 Collider * CObjectManager::GetCollider(Collider & myCollider, ColliderTag targetTag, bool isMakeAlign)
@@ -1363,6 +1432,11 @@ void CObjectManager::LateUpdate(float fTime)
 				temp.push_back(m_Players[i]);
 			}
 		}
+
+		m_FloatingUI[15]->SetAlive(true);
+		m_FloatingUI[15]->SetScale(XMFLOAT2(0, 0));
+		m_FloatingUI[15]->lifetime = 0.5;
+		m_FloatingUI[15]->SetPosition(g_SkillData.trigPosition);
 
 		g_SkillData.GetTarget(temp);
 
@@ -1562,36 +1636,53 @@ void CObjectManager::CreateObjectData()
 
 		importer.ImportLevel("LevelData_TestMap", m_LevelDataDesc);
 
-		XMFLOAT3 nodePositions[9] = {
-			XMFLOAT3(0,0,0),
-			XMFLOAT3(-200,0,88),
-			XMFLOAT3(-200,0,230),
-			XMFLOAT3(-139,0,257),
-			XMFLOAT3(-127,0,341),
-			XMFLOAT3(-42,0,387),
-			XMFLOAT3(-18,0,297),
-			XMFLOAT3(73,0,270),
-			XMFLOAT3(56,0,137)
+		//XMFLOAT3 nodePositions[9] = {
+		//	XMFLOAT3(0,0,0),
+		//	XMFLOAT3(-200,0,88),
+		//	XMFLOAT3(-200,0,230),
+		//	XMFLOAT3(-139,0,257),
+		//	XMFLOAT3(-127,0,341),
+		//	XMFLOAT3(-42,0,387),
+		//	XMFLOAT3(-18,0,297),
+		//	XMFLOAT3(73,0,270),
+		//	XMFLOAT3(56,0,137)
+		//};
+		//int nodeNextIdx[9] = {
+		//	-1,
+		//	0,
+		//	1,
+		//	2,
+		//	3,
+		//	4,
+		//	7,
+		//	8,
+		//	0
+		//};
+
+		//for (int i = 0; i < 9; ++i) {
+		//	AINode* tempNode = new AINode();
+		//	tempNode->m_xmf3Position = nodePositions[i];
+		//	g_vecAINode.push_back(tempNode);
+		//}
+		//for (int i = 0; i < 9; ++i) {
+		//	if(-1 != nodeNextIdx[i]) g_vecAINode[i]->next = g_vecAINode[nodeNextIdx[i]];
+		//	else g_vecAINode[i]->next = NULL;
+		//}
+
+		XMFLOAT3 nodePositions[1] = {
+	XMFLOAT3(0,0,0)
 		};
-		int nodeNextIdx[9] = {
-			-1,
-			0,
-			1,
-			2,
-			3,
-			4,
-			7,
-			8,
-			0
+		int nodeNextIdx[1] = {
+			-1
 		};
 
-		for (int i = 0; i < 9; ++i) {
+		for (int i = 0; i < 1; ++i) {
 			AINode* tempNode = new AINode();
 			tempNode->m_xmf3Position = nodePositions[i];
 			g_vecAINode.push_back(tempNode);
 		}
-		for (int i = 0; i < 9; ++i) {
-			if(-1 != nodeNextIdx[i]) g_vecAINode[i]->next = g_vecAINode[nodeNextIdx[i]];
+		for (int i = 0; i < 1; ++i) {
+			if (-1 != nodeNextIdx[i]) g_vecAINode[i]->next = g_vecAINode[nodeNextIdx[i]];
 			else g_vecAINode[i]->next = NULL;
 		}
 
@@ -1599,7 +1690,7 @@ void CObjectManager::CreateObjectData()
 			DebugBreak();
 
 		int nProps = 2;
-		int nPlayers = 3;
+		int nPlayers = 5;
 		int nFloatingUI = 5 + 10 + 1;
 		int nDefaultUI = 6 + 1 + 1 + 1;
 		int nProjectiles = nPlayers * g_nProjectilePerPlayer;
@@ -1768,13 +1859,27 @@ void CObjectManager::CreateObjectData()
 			}
 			else if(i == 1){
 				obj->SetTeam(1);
-				XMFLOAT3 temp = m_LevelDataDesc.Team2SpawnPointPosition[0]; temp.y += 50;
-				obj->SetPosition(temp);
+				//XMFLOAT3 temp = m_LevelDataDesc.Team2SpawnPointPosition[0]; temp.y += 50;
+				//obj->SetPosition(temp);
+				obj->SetPosition(XMFLOAT3(100, 100, 100));
 			}
 			else if (i == 2) {
 				obj->SetTeam(1);
-				XMFLOAT3 temp = m_LevelDataDesc.Team2SpawnPointPosition[1]; temp.y += 100;
-				obj->SetPosition(temp);
+				//XMFLOAT3 temp = m_LevelDataDesc.Team2SpawnPointPosition[1]; temp.y += 100;
+				//obj->SetPosition(temp);
+				obj->SetPosition(XMFLOAT3(-100, 100, 100));
+			}
+			else if (i == 3) {
+				obj->SetTeam(1);
+				//XMFLOAT3 temp = m_LevelDataDesc.Team2SpawnPointPosition[0]; temp.y += 50;
+				//obj->SetPosition(temp);
+				obj->SetPosition(XMFLOAT3(100, 100, -50));
+			}
+			else if (i == 4) {
+				obj->SetTeam(1);
+				//XMFLOAT3 temp = m_LevelDataDesc.Team2SpawnPointPosition[1]; temp.y += 100;
+				//obj->SetPosition(temp);
+				obj->SetPosition(XMFLOAT3(-100, 100, -50));
 			}
 			obj->SetSpawnPoint(obj->GetPosition());
 
@@ -1840,8 +1945,12 @@ void CObjectManager::CreateObjectData()
 			else {
 				obj->SetAlive(false);
 
+				float range = 200;
+				if (g_SkillData.m_IsActivated[SkillType::RANGE1]) range += 200;
+				if (g_SkillData.m_IsActivated[SkillType::RANGE2]) range += 400;
+
 				obj->AddModel(GetModelByName("Effect_Ring"));
-				obj->Initialize(XMFLOAT2(512, 512));
+				obj->Initialize(XMFLOAT2(range, range));
 				obj->SetRotation(XMFLOAT3(90, 0, 0));
 			}
 
@@ -1926,7 +2035,7 @@ void CObjectManager::CreateObjectData()
 		int nProps = 0;
 		int nPlayers = 0;
 		int nFloatingUI = 0;
-		int nDefaultUI = 1;
+		int nDefaultUI = 1 + 12;
 		int nProjectiles = nPlayers * g_nProjectilePerPlayer;
 		m_nObjects = nProps + nPlayers + nProjectiles + nFloatingUI + nDefaultUI;
 
@@ -1948,10 +2057,26 @@ void CObjectManager::CreateObjectData()
 
 		g_vecTexture.clear();
 		importer.ImportTexture(L"TitleImg_001", "Texture_TitleImg");
+		importer.ImportTexture(L"skill_around", "skill_around");
+		importer.ImportTexture(L"skill_dot", "skill_dot");
+		importer.ImportTexture(L"skill_powerUp", "skill_powerUp");
+		importer.ImportTexture(L"skill_rangeUp", "skill_rangeUp");
+		importer.ImportTexture(L"skill_straight", "skill_straight");
+		importer.ImportTexture(L"skill_stun", "skill_stun");
+		importer.ImportTexture(L"skill_highlight", "skill_highlight");
 		CreateDescriptorHeap();
 		for (int i = 0; i < g_vecTexture.size(); ++i) CreateTextureResourceView(g_vecTexture[i]);
 
 		importer.ImportModel("", "Texture_TitleImg", ModelType::FloatingUI, "UI_TitleImg");
+
+		importer.ImportModel("", "skill_around", ModelType::FloatingUI,		"skill_around");
+		importer.ImportModel("", "skill_dot", ModelType::FloatingUI,		"skill_dot");
+		importer.ImportModel("", "skill_powerUp", ModelType::FloatingUI,	"skill_powerUp");
+		importer.ImportModel("", "skill_rangeUp", ModelType::FloatingUI,	"skill_rangeUp");
+		importer.ImportModel("", "skill_straight", ModelType::FloatingUI,	"skill_straight");
+		importer.ImportModel("", "skill_stun", ModelType::FloatingUI,		"skill_stun");
+		importer.ImportModel("", "skill_highlight", ModelType::FloatingUI,	"skill_highlight");
+
 
 		CreateConstantBufferResorce();
 		CreateConstantBufferView();
@@ -1972,9 +2097,79 @@ void CObjectManager::CreateObjectData()
 		for (int i = 0; i < m_DefaultUI.size(); i++) {
 			CUI* obj = new CUI();
 			obj->SetMng(this);
+			if (i == 12) {
 			obj->AddModel(GetModelByName("UI_TitleImg"));
 			obj->SetPosition(0.5, 0.5, 0.0f);
 			obj->Initialize(XMFLOAT2(960, 540));
+			}
+
+			if (i == 1) {
+				obj->AddModel(GetModelByName("skill_around"));
+				obj->SetPosition(0.4, 0.4, 0.0f);
+				obj->Initialize(XMFLOAT2(64, 64));
+			}
+			if (i == 2) {
+				obj->AddModel(GetModelByName("skill_straight"));
+				obj->SetPosition(0.4, 0.5, 0.0f);
+				obj->Initialize(XMFLOAT2(64, 64));
+			}
+			if (i == 3) {
+				obj->AddModel(GetModelByName("skill_rangeUp"));
+				obj->SetPosition(0.5, 0.4, 0.0f);
+				obj->Initialize(XMFLOAT2(64, 64));
+			}
+			if (i == 4) {
+				obj->AddModel(GetModelByName("skill_powerUp"));
+				obj->SetPosition(0.5, 0.5, 0.0f);
+				obj->Initialize(XMFLOAT2(64, 64));
+			}
+			if (i == 5) {
+				obj->AddModel(GetModelByName("skill_stun"));
+				obj->SetPosition(0.6, 0.4, 0.0f);
+				obj->Initialize(XMFLOAT2(64, 64));
+			}
+			if (i == 6) {
+				obj->AddModel(GetModelByName("skill_dot"));
+				obj->SetPosition(0.6, 0.5, 0.0f);
+				obj->Initialize(XMFLOAT2(64, 64));
+			}
+			if (i == 7) {
+				obj->AddModel(GetModelByName("skill_highlight"));
+				obj->SetPosition(0.4, 0.4, 0.0f);
+				obj->Initialize(XMFLOAT2(64, 64));
+				obj->SetAlive(false);
+			}
+			if (i == 8) {
+				obj->AddModel(GetModelByName("skill_highlight"));
+				obj->SetPosition(0.4, 0.5, 0.0f);
+				obj->SetAlive(false);
+				obj->Initialize(XMFLOAT2(64, 64));
+			}
+			if (i == 9) {
+				obj->AddModel(GetModelByName("skill_highlight"));
+				obj->SetPosition(0.5, 0.4, 0.0f);
+				obj->SetAlive(false);
+				obj->Initialize(XMFLOAT2(64, 64));
+			}
+			if (i == 10) {
+				obj->AddModel(GetModelByName("skill_highlight"));
+				obj->SetPosition(0.5, 0.5, 0.0f);
+				obj->Initialize(XMFLOAT2(64, 64));
+				obj->SetAlive(false);
+			}
+			if (i == 11) {
+				obj->AddModel(GetModelByName("skill_highlight"));
+				obj->SetPosition(0.6, 0.4, 0.0f);
+				obj->SetAlive(false);
+				obj->Initialize(XMFLOAT2(64, 64));
+			}
+			if (i == 0) {
+				obj->AddModel(GetModelByName("skill_highlight"));
+				obj->SetPosition(0.6, 0.5, 0.0f);
+				obj->SetAlive(false);
+				obj->Initialize(XMFLOAT2(64, 64));
+			}
+
 
 			obj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 			m_DefaultUI[i] = obj;

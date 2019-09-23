@@ -395,9 +395,10 @@ public:
 	{
 		CreateObjectData();
 
-		g_SkillData.m_IsActivated[SkillType::AROUND] = true;
-		g_SkillData.m_IsActivated[SkillType::DOT] = true;
-		g_SkillData.m_IsActivated[SkillType::STUN] = true;
+		//g_SkillData.m_IsActivated[SkillType::STRAIGHT] = true;
+		//g_SkillData.m_IsActivated[SkillType::DOT] = true;
+		//g_SkillData.m_IsActivated[SkillType::STUN] = true;
+		//g_SkillData.m_IsActivated[SkillType::RANGE2] = true;
 
 	}
 	~CObjectManager();
