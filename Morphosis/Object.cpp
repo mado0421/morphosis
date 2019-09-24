@@ -1088,7 +1088,7 @@ void CObjectManager::Update(float fTime)
 					if (iter != m_Projectiles.end()) {
 						dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[temp.playerIdx], "Model_PaperBox_box_1");
 						(*iter)->SetAlive(true);
-						g_System->playSound(g_vecSound[static_cast<int>(SOUND::SHOT)], 0, false, &g_Channel);
+						//g_System->playSound(g_vecSound[static_cast<int>(SOUND::SHOT)], 0, false, &g_Channel);
 
 					}
 				}
@@ -1098,7 +1098,7 @@ void CObjectManager::Update(float fTime)
 				if (iter != m_Projectiles.end()) {
 					dynamic_cast<CProjectile*>((*iter))->Initialize(m_Players[temp.playerIdx], "Model_Crystal_default", true);
 					(*iter)->SetAlive(true);
-					g_System->playSound(g_vecSound[static_cast<int>(SOUND::SHOT)], 0, false, &g_Channel);
+					//g_System->playSound(g_vecSound[static_cast<int>(SOUND::SHOT)], 0, false, &g_Channel);
 
 
 				}
@@ -1741,7 +1741,7 @@ void CObjectManager::CreateObjectData()
 		importer.ImportTexture(L"Text_7", "Texture_Text_7");
 		importer.ImportTexture(L"Text_8", "Texture_Text_8");
 		importer.ImportTexture(L"Text_9", "Texture_Text_9");
-		importer.ImportTexture(L"smoke", "Effect_Smoke");
+		importer.ImportTexture(L"smoke3", "Effect_Smoke");
 		importer.ImportTexture(L"ring", "Effect_Ring");
 		importer.ImportTexture(L"Info", "Info_Infobar");
 		importer.ImportTexture(L"Skillbar", "Info_Skillbar");
