@@ -31,19 +31,9 @@ public:
 
 	// 초기화 함수
 	virtual ID3D12RootSignature *CreateRootSignature(ID3D12Device *pd3dDevice) = 0;
-
-protected:
-	CObjectManager* m_ObjMng = NULL;
 };
 
 class CSceneMainPlay : public CScene {
-public:
-	virtual ID3D12RootSignature *CreateRootSignature(ID3D12Device *pd3dDevice);
-	virtual void Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList);
-	virtual void ProcessInput(UCHAR * pKeysBuffer);
-};
-
-class CSceneLobby : public CScene {
 public:
 	virtual ID3D12RootSignature *CreateRootSignature(ID3D12Device *pd3dDevice);
 	virtual void Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList);

@@ -7,13 +7,13 @@
 2019-06-16
 디바이스 관련 상수
 *********************************************************************/
-#ifdef TEST_
-#define FRAME_BUFFER_WIDTH			(int)(1920   / 2.0)
-#define FRAME_BUFFER_HEIGHT			(int)(1080   / 2.0)
-#else
+//#ifdef TEST_
+//#define FRAME_BUFFER_WIDTH			(int)(1920   / 2.0)
+//#define FRAME_BUFFER_HEIGHT			(int)(1080   / 2.0)
+//#else
 #define FRAME_BUFFER_WIDTH			1920
 #define FRAME_BUFFER_HEIGHT			1080
-#endif
+//#endif
 
 
 /*********************************************************************
@@ -202,7 +202,7 @@ enum class AnimationState {
 	count
 };
 enum class SceneType {
-	LOBBY,
+	//LOBBY,
 	MAINPLAY,
 
 	count
