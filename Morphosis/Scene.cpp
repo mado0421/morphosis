@@ -1,50 +1,92 @@
 #include "stdafx.h"
 #include "Framework.h"
 #include "Scene.h"
-#include "Importer.h"
+//#include "Importer.h"
 #include "Object.h"
 #include "Camera.h"
 #include "PSO.h"
 #include "Texture.h"
 
-
-int g_RootParameterCamera;
-int g_RootParameterObject;
-int g_RootParameterTexture;
-int g_RootParameterAnimation;
-int g_RootParameterUI;
-bool g_IsMouseMode = true;
-
-ID3D12RootSignature * CSceneMainPlay::CreateRootSignature(ID3D12Device * pd3dDevice)
+CScene::CScene()
 {
-	/*********************************************************************
-	2019-06-16
-	루트파라미터 인덱스를 전역에서 관리하기 위해 이렇게 사용.
-	*********************************************************************/
-	g_RootParameterCamera		= 0;
-	g_RootParameterObject		= 1;
-	g_RootParameterTexture		= 2;
-	g_RootParameterAnimation	= 3;
-	g_RootParameterUI			= 4;
+}
 
+CScene::CScene(CFramework * pFramework)
+{
+	m_pFramework = pFramework;
+}
+
+void CScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
+{
+	pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);	// 이 루트 시그니처를 쓸 것
+	pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);	// 이 서술자 힙을 쓸 것
+
+	// HLSL에 넣어줄 카메라 정보 갱신부분
+	m_pCamera->SetViewportsAndScissorRects(pd3dCommandList);
+	m_pCamera->UpdateShaderVariables(pd3dCommandList);
+
+}
+
+void CScene::Update(float fTimeElapsed)
+{
+	m_pCamera->Update(fTimeElapsed);
+}
+
+void CScene::Release()
+{
+	delete m_pCamera;
+	m_pd3dGraphicsRootSignature->Release();
+	m_pd3dCbvSrvDescriptorHeap->Release();
+}
+
+TestScene::TestScene()
+{
+}
+
+TestScene::TestScene(CFramework * pFramework) : CScene(pFramework)
+{
+}
+
+void TestScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
+{
+}
+
+void TestScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
+{
+}
+
+void TestScene::Update(float fTimeElapsed)
+{
+}
+
+void TestScene::ProcessInput(UCHAR * pKeysBuffer)
+{
+}
+
+void TestScene::Release()
+{
+}
+
+ID3D12RootSignature * TestScene::CreateRootSignature(ID3D12Device * pd3dDevice)
+{
 	ID3D12RootSignature *pd3dGraphicsRootSignature = NULL;
-	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[3];	// Object, Texture and FloatingUI
+	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[3];
 
 	pd3dDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
 	pd3dDescriptorRanges[0].NumDescriptors = 1;
-	pd3dDescriptorRanges[0].BaseShaderRegister = g_RootParameterObject; //b1
+	pd3dDescriptorRanges[0].BaseShaderRegister = 1; //b1
 	pd3dDescriptorRanges[0].RegisterSpace = 0;
 	pd3dDescriptorRanges[0].OffsetInDescriptorsFromTableStart = 0;
 
 	pd3dDescriptorRanges[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	pd3dDescriptorRanges[1].NumDescriptors = 1;
-	pd3dDescriptorRanges[1].BaseShaderRegister = g_RootParameterTexture; //t2
+	pd3dDescriptorRanges[1].BaseShaderRegister = 2; //t2
 	pd3dDescriptorRanges[1].RegisterSpace = 0;
 	pd3dDescriptorRanges[1].OffsetInDescriptorsFromTableStart = 0;
 
 	pd3dDescriptorRanges[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
 	pd3dDescriptorRanges[2].NumDescriptors = 1;
-	pd3dDescriptorRanges[2].BaseShaderRegister = g_RootParameterUI; //b4
+	pd3dDescriptorRanges[2].BaseShaderRegister = 4; //b4
 	pd3dDescriptorRanges[2].RegisterSpace = 0;
 	pd3dDescriptorRanges[2].OffsetInDescriptorsFromTableStart = 0;
 
@@ -52,7 +94,7 @@ ID3D12RootSignature * CSceneMainPlay::CreateRootSignature(ID3D12Device * pd3dDev
 
 	//Camera
 	pd3dRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	pd3dRootParameters[0].Descriptor.ShaderRegister = g_RootParameterCamera; //b0
+	pd3dRootParameters[0].Descriptor.ShaderRegister = 0; //b0
 	pd3dRootParameters[0].Descriptor.RegisterSpace = 0;
 	pd3dRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
@@ -70,7 +112,7 @@ ID3D12RootSignature * CSceneMainPlay::CreateRootSignature(ID3D12Device * pd3dDev
 
 	//Anim
 	pd3dRootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	pd3dRootParameters[3].Descriptor.ShaderRegister = g_RootParameterAnimation;	//b3
+	pd3dRootParameters[3].Descriptor.ShaderRegister = 3;	//b3
 	pd3dRootParameters[3].Descriptor.RegisterSpace = 0;
 	pd3dRootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 
@@ -115,113 +157,4 @@ ID3D12RootSignature * CSceneMainPlay::CreateRootSignature(ID3D12Device * pd3dDev
 	if (pd3dErrorBlob) pd3dErrorBlob->Release();
 
 	return(pd3dGraphicsRootSignature);
-}
-
-void CSceneMainPlay::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
-{
-	m_pd3dDevice		= pd3dDevice;
-	m_pd3dCommandList	= pd3dCommandList;
-	GetCursorPos(&m_ptOldCursorPos);
-
-
-	m_pd3dGraphicsRootSignature = CreateRootSignature(pd3dDevice);
-
-	m_pCamera = new CFollowCamera();
-	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
-	//m_ObjMng = new CObjectManager(m_pd3dDevice, m_pd3dCommandList, SceneType::MAINPLAY);
-	//m_ObjMng->SetFramework(m_pFramework);
-	//m_pCamera->SetTarget(m_ObjMng->GetTarget(0));
-	m_pCamera->SetOffset(XMFLOAT3(0, 60, -60));
-	//m_pd3dCbvSrvDescriptorHeap = m_ObjMng->GetDescriptorHeap();
-	CPsoGenerator l_psoGenerator;
-	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoModel());
-	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoAnimatedModel());
-	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoFloatingUI());
-	l_psoGenerator.Init(m_pd3dDevice, m_pd3dGraphicsRootSignature, new CPsoDefaultUI());
-
-
-	g_System->playSound(g_vecSound[static_cast<int>(SOUND::BGM)], 0, false, &g_Channel);
-}
-
-
-void CSceneMainPlay::ProcessInput(UCHAR * pKeysBuffer)
-{
-	XMFLOAT2 cDelta = XMFLOAT2(0,0);
-	POINT ptCursorPos;
-	//static float cameraOffsetZ = 60;
-	//static float cameraOffsetY = 30;
-
-	if (pKeysBuffer[KEY::_1] & 0xF0) { g_IsMouseMode = false; }
-	if (pKeysBuffer[KEY::_2] & 0xF0) { g_IsMouseMode = true; }
-
-	//if (pKeysBuffer[VK_UP] & 0xF0) { 
-	//	cameraOffsetY += 0.1f; 
-	//	m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
-	//}
-	//if (pKeysBuffer[VK_DOWN] & 0xF0) { cameraOffsetY -= 0.1f; m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
-	//}
-	//if (pKeysBuffer[VK_LEFT] & 0xF0) { cameraOffsetZ += 0.1f; m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
-	//}
-	//if (pKeysBuffer[VK_RIGHT] & 0xF0) { cameraOffsetZ -= 0.1f; m_pCamera->SetOffset(XMFLOAT3(0, cameraOffsetY, cameraOffsetZ));
-	//}
-	//
-
-
-	//if (pKeysBuffer[KEY::_3] & 0xF0) { m_ObjMng->GetTarget(0)->Enable(); }
-
-
-
-	if (g_IsMouseMode) {
-		GetCursorPos(&ptCursorPos);
-		cDelta.x = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
-		cDelta.y = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
-		SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
-	}
-
-	//m_ObjMng->ProcessInput(pKeysBuffer, cDelta);
-}
-
-void CScene::SetFramework(CFramework * p)
-{
-	m_pFramework = p;
-}
-
-void CScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
-{
-	pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);	// 이 루트 시그니처를 쓸 것
-	pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);	// 이 서술자 힙을 쓸 것
-
-	// HLSL에 넣어줄 카메라 정보 갱신부분
-	m_pCamera->SetViewportsAndScissorRects(pd3dCommandList);
-	m_pCamera->UpdateShaderVariables(pd3dCommandList);
-
-	//m_ObjMng->Render();
-}
-
-void CScene::Update(float fTimeElapsed)
-{
-	m_pCamera->Update(fTimeElapsed);
-	//m_ObjMng->Update(fTimeElapsed);
-}
-
-void CScene::Release()
-{
-
-
-
-
-
-
-	g_vecAnimController.clear();
-	g_vecModel.clear();
-	g_vecModel.clear();
-	g_vecPSO.clear();
-	g_vecTexture.clear();
-
-	//delete m_ObjMng;
-	delete m_pCamera;
-	m_pd3dGraphicsRootSignature->Release();
-	m_pd3dCbvSrvDescriptorHeap->Release();
-
 }

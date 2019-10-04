@@ -24,9 +24,6 @@
     <Filter Include="소스 파일\Camera">
       <UniqueIdentifier>{a95bcdb7-ec7b-484b-a0d1-496728d26d95}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Timer">
-      <UniqueIdentifier>{724f1c7d-729a-42e9-8269-d6f869058188}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\PSO">
       <UniqueIdentifier>{1e5b2257-ce89-4e34-9f16-23c090883874}</UniqueIdentifier>
     </Filter>
@@ -42,11 +39,23 @@
     <Filter Include="소스 파일\Object\Animation">
       <UniqueIdentifier>{1ff4ed94-a96e-4405-98cb-7c35cc9ac733}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\AI">
+    <Filter Include="소스 파일\PreCompiled">
+      <UniqueIdentifier>{63cc5c03-7ba3-4551-8a22-d5a0f87e4a36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\HLSL">
+      <UniqueIdentifier>{6fca887a-aef9-46d8-8910-2a95a581bc83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\잠시 가려둘 애들">
+      <UniqueIdentifier>{4e9129ab-5077-44cb-be1e-38a43dc42de7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\잠시 가려둘 애들\AI">
       <UniqueIdentifier>{cd6268c8-c814-485e-99e5-4678b0462075}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\Effect">
+    <Filter Include="소스 파일\잠시 가려둘 애들\Effect">
       <UniqueIdentifier>{6a53693a-9849-445d-b70c-8a5fc5cb69db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\잠시 가려둘 애들\Timer">
+      <UniqueIdentifier>{724f1c7d-729a-42e9-8269-d6f869058188}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -81,22 +90,22 @@
       <Filter>소스 파일\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Timer.cpp">
-      <Filter>소스 파일\Timer</Filter>
-    </ClCompile>
-    <ClCompile Include="Morphosis.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\잠시 가려둘 애들\Timer</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
       <Filter>소스 파일\Object\Texture</Filter>
     </ClCompile>
     <ClCompile Include="AI.cpp">
-      <Filter>소스 파일\AI</Filter>
+      <Filter>소스 파일\잠시 가려둘 애들\AI</Filter>
     </ClCompile>
     <ClCompile Include="Effect.cpp">
-      <Filter>소스 파일\Effect</Filter>
+      <Filter>소스 파일\잠시 가려둘 애들\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>소스 파일\PreCompiled</Filter>
+    </ClCompile>
+    <ClCompile Include="Morphosis.cpp">
+      <Filter>소스 파일\PreCompiled</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -113,12 +122,6 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MathHelper.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Defines.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
     <ClInclude Include="AnimationController.h">
       <Filter>소스 파일\Object\Animation</Filter>
     </ClInclude>
@@ -150,39 +153,53 @@
       <Filter>소스 파일\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
-      <Filter>소스 파일\Timer</Filter>
-    </ClInclude>
-    <ClInclude Include="d3dx12.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Morphosis.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\잠시 가려둘 애들\Timer</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>소스 파일\Object\Texture</Filter>
     </ClInclude>
     <ClInclude Include="AI.h">
-      <Filter>소스 파일\AI</Filter>
+      <Filter>소스 파일\잠시 가려둘 애들\AI</Filter>
     </ClInclude>
     <ClInclude Include="Effect.h">
-      <Filter>소스 파일\Effect</Filter>
+      <Filter>소스 파일\잠시 가려둘 애들\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>소스 파일\PreCompiled</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>소스 파일\PreCompiled</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>소스 파일\PreCompiled</Filter>
+    </ClInclude>
+    <ClInclude Include="Morphosis.h">
+      <Filter>소스 파일\PreCompiled</Filter>
+    </ClInclude>
+    <ClInclude Include="Defines.h">
+      <Filter>소스 파일\PreCompiled</Filter>
+    </ClInclude>
+    <ClInclude Include="d3dx12.h">
+      <Filter>소스 파일\PreCompiled</Filter>
+    </ClInclude>
+    <ClInclude Include="MathHelper.h">
+      <Filter>소스 파일\PreCompiled</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="VertexShader.hlsl" />
-    <FxCompile Include="PixelShader.hlsl" />
+    <FxCompile Include="PixelShader.hlsl">
+      <Filter>소스 파일\HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="VertexShader.hlsl">
+      <Filter>소스 파일\HLSL</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Light.hlsli" />
-    <None Include="Header.hlsli" />
+    <None Include="Header.hlsli">
+      <Filter>소스 파일\HLSL</Filter>
+    </None>
+    <None Include="Light.hlsli">
+      <Filter>소스 파일\HLSL</Filter>
+    </None>
   </ItemGroup>
 </Project>

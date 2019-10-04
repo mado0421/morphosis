@@ -1,6 +1,6 @@
 ﻿#include "stdafx.h"
 #include "Mesh.h"
-#include "AnimationController.h"
+//#include "AnimationController.h"
 #include "Importer.h"
 
 
@@ -763,75 +763,75 @@ CTestMesh::~CTestMesh()
 	if (m_pnIndices) delete[] m_pnIndices;
 }
 
-CAnimatedModelMesh::CAnimatedModelMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ImportMeshData & m) : CMesh(pd3dDevice, pd3dCommandList)
-{
-	int nCtrlPoint = static_cast<int>(m.m_nCtrlPointList);
-	int nPolyongVertex = static_cast<int>(m.m_nVertexList);
-
-	UINT nStride = sizeof(CAnimatedVertex);
-	m_nVertices = nPolyongVertex;
-	//nVertices = nPolyongVertex;
-
-	XMFLOAT3* pos = new XMFLOAT3[nCtrlPoint];
-	for (int i = 0; i < nCtrlPoint; ++i) {
-		pos[i] = m.m_CtrlPointList[i].xmf3Position;
-		pos[i].z *= -1;
-	}
-	XMFLOAT4* weight = new XMFLOAT4[nCtrlPoint];
-	for (int i = 0; i < nCtrlPoint; ++i) weight[i] = m.m_CtrlPointList[i].xmf4BoneWeight;
-	XMINT4* boneIdx = new XMINT4[nCtrlPoint];
-	for (int i = 0; i < nCtrlPoint; ++i) boneIdx[i] = m.m_CtrlPointList[i].xmi4BoneIdx;
-
-
-
-	XMFLOAT2* uv = new XMFLOAT2[nPolyongVertex];
-	for (int i = 0; i < nPolyongVertex; ++i) uv[i] = m.m_VertexList[i].xmf2UV;
-	int* posIdx = new int[nPolyongVertex];
-	for (int i = 0; i < nPolyongVertex; ++i) posIdx[i] = m.m_VertexList[i].ctrlPointIdx;
-	XMFLOAT3* normal = new XMFLOAT3[nPolyongVertex];
-	for (int i = 0; i < nPolyongVertex; ++i)
-	{
-		normal[i] = m.m_VertexList[i].xmf3Normal;
-		normal[i].z *= -1;
-	}
-	XMFLOAT3* tangent = new XMFLOAT3[nPolyongVertex];
-	for (int i = 0; i < nPolyongVertex; ++i)
-	{
-		tangent[i] = m.m_VertexList[i].xmf3Tangent;
-		tangent[i].z *= -1;
-	}
-
-
-	CAnimatedVertex* animVertex = new CAnimatedVertex[nPolyongVertex];
-
-
-	for (int i = 0; i < nPolyongVertex; ++i) 
-		animVertex[i] = CAnimatedVertex(pos[posIdx[i]], normal[i], tangent[i], uv[i], weight[posIdx[i]], boneIdx[posIdx[i]]);
-
-
-	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
-		animVertex, sizeof(CAnimatedVertex) * nPolyongVertex,
-		D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
-		&m_pd3dVertexUploadBuffer);
-
-	delete[] pos;
-	delete[] weight;
-	delete[] boneIdx;
-	delete[] uv;
-	delete[] posIdx;
-	delete[] normal;
-	delete[] tangent;
-	delete[] animVertex;
-
-
-
-
-	m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
-	m_d3dVertexBufferView.StrideInBytes = nStride;
-	m_d3dVertexBufferView.SizeInBytes = nStride * nPolyongVertex;
-
-}
-
+//CAnimatedModelMesh::CAnimatedModelMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, ImportMeshData & m) : CMesh(pd3dDevice, pd3dCommandList)
+//{
+//	int nCtrlPoint = static_cast<int>(m.m_nCtrlPointList);
+//	int nPolyongVertex = static_cast<int>(m.m_nVertexList);
+//
+//	UINT nStride = sizeof(CAnimatedVertex);
+//	m_nVertices = nPolyongVertex;
+//	//nVertices = nPolyongVertex;
+//
+//	XMFLOAT3* pos = new XMFLOAT3[nCtrlPoint];
+//	for (int i = 0; i < nCtrlPoint; ++i) {
+//		pos[i] = m.m_CtrlPointList[i].xmf3Position;
+//		pos[i].z *= -1;
+//	}
+//	XMFLOAT4* weight = new XMFLOAT4[nCtrlPoint];
+//	for (int i = 0; i < nCtrlPoint; ++i) weight[i] = m.m_CtrlPointList[i].xmf4BoneWeight;
+//	XMINT4* boneIdx = new XMINT4[nCtrlPoint];
+//	for (int i = 0; i < nCtrlPoint; ++i) boneIdx[i] = m.m_CtrlPointList[i].xmi4BoneIdx;
+//
+//
+//
+//	XMFLOAT2* uv = new XMFLOAT2[nPolyongVertex];
+//	for (int i = 0; i < nPolyongVertex; ++i) uv[i] = m.m_VertexList[i].xmf2UV;
+//	int* posIdx = new int[nPolyongVertex];
+//	for (int i = 0; i < nPolyongVertex; ++i) posIdx[i] = m.m_VertexList[i].ctrlPointIdx;
+//	XMFLOAT3* normal = new XMFLOAT3[nPolyongVertex];
+//	for (int i = 0; i < nPolyongVertex; ++i)
+//	{
+//		normal[i] = m.m_VertexList[i].xmf3Normal;
+//		normal[i].z *= -1;
+//	}
+//	XMFLOAT3* tangent = new XMFLOAT3[nPolyongVertex];
+//	for (int i = 0; i < nPolyongVertex; ++i)
+//	{
+//		tangent[i] = m.m_VertexList[i].xmf3Tangent;
+//		tangent[i].z *= -1;
+//	}
+//
+//
+//	CAnimatedVertex* animVertex = new CAnimatedVertex[nPolyongVertex];
+//
+//
+//	for (int i = 0; i < nPolyongVertex; ++i) 
+//		animVertex[i] = CAnimatedVertex(pos[posIdx[i]], normal[i], tangent[i], uv[i], weight[posIdx[i]], boneIdx[posIdx[i]]);
+//
+//
+//	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
+//		animVertex, sizeof(CAnimatedVertex) * nPolyongVertex,
+//		D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+//		&m_pd3dVertexUploadBuffer);
+//
+//	delete[] pos;
+//	delete[] weight;
+//	delete[] boneIdx;
+//	delete[] uv;
+//	delete[] posIdx;
+//	delete[] normal;
+//	delete[] tangent;
+//	delete[] animVertex;
+//
+//
+//
+//
+//	m_d3dVertexBufferView.BufferLocation = m_pd3dVertexBuffer->GetGPUVirtualAddress();
+//	m_d3dVertexBufferView.StrideInBytes = nStride;
+//	m_d3dVertexBufferView.SizeInBytes = nStride * nPolyongVertex;
+//
+//}
+//
 CUIMesh::CUIMesh(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList, float width, float height) : CMesh(pd3dDevice, pd3dCommandList)
 {
 	m_nStride = sizeof(CUIVertex);

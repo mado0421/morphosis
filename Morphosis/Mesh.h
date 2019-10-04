@@ -2,8 +2,8 @@
 #include "stdafx.h"
 
 struct ImportMeshData;
-class AnimationMesh;
-class CAnimationController;
+//class AnimationMesh;
+//class CAnimationController;
 
 class CVertex {
 public:
@@ -102,10 +102,10 @@ public:
 	CModelMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nVertices, XMFLOAT3 *pxmf3Positions, XMFLOAT3 *pxmf3Normals, XMFLOAT2 *pxmf2UVs, UINT nIndices, UINT *pnIndices);
 	CModelMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ImportMeshData& m, float scale = 1.0f);
 };
-class CAnimatedModelMesh : public CMesh {
-public:
-	CAnimatedModelMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ImportMeshData& m);
-};
+//class CAnimatedModelMesh : public CMesh {
+//public:
+//	CAnimatedModelMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ImportMeshData& m);
+//};
 class CUIMesh : public CMesh {
 public:
 	CUIMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, float width = 0, float height = 0);

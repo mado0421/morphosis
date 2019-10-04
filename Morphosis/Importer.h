@@ -273,21 +273,22 @@ public:
 	//CModel*					GetModelByName(const char* name);
 	//CAnimationController*	GetAnimCtrlByName(const char* name);
 
-	void ImportModel(const char* fileName, const char* textureName, ModelType type, const char* modelName = "", float scale = 1.0f);
+	//void ImportModel(const char* fileName, const char* textureName, ModelType type, const char* modelName = "", float scale = 1.0f);
+	void ImportModel(const char* fileName, const char* modelName = "", float scale = 1.0f);
 	void ImportTexture(const wchar_t* fileName, const char* textureName = "");
-	void ImportAnimController(const char* animCtrlName = "");
-	void ImportAnimClip(const char* fileName, const char* animCtrlName, bool IsLoop, const char* animClipName = "");
-	void ImportLevel(const char* fileName, LEVELDATA_DESC& desc);
+	//void ImportAnimController(const char* animCtrlName = "");
+	//void ImportAnimClip(const char* fileName, const char* animCtrlName, bool IsLoop, const char* animClipName = "");
+	//void ImportLevel(const char* fileName, LEVELDATA_DESC& desc);
 private:
 	ID3D12Device*				m_pd3dDevice		= NULL;
 	ID3D12GraphicsCommandList*	m_pd3dCommandList	= NULL;
 };
 
-
-CTexture * GetTextureByName(const char * name);
-
-
-CModel * GetModelByName(const char * name);
-
-
-CAnimationController * GetAnimCtrlByName(const char * name);
+//
+//CTexture * GetTextureByName(const char * name);
+//
+//
+//CModel * GetModelByName(const char * name);
+//
+//
+//CAnimationController * GetAnimCtrlByName(const char * name);
