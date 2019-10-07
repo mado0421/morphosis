@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Framework.h"
 #include "Scene.h"
-//#include "Importer.h"
+#include "Importer.h"
 #include "Object.h"
 #include "Camera.h"
 #include "PSO.h"
@@ -49,6 +49,13 @@ TestScene::TestScene(CFramework * pFramework) : CScene(pFramework)
 
 void TestScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
 {
+	// 필요한 리소스 로드해
+	CImporter imp(pd3dDevice, pd3dCommandList);
+	imp.ImportTexture(L"Textures/CobblestoneMedieval12_albedo",		"albedo");
+	imp.ImportTexture(L"Textures/CobblestoneMedieval12_ao",			"ao");
+	imp.ImportTexture(L"Textures/CobblestoneMedieval12_height",		"height");
+	imp.ImportTexture(L"Textures/CobblestoneMedieval12_normal",		"normal");
+	imp.ImportTexture(L"Textures/CobblestoneMedieval12_roughness",	"roughness");
 }
 
 void TestScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)

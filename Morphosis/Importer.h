@@ -1,6 +1,9 @@
 #pragma once
 #include "stdafx.h"
 
+extern vector<CTexture*>			g_vecTexture;
+extern vector<CModel*>				g_vecModel;
+
 struct ImportBone {
 	std::string	m_Name;
 	XMFLOAT4X4	m_GlobalTransform;

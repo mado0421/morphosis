@@ -24,17 +24,21 @@ class CAnimationController;
 class CModel
 {
 public:
-	~CModel();
-public:
 	void Render(ID3D12GraphicsCommandList *pd3dCommandList, bool isDebug = false);
 
-	void SetMesh(CMesh* mesh)			{ m_Mesh	= mesh;		}
-	void SetTexture(CTexture* texture)	{ m_Texture = texture;	}
 	void SetName(const char* name)		{ m_strName = name;		}
+
+	void SetMeshIdx(int idx)		{ meshIdx = idx; }
+	void SetAlbedoIdx(int idx)		{ textureDesc.albedoIdx		= idx; }
+	void SetNormalIdx(int idx)		{ textureDesc.normalIdx		= idx; }
+	//void SetAOIdx(int idx)			{ textureDesc.AOIdx			= idx; }
+	//void SetHeightIdx(int idx)		{ textureDesc.heightIdx		= idx; }
+	//void SetRoughnessIdx(int idx)	{ textureDesc.roughnessIdx	= idx; }
+
 public:
 	string			m_strName		= "";
 
 private:
-	CMesh*			m_Mesh			= NULL;
-	CTexture*		m_Texture		= NULL;
+	int			meshIdx = -1;
+	TextureSet	textureDesc;
 };

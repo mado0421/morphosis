@@ -42,3 +42,13 @@ public:
 
 	void ReleaseUploadBuffers();
 };
+
+
+struct TextureSet {
+	int albedoIdx		= 0;
+	int normalIdx		= 1;
+	//int AOIdx			= 1;
+	//int heightIdx		= 3;
+	//int roughnessIdx	= 4;
+	//int emissiveIdx		= 5;
+};

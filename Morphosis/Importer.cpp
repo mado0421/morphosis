@@ -6,8 +6,8 @@
 #include "Texture.h"
 #include "Model.h"
 
-std::vector<CTexture*>				g_vecTexture;
-std::vector<CModel*>				g_vecModel;
+vector<CTexture*>			g_vecTexture;
+vector<CModel*>				g_vecModel;
 //std::vector<CAnimationController*>	g_vecAnimController;
 
 //void CImporter::ImportModel(const char * fileName, const char * textureName, ModelType type, const char * modelName, float scale)
@@ -250,13 +250,13 @@ void CImporter::ImportTexture(const wchar_t * fileName, const char * textureName
 //	g_vecAnimController.push_back(animController);
 //}
 //
-//CTexture * GetTextureByName(const char * name)
-//{
-//	for (int i = 0; i < g_vecTexture.size(); ++i)
-//		if (g_vecTexture[i]->m_strName == name) return g_vecTexture[i];
-//
-//	return nullptr;
-//}
+CTexture * GetTextureByName(const char * name)
+{
+	for (int i = 0; i < g_vecTexture.size(); ++i)
+		if (g_vecTexture[i]->m_strName == name) return g_vecTexture[i];
+
+	return nullptr;
+}
 //
 //CModel * GetModelByName(const char * name)
 //{
