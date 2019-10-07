@@ -21,10 +21,19 @@ class CMesh;
 class CTexture;
 class CAnimationController;
 
+struct TextureSet {
+	int albedoIdx = 0;
+	int normalIdx = 1;
+	//int AOIdx			= 1;
+	//int heightIdx		= 3;
+	//int roughnessIdx	= 4;
+	//int emissiveIdx		= 5;
+};
+
 class CModel
 {
 public:
-	void Render(ID3D12GraphicsCommandList *pd3dCommandList, bool isDebug = false);
+	void Render(ID3D12GraphicsCommandList *pd3dCommandList);
 
 	void SetName(const char* name)		{ m_strName = name;		}
 

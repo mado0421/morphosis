@@ -7,6 +7,8 @@ struct SRVROOTARGUMENTINFO
 	D3D12_GPU_DESCRIPTOR_HANDLE		m_d3dSrvGpuDescriptorHandle;
 };
 
+
+
 class CTexture
 {
 public:
@@ -23,10 +25,13 @@ private:
 	ID3D12Resource					*uploadBuffer					= NULL;
 	SRVROOTARGUMENTINFO				*rootArgumentInfo				= NULL;
 	D3D12_GPU_DESCRIPTOR_HANDLE		*SamplerGpuDescriptorHandles	= NULL;
-
+	TEXTURETYPE						m_type							= TEXTURETYPE::ALBEDO;
 
 public:
 	void SetName(const char* name) { m_strName = name; }
+	
+	void SetType(TEXTURETYPE type) { m_type = type; }
+	TEXTURETYPE GetType() { return m_type; }
 
 	void SetRootArgument(UINT nRootParameterIndex, D3D12_GPU_DESCRIPTOR_HANDLE d3dsrvGpuDescriptorHandle);
 	void SetSampler(D3D12_GPU_DESCRIPTOR_HANDLE *d3dSamplerGpuDescriptorHandle);
@@ -41,14 +46,4 @@ public:
 	UINT GetTextureType() { return(TextureType); }
 
 	void ReleaseUploadBuffers();
-};
-
-
-struct TextureSet {
-	int albedoIdx		= 0;
-	int normalIdx		= 1;
-	//int AOIdx			= 1;
-	//int heightIdx		= 3;
-	//int roughnessIdx	= 4;
-	//int emissiveIdx		= 5;
 };

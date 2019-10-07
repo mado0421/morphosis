@@ -11,12 +11,12 @@ cbuffer cbGameObjectInfo				: register(b1)
 	//matrix		gmtxGameObjectNoTrans	: packoffset(c4);
 	//uint		gnMaterial				: packoffset(c4);
 };
-Texture2D gtxtTexture					: register(t2);
+Texture2D gtxtTexture[5]					: register(t4);
 cbuffer cbAnimMatrixInfo				: register(b3)
 {
 	matrix		AnimMatrix[64]			: packoffset(c0);
 };
-cbuffer cbUIInfo						: register(b4)
+cbuffer cbUIInfo						: register(b2)
 {
 	matrix		gmtxUI					: packoffset(c0);
 	float2		gf2Size					: packoffset(c4);

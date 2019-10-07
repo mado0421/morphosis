@@ -17,7 +17,7 @@ float4 PSAnimModelShader(VS_ANIM_OUTPUT input) : SV_TARGET {
 
 	input.normalW = normalize(input.normalW);
 
-	float4 cColor = gtxtTexture.Sample(gSamplerState, input.uv);
+	float4 cColor = gtxtTexture[0].Sample(gSamplerState, input.uv);
 	float4 cLightResult = TestLighting(input.positionW, input.normalW);
 
 	float3 toEyeW = gvCameraPosition - input.positionW;
@@ -30,7 +30,7 @@ float4 PSAnimModelShader(VS_ANIM_OUTPUT input) : SV_TARGET {
 }
 
 float4 PSModelShader(VS_MODEL_OUTPUT input) : SV_TARGET {
-	float4 cColor = gtxtTexture.Sample(gSamplerState, input.uv);
+	float4 cColor = gtxtTexture[0].Sample(gSamplerState, input.uv);
 	float4 cLightResult = TestLighting(input.positionW, input.normalW);
 
 	float3 toEyeW = gvCameraPosition - input.positionW;
@@ -44,7 +44,7 @@ float4 PSModelShader(VS_MODEL_OUTPUT input) : SV_TARGET {
 }
 
 float4 PSDefaultUI(VS_UI_OUTPUT input) : SV_TARGET {
-	float4 cColor = gtxtTexture.Sample(gSamplerState, input.uv);
+	float4 cColor = gtxtTexture[0].Sample(gSamplerState, input.uv);
 	//cColor.a *= 1.0f;
 	if (cColor.a < 0.3) discard;
 	return cColor;

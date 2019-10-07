@@ -1,8 +1,7 @@
 #pragma once
 #include "stdafx.h"
 
-extern vector<CTexture*>			g_vecTexture;
-extern vector<CModel*>				g_vecModel;
+
 
 struct ImportBone {
 	std::string	m_Name;
@@ -278,7 +277,7 @@ public:
 
 	//void ImportModel(const char* fileName, const char* textureName, ModelType type, const char* modelName = "", float scale = 1.0f);
 	void ImportModel(const char* fileName, const char* modelName = "", float scale = 1.0f);
-	void ImportTexture(const wchar_t* fileName, const char* textureName = "");
+	void ImportTexture(const wchar_t* fileName, const char* textureName = "", TEXTURETYPE type = TEXTURETYPE::ALBEDO);
 	//void ImportAnimController(const char* animCtrlName = "");
 	//void ImportAnimClip(const char* fileName, const char* animCtrlName, bool IsLoop, const char* animClipName = "");
 	//void ImportLevel(const char* fileName, LEVELDATA_DESC& desc);
@@ -288,7 +287,7 @@ private:
 };
 
 //
-//CTexture * GetTextureByName(const char * name);
+CTexture * GetTextureByName(const char * name);
 //
 //
 //CModel * GetModelByName(const char * name);

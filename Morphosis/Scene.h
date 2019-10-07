@@ -12,6 +12,11 @@ protected:
 	ID3D12GraphicsCommandList		*m_pd3dCommandList				= NULL;
 	ID3D12DescriptorHeap			*m_pd3dCbvSrvDescriptorHeap		= NULL;
 
+	D3D12_CPU_DESCRIPTOR_HANDLE		m_d3dCbvCPUDescriptorStartHandle;
+	D3D12_GPU_DESCRIPTOR_HANDLE		m_d3dCbvGPUDescriptorStartHandle;
+	D3D12_CPU_DESCRIPTOR_HANDLE		m_d3dSrvCPUDescriptorStartHandle;
+	D3D12_GPU_DESCRIPTOR_HANDLE		m_d3dSrvGPUDescriptorStartHandle;
+
 	POINT							m_ptOldCursorPos;
 	CCamera							*m_pCamera = NULL;
 	CFramework						*m_pFramework = NULL;
@@ -29,6 +34,11 @@ public:
 
 	// 초기화 함수
 	virtual ID3D12RootSignature *CreateRootSignature(ID3D12Device *pd3dDevice) = 0;
+
+protected:
+	void CreateDescriptorHeap(int nObject);
+	void CreateTextureResourceViews();
+	void CreateTextureResourceView(void*);
 };
 
 class TestScene : public CScene {

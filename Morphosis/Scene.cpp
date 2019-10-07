@@ -7,6 +7,12 @@
 #include "PSO.h"
 #include "Texture.h"
 
+#include "Mesh.h"
+#include "Model.h"
+
+
+
+
 CScene::CScene()
 {
 }
@@ -39,6 +45,50 @@ void CScene::Release()
 	m_pd3dCbvSrvDescriptorHeap->Release();
 }
 
+/*
+	텍스처 임포트 후에 호출 할 것.
+	중간에 서술자 개수를 적어주는 곳에서 텍스처 개수를 받는다.
+	힙손상의 원인이 되므로 호출 순서에 주의.
+*/
+void CScene::CreateDescriptorHeap(int nObject)
+{
+	D3D12_DESCRIPTOR_HEAP_DESC d3dDescriptorHeapDesc;
+	d3dDescriptorHeapDesc.NumDescriptors = nObject + g_vecTexture.size();
+	d3dDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	d3dDescriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	d3dDescriptorHeapDesc.NodeMask = 0;
+
+	HRESULT result = m_pd3dDevice->CreateDescriptorHeap(&d3dDescriptorHeapDesc, __uuidof(ID3D12DescriptorHeap), (void **)&m_pd3dCbvSrvDescriptorHeap);
+	HRESULT reason = m_pd3dDevice->GetDeviceRemovedReason();
+
+	m_d3dCbvCPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	m_d3dCbvGPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart();
+	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (nObject));
+	m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (nObject));
+}
+
+void CScene::CreateTextureResourceViews()
+{
+	for (int i = 0; i < g_vecTexture.size(); ++i)
+		CreateTextureResourceView(g_vecTexture[i]);
+}
+
+void CScene::CreateTextureResourceView(void * pTexture)
+{
+
+	D3D12_CPU_DESCRIPTOR_HANDLE d3dSrvCPUDescriptorHandle = m_d3dSrvCPUDescriptorStartHandle;
+	D3D12_GPU_DESCRIPTOR_HANDLE d3dSrvGPUDescriptorHandle = m_d3dSrvGPUDescriptorStartHandle;
+	int nTextureType = static_cast<CTexture*>(pTexture)->GetTextureType();
+	ID3D12Resource *pShaderResource = static_cast<CTexture*>(pTexture)->GetTexture();
+	D3D12_RESOURCE_DESC d3dResourceDesc = pShaderResource->GetDesc();
+	D3D12_SHADER_RESOURCE_VIEW_DESC d3dShaderResourceViewDesc = GetShaderResourceViewDesc(d3dResourceDesc, nTextureType);
+	m_pd3dDevice->CreateShaderResourceView(pShaderResource, &d3dShaderResourceViewDesc, d3dSrvCPUDescriptorHandle);
+	m_d3dSrvCPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
+
+	static_cast<CTexture*>(pTexture)->SetRootArgument(g_RootParameterTexture + static_cast<int>(static_cast<CTexture*>(pTexture)->GetType() ), d3dSrvGPUDescriptorHandle);
+	m_d3dSrvGPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
+}
+
 TestScene::TestScene()
 {
 }
@@ -49,13 +99,49 @@ TestScene::TestScene(CFramework * pFramework) : CScene(pFramework)
 
 void TestScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
 {
+	m_pd3dDevice		= pd3dDevice;
+	m_pd3dCommandList	= pd3dCommandList;
+
 	// 필요한 리소스 로드해
-	CImporter imp(pd3dDevice, pd3dCommandList);
-	imp.ImportTexture(L"Textures/CobblestoneMedieval12_albedo",		"albedo");
-	imp.ImportTexture(L"Textures/CobblestoneMedieval12_ao",			"ao");
-	imp.ImportTexture(L"Textures/CobblestoneMedieval12_height",		"height");
-	imp.ImportTexture(L"Textures/CobblestoneMedieval12_normal",		"normal");
-	imp.ImportTexture(L"Textures/CobblestoneMedieval12_roughness",	"roughness");
+	CImporter imp(m_pd3dDevice, m_pd3dCommandList);
+	imp.ImportTexture(L"Textures/CobblestoneMedieval12_albedo",		"albedo",		TEXTURETYPE::ALBEDO);
+	imp.ImportTexture(L"Textures/CobblestoneMedieval12_normal",		"normal",		TEXTURETYPE::NORMAL);
+	imp.ImportTexture(L"Textures/CobblestoneMedieval12_ao",			"ao",			TEXTURETYPE::AO);
+	imp.ImportTexture(L"Textures/CobblestoneMedieval12_height",		"height",		TEXTURETYPE::HEIGHT);
+	imp.ImportTexture(L"Textures/CobblestoneMedieval12_roughness",	"roughness",	TEXTURETYPE::ROUGHNESS);
+
+	//오브젝트 몇 개 쓸거야
+	
+
+
+
+
+	
+	CreateDescriptorHeap(0);
+	CreateTextureResourceViews();
+
+
+	CreateConstantBufferResorce();
+	CreateConstantBufferView();
+	// plane 메쉬 만들고 저거 입혀
+	//CModel* model = new CModel();
+	//CUIMesh* tempMesh = new CUIMesh(m_pd3dDevice, m_pd3dCommandList);
+	//model->SetMesh(tempMesh);
+	//model->SetTexture(GetTextureByName("albedo"));
+
+	// 한 모델에서 여러 텍스처를 쓸 수 있게 만들어야 함.
+	// 지금은 한 모델이 하나의 메쉬와 하나의 텍스처만을 갖고 있음.
+	// 하나의 메쉬와 여러 텍스처를 쓸 수 있어야 함.
+	// 그래야 알비도, AO, 하이트, 노멀, 러프니스 등 다양한 맵을 쓸 수 있으니까.
+	// 그럼 어떻게 해야 하지? SetAlbedo()?
+
+
+
+
+
+	// 프리펩에 설정으로 같은 텍스처 사용을 두면 그 텍스처만 쓰게 한다든지~
+
+	//g_vecModel.push_back(model);
 }
 
 void TestScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
@@ -86,14 +172,14 @@ ID3D12RootSignature * TestScene::CreateRootSignature(ID3D12Device * pd3dDevice)
 	pd3dDescriptorRanges[0].OffsetInDescriptorsFromTableStart = 0;
 
 	pd3dDescriptorRanges[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	pd3dDescriptorRanges[1].NumDescriptors = 1;
-	pd3dDescriptorRanges[1].BaseShaderRegister = 2; //t2
+	pd3dDescriptorRanges[1].NumDescriptors = 5;
+	pd3dDescriptorRanges[1].BaseShaderRegister = 4; //t4, t5, t6, t7, t8
 	pd3dDescriptorRanges[1].RegisterSpace = 0;
 	pd3dDescriptorRanges[1].OffsetInDescriptorsFromTableStart = 0;
 
 	pd3dDescriptorRanges[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
 	pd3dDescriptorRanges[2].NumDescriptors = 1;
-	pd3dDescriptorRanges[2].BaseShaderRegister = 4; //b4
+	pd3dDescriptorRanges[2].BaseShaderRegister = 2; //b2
 	pd3dDescriptorRanges[2].RegisterSpace = 0;
 	pd3dDescriptorRanges[2].OffsetInDescriptorsFromTableStart = 0;
 
@@ -111,11 +197,11 @@ ID3D12RootSignature * TestScene::CreateRootSignature(ID3D12Device * pd3dDevice)
 	pd3dRootParameters[1].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[0];
 	pd3dRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
-	//Texture
+	//FloatingUI
 	pd3dRootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	pd3dRootParameters[2].DescriptorTable.NumDescriptorRanges = 1;
-	pd3dRootParameters[2].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[1];
-	pd3dRootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	pd3dRootParameters[2].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[2];
+	pd3dRootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 	//Anim
 	pd3dRootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
@@ -123,11 +209,12 @@ ID3D12RootSignature * TestScene::CreateRootSignature(ID3D12Device * pd3dDevice)
 	pd3dRootParameters[3].Descriptor.RegisterSpace = 0;
 	pd3dRootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 
-	//FloatingUI
+	//Texture
 	pd3dRootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	pd3dRootParameters[4].DescriptorTable.NumDescriptorRanges = 1;
-	pd3dRootParameters[4].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[2];
-	pd3dRootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	pd3dRootParameters[4].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[1];
+	pd3dRootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
 
 	///*
 	//Root Signiature 추가 필요

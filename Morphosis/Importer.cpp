@@ -8,6 +8,7 @@
 
 vector<CTexture*>			g_vecTexture;
 vector<CModel*>				g_vecModel;
+vector<CMesh*>				g_vecMesh;
 //std::vector<CAnimationController*>	g_vecAnimController;
 
 //void CImporter::ImportModel(const char * fileName, const char * textureName, ModelType type, const char * modelName, float scale)
@@ -208,28 +209,30 @@ vector<CModel*>				g_vecModel;
 
 void CImporter::ImportModel(const char * fileName, const char * modelName, float scale)
 {
+	cout << "CImporter::ImportModel() 은 수정중입니다.\n";
 
-	string modelDataName = ASSETPATH;
-	modelDataName += fileName;
-	modelDataName += "_mesh.dat";
-	ImportModelData modelData;
-	modelData.ImportFile(modelDataName.c_str());
-	for (int i = 0; i < modelData.GetNumOfMesh(); ++i) {
-		string partName = modelName;
-		partName += "_";
-		partName += modelData.GetMeshData(i).m_MeshName;
 
-		CModel* model = new CModel();
-		CModelMesh* tempMesh = new CModelMesh(m_pd3dDevice, m_pd3dCommandList, modelData.GetMeshData(i), scale);
-		model->SetMesh(tempMesh);
-		model->SetName(partName.c_str());
+	//string modelDataName = ASSETPATH;
+	//modelDataName += fileName;
+	//modelDataName += "_mesh.dat";
+	//ImportModelData modelData;
+	//modelData.ImportFile(modelDataName.c_str());
+	//for (int i = 0; i < modelData.GetNumOfMesh(); ++i) {
+	//	string partName = modelName;
+	//	partName += "_";
+	//	partName += modelData.GetMeshData(i).m_MeshName;
 
-		g_vecModel.push_back(model);
-	}
+	//	CModel* model = new CModel();
+	//	CModelMesh* tempMesh = new CModelMesh(m_pd3dDevice, m_pd3dCommandList, modelData.GetMeshData(i), scale);
+	//	model->SetMesh(tempMesh);
+	//	model->SetName(partName.c_str());
+
+	//	g_vecModel.push_back(model);
+	//}
 
 }
 
-void CImporter::ImportTexture(const wchar_t * fileName, const char * textureName)
+void CImporter::ImportTexture(const wchar_t * fileName, const char * textureName, TEXTURETYPE type)
 {
 	wstring filePath = LASSETPATH;
 	filePath += fileName;
@@ -238,6 +241,7 @@ void CImporter::ImportTexture(const wchar_t * fileName, const char * textureName
 	CTexture* texture = new CTexture(RESOURCE_TEXTURE2D);
 	texture->LoadTextureFromFile(m_pd3dDevice, m_pd3dCommandList, filePath.c_str());
 	texture->SetName(textureName);
+	texture->SetType(type);
 
 	g_vecTexture.push_back(texture);
 }
