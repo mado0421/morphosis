@@ -15,14 +15,17 @@ public:
 class CModelVertex : public CVertex {
 public:
 	XMFLOAT3	m_xmf3Normal;
+	XMFLOAT3	m_xmf3Tangent;
 	XMFLOAT2	m_xmf2TexCoord;
 public:
 	CModelVertex() = default;
 	CModelVertex(XMFLOAT3 position,
 				 XMFLOAT3 normal,
+				 XMFLOAT3 tangent,
 				 XMFLOAT2 texcoord) 
 				 : CVertex(position)
 				 , m_xmf3Normal(normal)
+				 , m_xmf3Tangent(tangent)
 				 , m_xmf2TexCoord(texcoord) {}
 };
 class CAnimatedVertex : public CVertex {
@@ -101,8 +104,8 @@ public:
 
 public:
 	CModelMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
-	CModelMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nVertices, XMFLOAT3 *pxmf3Positions, XMFLOAT3 *pxmf3Normals, XMFLOAT2 *pxmf2UVs, UINT nIndices, UINT *pnIndices);
-	CModelMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ImportMeshData& m, float scale = 1.0f);
+	//CModelMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nVertices, XMFLOAT3 *pxmf3Positions, XMFLOAT3 *pxmf3Normals, XMFLOAT2 *pxmf2UVs, UINT nIndices, UINT *pnIndices);
+	//CModelMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ImportMeshData& m, float scale = 1.0f);
 };
 //class CAnimatedModelMesh : public CMesh {
 //public:
@@ -121,8 +124,8 @@ private:
 	UINT	*m_pnIndices = NULL;
 public:
 	CTestMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
-	CTestMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, float size);
-	CTestMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, XMFLOAT3 extents);
-	CTestMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, XMFLOAT3 position, XMFLOAT3 extents);
+	//CTestMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, float size);
+	//CTestMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, XMFLOAT3 extents);
+	//CTestMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, XMFLOAT3 position, XMFLOAT3 extents);
 	~CTestMesh();
 };

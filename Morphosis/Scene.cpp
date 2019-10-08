@@ -86,7 +86,7 @@ void CScene::CreateTextureResourceView(void * pTexture)
 	m_pd3dDevice->CreateShaderResourceView(pShaderResource, &d3dShaderResourceViewDesc, d3dSrvCPUDescriptorHandle);
 	m_d3dSrvCPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
 
-	static_cast<CTexture*>(pTexture)->SetRootArgument(g_RootParameterTexture/* + static_cast<int>(static_cast<CTexture*>(pTexture)->GetType() )*/, d3dSrvGPUDescriptorHandle);
+	static_cast<CTexture*>(pTexture)->SetRootArgument(g_RootParameterTexture /*+ static_cast<int>(static_cast<CTexture*>(pTexture)->GetType() )*/, d3dSrvGPUDescriptorHandle);
 	m_d3dSrvGPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
 }
 
@@ -104,9 +104,9 @@ void TestScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList 
 	m_pd3dCommandList	= pd3dCommandList;
 	m_pd3dGraphicsRootSignature = CreateRootSignature(m_pd3dDevice);
 
-	m_pCamera = new CCamera();
+	m_pCamera = new CFollowCamera();
 	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	m_pCamera->SetPosition(XMFLOAT3(0, 0, -400));
+	m_pCamera->SetPosition(XMFLOAT3(0, 0, -200));
 	m_pCamera->SetLookAt(XMFLOAT3(0, 0, 0));
 
 	// 필요한 리소스 로드해
@@ -142,7 +142,8 @@ void TestScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList 
 	tempObj->SetPrefabIdx(GetPrefabIdx( "TestPlanePrefab" ));
 	tempObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 
-	tempObj->Move(XMFLOAT3(0, 0, 0));
+	tempObj->Move(XMFLOAT3(0, -50, 0));
+	tempObj->Rotate(XMFLOAT3(-90, 0, 0));
 
 
 
@@ -170,17 +171,23 @@ void TestScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 	for (int i = 0; i < m_vecObject.size(); ++i) m_vecObject[i]->Render(pd3dCommandList);
 }
 
+float g_temp;
+
 void TestScene::Update(float fTimeElapsed)
 {
 	m_pCamera->Update(fTimeElapsed);
 	for (int i = 0; i < m_vecObject.size(); ++i) m_vecObject[i]->Update(fTimeElapsed);
 
-	m_vecObject[0]->Rotate(XMFLOAT3(0, 300 * fTimeElapsed, 0));
+	//m_vecObject[0]->Rotate(XMFLOAT3(0, g_temp * fTimeElapsed, 0));
+	m_vecObject[0]->Rotate(XMFLOAT3(g_temp * fTimeElapsed, 0, 0));
 
 }
 
 void TestScene::ProcessInput(UCHAR * pKeysBuffer)
 {
+	if (pKeysBuffer[65] & 0xF0) { g_temp += 0.1; }
+	if (pKeysBuffer[68] & 0xF0) { g_temp -= 0.1; }
+	if (pKeysBuffer[VK_SPACE] & 0xF0) { g_temp = 0; }
 }
 
 void TestScene::Release()
@@ -272,8 +279,8 @@ ID3D12RootSignature * TestScene::CreateRootSignature(ID3D12Device * pd3dDevice)
 
 	ID3DBlob *pd3dSignatureBlob = NULL;
 	ID3DBlob *pd3dErrorBlob = NULL;
-	/*HRESULT isSuccess = */D3D12SerializeRootSignature(&d3dRootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1_0, &pd3dSignatureBlob, &pd3dErrorBlob);
-	/*isSuccess = */pd3dDevice->CreateRootSignature(0, pd3dSignatureBlob->GetBufferPointer(), pd3dSignatureBlob->GetBufferSize(), __uuidof(ID3D12RootSignature), (void **)&pd3dGraphicsRootSignature);
+	HRESULT isSuccess = D3D12SerializeRootSignature(&d3dRootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1_0, &pd3dSignatureBlob, &pd3dErrorBlob);
+	isSuccess = pd3dDevice->CreateRootSignature(0, pd3dSignatureBlob->GetBufferPointer(), pd3dSignatureBlob->GetBufferSize(), __uuidof(ID3D12RootSignature), (void **)&pd3dGraphicsRootSignature);
 	if (pd3dSignatureBlob) pd3dSignatureBlob->Release();
 	if (pd3dErrorBlob) pd3dErrorBlob->Release();
 

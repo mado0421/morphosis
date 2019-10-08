@@ -25,23 +25,36 @@ float4 PSAnimModelShader(VS_ANIM_OUTPUT input) : SV_TARGET {
 
 	cColor = lerp(cColor, cLightResult, 0.5f);
 	cColor = lerp(cColor, float4(0.1, 0.1, 0.1, 1.0), distToEye / 512);
-	return  float4(1, 1, 1, 1.0);
+	//return  float4(1, 1, 1, 1.0);
 
-	//return cColor;
+	return cColor;
 	//return (lerp(cColor, cLightResult, 0.5f));
 }
 
 float4 PSModelShader(VS_MODEL_OUTPUT input) : SV_TARGET {
-	return  float4(1, 1, 1, 1.0);
-	float4 cColor = gtxtTexture[0].Sample(gSamplerState, input.uv);
-	float4 cLightResult = TestLighting(input.positionW, input.normalW);
+	//return  float4(1, 1, 1, 1.0);
+	float4 cAlbedo = gtxtTexture[0].Sample(gSamplerState, input.uv);
 
-	float3 toEyeW = gvCameraPosition - input.positionW;
-	float distToEye = length(toEyeW);
+	float3 toEyeW = normalize( gvCameraPosition - input.positionW );
+	float4 ambient = float4(0.1, 0.1, 0.1, 1);
+	//float distToEye = length(toEyeW);
 
-	cColor = lerp(cColor, cLightResult, 0.5f);
-	cColor = lerp(cColor, float4(0.1, 0.1, 0.1, 1.0), distToEye / 512);
-	//return cColor;
+	//cColor = lerp(cColor, cLightResult, 0.5f);
+	//cColor = lerp(cColor, float4(0.1, 0.1, 0.1, 1.0), distToEye / 512);
+
+	float4 normalMapSample = gtxtTexture[1].Sample(gSamplerState, input.uv);
+	float3 bumpedNomalW = NormalSampleToWorldSpace(normalMapSample.rgb, input.normalW, input.tangentW);
+	float4 cLightResult = TestLighting(input.positionW, bumpedNomalW);
+
+
+
+
+
+
+
+
+
+	return cLightResult;
 
 	//return (lerp(cColor, cLightResult, 0.5f));
 }
