@@ -17,7 +17,7 @@ public:
 	virtual ~CTexture();
 
 public:
-	string							m_strName						= "";
+	string							name						= "";
 
 private:
 	UINT							TextureType						= RESOURCE_TEXTURE2D;
@@ -28,7 +28,7 @@ private:
 	TEXTURETYPE						m_type							= TEXTURETYPE::ALBEDO;
 
 public:
-	void SetName(const char* name) { m_strName = name; }
+	void SetName(const char* str) { name = str; }
 	
 	void SetType(TEXTURETYPE type) { m_type = type; }
 	TEXTURETYPE GetType() { return m_type; }

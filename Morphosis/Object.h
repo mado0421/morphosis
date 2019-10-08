@@ -1,5 +1,5 @@
 #pragma once
-
+#include "stdafx.h"
 /***********************************************************************
 클래스 사양
 
@@ -68,20 +68,51 @@
 //	vector<Collider>	m_vecCollider;
 //};
 
+struct CB_OBJECT_INFO {
+	XMFLOAT4X4	xmf4x4World;
+};
 
 class Object {
 public:
+	void Rotate(const XMFLOAT3& angle);
+	void Move(const XMFLOAT3& velocity);
+
+public:
+	/*******************************************************************
+	프레임마다 호출될 함수
+	*******************************************************************/
 	virtual void Update(float fTime);
-	virtual void Render();
+	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
+	void SetRootParameter(ID3D12GraphicsCommandList * pd3dCommandList);	// 렌더링 하기 전에 호출
+	virtual void UpdateConstantBuffer(ID3D12GraphicsCommandList * pd3dCommandList); // 렌더링 하기 전에 호출
+
+
+	/*******************************************************************
+	세팅 함수
+	*******************************************************************/
+	void SetPrefabIdx(int idx) { m_idxPrefab = idx; }
+
+	/*******************************************************************
+	초기화 함수
+	*******************************************************************/
+	Object();
+	virtual void CreateConstantBufferResource(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList);
+	virtual void CreateConstantBufferView(ID3D12Device * pd3dDevice, D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorStartHandle, int& offset);
+	void SetCbvGPUDescriptorHandlePtr(UINT64 nCbvGPUDescriptorHandlePtr);
 
 protected:
-	int			m_idxPrefab = 0;
-	//XMMATRIX	m_xmf4x4World;
+	int							m_idxPrefab = 0;
+	XMFLOAT4X4					m_xmf4x4World;
+
+	D3D12_GPU_DESCRIPTOR_HANDLE	m_d3dCbvGPUDescriptorHandle;
+	ID3D12Resource*				m_pd3dCBResource;
+	CB_OBJECT_INFO*				m_pCBMappedObjects;
+
 };
 
 class MovingObject : public Object {
 protected:
-	//XMFLOAT3	m_xmf3LocalVelocity;
+	XMFLOAT3	m_xmf3LocalVelocity;
 };
 
 class AnimatedMovindObject : public MovingObject {

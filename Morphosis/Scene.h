@@ -1,6 +1,7 @@
 #pragma once
 class CFramework;
 class CCamera;
+class Object;
 
 // Scene 자체는 안 쓸 예정이니까 추상클래스로?
 // 인터페이스?
@@ -39,6 +40,8 @@ protected:
 	void CreateDescriptorHeap(int nObject);
 	void CreateTextureResourceViews();
 	void CreateTextureResourceView(void*);
+	virtual void CreateConstantBufferResorce() = 0;
+	virtual void CreateConstantBufferView() = 0;
 };
 
 class TestScene : public CScene {
@@ -54,4 +57,10 @@ public:
 
 	// 초기화 함수
 	virtual ID3D12RootSignature *CreateRootSignature(ID3D12Device *pd3dDevice);
+
+protected:
+	virtual void CreateConstantBufferResorce();
+	virtual void CreateConstantBufferView();
+
+	vector<Object*> m_vecObject;
 };

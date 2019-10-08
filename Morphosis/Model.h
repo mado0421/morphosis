@@ -35,7 +35,7 @@ class CModel
 public:
 	void Render(ID3D12GraphicsCommandList *pd3dCommandList);
 
-	void SetName(const char* name)		{ m_strName = name;		}
+	void SetName(const char* str)		{ name = str;		}
 
 	void SetMeshIdx(int idx)		{ meshIdx = idx; }
 	void SetAlbedoIdx(int idx)		{ textureDesc.albedoIdx		= idx; }
@@ -45,7 +45,7 @@ public:
 	//void SetRoughnessIdx(int idx)	{ textureDesc.roughnessIdx	= idx; }
 
 public:
-	string			m_strName		= "";
+	string			name		= "";
 
 private:
 	int			meshIdx = -1;

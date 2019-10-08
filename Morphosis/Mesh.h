@@ -88,6 +88,8 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
 	virtual void CreateVertexBuffer(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, void *pData);
 	virtual void CreateIndexBuffer(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, void *pData);
+
+	string name = "";
 };
 class CModelMesh : public CMesh
 {

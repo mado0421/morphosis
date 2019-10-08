@@ -253,10 +253,10 @@ void CFollowCamera::SetLookAt(XMFLOAT3 & xmf3LookAt)
 	//XMFLOAT3 up = m_pTarget->GetUp();
 	////여기서 포지션이랑 LookAt이랑 같으면 EyeDir이 0, 0, 0이라고 에러 뜸
 
-	//XMFLOAT4X4 mtxLookAt = Matrix4x4::LookAtLH(m_xmf3Position, xmf3LookAt, up);
-	//m_xmf3Right = XMFLOAT3(mtxLookAt._11, mtxLookAt._21, mtxLookAt._31);
-	//m_xmf3Up	= XMFLOAT3(mtxLookAt._12, mtxLookAt._22, mtxLookAt._32);
-	//m_xmf3Look	= XMFLOAT3(mtxLookAt._13, mtxLookAt._23, mtxLookAt._33);
+	XMFLOAT4X4 mtxLookAt = Matrix4x4::LookAtLH(m_xmf3Position, xmf3LookAt, XMFLOAT3(0,1,0));
+	m_xmf3Right = XMFLOAT3(mtxLookAt._11, mtxLookAt._21, mtxLookAt._31);
+	m_xmf3Up	= XMFLOAT3(mtxLookAt._12, mtxLookAt._22, mtxLookAt._32);
+	m_xmf3Look	= XMFLOAT3(mtxLookAt._13, mtxLookAt._23, mtxLookAt._33);
 }
 
 CBoardCamera::CBoardCamera() : CCamera()

@@ -143,24 +143,24 @@ bool CFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 
 	BuildScenes();
 
-	BOOL bFullScreenState = FALSE;
-	m_pdxgiSwapChain->GetFullscreenState(&bFullScreenState, NULL);
-	if (!bFullScreenState)
-	{
-		DXGI_MODE_DESC dxgiTargetParameters;
-		dxgiTargetParameters.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		dxgiTargetParameters.Width = m_nWndClientWidth;
-		dxgiTargetParameters.Height = m_nWndClientHeight;
-		dxgiTargetParameters.RefreshRate.Numerator = 60;
-		dxgiTargetParameters.RefreshRate.Denominator = 1;
-		dxgiTargetParameters.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-		dxgiTargetParameters.ScanlineOrdering =
-			DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-		m_pdxgiSwapChain->ResizeTarget(&dxgiTargetParameters);
-	}
-	m_pdxgiSwapChain->SetFullscreenState(!bFullScreenState, NULL);
+	//BOOL bFullScreenState = FALSE;
+	//m_pdxgiSwapChain->GetFullscreenState(&bFullScreenState, NULL);
+	//if (!bFullScreenState)
+	//{
+	//	DXGI_MODE_DESC dxgiTargetParameters;
+	//	dxgiTargetParameters.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	//	dxgiTargetParameters.Width = m_nWndClientWidth;
+	//	dxgiTargetParameters.Height = m_nWndClientHeight;
+	//	dxgiTargetParameters.RefreshRate.Numerator = 60;
+	//	dxgiTargetParameters.RefreshRate.Denominator = 1;
+	//	dxgiTargetParameters.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+	//	dxgiTargetParameters.ScanlineOrdering =
+	//		DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+	//	m_pdxgiSwapChain->ResizeTarget(&dxgiTargetParameters);
+	//}
+	//m_pdxgiSwapChain->SetFullscreenState(!bFullScreenState, NULL);
 
-	OnResizeBackBuffers();
+	//OnResizeBackBuffers();
 
 	return true;
 }

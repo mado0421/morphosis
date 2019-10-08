@@ -285,12 +285,3 @@ private:
 	ID3D12Device*				m_pd3dDevice		= NULL;
 	ID3D12GraphicsCommandList*	m_pd3dCommandList	= NULL;
 };
-
-//
-CTexture * GetTextureByName(const char * name);
-//
-//
-//CModel * GetModelByName(const char * name);
-//
-//
-//CAnimationController * GetAnimCtrlByName(const char * name);

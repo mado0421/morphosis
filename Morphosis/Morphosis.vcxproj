@@ -175,6 +175,7 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Morphosis.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="Prefab.cpp" />
     <ClCompile Include="PSO.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="stdafx.cpp" />
@@ -211,6 +212,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="Morphosis.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="Prefab.h" />
     <ClInclude Include="PSO.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Scene.h" />

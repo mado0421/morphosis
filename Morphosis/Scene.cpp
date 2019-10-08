@@ -2,13 +2,14 @@
 #include "Framework.h"
 #include "Scene.h"
 #include "Importer.h"
-#include "Object.h"
 #include "Camera.h"
 #include "PSO.h"
 #include "Texture.h"
 
 #include "Mesh.h"
 #include "Model.h"
+#include "Prefab.h"
+#include "Object.h"
 
 
 
@@ -85,7 +86,7 @@ void CScene::CreateTextureResourceView(void * pTexture)
 	m_pd3dDevice->CreateShaderResourceView(pShaderResource, &d3dShaderResourceViewDesc, d3dSrvCPUDescriptorHandle);
 	m_d3dSrvCPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
 
-	static_cast<CTexture*>(pTexture)->SetRootArgument(g_RootParameterTexture + static_cast<int>(static_cast<CTexture*>(pTexture)->GetType() ), d3dSrvGPUDescriptorHandle);
+	static_cast<CTexture*>(pTexture)->SetRootArgument(g_RootParameterTexture/* + static_cast<int>(static_cast<CTexture*>(pTexture)->GetType() )*/, d3dSrvGPUDescriptorHandle);
 	m_d3dSrvGPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
 }
 
@@ -101,6 +102,12 @@ void TestScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList 
 {
 	m_pd3dDevice		= pd3dDevice;
 	m_pd3dCommandList	= pd3dCommandList;
+	m_pd3dGraphicsRootSignature = CreateRootSignature(m_pd3dDevice);
+
+	m_pCamera = new CCamera();
+	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	m_pCamera->SetPosition(XMFLOAT3(0, 0, -400));
+	m_pCamera->SetLookAt(XMFLOAT3(0, 0, 0));
 
 	// 필요한 리소스 로드해
 	CImporter imp(m_pd3dDevice, m_pd3dCommandList);
@@ -111,45 +118,65 @@ void TestScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList 
 	imp.ImportTexture(L"Textures/CobblestoneMedieval12_roughness",	"roughness",	TEXTURETYPE::ROUGHNESS);
 
 	//오브젝트 몇 개 쓸거야
-	
+	int nObject = 1;
+	int count = 0;
+	CreateDescriptorHeap(nObject);
+
+	CTestMesh* tempMesh = new CTestMesh(m_pd3dDevice, m_pd3dCommandList);
+	tempMesh->name = "Plane";
+	g_vecMesh.push_back(tempMesh);
+
+	CModel* tempModel = new CModel();
+	tempModel->SetMeshIdx(GetMeshIdx( "Plane" ));
+	tempModel->SetAlbedoIdx(GetTextureIdx( "albedo" ));
+	tempModel->SetNormalIdx(GetTextureIdx( "normal" ));
+	tempModel->name = "TestPlaneModel";
+	g_vecModel.push_back(tempModel);
+
+	CPrefab* tempPrefab = new CPrefab();
+	tempPrefab->m_vecModelIdx.push_back(GetModelIdx( "TestPlaneModel" ));
+	tempPrefab->name = "TestPlanePrefab";
+	g_vecPrefab.push_back(tempPrefab);
+
+	Object* tempObj = new Object();
+	tempObj->SetPrefabIdx(GetPrefabIdx( "TestPlanePrefab" ));
+	tempObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
+
+	tempObj->Move(XMFLOAT3(0, 0, 0));
 
 
 
 
-	
-	CreateDescriptorHeap(0);
+	m_vecObject.push_back(tempObj);
+
 	CreateTextureResourceViews();
-
-
 	CreateConstantBufferResorce();
 	CreateConstantBufferView();
-	// plane 메쉬 만들고 저거 입혀
-	//CModel* model = new CModel();
-	//CUIMesh* tempMesh = new CUIMesh(m_pd3dDevice, m_pd3dCommandList);
-	//model->SetMesh(tempMesh);
-	//model->SetTexture(GetTextureByName("albedo"));
 
-	// 한 모델에서 여러 텍스처를 쓸 수 있게 만들어야 함.
-	// 지금은 한 모델이 하나의 메쉬와 하나의 텍스처만을 갖고 있음.
-	// 하나의 메쉬와 여러 텍스처를 쓸 수 있어야 함.
-	// 그래야 알비도, AO, 하이트, 노멀, 러프니스 등 다양한 맵을 쓸 수 있으니까.
-	// 그럼 어떻게 해야 하지? SetAlbedo()?
+	CPsoModel pso;
+	pso.Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
 
 
-
-
-
-	// 프리펩에 설정으로 같은 텍스처 사용을 두면 그 텍스처만 쓰게 한다든지~
-
-	//g_vecModel.push_back(model);
 }
 
 void TestScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 {
+	pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
+	pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);
+	m_pCamera->SetViewportsAndScissorRects(pd3dCommandList);
+	m_pCamera->UpdateShaderVariables(pd3dCommandList);
+
+	m_pd3dCommandList->SetPipelineState(g_vecPSO[0]);
+	for (int i = 0; i < m_vecObject.size(); ++i) m_vecObject[i]->Render(pd3dCommandList);
 }
 
 void TestScene::Update(float fTimeElapsed)
 {
+	m_pCamera->Update(fTimeElapsed);
+	for (int i = 0; i < m_vecObject.size(); ++i) m_vecObject[i]->Update(fTimeElapsed);
+
+	m_vecObject[0]->Rotate(XMFLOAT3(0, 300 * fTimeElapsed, 0));
+
 }
 
 void TestScene::ProcessInput(UCHAR * pKeysBuffer)
@@ -251,4 +278,15 @@ ID3D12RootSignature * TestScene::CreateRootSignature(ID3D12Device * pd3dDevice)
 	if (pd3dErrorBlob) pd3dErrorBlob->Release();
 
 	return(pd3dGraphicsRootSignature);
+}
+
+void TestScene::CreateConstantBufferResorce()
+{
+	for (int i = 0; i < m_vecObject.size(); ++i) m_vecObject[i]->CreateConstantBufferResource(m_pd3dDevice, m_pd3dCommandList);
+}
+
+void TestScene::CreateConstantBufferView()
+{
+	int count = 0;
+	for (int i = 0; i < m_vecObject.size(); ++i) m_vecObject[i]->CreateConstantBufferView(m_pd3dDevice, m_d3dCbvCPUDescriptorStartHandle, count);
 }

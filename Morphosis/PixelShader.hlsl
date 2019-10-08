@@ -25,11 +25,14 @@ float4 PSAnimModelShader(VS_ANIM_OUTPUT input) : SV_TARGET {
 
 	cColor = lerp(cColor, cLightResult, 0.5f);
 	cColor = lerp(cColor, float4(0.1, 0.1, 0.1, 1.0), distToEye / 512);
-	return cColor;
+	return  float4(1, 1, 1, 1.0);
+
+	//return cColor;
 	//return (lerp(cColor, cLightResult, 0.5f));
 }
 
 float4 PSModelShader(VS_MODEL_OUTPUT input) : SV_TARGET {
+	return  float4(1, 1, 1, 1.0);
 	float4 cColor = gtxtTexture[0].Sample(gSamplerState, input.uv);
 	float4 cLightResult = TestLighting(input.positionW, input.normalW);
 
@@ -38,7 +41,7 @@ float4 PSModelShader(VS_MODEL_OUTPUT input) : SV_TARGET {
 
 	cColor = lerp(cColor, cLightResult, 0.5f);
 	cColor = lerp(cColor, float4(0.1, 0.1, 0.1, 1.0), distToEye / 512);
-	return cColor;
+	//return cColor;
 
 	//return (lerp(cColor, cLightResult, 0.5f));
 }

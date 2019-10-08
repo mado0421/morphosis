@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "PSO.h"
 
-std::vector<ID3D12PipelineState*>	g_vecPSO;
 
 void CPipelineStateObject::CreatePipelineStateDesc(ID3D12Device * pd3dDevice, ID3D12RootSignature * pd3dGraphicsRootSignature)
 {
@@ -152,6 +151,7 @@ ID3D12PipelineState * CPipelineStateObject::GetPipelineState()
 void CPipelineStateObject::Initialize(ID3D12Device * pd3dDevice, ID3D12RootSignature * pd3dGraphicsRootSignature)
 {
 	CreatePipelineStateDesc(pd3dDevice, pd3dGraphicsRootSignature);
+	g_vecPSO.push_back(GetPipelineState());
 }
 
 
