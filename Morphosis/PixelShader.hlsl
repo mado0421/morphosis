@@ -36,7 +36,7 @@ float4 PSModelShader(VS_MODEL_OUTPUT input) : SV_TARGET {
 	float4 cAlbedo = gtxtTexture[0].Sample(gSamplerState, input.uv);
 
 	float3 toEyeW = normalize( gvCameraPosition - input.positionW );
-	float4 ambient = float4(0.1, 0.1, 0.1, 1);
+	float4 ambient = float4(0.8, 0.8, 0.8, 1);
 	//float distToEye = length(toEyeW);
 
 	//cColor = lerp(cColor, cLightResult, 0.5f);
@@ -54,7 +54,7 @@ float4 PSModelShader(VS_MODEL_OUTPUT input) : SV_TARGET {
 
 
 
-	return cLightResult;
+	return (cAlbedo * ambient) + cLightResult;
 
 	//return (lerp(cColor, cLightResult, 0.5f));
 }
