@@ -84,11 +84,11 @@ float4 TestDirectionalLight(float3 vNormal, float3 vToCamera) {
 	/*********************************************************************
 	2019-07-20
 	*********************************************************************/
-	float4 fLightDiffuse	= float4(0.9f, 0.8f, 0.8f, 1.0f);
-	float4 fLightSpecular	= float4(0.5f, 0.9f, 0.5f, 1.0f);
-	float3 vLightDirection	= normalize(float3(0.7f, -1.0f, 0.0f));
+	float4 fLightDiffuse	= float4(0.2f, 0.2f, 0.2f, 1.0f);
+	float4 fLightSpecular	= float4(1, 1, 1, 1.0f);
+	float3 vLightDirection	= normalize(float3(0.0f, -1.0f, -0.3f));
 	// 빛의 방향
-	float fSpecular = 16.0f;
+	float fSpecular = 32.0f;
 
 	// 빛의 방향의 반대
 	float3 vToLight = -vLightDirection;

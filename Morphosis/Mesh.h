@@ -2,8 +2,8 @@
 #include "stdafx.h"
 
 struct ImportMeshData;
-class AnimationMesh;
-class CAnimationController;
+//class AnimationMesh;
+//class CAnimationController;
 
 class CVertex {
 public:
@@ -15,14 +15,17 @@ public:
 class CModelVertex : public CVertex {
 public:
 	XMFLOAT3	m_xmf3Normal;
+	XMFLOAT3	m_xmf3Tangent;
 	XMFLOAT2	m_xmf2TexCoord;
 public:
 	CModelVertex() = default;
 	CModelVertex(XMFLOAT3 position,
 				 XMFLOAT3 normal,
+				 XMFLOAT3 tangent,
 				 XMFLOAT2 texcoord) 
 				 : CVertex(position)
 				 , m_xmf3Normal(normal)
+				 , m_xmf3Tangent(tangent)
 				 , m_xmf2TexCoord(texcoord) {}
 };
 class CAnimatedVertex : public CVertex {
@@ -88,6 +91,8 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList);
 	virtual void CreateVertexBuffer(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, void *pData);
 	virtual void CreateIndexBuffer(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, void *pData);
+
+	string name = "";
 };
 class CModelMesh : public CMesh
 {
@@ -99,13 +104,13 @@ public:
 
 public:
 	CModelMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
-	CModelMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nVertices, XMFLOAT3 *pxmf3Positions, XMFLOAT3 *pxmf3Normals, XMFLOAT2 *pxmf2UVs, UINT nIndices, UINT *pnIndices);
-	CModelMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ImportMeshData& m, float scale = 1.0f);
+	//CModelMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nVertices, XMFLOAT3 *pxmf3Positions, XMFLOAT3 *pxmf3Normals, XMFLOAT2 *pxmf2UVs, UINT nIndices, UINT *pnIndices);
+	//CModelMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ImportMeshData& m, float scale = 1.0f);
 };
-class CAnimatedModelMesh : public CMesh {
-public:
-	CAnimatedModelMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ImportMeshData& m);
-};
+//class CAnimatedModelMesh : public CMesh {
+//public:
+//	CAnimatedModelMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ImportMeshData& m);
+//};
 class CUIMesh : public CMesh {
 public:
 	CUIMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, float width = 0, float height = 0);
@@ -119,8 +124,8 @@ private:
 	UINT	*m_pnIndices = NULL;
 public:
 	CTestMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
-	CTestMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, float size);
-	CTestMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, XMFLOAT3 extents);
-	CTestMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, XMFLOAT3 position, XMFLOAT3 extents);
+	//CTestMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, float size);
+	//CTestMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, XMFLOAT3 extents);
+	//CTestMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, XMFLOAT3 position, XMFLOAT3 extents);
 	~CTestMesh();
 };

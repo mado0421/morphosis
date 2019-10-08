@@ -21,20 +21,33 @@ class CMesh;
 class CTexture;
 class CAnimationController;
 
+struct TextureSet {
+	int albedoIdx = 0;
+	int normalIdx = 1;
+	//int AOIdx			= 1;
+	//int heightIdx		= 3;
+	//int roughnessIdx	= 4;
+	//int emissiveIdx		= 5;
+};
+
 class CModel
 {
 public:
-	~CModel();
-public:
-	void Render(ID3D12GraphicsCommandList *pd3dCommandList, bool isDebug = false);
+	void Render(ID3D12GraphicsCommandList *pd3dCommandList);
 
-	void SetMesh(CMesh* mesh)			{ m_Mesh	= mesh;		}
-	void SetTexture(CTexture* texture)	{ m_Texture = texture;	}
-	void SetName(const char* name)		{ m_strName = name;		}
+	void SetName(const char* str)		{ name = str;		}
+
+	void SetMeshIdx(int idx)		{ meshIdx = idx; }
+	void SetAlbedoIdx(int idx)		{ textureDesc.albedoIdx		= idx; }
+	void SetNormalIdx(int idx)		{ textureDesc.normalIdx		= idx; }
+	//void SetAOIdx(int idx)			{ textureDesc.AOIdx			= idx; }
+	//void SetHeightIdx(int idx)		{ textureDesc.heightIdx		= idx; }
+	//void SetRoughnessIdx(int idx)	{ textureDesc.roughnessIdx	= idx; }
+
 public:
-	string			m_strName		= "";
+	string			name		= "";
 
 private:
-	CMesh*			m_Mesh			= NULL;
-	CTexture*		m_Texture		= NULL;
+	int			meshIdx = -1;
+	TextureSet	textureDesc;
 };
