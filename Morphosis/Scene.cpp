@@ -54,7 +54,7 @@ void CScene::Release()
 void CScene::CreateDescriptorHeap(int nObject)
 {
 	D3D12_DESCRIPTOR_HEAP_DESC d3dDescriptorHeapDesc;
-	d3dDescriptorHeapDesc.NumDescriptors = nObject + g_vecTexture.size();
+	d3dDescriptorHeapDesc.NumDescriptors = nObject + static_cast<UINT>( g_vecTexture.size() );
 	d3dDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	d3dDescriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	d3dDescriptorHeapDesc.NodeMask = 0;
@@ -100,14 +100,19 @@ TestScene::TestScene(CFramework * pFramework) : CScene(pFramework)
 
 void TestScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList * pd3dCommandList)
 {
+	// 초기화 부분
 	m_pd3dDevice		= pd3dDevice;
 	m_pd3dCommandList	= pd3dCommandList;
 	m_pd3dGraphicsRootSignature = CreateRootSignature(m_pd3dDevice);
 
+	// 카메라 설정
 	m_pCamera = new CFollowCamera();
 	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	m_pCamera->SetPosition(XMFLOAT3(0, 0, -200));
 	m_pCamera->SetLookAt(XMFLOAT3(0, 0, 0));
+
+
+	// 실제적인 오브젝트 빌드
 
 	// 필요한 리소스 로드해
 	CImporter imp(m_pd3dDevice, m_pd3dCommandList);
@@ -120,6 +125,7 @@ void TestScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList 
 	//오브젝트 몇 개 쓸거야
 	int nObject = 1;
 	int count = 0;
+	// 서술자 힙 생성
 	CreateDescriptorHeap(nObject);
 
 	CTestMesh* tempMesh = new CTestMesh(m_pd3dDevice, m_pd3dCommandList);
@@ -142,21 +148,26 @@ void TestScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList 
 	tempObj->SetPrefabIdx(GetPrefabIdx( "TestPlanePrefab" ));
 	tempObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
 
-	tempObj->Move(XMFLOAT3(0, -50, 0));
+	//tempObj->Move(XMFLOAT3(0, -50, 0));
 	tempObj->Rotate(XMFLOAT3(-90, 0, 0));
-
-
-
 
 	m_vecObject.push_back(tempObj);
 
+
+
+	// 필수적인 생성 부분
 	CreateTextureResourceViews();
 	CreateConstantBufferResorce();
 	CreateConstantBufferView();
 
-	CPsoModel pso;
-	pso.Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
 
+
+	// 파이프라인 스테이트 오브젝트 생성
+	CPsoModel pso;
+	//TestPSO pso;
+	pso.Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
+	ComputePSO cpso;
+	cpso.Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
 
 }
 
@@ -171,23 +182,19 @@ void TestScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 	for (int i = 0; i < m_vecObject.size(); ++i) m_vecObject[i]->Render(pd3dCommandList);
 }
 
-float g_temp;
-
 void TestScene::Update(float fTimeElapsed)
 {
 	m_pCamera->Update(fTimeElapsed);
 	for (int i = 0; i < m_vecObject.size(); ++i) m_vecObject[i]->Update(fTimeElapsed);
-
-	//m_vecObject[0]->Rotate(XMFLOAT3(0, g_temp * fTimeElapsed, 0));
-	m_vecObject[0]->Rotate(XMFLOAT3(g_temp * fTimeElapsed, 0, 0));
-
 }
 
 void TestScene::ProcessInput(UCHAR * pKeysBuffer)
 {
-	if (pKeysBuffer[65] & 0xF0) { g_temp += 0.1; }
-	if (pKeysBuffer[68] & 0xF0) { g_temp -= 0.1; }
-	if (pKeysBuffer[VK_SPACE] & 0xF0) { g_temp = 0; }
+	if (pKeysBuffer[87] & 0xF0) { m_pCamera->MoveForward(); }	// W
+	if (pKeysBuffer[65] & 0xF0) { m_pCamera->MoveLeft(); }		// A
+	if (pKeysBuffer[68] & 0xF0) { m_pCamera->MoveRight(); }		// D
+	if (pKeysBuffer[83] & 0xF0) { m_pCamera->MoveBackward(); }	// S
+	//if (pKeysBuffer[VK_SPACE] & 0xF0) { g_temp = 0; }
 }
 
 void TestScene::Release()
@@ -255,7 +262,7 @@ ID3D12RootSignature * TestScene::CreateRootSignature(ID3D12Device * pd3dDevice)
 	//*/
 	D3D12_STATIC_SAMPLER_DESC d3dSamplerDesc;
 	::ZeroMemory(&d3dSamplerDesc, sizeof(D3D12_STATIC_SAMPLER_DESC));
-	d3dSamplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+	d3dSamplerDesc.Filter = D3D12_FILTER_ANISOTROPIC;
 	d3dSamplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 	d3dSamplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 	d3dSamplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;

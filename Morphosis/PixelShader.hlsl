@@ -32,31 +32,16 @@ float4 PSAnimModelShader(VS_ANIM_OUTPUT input) : SV_TARGET {
 }
 
 float4 PSModelShader(VS_MODEL_OUTPUT input) : SV_TARGET {
-	//return  float4(1, 1, 1, 1.0);
 	float4 cAlbedo = gtxtTexture[0].Sample(gSamplerState, input.uv);
 
 	float3 toEyeW = normalize( gvCameraPosition - input.positionW );
 	float4 ambient = float4(0.8, 0.8, 0.8, 1);
-	//float distToEye = length(toEyeW);
-
-	//cColor = lerp(cColor, cLightResult, 0.5f);
-	//cColor = lerp(cColor, float4(0.1, 0.1, 0.1, 1.0), distToEye / 512);
 
 	float4 normalMapSample = gtxtTexture[1].Sample(gSamplerState, input.uv);
 	float3 bumpedNomalW = NormalSampleToWorldSpace(normalMapSample.rgb, input.normalW, input.tangentW);
 	float4 cLightResult = TestLighting(input.positionW, bumpedNomalW);
 
-
-
-
-
-
-
-
-
 	return (cAlbedo * ambient) + cLightResult;
-
-	//return (lerp(cColor, cLightResult, 0.5f));
 }
 
 float4 PSDefaultUI(VS_UI_OUTPUT input) : SV_TARGET {
@@ -68,4 +53,15 @@ float4 PSDefaultUI(VS_UI_OUTPUT input) : SV_TARGET {
 
 float4 PSDebug(VS_DEBUG_OUTPUT input) : SV_TARGET {
 	return float4(1.0f, 0.0f, 0.0f, 1.0f);
+}
+
+float4 PSTestShader(VS_MODEL_OUTPUT input) : SV_TARGET{
+
+	float dist = distance(gvCameraPosition, input.positionW);
+
+	float normalizedDist = clamp(dist, 0, 5000)/5000.0f;
+
+
+
+	return float4(normalizedDist, normalizedDist, normalizedDist,1);
 }

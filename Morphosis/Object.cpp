@@ -30,6 +30,7 @@ void Object::Move(const XMFLOAT3& velocity)
 
 void Object::Update(float fTime)
 {
+	Rotate(XMFLOAT3(180.0f * -fTime, 0, 0));
 }
 
 void Object::Render(ID3D12GraphicsCommandList *pd3dCommandList)
