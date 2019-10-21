@@ -29,10 +29,12 @@ void CTexture::SetSampler(D3D12_GPU_DESCRIPTOR_HANDLE *d3dSamplerGpuDescriptorHa
 	SamplerGpuDescriptorHandles = d3dSamplerGpuDescriptorHandle;
 }
 
+/*g_RootParameterTexture + static_cast<int>( m_type )*/
+
 void CTexture::UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList)
 {
 	pd3dCommandList->SetGraphicsRootDescriptorTable(
-		g_RootParameterTexture/* + static_cast<int>( m_type )*/,
+		rootArgumentInfo->m_nRootParameterIndex,
 		rootArgumentInfo->m_d3dSrvGpuDescriptorHandle);
 }
 

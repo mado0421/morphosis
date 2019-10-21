@@ -9,6 +9,7 @@ class CScene
 {
 protected:
 	ID3D12RootSignature				*m_pd3dGraphicsRootSignature	= NULL;
+	ID3D12RootSignature				*m_pd3dComputeRootSignature		= NULL;
 	ID3D12Device					*m_pd3dDevice					= NULL;
 	ID3D12GraphicsCommandList		*m_pd3dCommandList				= NULL;
 	ID3D12DescriptorHeap			*m_pd3dCbvSrvDescriptorHeap		= NULL;
@@ -17,10 +18,14 @@ protected:
 	D3D12_GPU_DESCRIPTOR_HANDLE		m_d3dCbvGPUDescriptorStartHandle;
 	D3D12_CPU_DESCRIPTOR_HANDLE		m_d3dSrvCPUDescriptorStartHandle;
 	D3D12_GPU_DESCRIPTOR_HANDLE		m_d3dSrvGPUDescriptorStartHandle;
+	D3D12_CPU_DESCRIPTOR_HANDLE		m_d3dUavCPUDescriptorStartHandle;
+	D3D12_GPU_DESCRIPTOR_HANDLE		m_d3dUavGPUDescriptorStartHandle;
 
 	POINT							m_ptOldCursorPos;
 	CCamera							*m_pCamera = NULL;
 	CFramework						*m_pFramework = NULL;
+
+	ID3D12Resource *m_pd3dComputeResource = NULL;
 
 public:
 	CScene();
@@ -34,10 +39,12 @@ public:
 	virtual void Release() = 0;
 
 	// 초기화 함수
-	virtual ID3D12RootSignature *CreateRootSignature(ID3D12Device *pd3dDevice) = 0;
+	virtual ID3D12RootSignature *CreateGraphicsRootSignature(ID3D12Device *pd3dDevice) = 0;
+	virtual ID3D12RootSignature *CreateComputeRootSignature(ID3D12Device *pd3dDevice) = 0;
 
 protected:
 	void CreateDescriptorHeap(int nObject);
+	void SetComputeShaderResource();
 	void CreateTextureResourceViews();
 	void CreateTextureResourceView(void*);
 	virtual void CreateConstantBufferResorce() = 0;
@@ -56,7 +63,8 @@ public:
 	virtual void Release();
 
 	// 초기화 함수
-	virtual ID3D12RootSignature *CreateRootSignature(ID3D12Device *pd3dDevice);
+	virtual ID3D12RootSignature *CreateGraphicsRootSignature(ID3D12Device *pd3dDevice);
+	virtual ID3D12RootSignature *CreateComputeRootSignature(ID3D12Device *pd3dDevice);
 
 protected:
 	virtual void CreateConstantBufferResorce();

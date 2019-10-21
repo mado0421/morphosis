@@ -41,9 +41,12 @@ public:
 
 	void LoadTextureFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, const wchar_t *pszFileName);
 
-	int GetTextureCount() { return(TextureType); }
 	ID3D12Resource *GetTexture() { return(texture); }
 	UINT GetTextureType() { return(TextureType); }
+
+	D3D12_GPU_DESCRIPTOR_HANDLE GetSrvGPUDescriptorHandle() { return rootArgumentInfo->m_d3dSrvGpuDescriptorHandle; }
+	int GetRootParameterIndex() { return rootArgumentInfo->m_nRootParameterIndex; }
+
 
 	void ReleaseUploadBuffers();
 };

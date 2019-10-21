@@ -54,18 +54,70 @@ void CScene::Release()
 void CScene::CreateDescriptorHeap(int nObject)
 {
 	D3D12_DESCRIPTOR_HEAP_DESC d3dDescriptorHeapDesc;
-	d3dDescriptorHeapDesc.NumDescriptors = nObject + static_cast<UINT>( g_vecTexture.size() );
+	d3dDescriptorHeapDesc.NumDescriptors = nObject + static_cast<UINT>( g_vecTexture.size() ) + 1;
 	d3dDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	d3dDescriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	d3dDescriptorHeapDesc.NodeMask = 0;
 
-	HRESULT result = m_pd3dDevice->CreateDescriptorHeap(&d3dDescriptorHeapDesc, __uuidof(ID3D12DescriptorHeap), (void **)&m_pd3dCbvSrvDescriptorHeap);
+	HRESULT result = m_pd3dDevice->CreateDescriptorHeap(
+		&d3dDescriptorHeapDesc, 
+		__uuidof(ID3D12DescriptorHeap), 
+		(void **)&m_pd3dCbvSrvDescriptorHeap);
 	HRESULT reason = m_pd3dDevice->GetDeviceRemovedReason();
 
 	m_d3dCbvCPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	m_d3dCbvGPUDescriptorStartHandle = m_pd3dCbvSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart();
 	m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (nObject));
 	m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * (nObject));
+	m_d3dUavCPUDescriptorStartHandle.ptr = m_d3dSrvCPUDescriptorStartHandle.ptr + ::gnCbvSrvDescriptorIncrementSize;
+	m_d3dUavGPUDescriptorStartHandle.ptr = m_d3dSrvGPUDescriptorStartHandle.ptr + ::gnCbvSrvDescriptorIncrementSize;
+}
+
+void CScene::SetComputeShaderResource()
+{
+	D3D12_RESOURCE_DESC d3dBufferResourceDesc;
+	::ZeroMemory(&d3dBufferResourceDesc, sizeof(D3D12_RESOURCE_DESC));
+	d3dBufferResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	d3dBufferResourceDesc.Alignment = 0;
+	d3dBufferResourceDesc.Width = 1920/*m_nWndClientWidth*/;
+	d3dBufferResourceDesc.Height = 1080/*m_nWndClientHeight*/;
+	d3dBufferResourceDesc.DepthOrArraySize = 1;
+	d3dBufferResourceDesc.MipLevels = 1;
+	d3dBufferResourceDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	d3dBufferResourceDesc.SampleDesc.Count = 1;
+	d3dBufferResourceDesc.SampleDesc.Quality = 0;
+	d3dBufferResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	d3dBufferResourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+
+	D3D12_HEAP_PROPERTIES d3dHeapPropertiesDesc;
+	::ZeroMemory(&d3dHeapPropertiesDesc, sizeof(D3D12_HEAP_PROPERTIES));
+	d3dHeapPropertiesDesc.Type = D3D12_HEAP_TYPE_DEFAULT;
+	d3dHeapPropertiesDesc.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+	d3dHeapPropertiesDesc.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+	d3dHeapPropertiesDesc.CreationNodeMask = 1;
+	d3dHeapPropertiesDesc.VisibleNodeMask = 1;
+
+	HRESULT hResult = m_pd3dDevice->CreateCommittedResource(
+		&d3dHeapPropertiesDesc, D3D12_HEAP_FLAG_NONE,
+		&d3dBufferResourceDesc, D3D12_RESOURCE_STATE_COMMON,
+		NULL, __uuidof(ID3D12Resource), (void **)&m_pd3dComputeResource);
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Format = m_pd3dComputeResource->GetDesc().Format;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = 1;
+
+	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+	uavDesc.Format = m_pd3dComputeResource->GetDesc().Format;
+	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+	uavDesc.Texture2D.MipSlice = 0;
+
+	//m_d3dSrvCPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
+	//m_d3dSrvGPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
+	m_pd3dDevice->CreateShaderResourceView(m_pd3dComputeResource, &srvDesc, m_d3dSrvCPUDescriptorStartHandle);
+	m_pd3dDevice->CreateUnorderedAccessView(m_pd3dComputeResource, NULL, &uavDesc, m_d3dUavCPUDescriptorStartHandle);
 }
 
 void CScene::CreateTextureResourceViews()
@@ -74,20 +126,23 @@ void CScene::CreateTextureResourceViews()
 		CreateTextureResourceView(g_vecTexture[i]);
 }
 
+/*+ static_cast<int>(static_cast<CTexture*>(pTexture)->GetType() )*/
+
 void CScene::CreateTextureResourceView(void * pTexture)
 {
-
 	D3D12_CPU_DESCRIPTOR_HANDLE d3dSrvCPUDescriptorHandle = m_d3dSrvCPUDescriptorStartHandle;
 	D3D12_GPU_DESCRIPTOR_HANDLE d3dSrvGPUDescriptorHandle = m_d3dSrvGPUDescriptorStartHandle;
+
 	int nTextureType = static_cast<CTexture*>(pTexture)->GetTextureType();
 	ID3D12Resource *pShaderResource = static_cast<CTexture*>(pTexture)->GetTexture();
 	D3D12_RESOURCE_DESC d3dResourceDesc = pShaderResource->GetDesc();
 	D3D12_SHADER_RESOURCE_VIEW_DESC d3dShaderResourceViewDesc = GetShaderResourceViewDesc(d3dResourceDesc, nTextureType);
-	m_pd3dDevice->CreateShaderResourceView(pShaderResource, &d3dShaderResourceViewDesc, d3dSrvCPUDescriptorHandle);
-	m_d3dSrvCPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
 
-	static_cast<CTexture*>(pTexture)->SetRootArgument(g_RootParameterTexture /*+ static_cast<int>(static_cast<CTexture*>(pTexture)->GetType() )*/, d3dSrvGPUDescriptorHandle);
+	m_pd3dDevice->CreateShaderResourceView(pShaderResource, &d3dShaderResourceViewDesc, d3dSrvCPUDescriptorHandle);
+
+	m_d3dSrvCPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
 	m_d3dSrvGPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
+	static_cast<CTexture*>(pTexture)->SetRootArgument(g_RootParameterTexture + static_cast<int>(static_cast<CTexture*>(pTexture)->GetType()), d3dSrvGPUDescriptorHandle);
 }
 
 TestScene::TestScene()
@@ -103,7 +158,11 @@ void TestScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList 
 	// 초기화 부분
 	m_pd3dDevice		= pd3dDevice;
 	m_pd3dCommandList	= pd3dCommandList;
-	m_pd3dGraphicsRootSignature = CreateRootSignature(m_pd3dDevice);
+	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(m_pd3dDevice);
+	m_pd3dComputeRootSignature = CreateComputeRootSignature(m_pd3dDevice);
+
+
+
 
 	// 카메라 설정
 	m_pCamera = new CFollowCamera();
@@ -160,15 +219,14 @@ void TestScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList 
 	CreateConstantBufferResorce();
 	CreateConstantBufferView();
 
-
+	SetComputeShaderResource();
 
 	// 파이프라인 스테이트 오브젝트 생성
 	CPsoModel pso;
 	//TestPSO pso;
 	pso.Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
 	ComputePSO cpso;
-	cpso.Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
-
+	cpso.Initialize(m_pd3dDevice, m_pd3dComputeRootSignature);
 }
 
 void TestScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
@@ -180,6 +238,40 @@ void TestScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 
 	m_pd3dCommandList->SetPipelineState(g_vecPSO[0]);
 	for (int i = 0; i < m_vecObject.size(); ++i) m_vecObject[i]->Render(pd3dCommandList);
+
+	D3D12_RESOURCE_BARRIER d3dResourceBarrier;
+	::ZeroMemory(&d3dResourceBarrier, sizeof(D3D12_RESOURCE_BARRIER));
+	d3dResourceBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	d3dResourceBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	d3dResourceBarrier.Transition.pResource = g_vecTexture.front()->GetTexture();
+	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
+	d3dResourceBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+
+
+	pd3dCommandList->SetComputeRootSignature(m_pd3dComputeRootSignature);
+
+	d3dResourceBarrier.Transition.pResource = g_vecTexture.front()->GetTexture();
+	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COMMON;
+	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_SOURCE;
+	m_pd3dCommandList->ResourceBarrier(1, &d3dResourceBarrier);
+
+	d3dResourceBarrier.Transition.pResource = m_pd3dComputeResource;
+	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COMMON;
+	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
+	m_pd3dCommandList->ResourceBarrier(1, &d3dResourceBarrier);
+
+	m_pd3dCommandList->SetPipelineState(g_vecPSO[1]);
+	m_pd3dCommandList->SetComputeRootDescriptorTable(0, m_d3dSrvGPUDescriptorStartHandle);
+	m_pd3dCommandList->SetComputeRootDescriptorTable(1, m_d3dUavGPUDescriptorStartHandle);
+	UINT numGroupsX = (UINT)ceilf(1920 / 256.0f);
+	m_pd3dCommandList->Dispatch(numGroupsX, 1080, 1);
+
+	d3dResourceBarrier.Transition.pResource = m_pd3dComputeResource;
+	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
+	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
+	m_pd3dCommandList->ResourceBarrier(1, &d3dResourceBarrier);
+
 }
 
 void TestScene::Update(float fTimeElapsed)
@@ -201,10 +293,10 @@ void TestScene::Release()
 {
 }
 
-ID3D12RootSignature * TestScene::CreateRootSignature(ID3D12Device * pd3dDevice)
+ID3D12RootSignature * TestScene::CreateGraphicsRootSignature(ID3D12Device * pd3dDevice)
 {
 	ID3D12RootSignature *pd3dGraphicsRootSignature = NULL;
-	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[3];
+	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[4];
 
 	pd3dDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
 	pd3dDescriptorRanges[0].NumDescriptors = 1;
@@ -212,19 +304,25 @@ ID3D12RootSignature * TestScene::CreateRootSignature(ID3D12Device * pd3dDevice)
 	pd3dDescriptorRanges[0].RegisterSpace = 0;
 	pd3dDescriptorRanges[0].OffsetInDescriptorsFromTableStart = 0;
 
-	pd3dDescriptorRanges[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	pd3dDescriptorRanges[1].NumDescriptors = 5;
-	pd3dDescriptorRanges[1].BaseShaderRegister = 4; //t4, t5, t6, t7, t8
+	pd3dDescriptorRanges[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+	pd3dDescriptorRanges[1].NumDescriptors = 1;
+	pd3dDescriptorRanges[1].BaseShaderRegister = 2; //b2
 	pd3dDescriptorRanges[1].RegisterSpace = 0;
 	pd3dDescriptorRanges[1].OffsetInDescriptorsFromTableStart = 0;
 
-	pd3dDescriptorRanges[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+	pd3dDescriptorRanges[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	pd3dDescriptorRanges[2].NumDescriptors = 1;
-	pd3dDescriptorRanges[2].BaseShaderRegister = 2; //b2
+	pd3dDescriptorRanges[2].BaseShaderRegister = 4; //t4
 	pd3dDescriptorRanges[2].RegisterSpace = 0;
 	pd3dDescriptorRanges[2].OffsetInDescriptorsFromTableStart = 0;
 
-	D3D12_ROOT_PARAMETER pd3dRootParameters[5];	//Camera, Obejct, texture, anim
+	pd3dDescriptorRanges[3].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	pd3dDescriptorRanges[3].NumDescriptors = 1;
+	pd3dDescriptorRanges[3].BaseShaderRegister = 5; //t5
+	pd3dDescriptorRanges[3].RegisterSpace = 0;
+	pd3dDescriptorRanges[3].OffsetInDescriptorsFromTableStart = 0;
+
+	D3D12_ROOT_PARAMETER pd3dRootParameters[6];
 
 	//Camera
 	pd3dRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
@@ -241,7 +339,7 @@ ID3D12RootSignature * TestScene::CreateRootSignature(ID3D12Device * pd3dDevice)
 	//FloatingUI
 	pd3dRootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	pd3dRootParameters[2].DescriptorTable.NumDescriptorRanges = 1;
-	pd3dRootParameters[2].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[2];
+	pd3dRootParameters[2].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[1];
 	pd3dRootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 	//Anim
@@ -250,12 +348,17 @@ ID3D12RootSignature * TestScene::CreateRootSignature(ID3D12Device * pd3dDevice)
 	pd3dRootParameters[3].Descriptor.RegisterSpace = 0;
 	pd3dRootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 
-	//Texture
+	//DiffTexture
 	pd3dRootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	pd3dRootParameters[4].DescriptorTable.NumDescriptorRanges = 1;
-	pd3dRootParameters[4].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[1];
+	pd3dRootParameters[4].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[3];
 	pd3dRootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
+	//NormalTexture
+	pd3dRootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	pd3dRootParameters[5].DescriptorTable.NumDescriptorRanges = 1;
+	pd3dRootParameters[5].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[2];
+	pd3dRootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 	///*
 	//Root Signiature 추가 필요
@@ -292,6 +395,57 @@ ID3D12RootSignature * TestScene::CreateRootSignature(ID3D12Device * pd3dDevice)
 	if (pd3dErrorBlob) pd3dErrorBlob->Release();
 
 	return(pd3dGraphicsRootSignature);
+}
+
+ID3D12RootSignature * TestScene::CreateComputeRootSignature(ID3D12Device * pd3dDevice)
+{
+	ID3D12RootSignature *pd3dRootSignature = NULL;
+	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[2];
+
+	pd3dDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	pd3dDescriptorRanges[0].NumDescriptors = 1;
+	pd3dDescriptorRanges[0].BaseShaderRegister = 6;
+	pd3dDescriptorRanges[0].RegisterSpace = 0;
+	pd3dDescriptorRanges[0].OffsetInDescriptorsFromTableStart = 0;
+
+	pd3dDescriptorRanges[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+	pd3dDescriptorRanges[1].NumDescriptors = 1;
+	pd3dDescriptorRanges[1].BaseShaderRegister = 7;
+	pd3dDescriptorRanges[1].RegisterSpace = 0;
+	pd3dDescriptorRanges[1].OffsetInDescriptorsFromTableStart = 0;
+
+	D3D12_ROOT_PARAMETER pd3dRootParameters[2];
+
+	//DiffTexture
+	pd3dRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	pd3dRootParameters[0].DescriptorTable.NumDescriptorRanges = 1;
+	pd3dRootParameters[0].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[0];
+	pd3dRootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+	//UAV Texture Resource
+	pd3dRootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	pd3dRootParameters[1].DescriptorTable.NumDescriptorRanges = 1;
+	pd3dRootParameters[1].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[1];
+	pd3dRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+	D3D12_ROOT_SIGNATURE_FLAGS d3dRootSignatureFlags =
+		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+	D3D12_ROOT_SIGNATURE_DESC d3dRootSignatureDesc;
+	::ZeroMemory(&d3dRootSignatureDesc, sizeof(D3D12_ROOT_SIGNATURE_DESC));
+	d3dRootSignatureDesc.NumParameters = _countof(pd3dRootParameters);
+	d3dRootSignatureDesc.pParameters = pd3dRootParameters;
+	d3dRootSignatureDesc.NumStaticSamplers = 0;
+	d3dRootSignatureDesc.pStaticSamplers = NULL;
+	d3dRootSignatureDesc.Flags = d3dRootSignatureFlags;
+
+	ID3DBlob *pd3dSignatureBlob = NULL;
+	ID3DBlob *pd3dErrorBlob = NULL;
+	HRESULT isSuccess = D3D12SerializeRootSignature(&d3dRootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1_0, &pd3dSignatureBlob, &pd3dErrorBlob);
+	isSuccess = pd3dDevice->CreateRootSignature(0, pd3dSignatureBlob->GetBufferPointer(), pd3dSignatureBlob->GetBufferSize(), __uuidof(ID3D12RootSignature), (void **)&pd3dRootSignature);
+	if (pd3dSignatureBlob) pd3dSignatureBlob->Release();
+	if (pd3dErrorBlob) pd3dErrorBlob->Release();
+
+	return(pd3dRootSignature);
 }
 
 void TestScene::CreateConstantBufferResorce()

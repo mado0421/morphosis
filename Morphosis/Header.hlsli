@@ -11,7 +11,6 @@ cbuffer cbGameObjectInfo				: register(b1)
 	//matrix		gmtxGameObjectNoTrans	: packoffset(c4);
 	//uint		gnMaterial				: packoffset(c4);
 };
-Texture2D gtxtTexture[5]					: register(t4);
 cbuffer cbAnimMatrixInfo				: register(b3)
 {
 	matrix		AnimMatrix[64]			: packoffset(c0);
@@ -21,16 +20,10 @@ cbuffer cbUIInfo						: register(b2)
 	matrix		gmtxUI					: packoffset(c0);
 	float2		gf2Size					: packoffset(c4);
 	float		gfAlpha					: packoffset(c8);
-
 };
-//cbuffer cbMaterialInfo					: register(b4)
-//{
-//	matrix		Material[64]			: packoffset(c0);
-//};
-//cbuffer cbLightlInfo					: register(b5)
-//{
-//	matrix		Light[64]				: packoffset(c0);
-//};
+Texture2D gtxtDiffuseTexture			: register(t4);
+Texture2D gtxtNormalTexture				: register(t5);
+RWTexture2D<float4> gtxtOutput;
 
 struct VS_ANIM_INPUT {
 	float3	position	: POSITION;
