@@ -54,7 +54,7 @@ void CScene::Release()
 void CScene::CreateDescriptorHeap(int nObject)
 {
 	D3D12_DESCRIPTOR_HEAP_DESC d3dDescriptorHeapDesc;
-	d3dDescriptorHeapDesc.NumDescriptors = nObject + static_cast<UINT>( g_vecTexture.size() ) + 1;
+	d3dDescriptorHeapDesc.NumDescriptors = nObject + static_cast<UINT>( g_vecTexture.size() ) + 2;
 	d3dDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	d3dDescriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	d3dDescriptorHeapDesc.NodeMask = 0;
@@ -114,10 +114,13 @@ void CScene::SetComputeShaderResource()
 	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
 	uavDesc.Texture2D.MipSlice = 0;
 
+	m_pd3dDevice->CreateShaderResourceView(m_pd3dComputeResource, &srvDesc, m_d3dSrvCPUDescriptorStartHandle);
+	m_d3dSrvCPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
+	m_d3dUavCPUDescriptorStartHandle.ptr = m_d3dSrvCPUDescriptorStartHandle.ptr;
+
+	m_pd3dDevice->CreateUnorderedAccessView(m_pd3dComputeResource, NULL, &uavDesc, m_d3dUavCPUDescriptorStartHandle);
 	//m_d3dSrvCPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
 	//m_d3dSrvGPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
-	m_pd3dDevice->CreateShaderResourceView(m_pd3dComputeResource, &srvDesc, m_d3dSrvCPUDescriptorStartHandle);
-	m_pd3dDevice->CreateUnorderedAccessView(m_pd3dComputeResource, NULL, &uavDesc, m_d3dUavCPUDescriptorStartHandle);
 }
 
 void CScene::CreateTextureResourceViews()
@@ -140,9 +143,9 @@ void CScene::CreateTextureResourceView(void * pTexture)
 
 	m_pd3dDevice->CreateShaderResourceView(pShaderResource, &d3dShaderResourceViewDesc, d3dSrvCPUDescriptorHandle);
 
+	static_cast<CTexture*>(pTexture)->SetRootArgument(g_RootParameterTexture + static_cast<int>(static_cast<CTexture*>(pTexture)->GetType()), d3dSrvGPUDescriptorHandle);
 	m_d3dSrvCPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
 	m_d3dSrvGPUDescriptorStartHandle.ptr += ::gnCbvSrvDescriptorIncrementSize;
-	static_cast<CTexture*>(pTexture)->SetRootArgument(g_RootParameterTexture + static_cast<int>(static_cast<CTexture*>(pTexture)->GetType()), d3dSrvGPUDescriptorHandle);
 }
 
 TestScene::TestScene()
@@ -351,13 +354,13 @@ ID3D12RootSignature * TestScene::CreateGraphicsRootSignature(ID3D12Device * pd3d
 	//DiffTexture
 	pd3dRootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	pd3dRootParameters[4].DescriptorTable.NumDescriptorRanges = 1;
-	pd3dRootParameters[4].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[3];
+	pd3dRootParameters[4].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[2];
 	pd3dRootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 	//NormalTexture
 	pd3dRootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	pd3dRootParameters[5].DescriptorTable.NumDescriptorRanges = 1;
-	pd3dRootParameters[5].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[2];
+	pd3dRootParameters[5].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[3];
 	pd3dRootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 	///*
