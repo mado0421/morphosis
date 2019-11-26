@@ -722,7 +722,7 @@ void ExportMeshFile(const char* fileName, const char* modelName) {
 	out.close();
 }
 
-const char * SAMPLE_FILENAME = "bullet002";
+const char * SAMPLE_FILENAME = "TestSphere";
 
 
 int main(int argc, char** argv)
@@ -767,7 +767,7 @@ int main(int argc, char** argv)
 	FbxString meshFileName;
 	meshFileName += lFilePath;
 	meshFileName += "_mesh.dat";
-	ExportMeshFile(meshFileName, "bullet002");
+	ExportMeshFile(meshFileName, "TestSphere");
 
 
 
