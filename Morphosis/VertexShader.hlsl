@@ -31,8 +31,7 @@ VS_ANIM_OUTPUT VSAnimModelShader(VS_ANIM_INPUT input) {
 VS_MODEL_OUTPUT VSModelShader(VS_MODEL_INPUT input) {
 	VS_MODEL_OUTPUT output;
 
-	output.normalW		= mul(input.normal, (float3x3)gmtxGameObject);
-	output.tangentW		= mul(input.tangent, (float3x3)gmtxGameObject);
+	output.normalW		= normalize(mul(normalize(input.normal), (float3x3)gmtxGameObject));
 	output.positionW	= (float3)mul(float4(input.position, 1.0f), gmtxGameObject);
 	output.position		= mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection);
 	output.uv			= input.uv;
