@@ -36,21 +36,12 @@ CFramework::CFramework()
 
 
 
-	// Note: FMOD 사운드 초기화 및 사운드 로딩
-	FMOD::System_Create(&g_System);
-	g_System->init(32, FMOD_INIT_NORMAL, NULL);
-
-	g_vecSound.resize(2);
-
-	g_System->createSound("Assets/run.wav", FMOD_LOOP_NORMAL, 0,	&g_vecSound[static_cast<int>(SOUND::BGM)]);
-	g_System->createSound("Assets/shot.mp3", FMOD_DEFAULT, 0,	&g_vecSound[static_cast<int>(SOUND::SHOT)]);
-	//FMOD_System_Create(&g_System);
-	//FMOD_System_Init(g_System, 32, FMOD_INIT_NORMAL, NULL);
-
+	//// Note: FMOD 사운드 초기화 및 사운드 로딩
+	//FMOD::System_Create(&g_System);
+	//g_System->init(32, FMOD_INIT_NORMAL, NULL);
 	//g_vecSound.resize(2);
-
-	//FMOD_System_CreateSound(g_System, "run.wav", FMOD_DEFAULT, 0, &g_vecSound[static_cast<int>(SOUND::BGM)]);
-	//FMOD_System_CreateSound(g_System, "382735__schots__gun-shot.mp3", FMOD_DEFAULT, 0, &g_vecSound[static_cast<int>(SOUND::SHOT)]);
+	//g_System->createSound("Assets/run.wav", FMOD_LOOP_NORMAL, 0,	&g_vecSound[static_cast<int>(SOUND::BGM)]);
+	//g_System->createSound("Assets/shot.mp3", FMOD_DEFAULT, 0,	&g_vecSound[static_cast<int>(SOUND::SHOT)]);
 }
 
 
@@ -152,24 +143,24 @@ bool CFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 
 	BuildScenes();
 
-	BOOL bFullScreenState = FALSE;
-	m_pdxgiSwapChain->GetFullscreenState(&bFullScreenState, NULL);
-	if (!bFullScreenState)
-	{
-		DXGI_MODE_DESC dxgiTargetParameters;
-		dxgiTargetParameters.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		dxgiTargetParameters.Width = m_nWndClientWidth;
-		dxgiTargetParameters.Height = m_nWndClientHeight;
-		dxgiTargetParameters.RefreshRate.Numerator = 60;
-		dxgiTargetParameters.RefreshRate.Denominator = 1;
-		dxgiTargetParameters.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-		dxgiTargetParameters.ScanlineOrdering =
-			DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-		m_pdxgiSwapChain->ResizeTarget(&dxgiTargetParameters);
-	}
-	m_pdxgiSwapChain->SetFullscreenState(!bFullScreenState, NULL);
+	//BOOL bFullScreenState = FALSE;
+	//m_pdxgiSwapChain->GetFullscreenState(&bFullScreenState, NULL);
+	//if (!bFullScreenState)
+	//{
+	//	DXGI_MODE_DESC dxgiTargetParameters;
+	//	dxgiTargetParameters.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	//	dxgiTargetParameters.Width = m_nWndClientWidth;
+	//	dxgiTargetParameters.Height = m_nWndClientHeight;
+	//	dxgiTargetParameters.RefreshRate.Numerator = 60;
+	//	dxgiTargetParameters.RefreshRate.Denominator = 1;
+	//	dxgiTargetParameters.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+	//	dxgiTargetParameters.ScanlineOrdering =
+	//		DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+	//	m_pdxgiSwapChain->ResizeTarget(&dxgiTargetParameters);
+	//}
+	//m_pdxgiSwapChain->SetFullscreenState(!bFullScreenState, NULL);
 
-	OnResizeBackBuffers();
+	//OnResizeBackBuffers();
 
 	return true;
 }
@@ -407,37 +398,18 @@ void CFramework::BuildScenes()
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
 	// 이후 Scene 추가할 때 수정할 것
-	m_ppScenes = new CScene*[static_cast<int>(SceneType::count)];
+	//m_ppScenes = new CScene*[static_cast<int>(SceneType::count)];
 
-	m_ppScenes[static_cast<int>(SceneType::LOBBY)]		= new CSceneLobby();
-	m_ppScenes[static_cast<int>(SceneType::MAINPLAY)]	= new CSceneMainPlay();
+	//m_ppScenes[static_cast<int>(SceneType::LOBBY)]		= new CSceneLobby();
+	//m_ppScenes[static_cast<int>(SceneType::MAINPLAY)]	= new CSceneMainPlay();
 
-	m_ppScenes[static_cast<int>(SceneType::LOBBY)]->SetFramework(this);
-	m_ppScenes[static_cast<int>(SceneType::MAINPLAY)]->SetFramework(this);
+	//m_ppScenes[static_cast<int>(SceneType::LOBBY)]->SetFramework(this);
+	//m_ppScenes[static_cast<int>(SceneType::MAINPLAY)]->SetFramework(this);
 
-	m_pCurrentScene = m_ppScenes[static_cast<int>(SceneType::MAINPLAY)];
-	m_pCurrentScene->Initialize(m_pd3dDevice, m_pd3dCommandList);
-
-	m_pd3dCommandList->Close();
-	ID3D12CommandList *ppd3dCommandLists[] = { m_pd3dCommandList };
-	m_pd3dCommandQueue->ExecuteCommandLists(1, ppd3dCommandLists);
-
-	WaitForGpuComplete();
-	m_MainTimer.Reset();
-}
-
-void CFramework::ChangeScene(SceneType type)
-{
-	 //Scene Change 부분
-	m_pCurrentScene->Release();
-
-	switch (type)
-	{
-	case SceneType::LOBBY:		m_pCurrentScene = m_ppScenes[static_cast<int>(SceneType::LOBBY)];		break;
-	case SceneType::MAINPLAY:	m_pCurrentScene = m_ppScenes[static_cast<int>(SceneType::MAINPLAY)];	break;
-	default: break;
-	}
-	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
+	//m_pCurrentScene = m_ppScenes[static_cast<int>(SceneType::MAINPLAY)];
+	m_ppScenes = new CScene*[1];
+	m_ppScenes[0] = new TestScene(this);
+	m_pCurrentScene = m_ppScenes[0];
 
 	m_pCurrentScene->Initialize(m_pd3dDevice, m_pd3dCommandList);
 
@@ -448,6 +420,29 @@ void CFramework::ChangeScene(SceneType type)
 	WaitForGpuComplete();
 	m_MainTimer.Reset();
 }
+
+//void CFramework::ChangeScene(SceneType type)
+//{
+//	 //Scene Change 부분
+//	m_pCurrentScene->Release();
+//
+//	switch (type)
+//	{
+//	case SceneType::LOBBY:		m_pCurrentScene = m_ppScenes[static_cast<int>(SceneType::LOBBY)];		break;
+//	case SceneType::MAINPLAY:	m_pCurrentScene = m_ppScenes[static_cast<int>(SceneType::MAINPLAY)];	break;
+//	default: break;
+//	}
+//	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
+//
+//	m_pCurrentScene->Initialize(m_pd3dDevice, m_pd3dCommandList);
+//
+//	m_pd3dCommandList->Close();
+//	ID3D12CommandList *ppd3dCommandLists[] = { m_pd3dCommandList };
+//	m_pd3dCommandQueue->ExecuteCommandLists(1, ppd3dCommandLists);
+//
+//	WaitForGpuComplete();
+//	m_MainTimer.Reset();
+//}
 
 void CFramework::ReleaseScenes()
 {
