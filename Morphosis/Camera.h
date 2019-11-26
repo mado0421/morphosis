@@ -20,6 +20,8 @@ protected:
 	XMFLOAT3						m_xmf3Right;
 	XMFLOAT3						m_xmf3Up;
 	XMFLOAT3						m_xmf3Look;
+	XMFLOAT3						m_xmf3Direction;
+	XMFLOAT3						m_xmf3Rotation;
 
 	XMFLOAT3						m_xmf3LookAtWorld;
 	XMFLOAT3						m_xmf3Offset;
@@ -77,26 +79,23 @@ public:
 	D3D12_VIEWPORT GetViewport() { return(m_d3dViewport); }
 	D3D12_RECT GetScissorRect() { return(m_d3dScissorRect); }
 
-	virtual void Move(const XMFLOAT3& xmf3Shift) { m_xmf3Position.x += xmf3Shift.x; m_xmf3Position.y += xmf3Shift.y; m_xmf3Position.z += xmf3Shift.z; }
-	virtual void Rotate(float fPitch = 0.0f, float fYaw = 0.0f, float fRoll = 0.0f) {
-		XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&m_xmf3Up), XMConvertToRadians(fYaw));
-		m_xmf3Look = Vector3::TransformNormal(m_xmf3Look, xmmtxRotate);
-		m_xmf3Right = Vector3::TransformNormal(m_xmf3Right, xmmtxRotate);
-
-		m_xmf3Look = Vector3::Normalize(m_xmf3Look);
-		m_xmf3Right = Vector3::CrossProduct(m_xmf3Up, m_xmf3Look, true);
-		m_xmf3Up = Vector3::CrossProduct(m_xmf3Look, m_xmf3Right, true);
-
-		//m_xmf4x4World._11 = xmf3Right.x;	m_xmf4x4World._12 = xmf3Right.y;	m_xmf4x4World._13 = m_xmf3Right.z;
-		//m_xmf4x4World._21 = xmf3Up.x;		m_xmf4x4World._22 = xmf3Up.y;		m_xmf4x4World._23 = m_xmf3Up.z;
-		//m_xmf4x4World._31 = xmf3Look.x;		m_xmf4x4World._32 = xmf3Look.y;		m_xmf4x4World._33 = m_xmf3Look.z;
-	
-	}
+	virtual void Rotate(float fPitch = 0.0f, float fYaw = 0.0f, float fRoll = 0.0f) {m_xmf3Rotation = { fPitch ,fYaw, fRoll };}
 	virtual void Update(float fTimeElapsed) { }
 	virtual void SetLookAt(XMFLOAT3& xmf3LookAt) { }
 
 	virtual void SetTarget(void *target) {}
 	virtual CObject* GetTarget() { return nullptr; }
+
+public:
+	void MoveForward()	{ m_xmf3Direction = Vector3::Add(m_xmf3Direction, m_xmf3Look); }
+	void MoveRight()	{ m_xmf3Direction = Vector3::Add(m_xmf3Direction, m_xmf3Right); }
+	void MoveLeft()		{ m_xmf3Direction = Vector3::Add(m_xmf3Direction, Vector3::Multiply(-1, m_xmf3Right)); }
+	void MoveBackward() { m_xmf3Direction = Vector3::Add(m_xmf3Direction, Vector3::Multiply(-1, m_xmf3Look)); }
+	void MoveUp()		{ m_xmf3Direction = Vector3::Add(m_xmf3Direction, m_xmf3Up); }
+	void MoveDown()		{ m_xmf3Direction = Vector3::Add(m_xmf3Direction, Vector3::Multiply(-1, m_xmf3Up)); }
+
+protected:
+	virtual void Move(const XMFLOAT3& xmf3Shift) { m_xmf3Position.x += xmf3Shift.x; m_xmf3Position.y += xmf3Shift.y; m_xmf3Position.z += xmf3Shift.z; }
 };
 
 class CBoardCamera : public CCamera

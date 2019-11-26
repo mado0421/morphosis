@@ -18,7 +18,6 @@ protected:
 	D3D12_CPU_DESCRIPTOR_HANDLE		m_d3dSrvCPUDescriptorStartHandle;
 	D3D12_GPU_DESCRIPTOR_HANDLE		m_d3dSrvGPUDescriptorStartHandle;
 
-	POINT							m_ptOldCursorPos;
 	CCamera							*m_pCamera = NULL;
 	CFramework						*m_pFramework = NULL;
 

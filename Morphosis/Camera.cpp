@@ -246,6 +246,26 @@ void CFollowCamera::Update(float fTimeElapsed)
 //		SetLookAt(targetPos);
 //
 //	}
+	float cam_speed = 200.0f;
+	Move(Vector3::Multiply(fTimeElapsed * cam_speed, m_xmf3Direction));
+	m_xmf3Direction.x = 0;
+	m_xmf3Direction.y = 0;
+	m_xmf3Direction.z = 0;
+
+	XMFLOAT4X4 xmf4x4World = Matrix4x4::Identity();
+	xmf4x4World._11 = m_xmf3Right.x;	xmf4x4World._12 = m_xmf3Right.y;	xmf4x4World._13 = m_xmf3Right.z;
+	xmf4x4World._21 = m_xmf3Up.x;		xmf4x4World._22 = m_xmf3Up.y;		xmf4x4World._23 = m_xmf3Up.z;
+	xmf4x4World._31 = m_xmf3Look.x;		xmf4x4World._32 = m_xmf3Look.y;		xmf4x4World._33 = m_xmf3Look.z;
+
+	m_xmf3Rotation = Vector3::Multiply(fTimeElapsed /** cam_speed * 0.01*/, m_xmf3Rotation);
+	XMStoreFloat4x4(&xmf4x4World, XMMatrixMultiply(XMLoadFloat4x4(&xmf4x4World), XMMatrixRotationRollPitchYawDegree(m_xmf3Rotation.x, m_xmf3Rotation.y, m_xmf3Rotation.z)));
+
+	m_xmf3Right.x	= xmf4x4World._11; m_xmf3Right.y	= xmf4x4World._12; m_xmf3Right.z	= xmf4x4World._13;
+	m_xmf3Up.x		= xmf4x4World._21; m_xmf3Up.y		= xmf4x4World._22; m_xmf3Up.z		= xmf4x4World._23;
+	m_xmf3Look.x	= xmf4x4World._31; m_xmf3Look.y		= xmf4x4World._32; m_xmf3Look.z		= xmf4x4World._33;
+	m_xmf3Rotation.x = 0;
+	m_xmf3Rotation.y = 0;
+	m_xmf3Rotation.z = 0;
 }
 
 void CFollowCamera::SetLookAt(XMFLOAT3 & xmf3LookAt)

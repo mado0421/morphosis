@@ -118,14 +118,17 @@ void TestScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList 
 	imp.ImportTexture(L"Textures/CobblestoneMedieval12_roughness",	"roughness",	TEXTURETYPE::ROUGHNESS);
 
 	//오브젝트 몇 개 쓸거야
-	int nObject = 1;
+	int nObject = 2;
 	int count = 0;
 	CreateDescriptorHeap(nObject);
 
 	CTestMesh* tempMesh = new CTestMesh(m_pd3dDevice, m_pd3dCommandList);
 	tempMesh->name = "Plane";
+	CTestMesh* tempMesh2 = new CTestMesh(m_pd3dDevice, m_pd3dCommandList, XMFLOAT3(50, 50, 50));
+	tempMesh2->name = "Box";
 	//CModelMesh* modelMesh = new CModelMesh
 	g_vecMesh.push_back(tempMesh);
+	g_vecMesh.push_back(tempMesh2);
 
 	CModel* tempModel = new CModel();
 	tempModel->SetMeshIdx(GetMeshIdx( "Plane" ));
@@ -133,23 +136,35 @@ void TestScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList 
 	tempModel->SetNormalIdx(GetTextureIdx( "normal" ));
 	tempModel->name = "TestPlaneModel";
 	g_vecModel.push_back(tempModel);
+	CModel* tempModel2 = new CModel();
+	tempModel2->SetMeshIdx(GetMeshIdx("Box"));
+	tempModel2->SetAlbedoIdx(GetTextureIdx("albedo"));
+	tempModel2->SetNormalIdx(GetTextureIdx("normal"));
+	tempModel2->name = "TestBoxModel";
+	g_vecModel.push_back(tempModel2);
+
 
 	CPrefab* tempPrefab = new CPrefab();
 	tempPrefab->m_vecModelIdx.push_back(GetModelIdx( "TestPlaneModel" ));
 	tempPrefab->name = "TestPlanePrefab";
 	g_vecPrefab.push_back(tempPrefab);
+	CPrefab* tempPrefab2 = new CPrefab();
+	tempPrefab2->m_vecModelIdx.push_back(GetModelIdx("TestBoxModel"));
+	tempPrefab2->name = "TestBoxPrefab";
+	g_vecPrefab.push_back(tempPrefab2);
 
 	Object* tempObj = new Object();
 	tempObj->SetPrefabIdx(GetPrefabIdx( "TestPlanePrefab" ));
 	tempObj->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
-
 	tempObj->Move(XMFLOAT3(0, -50, 0));
 	tempObj->Rotate(XMFLOAT3(-90, 0, 0));
-
-
-
-
 	m_vecObject.push_back(tempObj);
+	Object* tempObj2 = new Object();
+	tempObj2->SetPrefabIdx(GetPrefabIdx("TestBoxPrefab"));
+	tempObj2->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize) * count++);
+	tempObj2->Move(XMFLOAT3(0, 50, 0));
+	//tempObj2->Rotate(XMFLOAT3(0, 0, 0));
+	m_vecObject.push_back(tempObj2);
 
 	CreateTextureResourceViews();
 	CreateConstantBufferResorce();
@@ -158,7 +173,7 @@ void TestScene::Initialize(ID3D12Device * pd3dDevice, ID3D12GraphicsCommandList 
 	CPsoModel pso;
 	pso.Initialize(m_pd3dDevice, m_pd3dGraphicsRootSignature);
 
-
+	SetCursorPos(FRAME_BUFFER_WIDTH / 2.0, FRAME_BUFFER_HEIGHT / 2.0);
 }
 
 void TestScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
@@ -172,23 +187,46 @@ void TestScene::Render(ID3D12GraphicsCommandList * pd3dCommandList)
 	for (int i = 0; i < m_vecObject.size(); ++i) m_vecObject[i]->Render(pd3dCommandList);
 }
 
-float g_temp;
-
 void TestScene::Update(float fTimeElapsed)
 {
 	m_pCamera->Update(fTimeElapsed);
 	for (int i = 0; i < m_vecObject.size(); ++i) m_vecObject[i]->Update(fTimeElapsed);
 
-	//m_vecObject[0]->Rotate(XMFLOAT3(0, g_temp * fTimeElapsed, 0));
-	m_vecObject[0]->Rotate(XMFLOAT3(g_temp * fTimeElapsed, 0, 0));
+	//m_vecObject[0]->Rotate(XMFLOAT3(g_temp * fTimeElapsed, 0, 0));
 
 }
 
 void TestScene::ProcessInput(UCHAR * pKeysBuffer)
 {
-	if (pKeysBuffer[65] & 0xF0) { g_temp += 0.1; }
-	if (pKeysBuffer[68] & 0xF0) { g_temp -= 0.1; }
-	if (pKeysBuffer[VK_SPACE] & 0xF0) { g_temp = 0; }
+	//static bool		bIsTranslateMode	= true;
+	static POINT	ptOldCursorPos		= { FRAME_BUFFER_WIDTH / 2.0, FRAME_BUFFER_HEIGHT / 2.0 };
+
+	//if (pKeysBuffer[49] & 0xF0) { bIsTranslateMode = false; }
+	//if (pKeysBuffer[50] & 0xF0) { bIsTranslateMode = true;  }
+
+	//if (bIsTranslateMode) {
+		if (pKeysBuffer[87] & 0xF0) { m_pCamera->MoveForward(); }	// W
+		if (pKeysBuffer[65] & 0xF0) { m_pCamera->MoveLeft(); }		// A
+		if (pKeysBuffer[68] & 0xF0) { m_pCamera->MoveRight(); }		// D
+		if (pKeysBuffer[83] & 0xF0) { m_pCamera->MoveBackward(); }	// S
+		if (pKeysBuffer[81] & 0xF0) { m_pCamera->MoveUp(); }		// Q
+		if (pKeysBuffer[69] & 0xF0) { m_pCamera->MoveDown(); }		// E
+	//}
+	//else {
+		XMFLOAT2		cDelta = XMFLOAT2(0, 0);
+		POINT			ptCursorPos;
+
+		//if (pKeysBuffer[81] & 0xF0) { cDelta.x = -1; }		// Q
+		//if (pKeysBuffer[69] & 0xF0) { cDelta.x = 1; }		// E
+
+		//SetCursorPos(ptOldCursorPos.x, ptOldCursorPos.y);
+		GetCursorPos(&ptCursorPos);
+		cDelta.x = (ptCursorPos.x - ptOldCursorPos.x);
+		cDelta.y = (ptCursorPos.y - ptOldCursorPos.y);
+		SetCursorPos(ptOldCursorPos.x, ptOldCursorPos.y);
+
+		m_pCamera->Rotate(cDelta.y, cDelta.x,0);
+	//}
 }
 
 void TestScene::Release()
@@ -256,7 +294,7 @@ ID3D12RootSignature * TestScene::CreateRootSignature(ID3D12Device * pd3dDevice)
 	//*/
 	D3D12_STATIC_SAMPLER_DESC d3dSamplerDesc;
 	::ZeroMemory(&d3dSamplerDesc, sizeof(D3D12_STATIC_SAMPLER_DESC));
-	d3dSamplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+	d3dSamplerDesc.Filter = D3D12_FILTER_ANISOTROPIC;
 	d3dSamplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 	d3dSamplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 	d3dSamplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
